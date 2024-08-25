@@ -560,7 +560,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         m_pEdtRotationAngle->setRange(-360.0, 360.0);
         m_pEdtRotationAngle->setDecimals(1);
         m_pEdtRotationAngle->setSingleStep(0.1);
-        m_pEdtRotationAngle->setSuffix(" " + ZS::System::Math::c_strSymbolDegree);
+        m_pEdtRotationAngle->setSuffix(" " + QString(ZS::System::Math::c_chSymbolDegree));
         //m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
         m_pLytLineRotationAngle->addWidget(m_pEdtRotationAngle);
         m_pLytLineRotationAngle->addStretch();

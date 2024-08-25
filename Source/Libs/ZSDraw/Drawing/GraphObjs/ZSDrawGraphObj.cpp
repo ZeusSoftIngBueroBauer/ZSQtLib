@@ -7334,7 +7334,7 @@ void CGraphObj::updateTransformedCoorsOnItemPositionChanged()
 //
 //        m_strToolTip += "\nSize:\t\t" + getSize(Units.Length.px).toString();
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_strSymbolDegree;
+//        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_chSymbolDegree;
 //#endif
 //        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 //
@@ -7361,7 +7361,7 @@ void CGraphObj::updateTransformedCoorsOnItemPositionChanged()
 //        m_strEditInfo += ", W:" + QString::number(pGraphicsItem->boundingRect().width(),'f',1);
 //        m_strEditInfo += ", H:" + QString::number(pGraphicsItem->boundingRect().height(),'f',1);
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_strSymbolDegree;
+//        m_strEditInfo += ", " + strAngleSymbol + ":" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + c_chSymbolDegree;
 //#endif
 //    }
 //}
@@ -7861,7 +7861,7 @@ double CGraphObj::QGraphicsItem_setRotation(double i_fAngle_degree)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Angle: " + QString::number(i_fAngle_degree) + " " + Math::c_strSymbolDegree;
+        strMthInArgs = "Angle: " + QString::number(i_fAngle_degree) + " " + QString(Math::c_chSymbolDegree);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7877,7 +7877,7 @@ double CGraphObj::QGraphicsItem_setRotation(double i_fAngle_degree)
         pGraphicsItemThis->setRotation(i_fAngle_degree);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev: " + QString::number(fAnglePrev_degree, 'f', 3) + " " + Math::c_strSymbolDegree);
+        mthTracer.setMethodReturn("Prev: " + QString::number(fAnglePrev_degree, 'f', 3) + " " + QString(Math::c_chSymbolDegree));
     }
     return fAnglePrev_degree;
 }

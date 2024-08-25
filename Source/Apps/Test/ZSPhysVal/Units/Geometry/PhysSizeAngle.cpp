@@ -51,7 +51,7 @@ CPhysSizeAngle::CPhysSizeAngle( CUnitsTreeEntryGrpScienceField* i_pParentBranch 
         /* strName          */ "Angle",
         /* strSIUnitName    */ "Radiant",
         /* strSIUnitSymbol  */ "rad",
-        /* strFormulaSymbol */ Math::c_strSymbolPhi,
+        /* strFormulaSymbol */ Math::c_chSymbolDegree,
         /* bIsPowerRelated  */ false ),
     m_treeEntryRad(
         /* pPhysSize      */ this,
@@ -63,7 +63,7 @@ CPhysSizeAngle::CPhysSizeAngle( CUnitsTreeEntryGrpScienceField* i_pParentBranch 
       /* pPhysSize      */ this,
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
-      /* strSymbol      */ Math::c_strSymbolDegree,
+      /* strSymbol      */ Math::c_chSymbolDegree,
       /* fMFromSI       */ 180.0/Math::c_fPI ),
     Rad(m_treeEntryRad),
     Degree(m_treeEntryDegree)

@@ -11092,7 +11092,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 0.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -11124,7 +11124,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("rotationAngle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 90.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -11156,7 +11156,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("rotationAngle: 180.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 180.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -11188,7 +11188,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("rotationAngle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 270.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -11268,7 +11268,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
         strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 0.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -11313,7 +11313,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
         strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("rotationAngle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 90.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -11359,7 +11359,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
         strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("rotationAngle: 180.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 180.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -11404,7 +11404,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
         strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("rotationAngle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 270.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line4
@@ -11449,7 +11449,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
         strlstExpectedValues.append("getLine.p2.y: 28.6 mm");
     }
     strlstExpectedValues.append("getLength: 60.6 mm");
-    strlstExpectedValues.append("rotationAngle: 45.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 45.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -11963,7 +11963,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dx: 100.0 mm");
     strlstExpectedValues.append("dy: 0.0 mm");
     strlstExpectedValues.append("Length: 100.0 mm");
-    strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 0.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -11991,7 +11991,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         strlstExpectedValues.append("dy: -100.0 mm");
     }
     strlstExpectedValues.append("Length: 100.0 mm");
-    strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 90.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -12017,7 +12017,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dx: -100.0 mm");
     strlstExpectedValues.append("dy: 0.0 mm");
     strlstExpectedValues.append("Length: 100.0 mm");
-    strlstExpectedValues.append("Angle: 180.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 180.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -12045,7 +12045,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         strlstExpectedValues.append("dy: 100.0 mm");
     }
     strlstExpectedValues.append("Length: 100.0 mm");
-    strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 270.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -12073,7 +12073,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         strlstExpectedValues.append("dy: -42.9 mm");
     }
     strlstExpectedValues.append("Length: 60.6 mm");
-    strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 45.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -12108,7 +12108,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dx: 350 px");
     strlstExpectedValues.append("dy: 0 px");
     strlstExpectedValues.append("Length: 350 px");
-    strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 0.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     fP1YPos_mm = 0.0;
@@ -12136,10 +12136,10 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dy: 350 px");
     strlstExpectedValues.append("Length: 350 px");
     if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 90.0 " + QString(Math::c_chSymbolDegree));
     }
     else {
-        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 270.0 " + QString(Math::c_chSymbolDegree));
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -12167,7 +12167,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dx: -350 px");
     strlstExpectedValues.append("dy: 0 px");
     strlstExpectedValues.append("Length: 350 px");
-    strlstExpectedValues.append("Angle: 180.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 180.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     fP1YPos_mm = 100.0;
@@ -12195,10 +12195,10 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dy: -350 px");
     strlstExpectedValues.append("Length: 350 px");
     if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 270.0 " + QString(Math::c_chSymbolDegree));
     }
     else {
-        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 90.0 " + QString(Math::c_chSymbolDegree));
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -12227,10 +12227,10 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("dy: 150 px");
     strlstExpectedValues.append("Length: 212 px");
     if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 45.0 " + QString(Math::c_chSymbolDegree));
     }
     else {
-        strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 315.0 " + QString(Math::c_chSymbolDegree));
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 }

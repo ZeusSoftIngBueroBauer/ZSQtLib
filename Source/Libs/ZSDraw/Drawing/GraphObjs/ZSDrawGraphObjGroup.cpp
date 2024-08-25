@@ -3556,6 +3556,7 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
         setPhysValRectScaled(physValRect);
         // The relative rotation angle on the screen should remain the same.
         if (i_pGraphObjGroupPrev != nullptr) {
+            CPhysValRes physValRes = m_physValRotationAngle.getRes();
             CPhysVal physValRotationAngleParentGroup = i_pGraphObjGroupPrev->rotationAngle();
             if (i_pGraphObjGroupNew == nullptr) {
                 m_physValRotationAngle += i_pGraphObjGroupPrev->mapRotationAngleToScene(physValRotationAngleParentGroup);
@@ -3563,6 +3564,8 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
             else {
                 m_physValRotationAngle += i_pGraphObjGroupPrev->mapRotationAngleTo(physValRotationAngleParentGroup, i_pGraphObjGroupNew);
             }
+            // Keep the resolution.
+            m_physValRotationAngle.setRes(physValRes);
         }
         physValRect.setAngle(m_physValRotationAngle);
         setPhysValRectScaledAndRotated(physValRect);

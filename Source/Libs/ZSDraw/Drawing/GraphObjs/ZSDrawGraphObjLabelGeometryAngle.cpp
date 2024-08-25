@@ -338,7 +338,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     // If the label is linked to different objects ..
     else {
         // .. calculate coordinate from selection points.
-        strText = QString::number(m_lineSelPtsSceneCoors.angle(), 'f', 1) + " " + Math::c_strSymbolDegree;
+        strText = QString::number(m_lineSelPtsSceneCoors.angle(), 'f', 1) + " " + QString(Math::c_chSymbolDegree);
     }
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
@@ -455,7 +455,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strRuntimeInfo = "PolarCoors {" + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + Math::c_strSymbolDegree + "}";
+            ", " + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
@@ -514,8 +514,8 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strRuntimeInfo = "AnchorLine2 {Rect {" + qRect2Str(m_rectPie) + "} px" +
-            ", PieAngles {Start: " + QString::number(m_fPieStartAngle_degrees) + " " + Math::c_strSymbolDegree +
-            ", Span: " + QString::number(m_fPieSpanAngle_degrees) + " " + Math::c_strSymbolDegree + "}";
+            ", PieAngles {Start: " + QString::number(m_fPieStartAngle_degrees) + " " + QString(Math::c_chSymbolDegree) +
+            ", Span: " + QString::number(m_fPieSpanAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 

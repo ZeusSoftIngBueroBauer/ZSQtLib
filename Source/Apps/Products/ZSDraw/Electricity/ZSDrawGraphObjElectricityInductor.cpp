@@ -469,7 +469,7 @@ protected: // overridables of base class CGraphObj
 //
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
 //        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-//        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::System::Math::c_strSymbolDegree;
+//        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::System::Math::c_chSymbolDegree;
 //#endif
 //        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
 //

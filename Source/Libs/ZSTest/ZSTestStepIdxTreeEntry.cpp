@@ -199,7 +199,7 @@ QString CAbstractTestStepIdxTreeEntry::testDuration2StrInBestUnit() const
     }
     else if( fabs(fDuration_s) <= 1.0e-3 )
     {
-        strDuration = QString::number(1.0e6 * fDuration_s, 'f', 3) + " " + Math::c_strSymbolMicro + "s";
+        strDuration = QString::number(1.0e6 * fDuration_s, 'f', 3) + " " + Math::c_chSymbolMicro + "s";
     }
     else if( fabs(fDuration_s) <= 1.0 )
     {

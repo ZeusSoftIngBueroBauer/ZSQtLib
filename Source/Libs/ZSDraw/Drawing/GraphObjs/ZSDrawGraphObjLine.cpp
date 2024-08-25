@@ -2581,7 +2581,6 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged(
         setPhysValLineOrig(physValLine);
         physValLine = getPhysValLineScaled(m_physValLineOrig);
         setPhysValLineScaled(physValLine);
-        //physValLine.setAngle(m_physValRotationAngle);
         setPhysValLineScaledAndRotated(physValLine);
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);

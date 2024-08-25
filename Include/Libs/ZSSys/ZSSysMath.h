@@ -95,19 +95,12 @@ const double c_f360Degrees_rad = 2.0 * acos(-1.0);
 
 const double c_fe = 2.718281828459;
 
-const QChar   c_chSymbolSquare(0x00B2);
-const QString c_strSymbolSquare(c_chSymbolSquare);
-
-const QChar   c_chSymbolSquareRoot(0x221A);
-const QString c_strSymbolSquareRoot(c_chSymbolSquareRoot);
-
-const QChar   c_chSymbolDegree(0x00B0);
-const QString c_strSymbolDegree(c_chSymbolDegree);
-const QChar   c_chSymbolPhi(0x03C6);
-const QString c_strSymbolPhi(c_chSymbolPhi);
-
-const QChar   c_chSymbolMicro(0x00B5);
-const QString c_strSymbolMicro(c_chSymbolMicro);
+// Don't use QString for those symbols as that may crash in "load_relaxed".
+const QChar c_chSymbolSquare(0x00B2);
+const QChar c_chSymbolSquareRoot(0x221A);
+const QChar c_chSymbolDegree(0x00B0);
+const QChar c_chSymbolPhi(0x03C6);
+const QChar c_chSymbolMicro(0x00B5);
 
 ZSSYSDLL_API double sqr( double i_fVal );
 ZSSYSDLL_API double sqrt( double i_fVal );

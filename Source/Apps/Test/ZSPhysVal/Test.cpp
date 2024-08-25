@@ -390,7 +390,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
-        /* strOperation    */ "CPhysVal(\"8.9 " + Math::c_strSymbolMicro + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio)",
+        /* strOperation    */ "CPhysVal(\"8.9 " + QString(Math::c_chSymbolMicro) + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio)",
         /* pGrpParent      */ pTSGrpWithStringValuesConvert2Str,
         /* szDoTestStepFct */ SLOT(doTestStepCtorWithStrValsConvert2Str_11(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Constructor with string value containing resolution in %" );
@@ -398,7 +398,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
-        /* strOperation    */ "CPhysVal(\"8.9 " + Math::c_strSymbolMicro + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio,OutResWithUnit)",
+        /* strOperation    */ "CPhysVal(\"8.9 " + QString(Math::c_chSymbolMicro) + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio,OutResWithUnit)",
         /* pGrpParent      */ pTSGrpWithStringValuesConvert2Str,
         /* szDoTestStepFct */ SLOT(doTestStepCtorWithStrValsConvert2Str_12(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Constructor with string value containing resolution in %" );
@@ -406,7 +406,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
-        /* strOperation    */ "CPhysVal(\"8.9 " +Math::c_strSymbolMicro + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio).toString()",
+        /* strOperation    */ "CPhysVal(\"8.9 " + QString(Math::c_chSymbolMicro) + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio).toString()",
         /* pGrpParent      */ pTSGrpWithStringValuesConvert2Str,
         /* szDoTestStepFct */ SLOT(doTestStepCtorWithStrValsConvert2Str_13(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Constructor with string value containing resolution in %" );

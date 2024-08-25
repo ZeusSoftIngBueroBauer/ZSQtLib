@@ -2234,7 +2234,7 @@ void CMainWindow::createToolBars()
     m_pEdtEditRotateAngle->setRange(0.0,360.0);
     m_pEdtEditRotateAngle->setDecimals(1);
     m_pEdtEditRotateAngle->setSingleStep(1.0);
-    m_pEdtEditRotateAngle->setSuffix(" " +  ZS::System::Math::c_strSymbolDegree);
+    m_pEdtEditRotateAngle->setSuffix(" " +  QString(ZS::System::Math::c_chSymbolDegree));
     m_pEdtEditRotateAngle->setValue(90.0);
     m_pToolBarEditRotateAndMirror->addWidget(m_pEdtEditRotateAngle);
 

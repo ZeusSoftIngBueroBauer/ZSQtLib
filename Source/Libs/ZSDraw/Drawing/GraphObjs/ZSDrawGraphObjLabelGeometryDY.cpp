@@ -449,7 +449,7 @@ void CGraphObjLabelGeometryDY::updatePolarCoorsToLinkedSelPt()
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strRuntimeInfo = "PolarCoors {" + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + Math::c_strSymbolDegree + "}";
+            ", " + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 

@@ -1364,7 +1364,7 @@ QString CRequest::getDurationAsStrInBestUnit() const
     }
     else if( fabs(fDuration_s) <= 1.0e-3 )
     {
-        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + Math::c_strSymbolMicro + "s";
+        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + Math::c_chSymbolMicro + "s";
     }
     else if( fabs(fDuration_s) <= 1.0 )
     {

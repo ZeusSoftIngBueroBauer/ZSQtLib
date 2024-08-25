@@ -392,7 +392,6 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
 //------------------------------------------------------------------------------
 {
     double fVal = 0.0;
-
     if (i_iTrailingDigits == 0) {
         if (i_fVal < 0.0) {
             fVal = ceil(i_fVal-0.5);
@@ -509,41 +508,32 @@ double Math::round2Lower( double i_fVal, int i_iTrailingDigits )
 //------------------------------------------------------------------------------
 {
     double fVal = 0.0;
-
-    if( i_iTrailingDigits == 0 )
-    {
+    if (i_iTrailingDigits == 0) {
         fVal = floor(fabs(i_fVal));
-        if (i_fVal < 0.0)
-        {
+        if (i_fVal < 0.0) {
             fVal *= -1.0;
         }
     }
-    else
-    {
+    else {
         int iTrailingDigits = i_iTrailingDigits;
-        if( i_iTrailingDigits == -1 )
-        {
+        if (i_iTrailingDigits == -1) {
             iTrailingDigits = c_iCalculationAccuracyTrailingDigits;
         }
-
         int iDecimalPos = 0;
         int iSign = 0;
-
         #ifdef _MSC_VER
         #pragma warning(disable:4996)
-        char* szFcvt = _fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
+        char* szFcvt = new char[_CVTBUFSIZE];
+        _fcvt_s(szFcvt, _CVTBUFSIZE, i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
         #pragma warning(default:4996)
         #else
-        char* szFcvt = fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
+        TODO: thread safe version
+        //char* szFcvt = fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
         #endif
-
         char* szVal = nullptr;
-
-        if( iDecimalPos > 0 )
-        {
+        if (iDecimalPos > 0) {
             szVal = new char[strlen(szFcvt)+2]; // incl. decimal point and '\0'
             memset(szVal, 0x00, strlen(szFcvt)+2);
-
             #ifdef _WINDOWS
             #pragma warning(disable:4996)
             #endif
@@ -555,11 +545,9 @@ double Math::round2Lower( double i_fVal, int i_iTrailingDigits )
             #endif
             szVal[strlen(szVal)-2] = 0x00;
         }
-        else
-        {
+        else {
             szVal = new char[-iDecimalPos+strlen(szFcvt)+3]; // incl. '0.' and '\0'
             memset(szVal, 0x00, -iDecimalPos+strlen(szFcvt)+3);
-
             memset(szVal, '0', -iDecimalPos+2); // starting with '0.'
             szVal[1] = '.';
             #ifdef _WINDOWS
@@ -572,14 +560,16 @@ double Math::round2Lower( double i_fVal, int i_iTrailingDigits )
             szVal[strlen(szVal)-2] = 0x00;
         }
         fVal = atof(szVal);
-        if (i_fVal < 0.0)
-        {
+        if (i_fVal < 0.0) {
             fVal *= -1.0;
         }
         delete [] szVal;
         szVal = nullptr;
+        #ifdef _MSC_VER
+        delete [] szFcvt;
+        #endif
+        szFcvt = nullptr;
     }
-
     return fVal;
 
 } // round2Lower
@@ -620,41 +610,32 @@ double Math::round2Upper( double i_fVal, int i_iTrailingDigits )
 //------------------------------------------------------------------------------
 {
     double fVal = 0.0;
-
-    if( i_iTrailingDigits == 0 )
-    {
+    if (i_iTrailingDigits == 0) {
         fVal = ceil(fabs(i_fVal));
-        if (i_fVal < 0.0)
-        {
+        if (i_fVal < 0.0) {
             fVal *= -1.0;
         }
     }
-    else
-    {
+    else {
         int iTrailingDigits = i_iTrailingDigits;
-        if( i_iTrailingDigits == -1 )
-        {
+        if (i_iTrailingDigits == -1) {
             iTrailingDigits = c_iCalculationAccuracyTrailingDigits;
         }
-
         int iDecimalPos = 0;
         int iSign = 0;
-
         #ifdef _MSC_VER
         #pragma warning(disable:4996)
-        char* szFcvt = _fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
+        char* szFcvt = new char[_CVTBUFSIZE];
+        _fcvt_s(szFcvt, _CVTBUFSIZE, i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
         #pragma warning(default:4996)
         #else
-        char* szFcvt = fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
+        TODO: thread safe version
+        //char* szFcvt = fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
         #endif
-
         char* szVal = nullptr;
-
-        if( iDecimalPos > 0 )
-        {
+        if (iDecimalPos > 0) {
             szVal = new char[strlen(szFcvt)+2]; // incl. decimal point and '\0'
             memset(szVal, 0x00, strlen(szFcvt)+2);
-
             #ifdef _WINDOWS
             #pragma warning(disable:4996)
             #endif
@@ -664,17 +645,14 @@ double Math::round2Upper( double i_fVal, int i_iTrailingDigits )
             #ifdef _WINDOWS
             #pragma warning(default:4996)
             #endif
-            if (szVal[strlen(szVal)-2] != '0')
-            {
+            if (szVal[strlen(szVal)-2] != '0') {
                 ++szVal[strlen(szVal)-3];
             }
             szVal[strlen(szVal)-2] = 0x00;
         }
-        else
-        {
+        else {
             szVal = new char[-iDecimalPos+strlen(szFcvt)+3]; // incl. '0.' and '\0'
             memset(szVal, 0x00, -iDecimalPos+strlen(szFcvt)+3);
-
             memset(szVal, '0', -iDecimalPos+2); // starting with '0.'
             szVal[1] = '.';
             #ifdef _WINDOWS
@@ -684,19 +662,21 @@ double Math::round2Upper( double i_fVal, int i_iTrailingDigits )
             #ifdef _WINDOWS
             #pragma warning(default:4996)
             #endif
-            if (szVal[strlen(szVal)-2] != '0')
-            {
+            if (szVal[strlen(szVal)-2] != '0') {
                 ++szVal[strlen(szVal)-3];
             }
             szVal[strlen(szVal)-2] = 0x00;
         }
         fVal = atof(szVal);
-        if (i_fVal < 0.0)
-        {
+        if (i_fVal < 0.0) {
             fVal *= -1.0;
         }
         delete [] szVal;
         szVal = nullptr;
+        #ifdef _MSC_VER
+        delete [] szFcvt;
+        #endif
+        szFcvt = nullptr;
     }
 
     return fVal;
@@ -724,6 +704,7 @@ double Math::round2Upper( double i_fVal, int i_iTrailingDigits )
         round2Resolution(5.45, 0.01) = 5.45
         round2Resolution(5.55, 0.01) = 5.55
         round2Resolution(5.65, 0.01) = 5.65
+        round2Resolution(45.0, 0.4) = 45.0
 
     @note The function uses the following library functions:
         - floor(double value)
@@ -734,24 +715,18 @@ double Math::round2Resolution( double i_fVal, double i_fRes )
 {
     double fVal = i_fVal;
     double fRes = fabs(i_fRes);
-
-    if( fRes > 0.0 )
-    {
+    if (fRes > 0.0) {
         fVal = i_fVal / fRes;
-        if (fVal >= 0.0)
-        {
+        if (fVal >= 0.0) {
             fVal = fVal + 0.5;
-            if (fRes < 1.0)
-            {
+            if (fRes < 1.0) {
                 fVal += fRes/10.0;
             }
             fVal = floor(fVal);
         }
-        else
-        {
+        else {
             fVal = fVal - 0.5;
-            if (fRes < 1.0)
-            {
+            if (fRes < 1.0) {
                 fVal -= fRes/10.0;
             }
             fVal = ceil(fVal);
@@ -759,7 +734,8 @@ double Math::round2Resolution( double i_fVal, double i_fRes )
         fVal *= fRes;
     }
     return fVal;
-}
+
+} // round2Resolution
 
 //------------------------------------------------------------------------------
 /*! @brief Rounds the value to the lower decade if the value is not a whole
@@ -783,16 +759,11 @@ double Math::round2LowerDecade( double i_fVal )
 {
     int iSign = i_fVal < 0.0 ? -1 : 1;
     double fVal  = fabs(i_fVal);
-
-    if( fVal > 0.0 )
-    {
+    if (fVal > 0.0) {
         double fLog  = log10(fVal);
         double fFrac = modf(fLog, &fLog);
-
-        if( fVal < 1.0 )
-        {
-            if( fFrac != 0.0 )
-            {
+        if (fVal < 1.0) {
+            if (fFrac != 0.0) {
                 fLog -= 1.0;
             }
         }
@@ -823,16 +794,11 @@ double Math::round2UpperDecade( double i_fVal )
 {
     int iSign = i_fVal < 0.0 ? -1 : 1;
     double fVal = fabs(i_fVal);
-
-    if( fVal > 0.0 )
-    {
+    if (fVal > 0.0) {
         double fLog  = log10(fVal);
         double fFrac = modf(fLog, &fLog);
-
-        if( fVal >= 1.0 )
-        {
-            if( fFrac != 0.0 )
-            {
+        if (fVal >= 1.0) {
+            if (fFrac != 0.0) {
                 fLog += 1.0;
             }
         }
@@ -862,15 +828,11 @@ double Math::round2LowerIntMultOfTen( double i_fVal )
 //------------------------------------------------------------------------------
 {
     double fVal = fabs(i_fVal);
-
-    if( fVal > 0.0 )
-    {
+    if (fVal > 0.0) {
         int iSign = 1;
         int iMant = 0;
         int iExp  = 0;
-
         normalize(i_fVal, &iSign, &iMant, &iExp);
-
         fVal = iSign * iMant * pow(10.0, iExp);
     }
     return fVal;
@@ -897,20 +859,14 @@ double Math::round2UpperIntMultOfTen( double i_fVal )
 //------------------------------------------------------------------------------
 {
     double fVal = fabs(i_fVal);
-
-    if( fVal > 0.0 )
-    {
+    if (fVal > 0.0) {
         double fLog  = log10(fVal);
         double fFrac = modf(fLog, &fLog);
-
         int iSign = 1;
         int iMant = 0;
         int iExp  = 0;
-
         normalize(i_fVal, &iSign, &iMant, &iExp);
-
-        if( fFrac != 0.0 )
-        {
+        if (fFrac != 0.0) {
             iMant += 1;
         }
         fVal = iSign * iMant * pow(10.0, iExp);
@@ -932,21 +888,15 @@ int Math::minVal( int i_iValCount, int i_iVal1 ... )
 //------------------------------------------------------------------------------
 {
     int iMinVal = i_iVal1;
-
     va_list ap;
     va_start(ap,i_iVal1);
-
-    for( int iValIdx = 1; iValIdx < i_iValCount; iValIdx++ )
-    {
+    for (int iValIdx = 1; iValIdx < i_iValCount; iValIdx++) {
         int iVal = va_arg(ap,int);
-
-        if( iVal < iMinVal )
-        {
+        if (iVal < iMinVal) {
             iMinVal = iVal;
         }
     }
     va_end(ap);
-
     return iMinVal;
 }
 
@@ -964,21 +914,15 @@ double Math::minVal( int i_iValCount, double i_fVal1 ... )
 //------------------------------------------------------------------------------
 {
     double fMinVal = i_fVal1;
-
     va_list ap;
     va_start(ap, i_fVal1);
-
-    for( int iValIdx = 1; iValIdx < i_iValCount; iValIdx++ )
-    {
+    for (int iValIdx = 1; iValIdx < i_iValCount; iValIdx++) {
         double fVal = va_arg(ap, double);
-
-        if( fVal < fMinVal )
-        {
+        if (fVal < fMinVal) {
             fMinVal = fVal;
         }
     }
     va_end(ap);
-
     return fMinVal;
 }
 
@@ -996,21 +940,15 @@ int Math::maxVal( int i_iValCount, int i_iVal1 ... )
 //------------------------------------------------------------------------------
 {
     int iMaxVal = i_iVal1;
-
     va_list ap;
     va_start(ap,i_iVal1);
-
-    for( int iValIdx = 1; iValIdx < i_iValCount; iValIdx++ )
-    {
+    for (int iValIdx = 1; iValIdx < i_iValCount; iValIdx++) {
         int iVal = va_arg(ap,int);
-
-        if( iVal > iMaxVal )
-        {
+        if (iVal > iMaxVal) {
             iMaxVal = iVal;
         }
     }
     va_end(ap);
-
     return iMaxVal;
 }
 
@@ -1028,21 +966,15 @@ double Math::maxVal( int i_iValCount, double i_fVal1 ... )
 //------------------------------------------------------------------------------
 {
     double fMaxVal = i_fVal1;
-
     va_list ap;
     va_start(ap,i_fVal1);
-
-    for( int iValIdx = 1; iValIdx < i_iValCount; iValIdx++ )
-    {
+    for (int iValIdx = 1; iValIdx < i_iValCount; iValIdx++) {
         double fVal = va_arg(ap,double);
-
-        if( fVal > fMaxVal )
-        {
+        if (fVal > fMaxVal) {
             fMaxVal = fVal;
         }
     }
     va_end(ap);
-
     return fMaxVal;
 }
 
@@ -1064,13 +996,12 @@ std::tuple<double, double> Math::getAbsMinMax(const QVector<double>& i_arVals)
 {
     double fMin = DBL_MAX;
     double fMax = DBL_EPSILON;
-    for (int idx = 0; idx < i_arVals.size(); ++idx)
-    {
+    for (int idx = 0; idx < i_arVals.size(); ++idx) {
         double fTmp = fabs(i_arVals[idx]);
-        if( fTmp > fMax ) {
+        if (fTmp > fMax) {
             fMax = fTmp;
         }
-        if( fTmp < fMin && fTmp > 0.0 ) {
+        if (fTmp < fMin && fTmp > 0.0) {
             fMin = fTmp;
         }
     }
@@ -1106,27 +1037,19 @@ int Math::getFirstSignificantDigit( double i_fVal )
 //------------------------------------------------------------------------------
 {
     int iFirstDigit = 0;
-
-    if (i_fVal != 0.0)
-    {
+    if (i_fVal != 0.0) {
         double fAbsVal = fabs(i_fVal);
-
-        if (fAbsVal >= 1.0 && fAbsVal < 10.0)
-        {
+        if (fAbsVal >= 1.0 && fAbsVal < 10.0) {
             iFirstDigit = 1;
         }
-        else // if (fAbsVal < 1.0 || fAbsVal >= 10.0)
-        {
+        else {
             double fLogInt = 0.0;
             double fLog = log10(fAbsVal);
             double fLogFrac = modf(fLog, &fLogInt);
-
-            if (fAbsVal >= 10.0)
-            {
+            if (fAbsVal >= 10.0) {
                 iFirstDigit = static_cast<int>(fLogInt) + 1;
             }
-            else // if (fAbsVal < 1.0)
-            {
+            else {
                 iFirstDigit = static_cast<int>(fLogInt);
                 if (fLogFrac < 0.0) {
                     --iFirstDigit;
@@ -1162,48 +1085,37 @@ void Math::normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp 
 //------------------------------------------------------------------------------
 {
     double fValAbs  = fabs(i_fVal);
-    int    iValSign = i_fVal < 0.0 ? -1 : 1;
-    int    iValMant = 0;
-    int    iValExp  = 0;
-
-    if( fValAbs >= 1.0 )
-    {
+    int iValSign = i_fVal < 0.0 ? -1 : 1;
+    int iValMant = 0;
+    int iValExp  = 0;
+    if (fValAbs >= 1.0) {
         iValExp = static_cast<int>(log10(fValAbs));
     }
-    else if( fValAbs < 1.0 && fValAbs > 0.0 )
-    {
+    else if (fValAbs < 1.0 && fValAbs > 0.0) {
         double fValTmp = log10(fValAbs);
         iValExp = static_cast<int>(fValTmp);
-
         double fIntTmp = 0.0;
         double fFractTmp = modf(fValTmp, &fIntTmp);
-        if( fFractTmp != 0.0 )
-        {
+        if (fFractTmp != 0.0) {
             iValExp--;
         }
     }
-    if( o_piSign != nullptr )
-    {
+    if (o_piSign != nullptr) {
         *o_piSign = iValSign;
     }
-    if( o_piMant != nullptr )
-    {
-        if( iValExp != 0 )
-        {
+    if (o_piMant != nullptr) {
+        if (iValExp != 0) {
             double fFactTmp = pow(10.0,iValExp);
             iValMant = static_cast<int>(fValAbs/fFactTmp+0.05); // not the first but the second valid digit will be rounded
         }
-        else
-        {
+        else {
             iValMant = static_cast<int>(fValAbs+0.05); // not the first but the second valid digit will be rounded
         }
         *o_piMant = iValMant;
     }
-    if( o_piExp != nullptr )
-    {
+    if (o_piExp != nullptr) {
         *o_piExp = iValExp;
     }
-
 } // normalize
 
 //------------------------------------------------------------------------------
@@ -1233,13 +1145,12 @@ double Math::fctFFTWindowRect( double /*i_fVal*/, int /*i_iFFTSegmentLen*/ )
 double Math::fctFFTWindowHanning( double i_fVal, int i_iFFTSegmentLen )
 //------------------------------------------------------------------------------
 {
-    if( i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0 )
-    {
+    if (i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0) {
         return 0.0;
     }
     double fn = static_cast<double>(i_fVal);
     double fN = static_cast<double>(i_iFFTSegmentLen);
-    return 0.5+0.5*cos(c_f2PI*(fn-fN/2.0)/fN);
+    return 0.5 + 0.5*cos(c_f2PI*(fn-fN/2.0)/fN);
 }
 
 //------------------------------------------------------------------------------
@@ -1254,13 +1165,16 @@ double Math::fctFFTWindowHanning( double i_fVal, int i_iFFTSegmentLen )
 double Math::fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen )
 //------------------------------------------------------------------------------
 {
-    if( i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0 )
-    {
+    if (i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0) {
         return 0.0;
     }
     double fn = static_cast<double>(i_fVal);
     double fN = static_cast<double>(i_iFFTSegmentLen);
-    return 1.0-1.93*cos(c_f2PI*fn/(fN-1.0))+1.29*cos(c_f4PI*fn/(fN-1.0))-0.388*cos(c_f6PI*fn/(fN-1.0))+0.032*cos(c_f8PI*fn/(fN-1.0));
+    return 1.0
+         - 1.93*cos(c_f2PI*fn/(fN-1.0))
+         + 1.29*cos(c_f4PI*fn/(fN-1.0))
+         - 0.388*cos(c_f6PI*fn/(fN-1.0))
+         + 0.032*cos(c_f8PI*fn/(fN-1.0));
 }
 
 //------------------------------------------------------------------------------
@@ -1275,13 +1189,14 @@ double Math::fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen )
 double Math::fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen )
 //------------------------------------------------------------------------------
 {
-    if( i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0 )
-    {
+    if (i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0) {
         return 0.0;
     }
     double fn = static_cast<double>(i_fVal);
     double fN = static_cast<double>(i_iFFTSegmentLen);
-    return 0.42-0.5*cos(c_f2PI*fn/(fN-1.0))+0.08*cos(c_f4PI*fn/(fN-1.0));
+    return 0.42
+         - 0.5*cos(c_f2PI*fn/(fN-1.0))
+         + 0.08*cos(c_f4PI*fn/(fN-1.0));
 }
 
 //------------------------------------------------------------------------------
@@ -1296,13 +1211,12 @@ double Math::fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen )
 double Math::fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen )
 //------------------------------------------------------------------------------
 {
-    if( i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0 )
-    {
+    if (i_fVal > i_iFFTSegmentLen || i_iFFTSegmentLen <= 1 || i_fVal < 0) {
         return 0.0;
     }
     double fn = static_cast<double>(i_fVal);
     double fN = static_cast<double>(i_iFFTSegmentLen);
-    return 1.0-sqr((fn-fN/2.0)/(fN/2.0));
+    return 1.0 - sqr((fn-fN/2.0)/(fN/2.0));
 }
 
 //------------------------------------------------------------------------------
@@ -1323,17 +1237,14 @@ double Math::logRes2LinRes( double i_fResLog, double i_fValLin )
     //fValLin = round2LowerDecade(fValLin);
     //fResLin = fValLin * pow(10.0,fResLog);
     //fResLin = round2LowerDecade(fResLin);
-
     double fValLog = log10(i_fValLin);
     //fValLog1 = fValLog - fResLog/2.0;
     //fValLog2 = fValLog + fResLog/2.0;
     double fValLog1 = fValLog;
     double fValLog2 = fValLog + i_fResLog;
-
     double fValLin1 = pow(10.0,fValLog1);
     double fValLin2 = pow(10.0,fValLog2);
     double fValLinDiff = fValLin2 - fValLin1;
-
     return Math::round2LowerDecade(fValLinDiff);
 }
 
@@ -1349,25 +1260,20 @@ QRect Math::calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd )
 //------------------------------------------------------------------------------
 {
     QRect rct;
-
     // Previously zoomed area:
-    if( i_ptStart.x() < i_ptEnd.x() )
-    {
+    if (i_ptStart.x() < i_ptEnd.x()) {
         rct.setX(i_ptStart.x());
         rct.setWidth(i_ptEnd.x()-i_ptStart.x()+1); //lint !e834
     }
-    else
-    {
+    else {
         rct.setX(i_ptEnd.x());
         rct.setWidth(i_ptStart.x()-i_ptEnd.x()+1); //lint !e834
     }
-    if( i_ptStart.y() < i_ptEnd.y() )
-    {
+    if (i_ptStart.y() < i_ptEnd.y()) {
         rct.setY(i_ptStart.y());
         rct.setHeight(i_ptEnd.y()-i_ptStart.y()+1); //lint !e834
     }
-    else
-    {
+    else {
         rct.setY(i_ptEnd.y());
         rct.setHeight(i_ptStart.y()-i_ptEnd.y()+1); //lint !e834
     }
