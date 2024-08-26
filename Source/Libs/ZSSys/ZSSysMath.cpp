@@ -343,6 +343,10 @@ double Math::toCounterClockWiseAngleDegree( double i_fAngle_degree, bool i_bNorm
 //------------------------------------------------------------------------------
 /*! @brief Rounds the given value to the nearest absolute value at the given trailing digit.
 
+    Please note that a given value "0.000065" cannot be represented exactly in binary
+    format but is stored as 0.0000649999~ and will be rounded with trailing digits = 5
+    to 0.00006 instead of 0.00007.
+
     @param i_fVal [in]
         Value to be rounded.
     @param i_iTrailingDigits [in]
@@ -360,6 +364,7 @@ double Math::toCounterClockWiseAngleDegree( double i_fAngle_degree, bool i_bNorm
         round2Nearest(-1.16, 1) = -1.2
         round2Nearest(1.65, 0) = 2.0
         round2Nearest(1.64, 1) = 1.6
+        round2Nearest(1.65, 1) = 1.6 (see note above)
         round2Nearest(1.66, 1) = 1.7
         round2Nearest(-1.65, 0) = -2.0
         round2Nearest(-1.64, 1) = -1.6
@@ -368,21 +373,6 @@ double Math::toCounterClockWiseAngleDegree( double i_fAngle_degree, bool i_bNorm
     @note The function uses the following library functions:
         - fcvt(double value, int count, int *dec, int *sign)
           The function converts the floating point value to NULL-terminated ASCII string.
-          A single, statically allocated buffer is used for the conversion.
-          Each call destroys the result of the previous call.
-          The value parameter is the floating point number to convert.
-          fcvt stores the digits of value as a string, appending the character NULL ('\0').
-          The count parameter specifies the number of digits to store after the decimal point.
-          Excess digits are rounded to count digits. If there are fewer than count decimal places,
-          the string is padded with zeros.
-          Only digits are stored in the string. The decimal place and sign of value can be
-          retrieved and signed from dec after the call. The dec parameter points to an integer
-          value; this integer value indicates the position of the decimal relative to the
-          beginning of the string. A value of zero or a negative integer value indicates that
-          the decimal is to the left of the first digit.
-          The sign parameter refers to an integer that indicates the sign of value.
-          The integer is set to 0 if value is positive and is set to a non-zero number if value
-          is negative.
         - ceil(double value)
           Computes the smallest integer value not less than value.
         - floor(double value)
@@ -402,7 +392,7 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
     }
     else {
         int iTrailingDigits = i_iTrailingDigits;
-        if (i_iTrailingDigits == -1) {
+        if (i_iTrailingDigits < 0) {
             iTrailingDigits = c_iCalculationAccuracyTrailingDigits;
         }
         int iDecimalPos = 0;
@@ -410,7 +400,7 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
         #ifdef _MSC_VER
         #pragma warning(disable:4996)
         char* szFcvt = new char[_CVTBUFSIZE];
-        _fcvt_s(szFcvt, _CVTBUFSIZE, i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
+        _fcvt_s(szFcvt, _CVTBUFSIZE, i_fVal, iTrailingDigits, &iDecimalPos, &iSign);
         #pragma warning(default:4996)
         #else
         TODO: thread safe version
@@ -419,8 +409,8 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
         char* szVal = nullptr;
         const size_t iStrLenFcvt = strlen(szFcvt);
         if (iDecimalPos > 0) {
-            const size_t iMemSizeVal = iStrLenFcvt + 2;
-            szVal = new char[iMemSizeVal]; // incl. decimal point and '\0'
+            const size_t iMemSizeVal = iStrLenFcvt + 2; // incl. decimal point and '\0'
+            szVal = new char[iMemSizeVal];
             memset(szVal, 0x00, iMemSizeVal);
             #ifdef _WINDOWS
             #pragma warning(disable:4996)
@@ -431,11 +421,6 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
             #ifdef _WINDOWS
             #pragma warning(default:4996)
             #endif
-            const size_t iStrLenVal = strlen(szVal);
-            if (szVal[iStrLenVal-2] >= '5') {
-                ++szVal[iStrLenVal-3];
-            }
-            szVal[iStrLenVal-2] = 0x00;
         }
         else {
             const size_t iMemSizeVal = -iDecimalPos + iStrLenFcvt + 3;
@@ -450,11 +435,6 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
             #ifdef _WINDOWS
             #pragma warning(default:4996)
             #endif
-            const size_t iStrLenVal = strlen(szVal);
-            if (szVal[iStrLenVal-2] >= '5') {
-                ++szVal[iStrLenVal-3];
-            }
-            szVal[iStrLenVal-2] = 0x00;
         }
         fVal = atof(szVal);
         if (i_fVal < 0.0) {

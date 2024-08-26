@@ -1038,7 +1038,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         // creating the connection lines their connection points must already exist.
         // For this the connection lines will be saved at the end of the XML file.
         // Labels and selection points will not be saved at all (labels are created by their parents).
-        CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
+        CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
         while (itIdxTree != m_pGraphObjsIdxTree->end()) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
             if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
@@ -1053,7 +1053,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             ++itIdxTree;
         }
         if (!errResultInfo.isErrorResult()) {
-            CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
+            CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
             while (itIdxTree != m_pGraphObjsIdxTree->end()) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
                 if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {

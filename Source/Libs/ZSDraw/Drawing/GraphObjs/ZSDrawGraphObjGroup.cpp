@@ -446,7 +446,6 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
             else {
                 physValRectNew = m_pDrawingScene->convert(rctBoundingThisNew);
             }
-
             setRect(physValRectNew);
 
             // If the group's bounding rectangle has been changed, the groups center point (and also
@@ -618,11 +617,10 @@ void CGraphObjGroup::resizeToContent()
                 pGraphicsItemChildExisting->setPos(ptPosChildNew);
                 // The child was not notified about the geometry change (see above) but has to reset
                 // the scale transformation parameters of the parent.
+                // The parent scale transformation also needs to be newly initialized to take over
+                // the new rectangle of the parent group.
+                pGraphObjChildExisting->initParentTransform();
                 pGraphObjChildExisting->updateTransformedCoorsOnParentGeometryChanged();
-                // As on calling "setPos" the position may not have been changed, force the child
-                // to update it's original shape points in physical coordinates relative to either
-                // the top left or bottom left corner of the parents bounding rectangle:
-                //pGraphObjChildExisting->updatePhysValCoors();
                 pGraphObjChildExisting->setIgnoreParentGeometryChange(false);
             }
         }
@@ -3556,6 +3554,10 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
         setPhysValRectScaled(physValRect);
         // The relative rotation angle on the screen should remain the same.
         if (i_pGraphObjGroupPrev != nullptr) {
+            #pragma message(__TODO__"PhysVal: round2Resolution is different from round2Accuracy.")
+            #pragma message(__TODO__"PhysVal: Keep both resolution and accuracy in CPhysVal.")
+            #pragma message(__TODO__"PhysVal: Values with resolution may also have an accuracy.")
+            #pragma message(__TODO__"PhysVal: Resolutions should not be added, but accuracies should be added.")
             CPhysValRes physValRes = m_physValRotationAngle.getRes();
             CPhysVal physValRotationAngleParentGroup = i_pGraphObjGroupPrev->rotationAngle();
             if (i_pGraphObjGroupNew == nullptr) {

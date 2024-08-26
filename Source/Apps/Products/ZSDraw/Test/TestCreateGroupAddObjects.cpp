@@ -1860,7 +1860,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
     // Group BigPlusSign
     m_ptPosBigPlusSign = QPointF(0.0, 0.0);
-    m_sizeBigPlusSign = QSizeF(Math::sqrt(2.0) * 100.0, 212.1);
+    m_sizeBigPlusSign = QSizeF(141.42, 212.13);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
     m_pPhysValRectBigPlusSign->setCenter(QPointF(100.0, 150.0));
     strlstExpectedValues.append(resultValuesForGroup(
@@ -3462,8 +3462,8 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
     strlstExpectedValues.clear();
     // Group PlusSigns
-    m_ptPosTopGroup = QPointF(329.3, 300.0);
-    m_sizeTopGroup = QSizeF(170.7, 170.7);
+    m_ptPosTopGroup = QPointF(329.29, 300.0);
+    m_sizeTopGroup = QSizeF(170.71, 170.71);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     m_pPhysValRectTopGroup->setCenter(m_ptPosTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
@@ -4781,7 +4781,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
     pTestStep->setConfigValue("Method", "removeFromGroup");
     strlstExpectedValues.clear();
     // Group
-    m_ptPosSmallPlusSign = QPointF(296.0, 367.7);
+    m_ptPosSmallPlusSign = QPointF(296.97, 367.68);
     m_pPhysValRectSmallPlusSign->setCenter(m_ptPosSmallPlusSign);
     m_pPhysValRectSmallPlusSign->setAngle(m_physValAngleTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
