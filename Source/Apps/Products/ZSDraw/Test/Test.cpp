@@ -232,13 +232,6 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
-    // Start with reasonable drawing size
-    CDrawingSize drawingSize;
-    drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
-    drawingSize.setScreenResolutionInPxPerMM(1.0);
-    drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
-    m_pDrawingScene->setDrawingSize(drawingSize);
-
     CDrawGridSettings gridSettings;
     gridSettings.setLinesVisible(true);
     gridSettings.setLinesDistMin(20);
@@ -246,6 +239,17 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     gridSettings.setLabelsFont(QFont("Terminal"));
 
     //createTestGroupDrawingSize(nullptr);
+
+    // Pixels Drawings
+    //----------------
+
+    CDrawingSize drawingSize;
+    drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
+
+    // Must be set before initializing the physical objects coordinates of the test.
+    m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -256,36 +260,66 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpPixelsDrawing, drawingSize, gridSettings);
 
-    ZS::Test::CTestStepGroup* pGrpAddObjects = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawingAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing );
-    createTestGroupAddObjects(pGrpAddObjects);
-    //createTestGroupDrawObjects(pGrpAddObjects);
+    //createTestGroupAddObjects(pGrpPixelsDrawingAddObjects);
+    //createTestGroupDrawObjects(pGrpPixelsDrawingAddObjects);
+
+    // Metrics Drawings
+    //-----------------
+
+    drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Metrics Drawing",
         /* pTSGrpParent */ nullptr );
 
-    drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
-    drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
+    // YScaleTopDown
+    //--------------
+
+    drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+    // Must be set before initializing the physical objects coordinates of the test.
+    m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale TopDown",
         /* pTSGrpParent */ pGrpMetricsDrawing );
 
-    drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown, drawingSize, gridSettings);
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDownAddObjects = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown );
+    createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDownAddObjects);
+    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDownAddObjects);
+
+    // YScaleBottomUp
+    //---------------
+
+    drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
+    // Must be set before initializing the physical objects coordinates of the test.
+    m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale BottomUp",
         /* pTSGrpParent */ pGrpMetricsDrawing );
 
-    drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp, drawingSize, gridSettings);
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUpAddObjects = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp );
+    //createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
+    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
 
     // Recall test step settings
     //--------------------------
@@ -414,12 +448,12 @@ void CTest::createTestGroupPrepareScene(
     initInstCounts();
     initObjectCoors();
 
-    QString strDrawingSizeInfo = i_drawingSize.dimensionUnit().toString() +
-        " {" + qSize2Str(i_drawingSize.imageSizeInPixels()) + " px}";
+    QString strDrawingSizeInfo = "{" + qSize2Str(i_drawingSize.imageSizeInPixels()) + "} px";
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
         CPhysValSize physValSize(*m_pDrawingScene, i_drawingSize.metricImageWidth(), i_drawingSize.metricImageHeight());
-        strDrawingSizeInfo += ", " + i_drawingSize.yScaleAxisOrientation().toString() +
-            " {" + physValSize.toString(true) + "}";
+        strDrawingSizeInfo += " " + i_drawingSize.dimensionUnit().toString()
+            + " " + i_drawingSize.yScaleAxisOrientation().toString()
+            + " {" + physValSize.toString() + "} " + physValSize.unit().symbol();
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -653,7 +687,6 @@ void CTest::doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep )
     m_pDrawingScene->clear();
 
     initInstCounts();
-    initObjectCoors();
 
     i_pTestStep->setResultValue("");
 }
