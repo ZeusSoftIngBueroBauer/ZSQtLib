@@ -50,15 +50,15 @@ public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
-        const CDrawSettings& i_drawSettings ) override;
+        const CDrawSettings& i_drawSettings) override;
     virtual ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
-        QXmlStreamWriter& i_xmlStreamWriter ) override;
+        QXmlStreamWriter& i_xmlStreamWriter) const override;
     virtual CGraphObj* loadGraphObj(
         CDrawingScene* i_pDrawingScene,
         CGraphObjGroup* i_pGraphObjGroupParent,
         const QString& i_strObjName,
-        QXmlStreamReader& i_xmlStreamReader ) override;
+        QXmlStreamReader& i_xmlStreamReader) override;
 
 }; // class CObjFactoryConnectionLine
 

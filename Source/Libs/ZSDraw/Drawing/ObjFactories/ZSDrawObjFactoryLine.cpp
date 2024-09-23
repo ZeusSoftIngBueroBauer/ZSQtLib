@@ -111,8 +111,7 @@ CGraphObj* CObjFactoryLine::createGraphObj(
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryLine::saveGraphObj(
-    CGraphObj* i_pGraphObj,
-    QXmlStreamWriter& i_xmlStreamWriter )
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
 //------------------------------------------------------------------------------
 {
     if (i_pGraphObj == nullptr) {
@@ -136,6 +135,13 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
     }
 
+    const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
+    const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
+    int iDecimals = 6;
+    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+        iDecimals = drawingSize.metricImageCoorsDecimals() + 2; // to avoid rounding errors add two digits
+    }
+
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
@@ -144,8 +150,8 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     CPhysValPoint physValPoint1 = pGraphObj->getP1();
     CPhysValPoint physValPoint2 = pGraphObj->getP2();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameShapePointP1, physValPoint1.toString(false, ", ", 3));
-    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameShapePointP2, physValPoint2.toString(false, ", ", 3));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameShapePointP1, physValPoint1.toString(false, ", ", iDecimals));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameShapePointP2, physValPoint2.toString(false, ", ", iDecimals));
     i_xmlStreamWriter.writeEndElement();
 
     i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));

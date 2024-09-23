@@ -323,7 +323,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawGridSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
+void CDrawGridSettings::save( QXmlStreamWriter& i_xmlStreamWriter ) const
 //------------------------------------------------------------------------------
 {
     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameLinesVisible, bool2Str(areLinesVisible()));

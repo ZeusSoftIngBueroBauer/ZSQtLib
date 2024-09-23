@@ -116,8 +116,7 @@ CGraphObj* CObjFactoryWdgtGroupBox::createGraphObj(
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryWdgtGroupBox::saveGraphObj(
-    CGraphObj*        i_pGraphObj,
-    QXmlStreamWriter& /*i_xmlStreamWriter*/ )
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
 //------------------------------------------------------------------------------
 {
     if( i_pGraphObj == nullptr )

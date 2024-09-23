@@ -924,7 +924,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingSize::save( QXmlStreamWriter& i_xmlStreamWriter )
+void CDrawingSize::save( QXmlStreamWriter& i_xmlStreamWriter ) const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(

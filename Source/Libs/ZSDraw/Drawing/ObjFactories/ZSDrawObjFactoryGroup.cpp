@@ -64,7 +64,7 @@ CObjFactoryGroup::CObjFactoryGroup( const QPixmap& i_pxmToolIcon ) :
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactoryGroup::~CObjFactoryGroup()
@@ -106,7 +106,7 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryGroup::saveGraphObj(
-    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
 //------------------------------------------------------------------------------
 {
     if (i_pGraphObj == nullptr) {
@@ -130,20 +130,27 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
     }
 
-    CDrawGridSettings gridSettings = pGraphObj->gridSettings();
+    const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
+    const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
+    int iDecimals = 6;
+    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+        iDecimals = drawingSize.metricImageCoorsDecimals() + 2; // to avoid rounding errors add two digits
+    }
+
+    const CDrawGridSettings& gridSettings = pGraphObj->gridSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
     gridSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
-    CDrawSettings drawSettings = pGraphObj->getDrawSettings();
+    const CDrawSettings& drawSettings = pGraphObj->getDrawSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
     CPhysValRect physValRect = pGraphObj->getRect();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameCenter, physValRect.center().toString(false, ", ", 3));
-    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSize, physValRect.size().toString(false, ", ", 3));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameCenter, physValRect.center().toString(false, ", ", iDecimals));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSize, physValRect.size().toString(false, ", ", iDecimals));
     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAngle, physValRect.angle().toString());
     i_xmlStreamWriter.writeEndElement();
 

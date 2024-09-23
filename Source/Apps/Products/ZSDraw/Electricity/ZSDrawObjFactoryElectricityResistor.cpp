@@ -117,8 +117,7 @@ CGraphObj* CObjFactoryResistor::createGraphObj(
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryResistor::saveGraphObj(
-    CGraphObj*        i_pGraphObj,
-    QXmlStreamWriter& i_xmlStreamWriter )
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
 //------------------------------------------------------------------------------
 {
     if( i_pGraphObj == nullptr )

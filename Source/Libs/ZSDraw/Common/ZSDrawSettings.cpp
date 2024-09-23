@@ -568,7 +568,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawSettings::save( QSettings& i_settings, const QString& i_strSettingsKey )
+void CDrawSettings::save( QSettings& i_settings, const QString& i_strSettingsKey ) const
 //------------------------------------------------------------------------------
 {
     for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
@@ -595,7 +595,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
+void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter ) const
 //------------------------------------------------------------------------------
 {
     for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {

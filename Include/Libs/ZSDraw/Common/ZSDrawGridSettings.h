@@ -84,8 +84,8 @@ public: // instance methods
     void setLabelsTextEffect(const CEnumTextEffect& i_eTextEffect);
     CEnumTextEffect labelsTextEffect() const;
 public: // instance methods
-    void save( QXmlStreamWriter& i_xmlStreamWriter );
-    void load( QXmlStreamReader& i_xmlStreamReader );
+    void save(QXmlStreamWriter& i_xmlStreamWriter) const;
+    void load(QXmlStreamReader& i_xmlStreamReader);
 public: // instance methods
     QString toString() const;
 protected: // instance members

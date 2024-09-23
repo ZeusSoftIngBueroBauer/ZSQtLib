@@ -806,7 +806,7 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestSt
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -15.0), QPointF(0.0, 15.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(15.0, 0.0), QPointF(15.0, 30.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(15.0, bYAxisTopDown ? 0.0 : 30.0), QPointF(15.0, bYAxisTopDown ? 30.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
@@ -888,7 +888,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStep
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0), QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -1444,8 +1444,8 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -1561,8 +1561,8 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -100.0), QPointF(0.0, 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0, 200.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 200.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0, bYAxisTopDown ? 200.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -1598,8 +1598,8 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -1688,7 +1688,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     pTestStep->setConfigValue("Pos.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group
-    m_ptPosBigPlusSign = QPointF(400.0, 400.0);
+    m_ptPosBigPlusSign = QPointF(400.0, bYAxisTopDown ? 400.0 : 200.0);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
@@ -1817,15 +1817,15 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(70.7, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(70.7, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-70.7, 0.0), QPointF(70.7, 0.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-Math::sqrt(2.0)/2.0 * 100.0, 0.0), QPointF(Math::sqrt(2.0)/2.0 * 100.0, 0.0));
     m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(141.4, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(Math::sqrt(2.0) * 100.0, 50.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
@@ -1866,16 +1866,16 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -106.06), QPointF(0.0, 106.06));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(70.7, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(70.7, 212.1));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -106.065), QPointF(0.0, 106.065));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 0.0 : 212.13));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 212.13 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-70.7, 0.0), QPointF(70.7, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 106.1));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(Math::sqrt(2.0) * 100.0, 106.1));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-Math::sqrt(2.0)/2.0 * 100.0, 0.0), QPointF(Math::sqrt(2.0)/2.0 * 100.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 106.065));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(Math::sqrt(2.0) * 100.0, 106.065));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
@@ -1911,13 +1911,13 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     // Group BigPlusSign
     m_sizeBigPlusSign = QSizeF(100.0, 100.0);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
-    m_pPhysValRectBigPlusSign->setCenter(QPointF(70.7, 70.7));
+    m_pPhysValRectBigPlusSign->setCenter(QPointF(Math::sqrt(2.0)/2.0 * 100.0, Math::sqrt(2.0)/2.0 * 100.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -2000,18 +2000,18 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     m_ptPosBigPlusSign = QPointF(0.0, 0.0);
     m_sizeBigPlusSign = QSizeF(Math::sqrt(2.0) * 100.0, 100.0);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
-    m_pPhysValRectBigPlusSign->setCenter(QPointF(100.0, 70.7));
+    m_pPhysValRectBigPlusSign->setCenter(QPointF(100.0, Math::sqrt(2.0)/2.0 * 100.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(70.7, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(70.7, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-70.7, 0.0), QPointF(70.7, 0.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-Math::sqrt(2.0)/2.0 * 100.0, 0.0), QPointF(Math::sqrt(2.0)/2.0 * 100.0, 0.0));
     m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
     m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(Math::sqrt(2.0) * 100.0, 50.0));
     strlstExpectedValues.append(resultValuesForLine(
@@ -2054,16 +2054,16 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -70.7), QPointF(0.0, 70.7));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(70.7, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(70.7, Math::sqrt(2.0) * 100.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -Math::sqrt(2.0)/2.0 * 100.0), QPointF(0.0, Math::sqrt(2.0)/2.0 * 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? 0.0 : Math::sqrt(2.0) * 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(Math::sqrt(2.0)/2.0 * 100.0, bYAxisTopDown ? Math::sqrt(2.0) * 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-70.7, 0.0), QPointF(70.7, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 70.7));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(Math::sqrt(2.0) * 100.0, 70.7));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-Math::sqrt(2.0)/2.0 * 100.0, 0.0), QPointF(Math::sqrt(2.0)/2.0 * 100.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, Math::sqrt(2.0)/2.0 * 100.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(Math::sqrt(2.0) * 100.0, Math::sqrt(2.0)/2.0 * 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
@@ -2100,13 +2100,13 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     m_ptPosBigPlusSign = QPointF(0.0, 0.0);
     m_sizeBigPlusSign = QSizeF(100.0, 100.0);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
-    m_pPhysValRectBigPlusSign->setCenter(QPointF(70.7, 70.7));
+    m_pPhysValRectBigPlusSign->setCenter(QPointF(Math::sqrt(2.0)/2.0 * 100.0, Math::sqrt(2.0)/2.0 * 100.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -2118,8 +2118,6 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    m_sizeTopGroup = QSizeF(Math::sqrt(2.0) * 100.0, Math::sqrt(2.0) * 100.0);
 
     // Rotate TopGroup
     //----------------
@@ -2414,7 +2412,7 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGr
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -15.0), QPointF(0.0, 15.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(15.0, 0.0), QPointF(15.0, 30.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(15.0, bYAxisTopDown ? 0.0 : 30.0), QPointF(15.0, bYAxisTopDown ? 30.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
@@ -2456,7 +2454,7 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGr
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0), QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -2636,21 +2634,21 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(-25.0, 25.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -15.0), QPointF(0.0, 15.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(25.0, 60.0), QPointF(25.0, 90.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(25.0, bYAxisTopDown ? 60.0 : 40.0), QPointF(25.0, bYAxisTopDown ? 90.0 : 10.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
     // SmallPlusSign-HorizontalLine
     m_ptPosSmallPlusSignHorizontalLine = QPointF(-25.0, 25.0);
     m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-15.0, 0.0), QPointF(15.0, 0.0));
-    *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(10.0, 75.0), QPointF(40.0, 75.0));
+    *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(10.0, bYAxisTopDown ? 75.0 : 25.0), QPointF(40.0, bYAxisTopDown ? 75.0 : 25.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignHorizontalLine, m_ptPosSmallPlusSignHorizontalLine,
         m_lineSmallPlusSignHorizontalLine, *m_pPhysValLineSmallPlusSignHorizontalLine));
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0), QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -2683,27 +2681,27 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // Group PlusSigns
     m_ptPosTopGroup = QPointF(450.0, 350.0);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
-    m_pPhysValRectTopGroup->setCenter(m_ptPosTopGroup);
+    m_pPhysValRectTopGroup->setCenter(bYAxisTopDown ? m_ptPosTopGroup : QPointF(450.0, 250.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(-100.0, 50.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -30.0), QPointF(0.0, 30.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(100.0, 120.0), QPointF(100.0, 180.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(100.0, bYAxisTopDown ? 120.0 : 80), QPointF(100.0, bYAxisTopDown ? 180.0 : 20.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
     // SmallPlusSign-HorizontalLine
     m_ptPosSmallPlusSignHorizontalLine = QPointF(-100.0, 50.0);
     m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-60.0, 0.0), QPointF(60.0, 0.0));
-    *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(40.0, 150.0), QPointF(160.0, 150.0));
+    *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(40.0, bYAxisTopDown ? 150.0 : 50.0), QPointF(160.0, bYAxisTopDown ? 150.0 : 50.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignHorizontalLine, m_ptPosSmallPlusSignHorizontalLine,
         m_lineSmallPlusSignHorizontalLine, *m_pPhysValLineSmallPlusSignHorizontalLine));
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -100.0), QPointF(0.0, 100.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(200.0, 0.0), QPointF(200.0, 200.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(200.0, bYAxisTopDown ? 0.0 : 200.0), QPointF(200.0, bYAxisTopDown ? 200.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -2747,28 +2745,28 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(350.0, 400.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -30.0), QPointF(0.0, 30.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(350.0, 370.0), QPointF(350.0, 430.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(350.0, bYAxisTopDown ? 370.0 : 230.0), QPointF(350.0, bYAxisTopDown ? 430.0 : 170.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
     // SmallPlusSign-HorizontalLine
     m_ptPosSmallPlusSignHorizontalLine = QPointF(350.0, 400.0);
     m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-60.0, 0.0), QPointF(60.0, 0.0));
-    *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(290.0, 400.0), QPointF(410.0, 400.0));
+    *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(290.0, bYAxisTopDown ? 400.0 : 200.0), QPointF(410.0, bYAxisTopDown ? 400.0 : 200.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignHorizontalLine, m_ptPosSmallPlusSignHorizontalLine,
         m_lineSmallPlusSignHorizontalLine, *m_pPhysValLineSmallPlusSignHorizontalLine));
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(450.0, 350.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -100.0), QPointF(0.0, 100.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(450.0, 250.0), QPointF(450.0, 450.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(450.0, bYAxisTopDown ? 250.0 : 350.0), QPointF(450.0, bYAxisTopDown ? 450.0 : 150.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
     m_ptPosBigPlusSignHorizontalLine = QPointF(450.0, 350.0);
     m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-200.0, 0.0), QPointF(200.0, 0.0));
-    *m_pPhysValLineBigPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(250.0, 350.0), QPointF(650.0, 350.0));
+    *m_pPhysValLineBigPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(250.0, bYAxisTopDown ? 350.0 : 250.0), QPointF(650.0, bYAxisTopDown ? 350.0 : 250.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
@@ -2805,7 +2803,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -30.0), QPointF(0.0, 30.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(60.0, 0.0), QPointF(60.0, 60.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(60.0, bYAxisTopDown ? 0.0 : 60.0), QPointF(60.0, bYAxisTopDown ? 60.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
@@ -2849,7 +2847,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -100.0), QPointF(0.0, 100.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(200.0, 0.0), QPointF(200.0, 200.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(200.0, bYAxisTopDown ? 0.0 : 200.0), QPointF(200.0, bYAxisTopDown ? 200.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -2911,7 +2909,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     m_ptPosTopGroup = QPointF(450.0, 350.0);
     m_sizeTopGroup = QSizeF(400.0, 200.0);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
-    m_pPhysValRectTopGroup->setCenter(m_ptPosTopGroup);
+    m_pPhysValRectTopGroup->setCenter(bYAxisTopDown ? m_ptPosTopGroup : QPointF(450.0, 250.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
     // SmallPlusSign
@@ -2924,7 +2922,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -30.0), QPointF(0.0, 30.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(60.0, 0.0), QPointF(60.0, 60.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(60.0, bYAxisTopDown ? 0.0 : 60.0), QPointF(60.0, bYAxisTopDown ? 60.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
@@ -2945,7 +2943,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -100.0), QPointF(0.0, 100.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(200.0, 0.0), QPointF(200.0, 200.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(200.0, bYAxisTopDown ? 0.0 : 200.0), QPointF(200.0, bYAxisTopDown ? 200.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -3007,7 +3005,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -15.0), QPointF(0.0, 15.0));
-    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(15.0, 0.0), QPointF(15.0, 30.0));
+    *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(15.0, bYAxisTopDown ? 0.0 : 30.0), QPointF(15.0, bYAxisTopDown ? 30.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
@@ -3028,7 +3026,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
+    *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0), QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -3061,7 +3059,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // Group PlusSigns
     m_ptPosTopGroup = QPointF(450.0, 350.0);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
-    m_pPhysValRectTopGroup->setCenter(m_ptPosTopGroup);
+    m_pPhysValRectTopGroup->setCenter(bYAxisTopDown ? m_ptPosTopGroup : QPointF(450.0, 250.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
     // SmallPlusSign
@@ -3107,7 +3105,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     m_ptPosSmallPlusSign = QPointF(-25.0, 25.0);
     m_sizeSmallPlusSign = QSizeF(30.0, 30.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(QPointF(25.0, 75.0));
+    m_pPhysValRectSmallPlusSign->setCenter(QPointF(25.0, bYAxisTopDown ? 75.0 : 25.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
     // BigPlusSign
@@ -3153,7 +3151,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     m_ptPosSmallPlusSign = QPointF(275.0, 325.0);
     m_sizeSmallPlusSign = QSizeF(30.0, 30.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(QPointF(275.0, 325.0));
+    m_pPhysValRectSmallPlusSign->setCenter(QPointF(275.0, bYAxisTopDown ? 325.0 : 275.0));
     m_pPhysValRectSmallPlusSign->setAngle(m_physValAngleSmallPlusSign + m_physValAngleTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
@@ -3245,7 +3243,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     m_ptPosSmallPlusSign = QPointF(-25.0, 25.0);
     m_sizeSmallPlusSign = QSizeF(30.0, 30.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(QPointF(46.0, 96.0));
+    m_pPhysValRectSmallPlusSign->setCenter(QPointF(45.71, bYAxisTopDown ? 95.71 : 45.71));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
     // SmallPlusSign-VerticalLine
@@ -3299,31 +3297,31 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Group PlusSigns
-    m_ptPosTopGroup = QPointF(329.3, 300.0);
+    m_ptPosTopGroup = QPointF(329.29, 300.0);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     m_pPhysValRectTopGroup->setCenter(m_ptPosTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
     // SmallPlusSign
     m_ptPosSmallPlusSign = QPointF(-35.4, 25.0);
-    m_sizeSmallPlusSign = QSizeF(42.4, 30.0);
+    m_sizeSmallPlusSign = QSizeF(42.43, 30.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(QPointF(65.0, 96.0));
+    m_pPhysValRectSmallPlusSign->setCenter(QPointF(64.64, bYAxisTopDown ? 95.71 : 45.71));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -15.0), QPointF(0.0, 15.0));
-    m_pPhysValLineSmallPlusSignVerticalLine->setP1(QPointF(21.0, 0.0));
-    m_pPhysValLineSmallPlusSignVerticalLine->setP2(QPointF(21.0, 30.0));
+    m_pPhysValLineSmallPlusSignVerticalLine->setP1(QPointF(21.21, bYAxisTopDown ? 0.0 : 30.0));
+    m_pPhysValLineSmallPlusSignVerticalLine->setP2(QPointF(21.21, bYAxisTopDown ? 30.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
     // SmallPlusSign-HorizontalLine
     m_ptPosSmallPlusSignHorizontalLine = QPointF(0.0, 0.0);
-    m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-21.2, 0.0), QPointF(21.2, 0.0));
+    m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-21.21, 0.0), QPointF(21.21, 0.0));
     m_pPhysValLineSmallPlusSignHorizontalLine->setP1(QPointF(0.0, 15.0));
-    m_pPhysValLineSmallPlusSignHorizontalLine->setP2(QPointF(42.4, 15.0));
+    m_pPhysValLineSmallPlusSignHorizontalLine->setP2(QPointF(42.426, 15.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignHorizontalLine, m_ptPosSmallPlusSignHorizontalLine,
         m_lineSmallPlusSignHorizontalLine, *m_pPhysValLineSmallPlusSignHorizontalLine));
@@ -3337,8 +3335,8 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0 * Math::sqrt(2.0)/2.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0 * Math::sqrt(2.0)/2.0, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0 * Math::sqrt(2.0)/2.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0 * Math::sqrt(2.0)/2.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
@@ -3388,10 +3386,10 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // SmallPlusSign
-    m_ptPosSmallPlusSign = QPointF(293.9, 325.0);
-    m_sizeSmallPlusSign = QSizeF(42.4, 30.0);
+    m_ptPosSmallPlusSign = QPointF(293.93, 325.0);
+    m_sizeSmallPlusSign = QSizeF(42.43, 30.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(m_ptPosSmallPlusSign);
+    m_pPhysValRectSmallPlusSign->setCenter(bYAxisTopDown ? m_ptPosSmallPlusSign : QPointF(293.93, 275.0));
     m_pPhysValRectSmallPlusSign->setAngle(m_physValAngleSmallPlusSign + m_physValAngleTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
@@ -3404,7 +3402,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         c_strGraphObjNameSmallPlusSignHorizontalLine, m_ptPosSmallPlusSignHorizontalLine,
         m_lineSmallPlusSignHorizontalLine, *m_pPhysValLineSmallPlusSignHorizontalLine));
     // BigPlusSign
-    m_ptPosBigPlusSign = QPointF(329.3, 300.0);
+    m_ptPosBigPlusSign = QPointF(329.29, 300.0);
     m_sizeBigPlusSign = QSizeF(Math::sqrt(2.0) * 100.0, 100.0);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
     m_pPhysValRectBigPlusSign->setCenter(m_ptPosBigPlusSign);
@@ -3470,9 +3468,9 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
     // SmallPlusSign
     m_ptPosSmallPlusSign = QPointF(-35.4, 25.0);
-    m_sizeSmallPlusSign = QSizeF(42.4, 30.0);
+    m_sizeSmallPlusSign = QSizeF(42.43, 30.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(QPointF(50.0, 110.0));
+    m_pPhysValRectSmallPlusSign->setCenter(QPointF(50.0, 110.36));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
     // SmallPlusSign-VerticalLine
@@ -3487,7 +3485,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     m_ptPosBigPlusSign = QPointF(0.0, 0.0);
     m_sizeBigPlusSign = QSizeF(Math::sqrt(2.0) * 100.0, 100.0);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
-    m_pPhysValRectBigPlusSign->setCenter(QPointF(85.4, 85.4));
+    m_pPhysValRectBigPlusSign->setCenter(QPointF(85.36, 85.36));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
     // BigPlusSign-VerticalLine
@@ -3542,16 +3540,16 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // SmallPlusSign-VerticalLine
     m_ptPosSmallPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -11.9), QPointF(0.0, 11.9));
-    m_pPhysValLineSmallPlusSignVerticalLine->setP1(QPointF(13.0, 0.0));
-    m_pPhysValLineSmallPlusSignVerticalLine->setP2(QPointF(13.0, 23.8));
+    m_pPhysValLineSmallPlusSignVerticalLine->setP1(QPointF(13.18, 0.0));
+    m_pPhysValLineSmallPlusSignVerticalLine->setP2(QPointF(13.18, 23.786));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignVerticalLine, m_ptPosSmallPlusSignVerticalLine,
         m_lineSmallPlusSignVerticalLine, *m_pPhysValLineSmallPlusSignVerticalLine));
     // SmallPlusSign-HorizontalLine
     m_ptPosSmallPlusSignHorizontalLine = QPointF(0.0, 0.0);
     m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-13.2, 0.0), QPointF(13.2, 0.0));
-    m_pPhysValLineSmallPlusSignHorizontalLine->setP1(QPointF(0.0, 12.0));
-    m_pPhysValLineSmallPlusSignHorizontalLine->setP2(QPointF(26.0, 12.0));
+    m_pPhysValLineSmallPlusSignHorizontalLine->setP1(QPointF(0.0, 11.89));
+    m_pPhysValLineSmallPlusSignHorizontalLine->setP2(QPointF(26.36, 11.89));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameSmallPlusSignHorizontalLine, m_ptPosSmallPlusSignHorizontalLine,
         m_lineSmallPlusSignHorizontalLine, *m_pPhysValLineSmallPlusSignHorizontalLine));
@@ -3565,16 +3563,16 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -39.64), QPointF(0.0, 39.64));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(44.0, 0.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(44.0, 79.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(43.93, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(43.93, 79.287));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
     m_ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
     m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-43.94, 0.0), QPointF(43.94, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 40.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(88.0, 40.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 39.64));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(87.867, 39.64));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
@@ -3620,7 +3618,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     m_ptPosSmallPlusSign = QPointF(275.0, 302.145);
     m_sizeSmallPlusSign = QSizeF(26.360, 23.787);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
-    m_pPhysValRectSmallPlusSign->setCenter(QPointF(275.0, bYAxisTopDown ? 302.145 : 40.0));
+    m_pPhysValRectSmallPlusSign->setCenter(QPointF(275.0, bYAxisTopDown ? 302.144 : 40.0));
     m_pPhysValRectSmallPlusSign->setAngle(m_physValAngleSmallPlusSign + m_physValAngleTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
@@ -3721,8 +3719,8 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     // BigPlusSign-HorizontalLine
     m_lineBigPlusSignHorizontalLine.setP1(QPointF(-43.934, 0.0));
     m_lineBigPlusSignHorizontalLine.setP2(QPointF(43.934, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 39.645));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(87.868, 39.645));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 39.644));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(87.868, 39.644));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
@@ -4827,7 +4825,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
     pTestStep->setConfigValue("Method", "removeFromGroup");
     strlstExpectedValues.clear();
     // Group
-    m_ptPosBigPlusSign = QPointF(385.4, 385.4);
+    m_ptPosBigPlusSign = QPointF(385.36, 385.36);
     m_pPhysValRectBigPlusSign->setCenter(m_ptPosBigPlusSign);
     m_pPhysValRectBigPlusSign->setAngle(m_physValAngleTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(

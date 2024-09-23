@@ -106,8 +106,8 @@ public: // instance methods
     ZS::PhysVal::CPhysVal metricImageHeight() const;
     ZS::PhysVal::CPhysVal metricImageHeight(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods
-    void save( QXmlStreamWriter& i_xmlStreamWriter );
-    void load( QXmlStreamReader& i_xmlStreamReader );
+    void save(QXmlStreamWriter& i_xmlStreamWriter) const;
+    void load(QXmlStreamReader& i_xmlStreamReader);
 protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();

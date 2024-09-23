@@ -104,15 +104,15 @@ public: // interface methods
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
-        const CDrawSettings& i_drawSettings ) = 0;
+        const CDrawSettings& i_drawSettings) = 0;
     virtual ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
-        QXmlStreamWriter& i_xmlStreamWriter ) = 0;
+        QXmlStreamWriter& i_xmlStreamWriter) const = 0;
     virtual CGraphObj* loadGraphObj(
         CDrawingScene* i_pDrawingScene,
         CGraphObjGroup* i_pGraphObjGroupParent,
         const QString& i_strObjName,
-        QXmlStreamReader& i_xmlStreamReader ) = 0;
+        QXmlStreamReader& i_xmlStreamReader) = 0;
 public: // instance methods
     QString getGroupName() const { return m_strGroupName; }
     EGraphObjType getGraphObjType() const { return m_eGraphObjType; }

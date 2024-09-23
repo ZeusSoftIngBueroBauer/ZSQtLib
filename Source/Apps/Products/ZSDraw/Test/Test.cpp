@@ -264,7 +264,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing );
-    //createTestGroupAddObjects(pGrpPixelsDrawingAddObjects);
+    createTestGroupAddObjects(pGrpPixelsDrawingAddObjects);
     //createTestGroupDrawObjects(pGrpPixelsDrawingAddObjects);
 
     // Metrics Drawings
@@ -318,7 +318,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp );
-    //createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
+    createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
     //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
 
     // Recall test step settings
@@ -2309,7 +2309,7 @@ QStringList CTest::resultValuesForLine(
         strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
         strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
         strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
-        strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "} " + i_physValLine.unit().symbol(),
+        strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
         strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
     });
 }

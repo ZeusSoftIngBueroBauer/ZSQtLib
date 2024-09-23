@@ -185,11 +185,11 @@ public: // instance methods
     void setGraphObjType(EGraphObjType i_graphObjType);
     EGraphObjType getGraphObjType() const { return m_graphObjType; }
 public: // instance methods
-    void save( QSettings& i_settings, const QString& i_strSettingsKey );
-    void load( QSettings& i_settings, const QString& i_strSettingsKey );
+    void save(QSettings& i_settings, const QString& i_strSettingsKey) const;
+    void load(QSettings& i_settings, const QString& i_strSettingsKey);
 public: // instance methods
-    void save( QXmlStreamWriter& i_xmlStreamWriter );
-    void load( QXmlStreamReader& i_xmlStreamReader );
+    void save(QXmlStreamWriter& i_xmlStreamWriter) const;
+    void load(QXmlStreamReader& i_xmlStreamReader);
 public: // instance methods
     void set2Default();
     bool isDefault() const;
