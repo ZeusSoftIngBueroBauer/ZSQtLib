@@ -92,6 +92,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjGroup"; }
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // ctor
     CGraphObjGroup(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes)
@@ -261,6 +265,8 @@ public: // class members
          Used to create a unique name for newly created objects of this type.
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< Mathematic component to calculate the division lines of the X-Scale.
          Also used to convert pixel values into metric values and vice versa. */

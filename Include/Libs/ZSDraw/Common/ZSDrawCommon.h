@@ -255,7 +255,6 @@ typedef enum {
     EGraphObjTypeGroup           = QGraphicsItem::UserType + 10,  // not a SVG element
     EGraphObjTypeMax             = QGraphicsItem::UserType + 10,  // not a SVG element
     EGraphObjTypeCount           = (EGraphObjTypeMax - EGraphObjTypeMin + 1),
-    EGraphObjTypeUserDefined,
     EGraphObjTypeSelectionPoint,
     EGraphObjTypeLabelMin,
     EGraphObjTypeLabel = EGraphObjTypeLabelMin,
@@ -265,6 +264,7 @@ typedef enum {
     EGraphObjTypeLabelGeometryLength,
     EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeLabelMax = EGraphObjTypeLabelGeometryAngle,
+    EGraphObjTypeUserDefined,
     EGraphObjTypeUndefined = -1
 }   EGraphObjType;
 

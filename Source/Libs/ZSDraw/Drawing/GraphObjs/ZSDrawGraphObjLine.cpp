@@ -71,6 +71,37 @@ public: // class members
 qint64 CGraphObjLine::s_iInstCount = 0;
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjLine::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjLine::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -1915,7 +1946,7 @@ void CGraphObjLine::paint(
     // This will draw the bounding rectangle with dashed lines. I don't want this.
     //QGraphicsLineItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    i_pPainter->setRenderHint(QPainter::Antialiasing);
+    i_pPainter->setRenderHints(s_painterRenderHints);
     i_pPainter->drawLine(lineF);
 
     ////#pragma message(__TODO__"To be removed")

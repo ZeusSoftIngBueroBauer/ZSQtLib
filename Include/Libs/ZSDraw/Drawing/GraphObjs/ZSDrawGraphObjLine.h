@@ -110,6 +110,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLine"; }
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // ctors and dtor
     CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjLine();
@@ -230,6 +234,8 @@ public: // class members
          Used to create a unique name for newly created objects of this type.
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< The original, untransformed (not scaled, not rotated) line coordinates in local
          coordinates relative to the origin of the item's bounding rectangle.

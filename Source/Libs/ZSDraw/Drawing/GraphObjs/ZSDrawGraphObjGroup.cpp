@@ -67,10 +67,41 @@ class CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 *******************************************************************************/
 
 /*==============================================================================
-protected: // class members
+public: // class members
 ==============================================================================*/
 
 qint64 CGraphObjGroup::s_iInstCount = 0;
+
+/*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjGroup::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjGroup::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
 
 /*==============================================================================
 public: // ctors and dtor
@@ -2594,7 +2625,7 @@ void CGraphObjGroup::paint(
         /* strAddInfo   */ strMthInArgs );
 
     i_pPainter->save();
-    //i_pPainter->setRenderHint(QPainter::Antialiasing);
+    i_pPainter->setRenderHints(s_painterRenderHints);
 
     QPen pn;
     QBrush brush;

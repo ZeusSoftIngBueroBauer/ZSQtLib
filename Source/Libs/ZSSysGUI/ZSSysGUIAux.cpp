@@ -437,14 +437,40 @@ QString ZS::System::GUI::qMouseEvent2Str(QMouseEvent* i_pEv)
 }
 
 //------------------------------------------------------------------------------
+QString ZS::System::GUI::qPainterRenderHints2Str(QPainter::RenderHints i_painterRenderHints)
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_painterRenderHints.testFlag(QPainter::Antialiasing)) {
+        if (!str.isEmpty()) str += "|";
+        str += "Antialiasing";
+    }
+    if (i_painterRenderHints.testFlag(QPainter::TextAntialiasing)) {
+        if (!str.isEmpty()) str += "|";
+        str += "TextAntialiasing";
+    }
+    if (i_painterRenderHints.testFlag(QPainter::SmoothPixmapTransform)) {
+        if (!str.isEmpty()) str += "|";
+        str += "SmoothPixmapTransform";
+    }
+    if (i_painterRenderHints.testFlag(QPainter::Qt4CompatiblePainting)) {
+        if (!str.isEmpty()) str += "|";
+        str += "Qt4CompatiblePainting";
+    }
+    if (i_painterRenderHints.testFlag(QPainter::LosslessImageRendering)) {
+        if (!str.isEmpty()) str += "|";
+        str += "LosslessImageRendering";
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
 QString ZS::System::GUI::qPaintEvent2Str(QPaintEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    return "Type: " + qEventType2Str(i_pEv->type()) +
         ", Rect {" + qRect2Str(i_pEv->rect()) + "}";
         //", Region {" + qRegion2Str(i_pEv->region()) + "}";
-    return str;
 }
 
 //------------------------------------------------------------------------------

@@ -1507,7 +1507,7 @@ double CScaleDivLines::getValInPix(double i_fVal) const
         Position in pixel coordinates.
     @param i_bRoundToResolution [in]
         true if the returned values should be rounded to the resolution of the scale,
-        false otherwise.
+        false (default) otherwise.
 
     @return Value in world coordinates.
 */
@@ -1673,7 +1673,7 @@ double CScaleDivLines::getDistanceInPix(double i_fDistance) const
         Distance in pixel coordinates.
     @param i_bRoundToResolution [in]
         true if the returned values should be rounded to the resolution of the scale,
-        false otherwise.
+        false (default) otherwise.
 
     @return Value in world coordinates.
 */

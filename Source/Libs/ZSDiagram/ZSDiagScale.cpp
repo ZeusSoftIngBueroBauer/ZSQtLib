@@ -1384,18 +1384,15 @@ double CDiagScale::getVal( double i_fPix, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     CUnit unit = m_scale.unit();
-    if( i_pUnit != nullptr ) {
+    if (i_pUnit != nullptr) {
         unit = *i_pUnit;
     }
-    if( !areOfSameUnitGroup(m_scale.unit(), unit) ) {
+    if (!areOfSameUnitGroup(m_scale.unit(), unit)) {
         throw CException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-
     double fVal = m_scale.minVal().getVal(unit);
-
-    if( getRangePix() > 1 && isScaleValid() )
-    {
-        fVal = m_divLines.getVal(i_fPix);
+    if (getRangePix() > 1 && isScaleValid()) {
+        fVal = m_divLines.getVal(i_fPix, true);
         fVal = m_scale.unit().convertValue(fVal, unit);
     }
     return fVal;

@@ -384,9 +384,9 @@ public: // instance methods (returning calculated values)
     double getDivLineDistInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
 public: // instance methods (converting values)
     double getValInPix(double i_fVal) const;
-    double getVal(double i_fPos_px, bool i_bRoundToResolution = true) const;
+    double getVal(double i_fPos_px, bool i_bRoundToResolution = false) const;
     double getDistanceInPix(double i_fDistance) const;
-    double getDistance(double i_fDistance_px, bool i_bRoundToResolution = true) const;
+    double getDistance(double i_fDistance_px, bool i_bRoundToResolution = false) const;
 protected: // overridable auxiliary instance methods
     virtual void invalidateResults();
 protected: // auxiliary instance methods (to recalculate division lines after changing settings)

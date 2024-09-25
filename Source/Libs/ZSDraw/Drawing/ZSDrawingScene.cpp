@@ -2665,22 +2665,15 @@ void CDrawingScene::ungroup(CGraphObjGroup* i_pGraphObjGroup)
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ungroup",
-        /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
+        /* strAddInfo   */ strMthInArgs);
 
     if (i_pGraphObjGroup != nullptr) {
-        CGraphObjGroup* pGraphObjGroupParent = i_pGraphObjGroup->parentGroup();
         for (CGraphObj* pGraphObjChild : i_pGraphObjGroup->childs()) {
             i_pGraphObjGroup->removeFromGroup(pGraphObjChild);
         }
         delete i_pGraphObjGroup;
         i_pGraphObjGroup = nullptr;
     }
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
 }
 
 /*==============================================================================

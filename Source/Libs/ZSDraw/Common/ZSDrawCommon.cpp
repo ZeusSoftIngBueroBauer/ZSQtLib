@@ -171,6 +171,9 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabelGeometryAngle) {
         str = "LabelGeometryAngle";
     }
+    else if (i_graphObjType == EGraphObjTypeUserDefined) {
+        str = "UserDefined";
+    }
     else if (i_graphObjType == EGraphObjTypeUndefined) {
         str = "Undefined";
     }

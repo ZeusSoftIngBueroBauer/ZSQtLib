@@ -58,6 +58,7 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStep.h"
+#include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
@@ -238,7 +239,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
-    //createTestGroupDrawingSize(nullptr);
+    createTestGroupDrawingSize(nullptr);
 
     // Pixels Drawings
     //----------------
@@ -246,9 +247,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     CDrawingSize drawingSize;
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
     drawingSize.setScreenResolutionInPxPerMM(1.0);
-    drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
-
-    // Must be set before initializing the physical objects coordinates of the test.
+    drawingSize.setImageSize(CPhysVal(100, Units.Length.px), CPhysVal(100, Units.Length.px));
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
@@ -256,22 +257,78 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing",
         /* pTSGrpParent */ nullptr );
 
-    //createTestGroupImageSizeAndObjectCoordinates(pGrpPixelsDrawing);
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing100x100px = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* pTSGrpParent */ pGrpPixelsDrawing );
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing100x100pxObjectCoordinates = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
+        /* pTSGrpParent */ pGrpPixelsDrawing100x100px );
+    // For 100x100 pixel drawing we want to show that the right and bottom lines don't become visible.
+    // But for this the painter must not use Antialiasing.
+    const QMap<EGraphObjType, QPainter::RenderHints> mapGraphObjTypeRenderHints({
+        {EGraphObjTypeLine, QPainter::RenderHints()}
+    });
+    createTestGroupPrepareScene(pGrpPixelsDrawing100x100pxObjectCoordinates, drawingSize, gridSettings, mapGraphObjTypeRenderHints);
+    createTestGroupObjectCoordinatesAddLines(pGrpPixelsDrawing100x100pxObjectCoordinates);
 
-    createTestGroupPrepareScene(pGrpPixelsDrawing, drawingSize, gridSettings);
+    drawingSize.setImageSize(CPhysVal(101, Units.Length.px), CPhysVal(101, Units.Length.px));
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing101x101px = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* pTSGrpParent */ pGrpPixelsDrawing );
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing101x101pxObjectCoordinates = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
+        /* pTSGrpParent */ pGrpPixelsDrawing101x101px );
+    // For 101x101 pixel drawing we want to show that the right and bottom lines becomes even if no aliasing is set.
+    createTestGroupPrepareScene(pGrpPixelsDrawing101x101pxObjectCoordinates, drawingSize, gridSettings, mapGraphObjTypeRenderHints);
+    createTestGroupObjectCoordinatesAddLines(pGrpPixelsDrawing101x101pxObjectCoordinates);
 
-    ZS::Test::CTestStepGroup* pGrpPixelsDrawingAddObjects = new ZS::Test::CTestStepGroup(
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600px = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* pTSGrpParent */ pGrpPixelsDrawing );
+
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxObjectCoordinates = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
+        /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
+    createTestGroupPrepareScene(pGrpPixelsDrawing800x600pxObjectCoordinates, drawingSize, gridSettings);
+    createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
+
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
-        /* pTSGrpParent */ pGrpPixelsDrawing );
-    createTestGroupAddObjects(pGrpPixelsDrawingAddObjects);
-    //createTestGroupDrawObjects(pGrpPixelsDrawingAddObjects);
+        /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
+    createTestGroupPrepareScene(pGrpPixelsDrawing800x600pxAddObjects, drawingSize, gridSettings);
+    createTestGroupAddObjects(pGrpPixelsDrawing800x600pxAddObjects);
+
+    //ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxDrawObjects = new ZS::Test::CTestStepGroup(
+    //    /* pTest        */ this,
+    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
+    //    /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
+    //createTestGroupPrepareScene(pGrpPixelsDrawing800x600pxDrawObjects, drawingSize, gridSettings);
+    //createTestGroupDrawObjects(pGrpPixelsDrawing800x600pxDrawObjects);
 
     // Metrics Drawings
     //-----------------
 
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
+    drawingSize.setMetricUnit(Units.Length.mm);
+    drawingSize.setMetricImageCoorsDecimals(1);
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -282,7 +339,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     //--------------
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
-    // Must be set before initializing the physical objects coordinates of the test.
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown = new ZS::Test::CTestStepGroup(
@@ -290,21 +348,52 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale TopDown",
         /* pTSGrpParent */ pGrpMetricsDrawing );
 
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mm = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + drawingSize.metricImageWidth().toString() + ", " + drawingSize.metricImageHeight().toString() + ")",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown );
 
-    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown, drawingSize, gridSettings);
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
+    drawingSize.setScreenResolutionInPxPerMM(3.5);
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates, drawingSize, gridSettings);
+    createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates, drawingSize, gridSettings);
+    createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
 
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDownAddObjects = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
-        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown );
-    createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDownAddObjects);
-    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDownAddObjects);
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects, drawingSize, gridSettings);
+    createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects);
+
+    //ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
+    //    /* pTest        */ this,
+    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
+    //    /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
+    //createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects, drawingSize, gridSettings);
+    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
 
     // YScaleBottomUp
     //---------------
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
-    // Must be set before initializing the physical objects coordinates of the test.
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp = new ZS::Test::CTestStepGroup(
@@ -312,14 +401,41 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale BottomUp",
         /* pTSGrpParent */ pGrpMetricsDrawing );
 
-    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp, drawingSize, gridSettings);
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mm = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + drawingSize.metricImageWidth().toString() + ", " + drawingSize.metricImageHeight().toString() + ")",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp );
 
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUpAddObjects = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
+    drawingSize.setScreenResolutionInPxPerMM(3.5);
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates, drawingSize, gridSettings);
+    createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    // Must be set before creating test groups and test steps as the methods access the drawing scenes
+    // drawing size to name test groups and steps and to parametrize the test steps.
+    m_pDrawingScene->setDrawingSize(drawingSize);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates, drawingSize, gridSettings);
+    createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
-        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp );
-    createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
-    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUpAddObjects);
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects, drawingSize, gridSettings);
+    createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects);
+
+    //ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
+    //    /* pTest        */ this,
+    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
+    //    /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
+    //createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects, drawingSize, gridSettings);
+    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
 
     // Recall test step settings
     //--------------------------
@@ -404,14 +520,25 @@ void CTest::createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGrou
 //------------------------------------------------------------------------------
 void CTest::createTestGroupPrepareScene(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    const CDrawingSize& i_drawingSize, const CDrawGridSettings& i_gridSettings)
+    const CDrawingSize& i_drawingSize,
+    const CDrawGridSettings& i_gridSettings,
+    const QMap<EGraphObjType, QPainter::RenderHints> i_mapGraphObjTypeRenderHints)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
                        ", DrawingSize {" + i_drawingSize.toString() + "}",
-                       ", GridSettings {" + i_gridSettings.toString() + "}";
+                       ", GridSettings {" + i_gridSettings.toString() + "}" +
+                       ", RenderHints [" + QString::number(i_mapGraphObjTypeRenderHints.size()) + "]";
+        if (i_mapGraphObjTypeRenderHints.size() > 0) {
+            strMthInArgs += "(";
+            for (const EGraphObjType graphObjType : i_mapGraphObjTypeRenderHints.keys()) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                strMthInArgs += "{" + graphObjType2Str(graphObjType) + ": " + GUI::qPainterRenderHints2Str(i_mapGraphObjTypeRenderHints[graphObjType]) + "}";
+            }
+            strMthInArgs += ")";
+        }
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -445,8 +572,8 @@ void CTest::createTestGroupPrepareScene(
         /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
     pTestStep->setExpectedValue("");
 
-    initInstCounts();
-    initObjectCoors();
+    //initInstCounts();
+    //initObjectCoors();
 
     QString strDrawingSizeInfo = "{" + qSize2Str(i_drawingSize.imageSizeInPixels()) + "} px";
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
@@ -503,6 +630,23 @@ void CTest::createTestGroupPrepareScene(
     pTestStep->setConfigValue(
         XmlStreamParser::c_strXmlElemNameFont, i_gridSettings.labelsFont().family());
     pTestStep->setExpectedValue(i_gridSettings.toString());
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " SetPainterRenderHints",
+        /* strOperation    */ "GraphObjTypes.setPainterRenderHints",
+        /* pGrpParent      */ pGrpPrepareScene,
+        /* szDoTestStepFct */ SLOT(doTestStepSetPainterRenderHints(ZS::Test::CTestStep*)) );
+    for (const EGraphObjType graphObjType : i_mapGraphObjTypeRenderHints.keys()) {
+        pTestStep->addDataRow({
+            {"GraphObjType", graphObjType2Str(graphObjType)},
+            {"PainterRenderHints", static_cast<uint>(i_mapGraphObjTypeRenderHints[graphObjType])}
+        });
+    }
+    pTestStep->setExpectedValue("");
+
+    initInstCounts();
+    initObjectCoors();
 }
 
 //------------------------------------------------------------------------------
@@ -774,6 +918,102 @@ void CTest::doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep )
     m_pDrawingScene->setGridSettings(gridSettings);
 
     i_pTestStep->setResultValue(m_pDrawingScene->gridSettings().toString());
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepSetPainterRenderHints( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepSetPainterRenderHints",
+        /* strAddInfo   */ strMthInArgs );
+
+    //CGraphObjPoint::resetPainterRenderHints();
+    CGraphObjLine::resetPainterRenderHints();
+    //CGraphObjRect::resetPainterRenderHints();
+    //CGraphObjEllipse::resetPainterRenderHints();
+    //CGraphObjPolygon::resetPainterRenderHints();
+    //CGraphObjPolyline::resetPainterRenderHints();
+    //CGraphObjText::resetPainterRenderHints();
+    //CGraphObjImage::resetPainterRenderHints();
+    //CGraphObjConnectionPoint::resetPainterRenderHints();
+    //CGraphObjConnectionLine::resetPainterRenderHints();
+    CGraphObjGroup::resetPainterRenderHints();
+    //CGraphObjSelectionPoint::resetPainterRenderHints();
+    //CGraphObjLabel::resetPainterRenderHints();
+    //CGraphObjPosition::resetPainterRenderHints();
+    //CGraphObjLabelGeometryDX::resetPainterRenderHints();
+    //CGraphObjLabelGeometryDY::resetPainterRenderHints();
+    //CGraphObjGeometryLength::resetPainterRenderHints();
+    //CGraphObjGeometryAngle::resetPainterRenderHints();
+
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QString strGraphObjType = dataRow["GraphObjType"].toString();
+        EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+        QPainter::RenderHints uPainterRenderHints = dataRow["PainterRenderHints"].toUInt();
+        if (graphObjType == EGraphObjTypePoint) {
+            //CGraphObjPoint::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLine) {
+            CGraphObjLine::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeRect) {
+            //CGraphObjRect::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeEllipse) {
+            //CGraphObjEllipse::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypePolygon) {
+            //CGraphObjPolygon::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypePolyline) {
+            //CGraphObjPolyline::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeText) {
+            //CGraphObjText::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeImage) {
+            //CGraphObjImage::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeConnectionPoint) {
+            //CGraphObjConnectionPoint::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeConnectionLine) {
+            //CGraphObjConnectionLine::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeGroup) {
+            CGraphObjGroup::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeSelectionPoint) {
+            //CGraphObjSelectionPoint::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLabel) {
+            //CGraphObjLabel::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLabelGeometryPosition) {
+            //CGraphObjPosition::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLabelGeometryDX) {
+            //CGraphObjLabelGeometryDX::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLabelGeometryDY) {
+            //CGraphObjLabelGeometryDY::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLabelGeometryLength) {
+            //CGraphObjGeometryLength::setPainterRenderHints(uPainterRenderHints);
+        }
+        else if (graphObjType == EGraphObjTypeLabelGeometryAngle) {
+            //CGraphObjGeometryAngle::setPainterRenderHints(uPainterRenderHints);
+        }
+    }
+    i_pTestStep->setResultValue("");
 }
 
 //------------------------------------------------------------------------------

@@ -32,6 +32,7 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 #include <QtCore/qnamespace.h>
 #include <QtGui/qevent.h>
+#include <QtGui/qpainter.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qabstractitemview.h>
@@ -77,6 +78,7 @@ ZSSYSGUIDLL_API QString qDropEvent2Str(QDropEvent* i_pEv);
 ZSSYSGUIDLL_API QString qKeyEvent2Str(QKeyEvent* i_pEv);
 ZSSYSGUIDLL_API QKeyEvent* str2QKeyEvent(const QString& i_str, QEvent::Type i_type);
 ZSSYSGUIDLL_API QString qMouseEvent2Str(QMouseEvent* i_pEv);
+ZSSYSGUIDLL_API QString qPainterRenderHints2Str(QPainter::RenderHints i_painterRenderHints);
 ZSSYSGUIDLL_API QString qPaintEvent2Str(QPaintEvent* i_pEv);
 ZSSYSGUIDLL_API QString qResizeEvent2Str(QResizeEvent* i_pEv);
 

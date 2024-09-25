@@ -31,6 +31,7 @@ may result in using the software modules.
 #include <QtCore/qpoint.h>
 #include <QtCore/qrect.h>
 #include <QtCore/qsize.h>
+#include <QtGui/qpainter.h>
 #include <QtGui/qpolygon.h>
 
 #include "ZSTest/ZSTest.h"
@@ -102,19 +103,19 @@ public: // instance methods
 protected: // instance methods
     void createTestGroupPrepareScene(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-        const ZS::Draw::CDrawingSize& i_drawingSize, const ZS::Draw::CDrawGridSettings& i_gridSettings);
+        const ZS::Draw::CDrawingSize& i_drawingSize,
+        const ZS::Draw::CDrawGridSettings& i_gridSettings,
+        const QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints> i_mapGraphObjTypeRenderHints = QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints>());
     void createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinates(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesTransformPhysValShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesTransformPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesAddLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -122,6 +123,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -190,6 +192,7 @@ protected slots:
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSetPainterRenderHints( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValPoint( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValSize( ZS::Test::CTestStep* i_pTestStep );

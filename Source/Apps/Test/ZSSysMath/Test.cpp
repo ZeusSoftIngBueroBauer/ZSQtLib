@@ -1712,7 +1712,7 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
         double fDivLineInPixResult = divLines.getDivLineInPix(eDivLineLayer, idxDivLine);
         double fDivLineDistValResult = divLines.getDivLineDistVal(eDivLineLayer, idxDivLine1, idxDivLine2);
         double fDivLineDistPixResult = divLines.getDivLineDistInPix(eDivLineLayer, idxDivLine1, idxDivLine2);
-        double fValResult = divLines.getVal(fValInPix);
+        double fValResult = divLines.getVal(fValInPix, true);
         double fValInPixResult = divLines.getValInPix(fVal);
 
         mapResultValues["DivLinesCount"] = QString::number(iDivLinesCountResult);

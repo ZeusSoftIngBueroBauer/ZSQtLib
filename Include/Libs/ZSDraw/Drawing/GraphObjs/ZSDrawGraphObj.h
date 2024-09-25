@@ -35,6 +35,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
 
 #include <QtGui/qcursor.h>
+#include <QtGui/qpainter.h>
 
 namespace ZS
 {
