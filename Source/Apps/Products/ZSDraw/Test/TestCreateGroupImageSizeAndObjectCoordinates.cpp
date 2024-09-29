@@ -173,8 +173,8 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setCenter(400, 400)
-    ----------------------
+    /* setCenter(400, 400 : 200)
+    ----------------------------
         200   250   300   350   400   450   500    BottomUp
      250 +-----+-----+-----+-----+                   350
          |                       |
@@ -229,28 +229,42 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setSize(300, 200)
     --------------------
-        200   250   300   350   400          200   250   300   350   400   450   500  BottomUp
-     250 +-----+-----+-----+-----+        250 +-----+-----+-----x-----+-----+-----+      350
+    TopDown
+    -------
+        200   250   300   350   400          200   250   300   350   400   450   500
+     250 +-----+-----+-----+-----+        250 +-----+-----+-----x-----+-----+-----+
          |                       |            |                                   |
-     300 +           X           +        300 +                                   +      300
+     300 +           X           +        300 +                                   +
          |                       |            |                                   |
-     350 +-----+-----+-----+-----+   =>   350 x                 X                 x      250
+     350 +-----+-----+-----+-----+   =>   350 x                 X                 x
                                               |                                   |
-                                          400 +                                   +      200
+                                          400 +                                   +
                                               |                                   |
-                                          450 +-----+-----+-----x-----+-----+-----+      150
+                                          450 +-----+-----+-----x-----+-----+-----+
+    BottomUp
+    --------
+                                             200   250   300   350   400   450   500
+                                          150 +-----+-----+-----x-----+-----+-----+
+                                              |                                   |
+                                          200 +                                   +
+        200   250   300   350   400           |                                   |
+     250 +-----+-----+-----+-----+        250 x                 X                 x
+         |                       |            |                                   |
+     300 +           X           +        300 +                                   +
+         |                       |            |                                   |
+     350 +-----+-----+-----+-----+   =>   350 +-----+-----+-----x-----+-----+-----+
     */
     QSizeF size300x200(300.0, 200.0);
     double fWidthSetSizeAngle0 = size300x200.width();
     double fHeightSetSizeAngle0 = size300x200.height();
     QPointF ptCenterSetSizeAngle0(350.0, bYAxisTopDown ? 350.0 : 250.0);
-    QPointF ptTopLeftSetSizeAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
-    QPointF ptTopRightSetSizeAngle0(500.0, bYAxisTopDown ? 250.0 : 350.0);
-    QPointF ptBottomRightSetSizeAngle0(500.0, bYAxisTopDown ? 450.0 : 150.0);
-    QPointF ptBottomLeftSetSizeAngle0(200.0, bYAxisTopDown ? 450.0 : 150.0);
-    QPointF ptTopCenterSetSizeAngle0(350.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopLeftSetSizeAngle0(200.0, bYAxisTopDown ? 250.0 : 150.0);
+    QPointF ptTopRightSetSizeAngle0(500.0, bYAxisTopDown ? 250.0 : 150.0);
+    QPointF ptBottomRightSetSizeAngle0(500.0, bYAxisTopDown ? 450.0 : 350.0);
+    QPointF ptBottomLeftSetSizeAngle0(200.0, bYAxisTopDown ? 450.0 : 350.0);
+    QPointF ptTopCenterSetSizeAngle0(350.0, bYAxisTopDown ? 250.0 : 150.0);
     QPointF ptRightCenterSetSizeAngle0(500.0, bYAxisTopDown ? 350.0 : 250.0);
-    QPointF ptBottomCenterSetSizeAngle0(350.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptBottomCenterSetSizeAngle0(350.0, bYAxisTopDown ? 450.0 : 350.0);
     QPointF ptLeftCenterSetSizeAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -11011,6 +11025,20 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+    QString strUnit = unit.symbol();
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 351 * 351 Pixels
+    Metrics Drawing:
+        Size: 100 * 100 mm
+        ScreenPixelResolution: 3.5 px/mm
+        Decimals: 1
+    -----------------------------------------------------------------------*/
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValPoint = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -11037,12 +11065,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("{0.0, 0.0} mm");
-    }
-    else {
-        strlstExpectedValues.append("{0.0, 100.0} mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "{0.0, 0.0} mm" : "{0.0, 100.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -11055,12 +11078,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("{28.6, 28.6} mm");
-    }
-    else {
-        strlstExpectedValues.append("{28.6, 71.4} mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "{28.6, 28.6} mm" : "{28.6, 71.4} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -11073,12 +11091,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("{57.1, 57.1} mm");
-    }
-    else {
-        strlstExpectedValues.append("{57.1, 42.9} mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "{57.1, 57.1} mm" : "{57.1, 42.9} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -11091,12 +11104,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("{100.0, 100.0} mm");
-    }
-    else {
-        strlstExpectedValues.append("{100.0, 0.0} mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "{100.0, 100.0} mm" : "{100.0, 0.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -11107,10 +11115,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(mm, px)",
         /* pTSGrpParent */ pGrpConvertToPhysValPoint );
 
-    double fYPos_mm = 0.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fYPos_mm = 100.0;
-    }
+    double fYPos_mm = bYAxisTopDown ? 0.0 : 100.0;
     QString strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -11125,10 +11130,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     strlstExpectedValues.append("{0, 0} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fYPos_mm = 20.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fYPos_mm = 80.0;
-    }
+    fYPos_mm = bYAxisTopDown ? 20.0 : 80.0;
     strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -11143,7 +11145,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     strlstExpectedValues.append("{70, 70} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fYPos_mm = 50.0;
+    fYPos_mm = bYAxisTopDown ? 50.0 : 50.0;
     strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -11158,10 +11160,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     strlstExpectedValues.append("{175, 175} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fYPos_mm = 100.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fYPos_mm = 0.0;
-    }
+    fYPos_mm = bYAxisTopDown ? 100.0 : 0.0;
     strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -11191,6 +11190,15 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValSize(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValSize",
         /* strAddInfo   */ strMthInArgs );
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 351 * 351 Pixels
+    Metrics Drawing:
+        Size: 100 * 100 mm
+        ScreenPixelResolution: 3.5 px/mm
+        Decimals: 1
+    -----------------------------------------------------------------------*/
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValSize = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -11440,6 +11448,20 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+    QString strUnit = unit.symbol();
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 351 * 351 Pixels
+    Metrics Drawing:
+        Size: 100 * 100 mm
+        ScreenPixelResolution: 3.5 px/mm
+        Decimals: 1
+    -----------------------------------------------------------------------*/
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValLine = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -11466,16 +11488,9 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("P1 {0.0, 0.0} mm");
-        strlstExpectedValues.append("P2 {100.0, 0.0} mm");
-        strlstExpectedValues.append("Center {50.0, 0.0} mm");
-    }
-    else {
-        strlstExpectedValues.append("P1 {0.0, 100.0} mm");
-        strlstExpectedValues.append("P2 {100.0, 100.0} mm");
-        strlstExpectedValues.append("Center {50.0, 100.0} mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "P1 {0.0, 0.0} mm" : "P1 {0.0, 100.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "P2 {100.0, 0.0} mm" : "P2 {100.0, 100.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "Center {50.0, 0.0} mm" : "Center {50.0, 100.0} mm");
     strlstExpectedValues.append("dx: 100.0 mm");
     strlstExpectedValues.append("dy: 0.0 mm");
     strlstExpectedValues.append("Length: 100.0 mm");
@@ -11492,20 +11507,11 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("P1 {100.0, 0.0} mm");
-        strlstExpectedValues.append("P2 {100.0, 100.0} mm");
-        strlstExpectedValues.append("Center {100.0, 50.0} mm");
-        strlstExpectedValues.append("dx: 0.0 mm");
-        strlstExpectedValues.append("dy: 100.0 mm");
-    }
-    else {
-        strlstExpectedValues.append("P1 {100.0, 100.0} mm");
-        strlstExpectedValues.append("P2 {100.0, 0.0} mm");
-        strlstExpectedValues.append("Center {100.0, 50.0} mm");
-        strlstExpectedValues.append("dx: 0.0 mm");
-        strlstExpectedValues.append("dy: -100.0 mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "P1 {100.0, 0.0} mm" : "P1 {100.0, 100.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "P2 {100.0, 100.0} mm" : "P2 {100.0, 0.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "Center {100.0, 50.0} mm" : "Center {100.0, 50.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "dx: 0.0 mm" : "dx: 0.0 mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "dy: 100.0 mm" : "dy: -100.0 mm");
     strlstExpectedValues.append("Length: 100.0 mm");
     strlstExpectedValues.append("Angle: 90.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -11520,16 +11526,9 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("P1 {100.0, 100.0} mm");
-        strlstExpectedValues.append("P2 {0.0, 100.0} mm");
-        strlstExpectedValues.append("Center {50.0, 100.0} mm");
-    }
-    else {
-        strlstExpectedValues.append("P1 {100.0, 0.0} mm");
-        strlstExpectedValues.append("P2 {0.0, 0.0} mm");
-        strlstExpectedValues.append("Center {50.0, 0.0} mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "P1 {100.0, 100.0} mm" : "P1 {100.0, 0.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "P2 {0.0, 100.0} mm" : "P2 {0.0, 0.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "Center {50.0, 100.0} mm" : "Center {50.0, 0.0} mm");
     strlstExpectedValues.append("dx: -100.0 mm");
     strlstExpectedValues.append("dy: 0.0 mm");
     strlstExpectedValues.append("Length: 100.0 mm");
@@ -11546,20 +11545,11 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("P1 {0.0, 100.0} mm");
-        strlstExpectedValues.append("P2 {0.0, 0.0} mm");
-        strlstExpectedValues.append("Center {0.0, 50.0} mm");
-        strlstExpectedValues.append("dx: 0.0 mm");
-        strlstExpectedValues.append("dy: -100.0 mm");
-    }
-    else {
-        strlstExpectedValues.append("P1 {0.0, 0.0} mm");
-        strlstExpectedValues.append("P2 {0.0, 100.0} mm");
-        strlstExpectedValues.append("Center {0.0, 50.0} mm");
-        strlstExpectedValues.append("dx: 0.0 mm");
-        strlstExpectedValues.append("dy: 100.0 mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "P1 {0.0, 100.0} mm" : "P1 {0.0, 0.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "P2 {0.0, 0.0} mm" : "P2 {0.0, 100.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "Center {0.0, 50.0} mm" : "Center {0.0, 50.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "dx: 0.0 mm" : "dx: 0.0 mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "dy: -100.0 mm" : "dy: 100.0 mm");
     strlstExpectedValues.append("Length: 100.0 mm");
     strlstExpectedValues.append("Angle: 270.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -11574,20 +11564,11 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("P1 {28.6, 28.6} mm");
-        strlstExpectedValues.append("P2 {71.4, 71.4} mm");
-        strlstExpectedValues.append("Center {50.0, 50.0} mm");
-        strlstExpectedValues.append("dx: 42.9 mm");
-        strlstExpectedValues.append("dy: 42.9 mm");
-    }
-    else {
-        strlstExpectedValues.append("P1 {28.6, 71.4} mm");
-        strlstExpectedValues.append("P2 {71.4, 28.6} mm");
-        strlstExpectedValues.append("Center {50.0, 50.0} mm");
-        strlstExpectedValues.append("dx: 42.9 mm");
-        strlstExpectedValues.append("dy: -42.9 mm");
-    }
+    strlstExpectedValues.append(bYAxisTopDown ? "P1 {28.6, 28.6} mm" : "P1 {28.6, 71.4} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "P2 {71.4, 71.4} mm" : "P2 {71.4, 28.6} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "Center {50.0, 50.0} mm" : "Center {50.0, 50.0} mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "dx: 42.9 mm" : "dx: 42.9 mm");
+    strlstExpectedValues.append(bYAxisTopDown ? "dy: 42.9 mm" : "dy: -42.9 mm");
     strlstExpectedValues.append("Length: 60.6 mm");
     strlstExpectedValues.append("Angle: 45.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -11600,12 +11581,8 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(mm, px)",
         /* pTSGrpParent */ pGrpConvertToPhysValLine );
 
-    double fP1YPos_mm = 0.0;
-    double fP2YPos_mm = 0.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fP1YPos_mm = 100.0;
-        fP2YPos_mm = 100.0;
-    }
+    double fP1YPos_mm = bYAxisTopDown ? 0.0 : 100.0;
+    double fP2YPos_mm = bYAxisTopDown ? 0.0 : 100.0;
     QString strP1YPos = QString::number(static_cast<int>(fP1YPos_mm));
     QString strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
@@ -11627,12 +11604,8 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     strlstExpectedValues.append("Angle: 0.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fP1YPos_mm = 0.0;
-    fP2YPos_mm = 100.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fP1YPos_mm = 100.0;
-        fP2YPos_mm = 0.0;
-    }
+    fP1YPos_mm = bYAxisTopDown ? 0.0 : 100.0;
+    fP2YPos_mm = bYAxisTopDown ? 100.0 : 0.0;
     strP1YPos = QString::number(static_cast<int>(fP1YPos_mm));
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
@@ -11651,20 +11624,11 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     strlstExpectedValues.append("dx: 0 px");
     strlstExpectedValues.append("dy: 350 px");
     strlstExpectedValues.append("Length: 350 px");
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 90.0 " + QString(Math::c_chSymbolDegree));
-    }
-    else {
-        strlstExpectedValues.append("Angle: 270.0 " + QString(Math::c_chSymbolDegree));
-    }
+    strlstExpectedValues.append(QString(bYAxisTopDown ? "Angle: 90.0 " : "Angle: 270.0 ") + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fP1YPos_mm = 100.0;
-    fP2YPos_mm = 100.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fP1YPos_mm = 0.0;
-        fP2YPos_mm = 0.0;
-    }
+    fP1YPos_mm = bYAxisTopDown ? 100.0 : 0.0;
+    fP2YPos_mm = bYAxisTopDown ? 100.0 : 0.0;
     strP1YPos = QString::number(static_cast<int>(fP1YPos_mm));
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
@@ -11686,12 +11650,8 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     strlstExpectedValues.append("Angle: 180.0 " + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fP1YPos_mm = 100.0;
-    fP2YPos_mm = 0.0;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fP1YPos_mm = 0.0;
-        fP2YPos_mm = 100.0;
-    }
+    fP1YPos_mm = bYAxisTopDown ? 100.0 : 0.0;
+    fP2YPos_mm = bYAxisTopDown ? 0.0 : 100.0;
     strP1YPos = QString::number(static_cast<int>(fP1YPos_mm));
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
@@ -11710,20 +11670,11 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     strlstExpectedValues.append("dx: 0 px");
     strlstExpectedValues.append("dy: -350 px");
     strlstExpectedValues.append("Length: 350 px");
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 270.0 " + QString(Math::c_chSymbolDegree));
-    }
-    else {
-        strlstExpectedValues.append("Angle: 90.0 " + QString(Math::c_chSymbolDegree));
-    }
+    strlstExpectedValues.append(QString(bYAxisTopDown ? "Angle: 270.0 " : "Angle: 90.0 ") + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fP1YPos_mm = 28.6;
-    fP2YPos_mm = 71.4;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fP1YPos_mm = 71.4;
-        fP2YPos_mm = 28.6;
-    }
+    fP1YPos_mm = bYAxisTopDown ? 28.6 : 71.4;
+    fP2YPos_mm = bYAxisTopDown ? 71.4 : 28.6;
     strP1YPos = QString::number(static_cast<int>(fP1YPos_mm));
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
@@ -11742,12 +11693,7 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     strlstExpectedValues.append("dx: 150 px");
     strlstExpectedValues.append("dy: 150 px");
     strlstExpectedValues.append("Length: 212 px");
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 45.0 " + QString(Math::c_chSymbolDegree));
-    }
-    else {
-        strlstExpectedValues.append("Angle: 315.0 " + QString(Math::c_chSymbolDegree));
-    }
+    strlstExpectedValues.append(QString(bYAxisTopDown ? "Angle: 45.0 " : "Angle: 315.0 ") + QString(Math::c_chSymbolDegree));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -11771,6 +11717,15 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(
     double fResPxPerMM = drawingSize.screenResolutionInPxPerMM();
     int cyImageHeight_px = drawingSize.imageHeightInPixels();
     double fMetricHeight_mm = drawingSize.metricImageHeight(Units.Length.mm).getVal();
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 351 * 351 Pixels
+    Metrics Drawing:
+        Size: 100 * 100 mm
+        ScreenPixelResolution: 3.5 px/mm
+        Decimals: 1
+    -----------------------------------------------------------------------*/
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
