@@ -1064,10 +1064,13 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 /*! @brief Sets the size (width and height) of the rectangle.
 
-    The top left corner and the rotation angle of the rectangle remains the same.
-    To keep the top left corner the center point will be moved.
+    On changing the size the rotation angle of the rectangle remains the same.
 
-    The rectangle's right and bottom edges are implicitly changed.
+    If the Y axis scale orientation is from top to bottom also the top left
+    corner remains unchanged. For scale orientation from bottom to top the
+    bottom left corner remains unchanged.
+
+    To keep either the top left or bottom left corner the center point will be moved.
 
     Width and height must be greater than or equal to 0. For an invalid size an exception is thrown.
 
@@ -1084,44 +1087,8 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     if (!sizeF.isValid()) {
         throw CException(__FILE__, __LINE__, EResultInvalidSize);
     }
-    // Before taken over the new size, get current top left corner.
-    CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal();
-    double fY = physValPtTL.y().getVal();
-    double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
-    if (fAngle_degree == 0.0) {
-        fX += sizeF.width() / 2.0;
-         if (m_bYAxisTopDown) {
-            fY += sizeF.height() / 2.0;
-        }
-        else {
-            fY -= sizeF.height() / 2.0;
-        }
-    }
-    else {
-        QLineF lineDiagonale(QPointF(0.0, 0.0), QPointF(sizeF.width(), sizeF.height()));
-        double fPhi_degree = lineDiagonale.angle(); // QLine::angle returns the angle counterclockwise
-        double fPhi1_degree = Math::toClockWiseAngleDegree(fPhi_degree);
-        double fBeta_degree = fPhi1_degree + fAngle_degree;
-        double fBeta_rad = Math::degree2Rad(fBeta_degree);
-        double fRadius = lineDiagonale.length() / 2.0;
-        // The angle is now clockwise. The stdlib trigonometric functions need the angle counter clockwise.
-        double fBeta1_rad = Math::toCounterClockWiseAngleRad(fBeta_rad);
-        double dx = fRadius * cos(fBeta1_rad);
-        double dy = fRadius * sin(fBeta1_rad);
-        fX += dx;
-        if (m_bYAxisTopDown) {
-            fY -= dy;
-        }
-        else {
-            fY += dy;
-        }
-    }
-    m_ptCenter = QPointF(fX, fY);
-    m_size = sizeF;
-    quint16 uSelectionPointsToExclude = 0;
-    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    invalidateSelectionPoints(uSelectionPointsToExclude);
+    setWidth(i_physValSize.width());
+    setHeight(i_physValSize.height());
 }
 
 //------------------------------------------------------------------------------
@@ -1432,11 +1399,12 @@ void CPhysValRect::setHeight(double i_fHeight)
 //------------------------------------------------------------------------------
 /*! @brief Sets the height of the rectangle.
 
-    The top, left and right edges and the rotation angle of the rectangle remain
-    the same. To keep the top, left and right edges the center point will be moved.
-    If the unit is changed the center point will be converted correspondingly.
+    The left and right edges as well as the rotation angle of the rectangle remains unchanged.
 
-    The rectangle's bottom edge is implicitly changed.
+    If the Y axis scale orientation is from top to bottom also the top edge remains unchanged.
+    If the Y axis scale orientation is from bottom to top the bottom edge remains unchanged.
+
+    To keep the unchanged edges the center point will be moved.
 
     Height must be greater than or equal to 0. For an invalid value an exception is thrown.
 
@@ -1454,7 +1422,9 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
         throw CException(__FILE__, __LINE__, EResultInvalidValue);
     }
     if (fHeight > 0.0) {
-        QLineF lineHeight(topCenter().toQPointF(), bottomCenter().toQPointF());
+        QPointF ptStart(m_bYAxisTopDown ? topCenter().toQPointF() : bottomCenter().toQPointF());
+        QPointF ptEnd(m_bYAxisTopDown ? bottomCenter().toQPointF() : topCenter().toQPointF());
+        QLineF lineHeight(ptStart, ptEnd);
         lineHeight.setLength(fHeight);
         m_ptCenter = lineHeight.center();
     }
@@ -1464,9 +1434,16 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
     }
     m_size.setHeight(fHeight);
     quint16 uSelectionPointsToExclude = 0;
-    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
-    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    if (m_bYAxisTopDown) {
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    }
+    else {
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    }
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
