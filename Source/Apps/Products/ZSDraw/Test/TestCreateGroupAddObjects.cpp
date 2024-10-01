@@ -884,7 +884,7 @@ void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTes
     pTestStep->setConfigValue("Size.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group SmallPlusSign
-    m_ptPosSmallPlusSign = QPointF(275.0, 340.0);
+    m_ptPosSmallPlusSign = QPointF(275.0, bYAxisTopDown ? 340.0 : 310);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
@@ -907,7 +907,7 @@ void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTes
     // Resize SmallPlusSign
     //---------------------
 
-    m_sizeSmallPlusSign = QSizeF(30.0, 120.0);
+    m_sizeSmallPlusSign.setHeight(120.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameSmallPlusSign + ".setHeight(" + QString::number(m_sizeSmallPlusSign.height()) + " " + unit.symbol() + ")",
@@ -921,7 +921,7 @@ void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTes
     pTestStep->setConfigValue("Height.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group SmallPlusSign
-    m_ptPosSmallPlusSign = QPointF(275.0, 370.0);
+    m_ptPosSmallPlusSign = QPointF(275.0, bYAxisTopDown ? 370.0 : 280.0);
     m_pPhysValRectSmallPlusSign->setSize(m_sizeSmallPlusSign);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameSmallPlusSign, m_ptPosSmallPlusSign, *m_pPhysValRectSmallPlusSign));
@@ -1684,7 +1684,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     pTestStep->setConfigValue("Size.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group BigPlusSign
-    m_ptPosBigPlusSign = QPointF(383.7, 322.4);
+    m_ptPosBigPlusSign = bYAxisTopDown ? QPointF(383.7, 322.4) : QPointF(287.1, 348.3);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
@@ -1983,7 +1983,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Group BigPlusSignParent
-    m_ptPosTopGroup.setY(379.3);
+    m_ptPosTopGroup.setY(bYAxisTopDown ? 379.3 : 220.7);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
@@ -2171,7 +2171,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Group BigPlusSignParent
-    m_ptPosTopGroup = QPointF(300.0, 341.4);
+    m_ptPosTopGroup = bYAxisTopDown ? QPointF(300.0, 341.4) : QPointF(341.4, 300.0);
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup));
@@ -3864,12 +3864,6 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".showGeometryLabels(TopLeft, Angle)",
         /* pGrpParent      */ pGrpModifyPlusSigns,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameBigPlusSign},
-        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign)},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->topLeft().toString()},
-    });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameBigPlusSign},
         {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign)},

@@ -4447,11 +4447,11 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle270 = size300x200.width();
     double fHeightSetSizeAngle270 = size300x200.height();
-    QPointF ptCenterSetSizeAngle270(350.0, bYAxisTopDown ? 250.0 : 350.0);
-    QPointF ptTopLeftSetSizeAngle270 = ptTopLeftSetAngle270;
-    QPointF ptTopRightSetSizeAngle270(250.0, bYAxisTopDown ? 100.0 : 500.0);
-    QPointF ptBottomRightSetSizeAngle270(450.0, bYAxisTopDown ? 100.0 : 500.0);
-    QPointF ptBottomLeftSetSizeAngle270(450.0, bYAxisTopDown ? 400.0: 200.0);
+    QPointF ptCenterSetSizeAngle270 = bYAxisTopDown ? QPointF(350.0, 250.0) : QPointF(250.0, 350.0);
+    QPointF ptTopLeftSetSizeAngle270 = bYAxisTopDown ? ptTopLeftSetAngle270 : QPointF(150.0, 200.0);
+    QPointF ptTopRightSetSizeAngle270 = bYAxisTopDown ? QPointF(250.0, 100.0) : QPointF(150.0, 500.0);
+    QPointF ptBottomRightSetSizeAngle270 = bYAxisTopDown ? QPointF(450.0, 100.0) : QPointF(350.0, 500.0);
+    QPointF ptBottomLeftSetSizeAngle270 = bYAxisTopDown ? QPointF(450.0, 400.0) : ptBottomLeftSetAngle270;
     QPointF ptTopCenterSetSizeAngle270 = QLineF(ptTopRightSetSizeAngle270, ptTopLeftSetSizeAngle270).center();
     QPointF ptRightCenterSetSizeAngle270 = QLineF(ptTopRightSetSizeAngle270, ptBottomRightSetSizeAngle270).center();
     QPointF ptBottomCenterSetSizeAngle270 = QLineF(ptBottomRightSetSizeAngle270, ptBottomLeftSetSizeAngle270).center();
@@ -4718,12 +4718,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetHeightAngle270 = fWidthSetAngle270;
     double fHeightSetHeightAngle270 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle270 = ptBottomCenterSetAngle270;
-    QPointF ptTopLeftSetHeightAngle270 = ptTopLeftSetAngle270;
-    QPointF ptTopRightSetHeightAngle270 = ptTopRightSetAngle270;
-    QPointF ptBottomRightSetHeightAngle270(450.0, bYAxisTopDown ? 200.0 : 400.0);
-    QPointF ptBottomLeftSetHeightAngle270(450.0, bYAxisTopDown ? 400.0 : 200.0);
-    QPointF ptTopCenterSetHeightAngle270 = ptTopCenterSetAngle270;
+    QPointF ptCenterSetHeightAngle270 = bYAxisTopDown ? ptBottomCenterSetAngle270 : ptTopCenterSetAngle270;
+    QPointF ptTopLeftSetHeightAngle270 = bYAxisTopDown ? ptTopLeftSetAngle270 : QPointF(150.0, 200.0);
+    QPointF ptTopRightSetHeightAngle270 = bYAxisTopDown ? ptTopRightSetAngle270 : QPointF(150.0, 400.0);
+    QPointF ptBottomRightSetHeightAngle270 = bYAxisTopDown ? QPointF(450.0, 200.0) : ptBottomRightSetAngle270;
+    QPointF ptBottomLeftSetHeightAngle270 = bYAxisTopDown ? QPointF(450.0, 400.0) : ptBottomLeftSetAngle270;
+    QPointF ptTopCenterSetHeightAngle270 = QLineF(ptTopLeftSetHeightAngle270, ptTopRightSetHeightAngle270).center();
     QPointF ptRightCenterSetHeightAngle270 = QLineF(ptTopRightSetHeightAngle270, ptBottomRightSetHeightAngle270).center();
     QPointF ptBottomCenterSetHeightAngle270 = QLineF(ptBottomRightSetHeightAngle270, ptBottomLeftSetHeightAngle270).center();
     QPointF ptLeftCenterSetHeightAngle270 = QLineF(ptTopLeftSetHeightAngle270, ptBottomLeftSetHeightAngle270).center();
@@ -5751,11 +5751,11 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle30 = size300x200.width();
     double fHeightSetSizeAngle30 = size300x200.height();
-    QPointF ptCenterSetSizeAngle30(318.3, bYAxisTopDown ? 368.3 : 231.7);
-    QPointF ptTopLeftSetSizeAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetSizeAngle30(498.2, bYAxisTopDown ? 356.7 : 243.3);
-    QPointF ptBottomRightSetSizeAngle30(398.2, bYAxisTopDown ? 529.9 : 70.1);
-    QPointF ptBottomLeftSetSizeAngle30(138.4, bYAxisTopDown ? 379.9: 220.1);
+    QPointF ptCenterSetSizeAngle30 = bYAxisTopDown ? QPointF(318.3, 368.3) : QPointF(368.3, 318.3);
+    QPointF ptTopLeftSetSizeAngle30 = bYAxisTopDown ? ptTopLeftSetAngle30 : QPointF(288.4, 479.9);
+    QPointF ptTopRightSetSizeAngle30 = bYAxisTopDown ? QPointF(498.2, 356.7) : QPointF(548.2, 329.9);
+    QPointF ptBottomRightSetSizeAngle30 = bYAxisTopDown ? QPointF(398.2, 529.9) : QPointF(448.2, 156.7);
+    QPointF ptBottomLeftSetSizeAngle30 = bYAxisTopDown ? QPointF(138.4, 379.9) : ptBottomLeftSetAngle30;
     QPointF ptTopCenterSetSizeAngle30 = QLineF(ptTopRightSetSizeAngle30, ptTopLeftSetSizeAngle30).center();
     QPointF ptRightCenterSetSizeAngle30 = QLineF(ptTopRightSetSizeAngle30, ptBottomRightSetSizeAngle30).center();
     QPointF ptBottomCenterSetSizeAngle30 = QLineF(ptBottomRightSetSizeAngle30, ptBottomLeftSetSizeAngle30).center();
@@ -6024,12 +6024,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetHeightAngle30 = fWidthSetAngle30;
     double fHeightSetHeightAngle30 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle30(275.0, bYAxisTopDown ? 343.3 : 256.7);
-    QPointF ptTopLeftSetHeightAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetHeightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetHeightAngle30(311.6, bYAxisTopDown ? 479.9 : 120.1);
-    QPointF ptBottomLeftSetHeightAngle30(138.4, bYAxisTopDown ? 379.9 : 220.1);
-    QPointF ptTopCenterSetHeightAngle30 = ptTopCenterSetAngle30;
+    QPointF ptCenterSetHeightAngle30 = bYAxisTopDown ? QPointF(275.0, 343.3) : QPointF(325.0, 343.3);
+    QPointF ptTopLeftSetHeightAngle30 = bYAxisTopDown ? ptTopLeftSetAngle30 : QPointF(288.4, 479.9);
+    QPointF ptTopRightSetHeightAngle30 = bYAxisTopDown ? ptTopRightSetAngle30 : QPointF(461.6, 379.9);
+    QPointF ptBottomRightSetHeightAngle30 = bYAxisTopDown ? QPointF(311.6, 479.9) : ptBottomRightSetAngle30;
+    QPointF ptBottomLeftSetHeightAngle30 = bYAxisTopDown ? QPointF(138.4, 379.9) : ptBottomLeftSetAngle30;
+    QPointF ptTopCenterSetHeightAngle30 = QLineF(ptTopLeftSetHeightAngle30, ptTopRightSetHeightAngle30).center();
     QPointF ptRightCenterSetHeightAngle30 = QLineF(ptTopRightSetHeightAngle30, ptBottomRightSetHeightAngle30).center();
     QPointF ptBottomCenterSetHeightAngle30 = QLineF(ptBottomRightSetHeightAngle30, ptBottomLeftSetHeightAngle30).center();
     QPointF ptLeftCenterSetHeightAngle30 = QLineF(ptTopLeftSetHeightAngle30, ptBottomLeftSetHeightAngle30).center();
@@ -7058,11 +7058,11 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle120 = size300x200.width();
     double fHeightSetSizeAngle120 = size300x200.height();
-    QPointF ptCenterSetSizeAngle120(231.7, bYAxisTopDown ? 318.3 : 281.7);
-    QPointF ptTopLeftSetSizeAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetSizeAngle120(243.3, bYAxisTopDown ? 498.2 : 101.8);
-    QPointF ptBottomRightSetSizeAngle120(70.1, bYAxisTopDown ? 398.2 : 201.8);
-    QPointF ptBottomLeftSetSizeAngle120(220.1, bYAxisTopDown ? 138.4: 461.6);
+    QPointF ptCenterSetSizeAngle120 = bYAxisTopDown ? QPointF(231.7, 318.3) : QPointF(318.3, 231.7);
+    QPointF ptTopLeftSetSizeAngle120 = bYAxisTopDown ? ptTopLeftSetAngle120 : QPointF(479.9, 311.6);
+    QPointF ptTopRightSetSizeAngle120 = bYAxisTopDown ? QPointF(243.3, 498.2) : QPointF(329.9, 51.8);
+    QPointF ptBottomRightSetSizeAngle120 = bYAxisTopDown ? QPointF(70.1, 398.2) : QPointF(156.7, 151.8);
+    QPointF ptBottomLeftSetSizeAngle120 = bYAxisTopDown ? QPointF(220.1, 138.4) : ptBottomLeftSetAngle120;
     QPointF ptTopCenterSetSizeAngle120 = QLineF(ptTopRightSetSizeAngle120, ptTopLeftSetSizeAngle120).center();
     QPointF ptRightCenterSetSizeAngle120 = QLineF(ptTopRightSetSizeAngle120, ptBottomRightSetSizeAngle120).center();
     QPointF ptBottomCenterSetSizeAngle120 = QLineF(ptBottomRightSetSizeAngle120, ptBottomLeftSetSizeAngle120).center();
@@ -7329,12 +7329,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetHeightAngle120 = fWidthSetAngle120;
     double fHeightSetHeightAngle120 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle120 = ptBottomCenterSetAngle120;
-    QPointF ptTopLeftSetHeightAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetHeightAngle120 = ptTopRightSetAngle120;
-    QPointF ptBottomRightSetHeightAngle120(120.1, bYAxisTopDown ? 311.6 : 288.4);
-    QPointF ptBottomLeftSetHeightAngle120(220.1, bYAxisTopDown ? 138.4 : 461.6);
-    QPointF ptTopCenterSetHeightAngle120 = ptTopCenterSetAngle120;
+    QPointF ptCenterSetHeightAngle120 = bYAxisTopDown ? ptBottomCenterSetAngle120 : ptTopCenterSetAngle120;
+    QPointF ptTopLeftSetHeightAngle120 = bYAxisTopDown ? ptTopLeftSetAngle120 : QPointF(479.9, 311.6);
+    QPointF ptTopRightSetHeightAngle120 = bYAxisTopDown ? ptTopRightSetAngle120 : QPointF(379.9, 138.4);
+    QPointF ptBottomRightSetHeightAngle120 = bYAxisTopDown ? QPointF(120.1, 311.6) : ptBottomRightSetAngle120;
+    QPointF ptBottomLeftSetHeightAngle120 = bYAxisTopDown ? QPointF(220.1, 138.4) : ptBottomLeftSetAngle120;
+    QPointF ptTopCenterSetHeightAngle120 = QLineF(ptTopLeftSetHeightAngle120, ptTopRightSetHeightAngle120).center();
     QPointF ptRightCenterSetHeightAngle120 = QLineF(ptTopRightSetHeightAngle120, ptBottomRightSetHeightAngle120).center();
     QPointF ptBottomCenterSetHeightAngle120 = QLineF(ptBottomRightSetHeightAngle120, ptBottomLeftSetHeightAngle120).center();
     QPointF ptLeftCenterSetHeightAngle120 = QLineF(ptTopLeftSetHeightAngle120, ptBottomLeftSetHeightAngle120).center();
@@ -8361,11 +8361,11 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle210 = size300x200.width();
     double fHeightSetSizeAngle210 = size300x200.height();
-    QPointF ptCenterSetSizeAngle210(281.7, bYAxisTopDown ? 231.7 : 368.3);
-    QPointF ptTopLeftSetSizeAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetSizeAngle210(101.8, bYAxisTopDown ? 243.3 : 356.7);
-    QPointF ptBottomRightSetSizeAngle210(201.8, bYAxisTopDown ? 70.1 : 529.9);
-    QPointF ptBottomLeftSetSizeAngle210(461.6, bYAxisTopDown ? 220.1: 379.9);
+    QPointF ptCenterSetSizeAngle210 = bYAxisTopDown ? QPointF(281.7, 231.7) : QPointF(231.7, 281.7);
+    QPointF ptTopLeftSetSizeAngle210 = bYAxisTopDown ? ptTopLeftSetAngle210 : QPointF(311.6, 120.1);
+    QPointF ptTopRightSetSizeAngle210 = bYAxisTopDown ? QPointF(101.8, 243.3) : QPointF(51.8, 270.1);
+    QPointF ptBottomRightSetSizeAngle210 = bYAxisTopDown ? QPointF(201.8, 70.1) : QPointF(151.8, 443.3);
+    QPointF ptBottomLeftSetSizeAngle210 = bYAxisTopDown ? QPointF(461.6, 220.1) : ptBottomLeftSetAngle210;
     QPointF ptTopCenterSetSizeAngle210 = QLineF(ptTopRightSetSizeAngle210, ptTopLeftSetSizeAngle210).center();
     QPointF ptRightCenterSetSizeAngle210 = QLineF(ptTopRightSetSizeAngle210, ptBottomRightSetSizeAngle210).center();
     QPointF ptBottomCenterSetSizeAngle210 = QLineF(ptBottomRightSetSizeAngle210, ptBottomLeftSetSizeAngle210).center();
@@ -8632,12 +8632,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetHeightAngle210 = fWidthSetAngle210;
     double fHeightSetHeightAngle210 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle210 = ptBottomCenterSetAngle210;
-    QPointF ptTopLeftSetHeightAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetHeightAngle210 = ptTopRightSetAngle210;
-    QPointF ptBottomRightSetHeightAngle210(288.4, bYAxisTopDown ? 120.1 : 479.9);
-    QPointF ptBottomLeftSetHeightAngle210(461.6, bYAxisTopDown ? 220.1 : 379.9);
-    QPointF ptTopCenterSetHeightAngle210 = ptTopCenterSetAngle210;
+    QPointF ptCenterSetHeightAngle210 = bYAxisTopDown ? ptBottomCenterSetAngle210 : ptTopCenterSetAngle210;
+    QPointF ptTopLeftSetHeightAngle210 = bYAxisTopDown ? ptTopLeftSetAngle210 : QPointF(311.6, 120.1);
+    QPointF ptTopRightSetHeightAngle210 = bYAxisTopDown ? ptTopRightSetAngle210 : QPointF(138.4, 220.1);
+    QPointF ptBottomRightSetHeightAngle210 = bYAxisTopDown ? QPointF(288.4, 120.1) : ptBottomRightSetAngle210;
+    QPointF ptBottomLeftSetHeightAngle210 = bYAxisTopDown ? QPointF(461.6, 220.1) : ptBottomLeftSetAngle210;
+    QPointF ptTopCenterSetHeightAngle210 = QLineF(ptTopLeftSetHeightAngle210, ptTopRightSetHeightAngle210).center();
     QPointF ptRightCenterSetHeightAngle210 = QLineF(ptTopRightSetHeightAngle210, ptBottomRightSetHeightAngle210).center();
     QPointF ptBottomCenterSetHeightAngle210 = QLineF(ptBottomRightSetHeightAngle210, ptBottomLeftSetHeightAngle210).center();
     QPointF ptLeftCenterSetHeightAngle210 = QLineF(ptTopLeftSetHeightAngle210, ptBottomLeftSetHeightAngle210).center();
@@ -9664,11 +9664,11 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle300 = size300x200.width();
     double fHeightSetSizeAngle300 = size300x200.height();
-    QPointF ptCenterSetSizeAngle300(368.3, bYAxisTopDown ? 281.7 : 318.3);
-    QPointF ptTopLeftSetSizeAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetSizeAngle300(356.7, bYAxisTopDown ? 101.8 : 498.2);
-    QPointF ptBottomRightSetSizeAngle300(529.9, bYAxisTopDown ? 201.8 : 398.2);
-    QPointF ptBottomLeftSetSizeAngle300(379.9, bYAxisTopDown ? 461.6: 138.4);
+    QPointF ptCenterSetSizeAngle300 = bYAxisTopDown ? QPointF(368.3, 281.7) : QPointF(281.7, 368.3);
+    QPointF ptTopLeftSetSizeAngle300 = bYAxisTopDown ? ptTopLeftSetAngle300 : QPointF(120.1, 288.4);
+    QPointF ptTopRightSetSizeAngle300 = bYAxisTopDown ? QPointF(356.7, 101.8) : QPointF(270.1, 548.2);
+    QPointF ptBottomRightSetSizeAngle300 = bYAxisTopDown ? QPointF(529.9, 201.8) : QPointF(443.3, 448.2);
+    QPointF ptBottomLeftSetSizeAngle300 = bYAxisTopDown ? QPointF(379.9, 461.6) : ptBottomLeftSetAngle300;
     QPointF ptTopCenterSetSizeAngle300 = QLineF(ptTopRightSetSizeAngle300, ptTopLeftSetSizeAngle300).center();
     QPointF ptRightCenterSetSizeAngle300 = QLineF(ptTopRightSetSizeAngle300, ptBottomRightSetSizeAngle300).center();
     QPointF ptBottomCenterSetSizeAngle300 = QLineF(ptBottomRightSetSizeAngle300, ptBottomLeftSetSizeAngle300).center();
@@ -9935,12 +9935,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetHeightAngle300 = fWidthSetAngle300;
     double fHeightSetHeightAngle300 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle300 = ptBottomCenterSetAngle300;
-    QPointF ptTopLeftSetHeightAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetHeightAngle300 = ptTopRightSetAngle300;
-    QPointF ptBottomRightSetHeightAngle300(479.9, bYAxisTopDown ? 288.4 : 311.6);
-    QPointF ptBottomLeftSetHeightAngle300(379.9, bYAxisTopDown ? 461.6 : 138.4);
-    QPointF ptTopCenterSetHeightAngle300 = ptTopCenterSetAngle300;
+    QPointF ptCenterSetHeightAngle300 = bYAxisTopDown ? ptBottomCenterSetAngle300 : ptTopCenterSetAngle300;
+    QPointF ptTopLeftSetHeightAngle300 = bYAxisTopDown ? ptTopLeftSetAngle300 : QPointF(120.1, 288.4);
+    QPointF ptTopRightSetHeightAngle300 = bYAxisTopDown ? ptTopRightSetAngle300 : QPointF(220.1, 461.6);
+    QPointF ptBottomRightSetHeightAngle300 = bYAxisTopDown ? QPointF(479.9, 288.4) : ptBottomRightSetAngle300;
+    QPointF ptBottomLeftSetHeightAngle300 = bYAxisTopDown ? QPointF(379.9, 461.6) : ptBottomLeftSetAngle300;
+    QPointF ptTopCenterSetHeightAngle300 = QLineF(ptTopLeftSetHeightAngle300, ptTopRightSetHeightAngle300).center();
     QPointF ptRightCenterSetHeightAngle300 = QLineF(ptTopRightSetHeightAngle300, ptBottomRightSetHeightAngle300).center();
     QPointF ptBottomCenterSetHeightAngle300 = QLineF(ptBottomRightSetHeightAngle300, ptBottomLeftSetHeightAngle300).center();
     QPointF ptLeftCenterSetHeightAngle300 = QLineF(ptTopLeftSetHeightAngle300, ptBottomLeftSetHeightAngle300).center();
