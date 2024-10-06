@@ -108,6 +108,7 @@ protected: // instance methods
         const QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints> i_mapGraphObjTypeRenderHints = QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints>());
     void createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+
     void createTestGroupObjectCoordinatesTransformPhysValShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesTransformPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesAddLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -116,6 +117,7 @@ protected: // instance methods
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+
     void createTestGroupAddObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -134,89 +136,50 @@ protected: // instance methods
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 
-    //void createTestGroupDrawObjects(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupPixelsDrawing(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupMetricsDrawing(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupMetricsDrawingYScaleTopDown(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupMetricsDrawingYScaleBottomUp(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapes(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const ZS::Draw::CDrawingSize& i_drawingSize);
-    //void createTestGroupDrawStandardShapesLines(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const ZS::Draw::CDrawingSize& i_drawingSize);
-    //void createTestGroupDrawStandardShapesGroups(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const ZS::Draw::CDrawingSize& i_drawingSize);
-    //void createTestGroupDrawMouseEventsCreateObject(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QString& i_strFactoryGroupName, ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strGraphObjName,
-    //    const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease, const QPoint& i_ptMouseAfterRelease);
-    //void createTestGroupDrawMouseEventsCreateGroup(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QString& i_strGraphObjName,
-    //    const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease, int i_iMovesCount,
-    //    const QPoint& i_ptMouseAfterRelease);
-    //void createTestGroupShowAndMoveTextLabel(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QString& i_strGraphObjName, const QString& i_strLabelName,
-    //    const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
-    //void createTestGroupShowAndMoveGeometryLabel(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QString& i_strGraphObjName, const QString& i_strLabelName,
-    //    const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
-protected: // instance methods
-    //void addTestStepDrawMouseEventPress(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QPoint& i_ptMousePos);
-    //void addTestStepDrawMouseEventRelease(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QPoint& i_ptMousePos);
-    //void addTestStepDrawMouseEventsMove(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop, int i_iMovesCount = 0);
-    //void addTestStepsDrawMouseEventsMove(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop, int i_iMovesCount = 0);
-    //void addTestStepsDrawMouseEventsMovePressMoveRelease(
-    //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    //    const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+    void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupDrawStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupDrawStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupDrawStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
-    void doTestStepDrawingSize( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSetPainterRenderHints( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDrawingSceneConvertToPhysValPoint( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDrawingSceneConvertToPhysValSize( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDrawingSceneConvertToPhysValLine( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepDrawingSceneConvertToPhysValRect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepShowLabels( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepHideLabels( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepShowGeometryLabels( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepHideGeometryLabels( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepMainWindowSetGeometry(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepClearDrawingScene(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepSetDrawingSize(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepSetGridSettings(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
 protected: // auxiliary instance methods
     void initInstCounts();
     void initObjectCoors();
+    void addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false) const;
     QStringList resultValuesForGroup(
@@ -227,6 +190,8 @@ protected: // auxiliary instance methods
         const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine) const;
     QStringList resultValuesForLabel(
         const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const;
+public: // overridables of base class CTest (make protected method public)
+    void triggerDoTestStep(int i_iInterval_ms = -1) override;
 protected: // class members
     static QHash<QString, int> s_hshGraphObjsInstCounts;
 protected: // instance members

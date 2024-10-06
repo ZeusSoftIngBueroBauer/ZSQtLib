@@ -141,11 +141,11 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     // SmallRect
     //----------
 
-    ZS::Test::CTestStepGroup* pGrpAddSmallRect = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pGrpLinesSmallRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallRect,
         /* pTSGrpParent */ pGrpLines );
-    createTestGroupAddStandardShapesLinesSmallRect(pGrpAddSmallRect);
+    createTestGroupAddStandardShapesLinesSmallRect(pGrpLinesSmallRect);
 
     createTestStepSaveLoadFile(pGrpLines);
 

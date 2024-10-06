@@ -255,6 +255,20 @@ void CTestStep::setConfigValue( const QString& i_strKey, const QVariant& i_val )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Removes a config value from the test step.
+
+    @param i_strKey [in] Key for which the config value should be removed.
+*/
+void CTestStep::removeConfigValue( const QString& i_strKey )
+//------------------------------------------------------------------------------
+{
+    if (m_hshConfigValues.contains(i_strKey)) {
+        m_hshConfigValues.remove(i_strKey);
+        emit_changed();
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the instruction of the test step.
 
     The instruction should describe what has to be done to execute the test step.

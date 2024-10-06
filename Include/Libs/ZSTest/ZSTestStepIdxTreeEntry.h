@@ -76,6 +76,8 @@ public: // overridables
     virtual void addDataRow(const QHash<QString, QVariant>& i_dataRow);
     virtual void addDataRow(QHash<QString, QVariant>&& i_dataRow);
     virtual QHash<QString, QVariant> getDataRow(int i_idxRow) const;
+    virtual QHash<QString, QVariant> takeDataRow(int i_idxRow);
+    virtual void removeDataRow(int i_idxRow);
 public: // must overridables
     virtual CEnumTestResult getTestResult() const = 0;
     virtual double getTestDurationInSec() const = 0;

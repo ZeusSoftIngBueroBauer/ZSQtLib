@@ -68,6 +68,7 @@ public: // instance methods
     bool hasConfigValue( const QString& i_strKey ) const;
     QVariant getConfigValue( const QString& i_strKey ) const;
     void setConfigValue( const QString& i_strKey, const QVariant& i_val );
+    void removeConfigValue( const QString& i_strKey );
 public: // instance methods
     QString getInstruction() const { return m_strInstruction; }
     void setInstruction( const QString& i_strInstruction );

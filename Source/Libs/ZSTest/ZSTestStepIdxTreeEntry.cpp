@@ -182,6 +182,22 @@ QHash<QString, QVariant> CAbstractTestStepIdxTreeEntry::getDataRow(int i_idxRow)
     return m_arDataRows[i_idxRow];
 }
 
+//------------------------------------------------------------------------------
+QHash<QString, QVariant> CAbstractTestStepIdxTreeEntry::takeDataRow(int i_idxRow)
+//------------------------------------------------------------------------------
+{
+    QHash<QString, QVariant> dataRow = m_arDataRows[i_idxRow];
+    m_arDataRows.removeAt(i_idxRow);
+    return dataRow;
+}
+
+//------------------------------------------------------------------------------
+void CAbstractTestStepIdxTreeEntry::removeDataRow(int i_idxRow)
+//------------------------------------------------------------------------------
+{
+    m_arDataRows.removeAt(i_idxRow);
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
