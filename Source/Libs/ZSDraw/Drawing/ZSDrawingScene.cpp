@@ -2388,7 +2388,6 @@ CGraphObjGroup* CDrawingScene::groupGraphObjsSelected()
             arpGraphicsItemsSelected.removeOne(pGraphicsItemSelected);
         }
         pGraphObjGroup = groupGraphObjs(arpGraphicsItemsSelected);
-        // Finish creation of group.
         pGraphObjGroup->setSelected(true);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2500,7 +2499,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<QGraphicsItem*> i_arpGraphic
         pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(
             /* pDrawingScene */ this,
             /* ptItemPos     */ CPhysValPoint(*this),
-            /* drawSettings  */ m_drawSettings ));
+            /* drawSettings  */ CDrawSettings(EGraphObjTypeGroup) ));
         if (pGraphObjGroup == nullptr) {
             throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
         }

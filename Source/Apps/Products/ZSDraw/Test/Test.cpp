@@ -327,7 +327,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Metrics Drawings
     //-----------------
-#if 0
+
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
     drawingSize.setMetricUnit(Units.Length.mm);
     drawingSize.setMetricImageCoorsDecimals(1);
@@ -352,6 +352,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown100x100mm = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + drawingSize.metricImageWidth().toString() + ", " + drawingSize.metricImageHeight().toString() + ")",
@@ -364,6 +365,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown100x100mm );
     createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100mmObjectCoordinates);
+#endif
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
@@ -379,6 +381,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mm, drawingSize, gridSettings);
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
@@ -390,12 +393,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects);
+#endif
 
-    //ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
-    //    /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
-    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
+    createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
 
     // YScaleBottomUp
     //---------------
@@ -412,6 +416,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp100x100mm = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + drawingSize.metricImageWidth().toString() + ", " + drawingSize.metricImageHeight().toString() + ")",
@@ -424,6 +429,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp100x100mm );
     createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100mmObjectCoordinates);
+#endif
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
@@ -439,6 +445,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
@@ -450,13 +457,14 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects);
-
-    //ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
-    //    /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
-    //createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
 #endif
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
+        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
+    createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
+
     // Recall test step settings
     //--------------------------
 
@@ -1825,7 +1833,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepModifyGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
+void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1835,7 +1843,7 @@ void CTest::doTestStepModifyGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepModifyGraphObjLine",
+        /* strMethod    */ "doTestStepModifyGraphObjLineByDirectMethodCalls",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -1880,7 +1888,7 @@ void CTest::doTestStepModifyGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepModifyGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
+void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1890,7 +1898,7 @@ void CTest::doTestStepModifyGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepModifyGraphObjGroup",
+        /* strMethod    */ "doTestStepModifyGraphObjGroupByDirectMethodCalls",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -2297,7 +2305,7 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         i_pTestStep->setConfigValue("Method", "groupGraphObjsSelected");
         triggerDoTestStep();
     }
-    if (strMethod == "groupGraphObjsSelected") {
+    else if (strMethod == "groupGraphObjsSelected") {
         m_pDrawingScene->groupGraphObjsSelected();
         i_pTestStep->setConfigValue("Method", "setResultValues");
         triggerDoTestStep();
@@ -2317,6 +2325,139 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
             strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjGroup->keyInTree());
             for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
                 strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
+            }
+        }
+        for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
+            CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+            if (pGraphObj != nullptr) {
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
+            }
+        }
+        i_pTestStep->setResultValues(strlstResultValues);
+        i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepModifyGraphObjBySceneMouseEvents",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+
+    QPointF pt1 = i_pTestStep->getConfigValue("P1").toPointF();
+    QPointF pt2 = i_pTestStep->getConfigValue("P2").toPointF();
+    QString strMethod = "moveSelectionPoint";
+    if (i_pTestStep->hasConfigValue("Method")) {
+        strMethod = i_pTestStep->getConfigValue("Method").toString();
+    }
+
+    if (strMethod == "moveSelectionPoint") {
+        m_pDrawingScene->setCurrentDrawingTool(nullptr);
+        QPoint ptMousePosStart = pt1.toPoint();
+        QPoint ptMousePosStop = pt2.toPoint();
+        Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+        if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+            keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+        }
+        QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePosStart);
+        QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+        ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+        ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+        QMouseEvent* pMouseEv = new QMouseEvent(
+            /* type      */ QEvent::MouseButtonPress,
+            /* pos       */ ptDrawingViewMousePos,
+            /* globalPos */ ptMousePosGlobal,
+            /* button    */ Qt::LeftButton,
+            /* button    */ Qt::LeftButton,
+            /* modifiers */ keyboardModifiers );
+        m_pDrawingView->mousePressEvent(pMouseEv);
+        delete pMouseEv;
+        pMouseEv = nullptr;
+        addMouseMoveEventDataRows(i_pTestStep, ptMousePosStart, ptMousePosStop);
+        i_pTestStep->setConfigValue("Method", "mouseMoveEvent");
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mouseMoveEvent") {
+        int iMouseMovesRemaining = i_pTestStep->getDataRowCount();
+        if (iMouseMovesRemaining > 0) {
+            Qt::MouseButton mouseBtn = Qt::LeftButton;
+            if (i_pTestStep->hasConfigValue("MouseButtons")) {
+                mouseBtn = static_cast<Qt::MouseButton>(i_pTestStep->getConfigValue("MouseButtons").toInt());
+            }
+            QHash<QString, QVariant> dataRow = i_pTestStep->takeDataRow(0);
+            QPoint ptMouseMovePos = dataRow["MousePos"].toPoint();
+            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMouseMovePos);
+            QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+            QMouseEvent* pMouseEv = new QMouseEvent(
+                /* type      */ QEvent::MouseMove,
+                /* pos       */ ptDrawingViewMousePos,
+                /* globalPos */ ptMousePosGlobal,
+                /* button    */ Qt::NoButton,
+                /* buttons   */ mouseBtn,
+                /* modifiers */ Qt::NoModifier );
+            m_pDrawingView->mouseMoveEvent(pMouseEv);
+            delete pMouseEv;
+            pMouseEv = nullptr;
+        }
+        else {
+            i_pTestStep->setConfigValue("Method", "mouseReleaseEvent");
+        }
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mouseReleaseEvent") {
+        QPoint ptMousePos = pt2.toPoint();
+        Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+        if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+            keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+        }
+        QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
+        QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+        ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+        ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+        QMouseEvent* pMouseEv = new QMouseEvent(
+            /* type      */ QEvent::MouseButtonRelease,
+            /* pos       */ ptDrawingViewMousePos,
+            /* globalPos */ ptMousePosGlobal,
+            /* button    */ Qt::LeftButton,
+            /* buttons   */ Qt::NoButton,
+            /* modifiers */ keyboardModifiers );
+        m_pDrawingView->mouseReleaseEvent(pMouseEv);
+        delete pMouseEv;
+        pMouseEv = nullptr;
+        i_pTestStep->setConfigValue("Method", "setResultValues");
+        triggerDoTestStep();
+    }
+    else if (strMethod == "setResultValues") {
+        QStringList strlstResultValues;
+        QStringList strlstGraphObjsKeyInTreeGetResultValues;
+        if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
+            strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
+        }
+        if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            strlstGraphObjsKeyInTreeGetResultValues.append(strGraphObjKeyInTree);
+            if (graphObjType == EGraphObjTypeGroup) {
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+                if (pGraphObjGroup != nullptr) {
+                    for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
+                        strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
+                    }
+                }
             }
         }
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {

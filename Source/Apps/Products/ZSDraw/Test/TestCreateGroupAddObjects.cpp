@@ -182,7 +182,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTSGrpParent */ pGrpGroupsSmallPlusSign );
 
     createTestGroupAddStandardShapesGroupSmallPlusSign(pGrpGroupsSmallPlusSignAddShapes);
-    createTestGroupModifyStandardShapesGroupSmallPlusSign(pGrpGroupsSmallPlusSign);
+    createTestGroupAddStandardShapesGroupSmallPlusSignResize(pGrpGroupsSmallPlusSign);
     createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
 
     // BigPlusSign
@@ -215,7 +215,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTSGrpParent */ pGrpGroupsBigPlusSignRotateTop );
 
     createTestGroupAddStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateTopAddShapes);
-    createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
+    createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
     createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateTop);
 
     ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateAndResize = new ZS::Test::CTestStepGroup(
@@ -240,7 +240,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTSGrpParent */ pGrpGroupsBigPlusSignRotateAndResize );
 
     createTestGroupAddStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateAndResizeAddShapes);
-    createTestGroupModifyStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateAndResize);
+    createTestGroupAddStandardShapesGroupBigPlusSignModfications(pGrpGroupsBigPlusSignRotateAndResize);
     createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateAndResize);
 
     // PlusSigns
@@ -268,7 +268,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTSGrpParent */ pGrpGroupsPlusSigns );
 
     createTestGroupAddStandardShapesGroupPlusSigns(pGrpGroupsPlusSignsRotateAndResizeAddShapes);
-    createTestGroupModifyStandardShapesGroupPlusSigns(pGrpGroupsPlusSigns);
+    createTestGroupAddStandardShapesGroupPlusSignsModifications(pGrpGroupsPlusSigns);
     createTestStepSaveLoadFile(pGrpGroupsPlusSigns);
 
     // Checkmark
@@ -296,7 +296,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTSGrpParent */ pGrpGroupsCheckmark );
 
     createTestGroupAddStandardShapesGroupCheckmark(pGrpGroupsCheckmarkRotateAndResizeAddShapes);
-    createTestGroupModifyStandardShapesGroupCheckmark(pGrpGroupsCheckmark);
+    createTestGroupAddStandardShapesGroupCheckmarkModifications(pGrpGroupsCheckmark);
     createTestStepSaveLoadFile(pGrpGroupsCheckmark);
 
     // All
@@ -324,7 +324,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTSGrpParent */ pGrpGroupsAll );
 
     createTestGroupAddStandardShapesAllGroups(pGrpGroupsAllAddShapes);
-    createTestGroupModifyStandardShapesAllGroups(pGrpGroupsAll);
+    createTestGroupAddStandardShapesAllGroupsModifications(pGrpGroupsAll);
     createTestStepSaveLoadFile(pGrpGroupsAll);
 }
 
@@ -467,7 +467,6 @@ void CTest::createTestGroupAddStandardShapesLinesBigPlusSign(
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameBigPlusSignVerticalLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSignVerticalLine));
-    QPointF(300.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptP1BigPlusSignVerticalLine(300.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptP2BigPlusSignVerticalLine(300.0, bYAxisTopDown ? 350.0 : 250.0);
     m_ptPosBigPlusSignVerticalLine = QPointF(300.0, 300.0);
@@ -822,7 +821,7 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestSt
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -832,7 +831,7 @@ void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTes
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupModifyStandardShapesGroupSmallPlusSign",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupSmallPlusSignResize",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -876,7 +875,7 @@ void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTes
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameSmallPlusSign + ".setSize(" + qSize2Str(m_sizeSmallPlusSign) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameSmallPlusSign + ".setSize(" + qSize2Str(m_sizeSmallPlusSign) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifySmallPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameSmallPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSign]);
     pTestStep->setConfigValue("Method", "setSize");
@@ -913,7 +912,7 @@ void CTest::createTestGroupModifyStandardShapesGroupSmallPlusSign(ZS::Test::CTes
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameSmallPlusSign + ".setHeight(" + QString::number(m_sizeSmallPlusSign.height()) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameSmallPlusSign + ".setHeight(" + QString::number(m_sizeSmallPlusSign.height()) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifySmallPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameSmallPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSign]);
     pTestStep->setConfigValue("Method", "setHeight");
@@ -1025,7 +1024,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStep
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1035,7 +1034,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSignRotateParent",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -1205,7 +1204,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -1284,7 +1283,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
@@ -1348,7 +1347,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSignRotateParent(ZS::
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1358,7 +1357,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupModifyStandardShapesGroupBigPlusSign",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSignModfications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -1401,7 +1400,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameBigPlusSign + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameBigPlusSign + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSignVerticalLine);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine] = pIdxTree->buildKeyInTreeStr(
@@ -1482,7 +1481,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -1559,7 +1558,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setBottomRight(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setSize");
@@ -1596,7 +1595,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -1647,7 +1646,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -1676,7 +1675,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setSize");
@@ -1713,7 +1712,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setSize");
@@ -1750,7 +1749,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -1779,7 +1778,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setCenter(" + m_pPhysValRectBigPlusSign->center().toString() + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setCenter(" + m_pPhysValRectBigPlusSign->center().toString() + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign));
     pTestStep->setConfigValue("Method", "setCenter");
@@ -1809,7 +1808,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setPosition(" + m_pPhysValRectBigPlusSign->center().toString() + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setPosition(" + m_pPhysValRectBigPlusSign->center().toString() + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign));
     pTestStep->setConfigValue("Method", "setPosition");
@@ -1839,7 +1838,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setCenter(" + m_pPhysValRectBigPlusSign->center().toString() + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setCenter(" + m_pPhysValRectBigPlusSign->center().toString() + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign));
     pTestStep->setConfigValue("Method", "setCenter");
@@ -1919,7 +1918,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setWidth(" + QString::number(m_sizeTopGroup.width()) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setWidth(" + QString::number(m_sizeTopGroup.width()) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setWidth");
@@ -1969,7 +1968,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setHeight(" + QString::number(m_sizeTopGroup.height()) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setHeight(" + QString::number(m_sizeTopGroup.height()) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setHeight");
@@ -2019,7 +2018,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setSize(" + qSize2Str(m_sizeTopGroup) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setSize(" + qSize2Str(m_sizeTopGroup) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setSize");
@@ -2068,7 +2067,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -2107,7 +2106,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setWidth(" + QString::number(m_sizeTopGroup.width()) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setWidth(" + QString::number(m_sizeTopGroup.width()) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setWidth");
@@ -2157,7 +2156,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setHeight(" + QString::number(m_sizeTopGroup.height()) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setHeight(" + QString::number(m_sizeTopGroup.height()) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setHeight");
@@ -2207,7 +2206,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setSize(" + qSize2Str(m_sizeTopGroup) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setSize(" + qSize2Str(m_sizeTopGroup) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setSize");
@@ -2257,7 +2256,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -2295,7 +2294,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
@@ -2395,7 +2394,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -2433,7 +2432,7 @@ void CTest::createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestS
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
@@ -2598,7 +2597,7 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGr
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2608,7 +2607,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
     CMethodTracer mthTracer(+
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupModifyStandardShapesGroupPlusSigns",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupPlusSignsModifications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -2651,7 +2650,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameSmallPlusSign + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameSmallPlusSign + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.remove(c_strGraphObjNameSmallPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSignVerticalLine);
@@ -2693,7 +2692,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameBigPlusSign + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameBigPlusSign + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.remove(c_strGraphObjNameBigPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSignVerticalLine);
@@ -2800,7 +2799,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -2851,7 +2850,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.remove(c_strGraphObjNameTopGroup);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSignVerticalLine);
@@ -3095,7 +3094,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -3178,7 +3177,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -3217,7 +3216,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -3254,7 +3253,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.remove(c_strGraphObjNameTopGroup);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSign);
@@ -3303,7 +3302,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign));
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -3410,7 +3409,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setWidth(" + m_pPhysValRectTopGroup->width().toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setWidth(" + m_pPhysValRectTopGroup->width().toString() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setWidth");
@@ -3487,7 +3486,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.remove(c_strGraphObjNameTopGroup);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSign);
@@ -3636,7 +3635,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRPlusSigns) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -3715,7 +3714,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* strOperation    */ "DrawingScene.ungroup(" + c_strGraphObjNameTopGroup + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.remove(c_strGraphObjNameTopGroup);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSign);
@@ -3827,7 +3826,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign));
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -3880,7 +3879,7 @@ void CTest::createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + m_physValAngleBigPlusSign.toString() + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSign));
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -3986,7 +3985,7 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGr
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3996,7 +3995,7 @@ void CTest::createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestSte
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupModifyStandardShapesGroupCheckmark",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupCheckmarkModifications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -4089,7 +4088,7 @@ void CTest::createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameCheckmarkLeftLine + ".setLine()",
         /* strOperation    */ c_strGraphObjNameCheckmarkLeftLine + ".setLine()",
         /* pGrpParent      */ pGrpModifyCheckmark,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_ptPosCheckmarkLeftLine = QPointF(-7.5, 0.0);
     m_lineCheckmarkLeftLine = QLineF(QPointF(-17.5, -25.0), QPointF(17.5, 25.0));
     m_pPhysValLineCheckmarkLeftLine->setP1(QPointF(25.0, bYAxisTopDown ? 25.0 : 75.0));
@@ -4113,7 +4112,7 @@ void CTest::createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameCheckmarkRightLine + ".setLine()",
         /* strOperation    */ c_strGraphObjNameCheckmarkRightLine + ".setLine()",
         /* pGrpParent      */ pGrpModifyCheckmark,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_ptPosCheckmarkRightLine = QPointF(17.5, 17.5);
     m_lineCheckmarkRightLine = QLineF(QPointF(-7.5, 7.5), QPointF(7.5, -7.5));
     m_pPhysValLineCheckmarkRightLine->setP1(QPointF(60.0, bYAxisTopDown ? 75.0 : 25.0));
@@ -4137,7 +4136,7 @@ void CTest::createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameCheckmark + ".resizeToContent()",
         /* strOperation    */ c_strGraphObjNameCheckmark + ".resizeToContent()",
         /* pGrpParent      */ pGrpModifyCheckmark,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameCheckmark);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameCheckmark]);
     pTestStep->setConfigValue("Method", "resizeToContent");
@@ -4171,7 +4170,7 @@ void CTest::createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestSte
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRTopGroup) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRTopGroup) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyCheckmark,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -4467,7 +4466,7 @@ void CTest::createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* 
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4477,7 +4476,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupModifyStandardShapesAllGroups",
+        /* strMethod    */ "createTestGroupAddStandardShapesAllGroupsModifications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -4607,7 +4606,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameCheckmarkLeftLine + ".setLine()",
         /* strOperation    */ c_strGraphObjNameCheckmarkLeftLine + ".setLine()",
         /* pGrpParent      */ pGrpModifyCheckmarkLines,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_ptPosCheckmarkLeftLine = QPointF(-7.5, 0.0);
     m_lineCheckmarkLeftLine = QLineF(QPointF(-17.5, -25.0), QPointF(17.5, 25.0));
     m_pPhysValLineCheckmarkLeftLine->setP1(QPointF(25.0, bYAxisTopDown ? 25.0 : 75.0));
@@ -4632,7 +4631,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameCheckmarkRightLine + ".setLine()",
         /* strOperation    */ c_strGraphObjNameCheckmarkRightLine + ".setLine()",
         /* pGrpParent      */ pGrpModifyCheckmarkLines,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
     QPointF ptP1CheckmarkRightLine(60.0, bYAxisTopDown ? 75.0 : 25.0);
     QPointF ptP2CheckmarkRightLine(75.0, bYAxisTopDown ? 60.0 : 40.0);
     m_ptPosCheckmarkRightLine = QPointF(17.5, 17.5);
@@ -4658,7 +4657,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameCheckmark + ".resizeToContent()",
         /* strOperation    */ c_strGraphObjNameCheckmark + ".resizeToContent()",
         /* pGrpParent      */ pGrpModifyCheckmarkLines,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameCheckmark);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNameCheckmark));
@@ -4706,7 +4705,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameSmallRect + ".setRotationAngle(" + m_physValAngleSmallRect.toString() + ")",
         /* strOperation    */ c_strGraphObjNameSmallRect + ".setRotationAngle(" + m_physValAngleSmallRect.toString() + ")",
         /* pGrpParent      */ pGrpModifySmallRect,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameSmallRect);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNameSmallRect));
@@ -4752,7 +4751,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRTopGroup) + " " + unit.symbol() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setBottomRight(" + qPoint2Str(ptBRTopGroup) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setBottomRight");
@@ -4805,7 +4804,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + m_physValAngleTopGroup.toString() + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setRotationAngle");
@@ -4839,7 +4838,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".setWidth(" + m_pPhysValRectTopGroup->width().toString() + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setWidth(" + m_pPhysValRectTopGroup->width().toString() + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameTopGroup));
     pTestStep->setConfigValue("Method", "setWidth");
@@ -4887,7 +4886,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".removeFromGroup(" + c_strGraphObjNameSmallPlusSign + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".removeFromGroup(" + c_strGraphObjNameSmallPlusSign + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
@@ -4933,7 +4932,7 @@ void CTest::createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGrou
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".removeFromGroup(" + c_strGraphObjNameBigPlusSign + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".removeFromGroup(" + c_strGraphObjNameBigPlusSign + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSign);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine] = pIdxTree->buildKeyInTreeStr(
