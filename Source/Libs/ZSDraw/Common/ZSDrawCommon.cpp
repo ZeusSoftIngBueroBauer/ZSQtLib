@@ -371,7 +371,7 @@ QString ZS::Draw::selectionPointTypes2Str( TSelectionPointTypes i_selPts )
 Enum ESelectionPoint
 ==============================================================================*/
 
-static double s_fSelectionPointRotateDistance_px = 20.0;
+static double s_fSelectionPointRotateDistance_px = 10.0;
 
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ESelectionPoint>::s_arEnumEntries =
@@ -594,8 +594,8 @@ QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRota
 
     QCursor cursor = Qt::ArrowCursor;
     if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
-        QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
-        cursor = QCursor(bmpCursor);
+        QPixmap pxmCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+        cursor = QCursor(pxmCursor);
     }
     else {
         cursor = s_hshCursorShapes.value(static_cast<int>(i_selPt), Qt::ArrowCursor);

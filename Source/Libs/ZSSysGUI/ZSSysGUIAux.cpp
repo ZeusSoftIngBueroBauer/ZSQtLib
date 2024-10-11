@@ -279,14 +279,13 @@ QString ZS::System::GUI::qDropAction2Str( int i_iVal, EEnumEntryAliasStr /*i_ali
 QString ZS::System::GUI::qDragEnterEvent2Str(QDragEnterEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
         ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
         ", Pos: " + qPoint2Str(i_pEv->pos()) +
         ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-    return str;
 }
 
 //------------------------------------------------------------------------------
@@ -300,44 +299,39 @@ QString ZS::System::GUI::qDragLeaveEvent2Str(QDragLeaveEvent* i_pEv)
 QString ZS::System::GUI::qDragMoveEvent2Str(QDragMoveEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
         ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
         ", Pos: " + qPoint2Str(i_pEv->pos()) +
         ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-    return str;
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qDropEvent2Str(QDropEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
         ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
         ", Pos: " + qPoint2Str(i_pEv->pos()) +
         ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-    return str;
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qKeyEvent2Str(QKeyEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", Key: " + qKeyCode2Str(i_pEv->key()) +
         ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
         ", Text: " + i_pEv->text() +
-        ", AutoRepeat: " + bool2Str(i_pEv->isAutoRepeat());
-    if (i_pEv->isAutoRepeat()) {
-        str += ": Count: " + QString::number(i_pEv->count());
-    }
-    return str;
+        ", AutoRepeat: " + bool2Str(i_pEv->isAutoRepeat()) +
+        QString(i_pEv->isAutoRepeat() ? ": Count: " + QString::number(i_pEv->count()) : "");
 }
 
 //------------------------------------------------------------------------------
@@ -349,15 +343,11 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
 //------------------------------------------------------------------------------
 {
     QKeyEvent* pEv = nullptr;
-
     int iKey = -1;
     Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
-
-    if( i_str.length() == 1 )
-    {
+    if (i_str.length() == 1) {
         iKey = char2QKeyCode(i_str[0]);
         keyboardModifiers = char2QKeyboardModifiers(i_str[0]);
-
         pEv = new QKeyEvent(
             /* type      */ i_type,
             /* iKey      */ iKey,
@@ -366,11 +356,9 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
             /* bAutoRep  */ false,
             /* uCount    */ 1 );
     }
-    else if( i_str.compare("ctrl-c",Qt::CaseInsensitive) == 0 )
-    {
+    else if (i_str.compare("ctrl-c",Qt::CaseInsensitive) == 0) {
         iKey = str2QKeyCode("c");
         keyboardModifiers = Qt::ControlModifier;
-
         pEv = new QKeyEvent(
             /* type      */ i_type,
             /* iKey      */ iKey,
@@ -379,11 +367,9 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
             /* bAutoRep  */ false,
             /* uCount    */ 1 );
     }
-    else if( i_str.compare("ctrl-x",Qt::CaseInsensitive) == 0 )
-    {
+    else if (i_str.compare("ctrl-x",Qt::CaseInsensitive) == 0) {
         iKey = str2QKeyCode("x");
         keyboardModifiers = Qt::ControlModifier;
-
         pEv = new QKeyEvent(
             /* type      */ i_type,
             /* iKey      */ iKey,
@@ -392,11 +378,9 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
             /* bAutoRep  */ false,
             /* uCount    */ 1 );
     }
-    else if( i_str.compare("ctrl-v",Qt::CaseInsensitive) == 0 )
-    {
+    else if (i_str.compare("ctrl-v",Qt::CaseInsensitive) == 0) {
         iKey = str2QKeyCode("v");
         keyboardModifiers = Qt::ControlModifier;
-
         pEv = new QKeyEvent(
             /* type      */ i_type,
             /* iKey      */ iKey,
@@ -405,10 +389,8 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
             /* bAutoRep  */ false,
             /* uCount    */ 1 );
     }
-    else if( i_str.length() > 1 )
-    {
+    else if (i_str.length() > 1) {
         iKey = str2QKeyCode(i_str);
-
         pEv = new QKeyEvent(
             /* type      */ i_type,
             /* iKey      */ iKey,
@@ -417,7 +399,6 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
             /* bAutoRep  */ false,
             /* uCount    */ 1 );
     }
-
     return pEv;
 
 } // str2QKeyEvent
@@ -426,14 +407,13 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
 QString ZS::System::GUI::qMouseEvent2Str(QMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", Button: " + qMouseButton2Str(i_pEv->button()) +
         ", Buttons: " + qMouseButtons2Str(i_pEv->buttons()) +
         ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
         ", Pos: " + qPoint2Str(i_pEv->pos()) +
         ", GlobalPos: " + qPoint2Str(i_pEv->globalPos());
-    return str;
 }
 
 //------------------------------------------------------------------------------

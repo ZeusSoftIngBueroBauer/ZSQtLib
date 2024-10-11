@@ -159,20 +159,29 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_arpPhysValShapes(),
     m_arDrawSettingsPhysValShapes(),
     m_pTrcAdminObj(nullptr),
-    m_pTrcAdminObjConversions(nullptr),
-    m_pTrcAdminObjMouseMoveEvent(nullptr),
-    m_pTrcAdminObjPaintEvent(nullptr)
+    m_pTrcAdminObjCoordinateConversions(nullptr),
+    m_pTrcAdminObjCursor(nullptr),
+    m_pTrcAdminObjPaint(nullptr),
+    m_pTrcAdminObjMouseClickEvents(nullptr),
+    m_pTrcAdminObjMouseMoveEvents(nullptr),
+    m_pTrcAdminObjKeyEvents(nullptr)
 {
     setObjectName(i_strName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Drawing", ClassName(), objectName());
-    m_pTrcAdminObjConversions = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName() + "::Conversions", objectName());
-    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName() + "::MouseMoveEvent", objectName());
-    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName() + "::PaintEvent", objectName());
+    m_pTrcAdminObjCoordinateConversions = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::CoordinateConversions", objectName());
+    m_pTrcAdminObjCursor = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::Cursor", objectName());
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::Paint", objectName());
+    m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::MouseClickEvents", objectName());
+    m_pTrcAdminObjMouseMoveEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::MouseMoveEvents", objectName());
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::KeyEvents", objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -263,9 +272,12 @@ CDrawingScene::~CDrawingScene()
     mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjConversions);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCoordinateConversions);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCursor);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseClickEvents);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvents);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
 
     //m_drawingSize;
     //m_divLinesMetricsX;
@@ -291,9 +303,12 @@ CDrawingScene::~CDrawingScene()
     //m_ptMouseEvScenePosOnMousePressEvent;
     m_pGraphicsItemSelectionArea = nullptr;
     m_pTrcAdminObj = nullptr;
-    m_pTrcAdminObjConversions = nullptr;
-    m_pTrcAdminObjMouseMoveEvent = nullptr;
-    m_pTrcAdminObjPaintEvent = nullptr;
+    m_pTrcAdminObjCoordinateConversions = nullptr;
+    m_pTrcAdminObjCursor = nullptr;
+    m_pTrcAdminObjPaint = nullptr;
+    m_pTrcAdminObjMouseClickEvents = nullptr;
+    m_pTrcAdminObjMouseMoveEvents = nullptr;
+    m_pTrcAdminObjKeyEvents = nullptr;
 
 } // dtor
 
@@ -456,11 +471,11 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "convert",
         /* strAddInfo   */ strMthInArgs );
@@ -550,11 +565,11 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Size {" + i_physValSize.toString() + "} " + i_physValSize.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "convert",
         /* strAddInfo   */ strMthInArgs );
@@ -654,11 +669,11 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "convert",
         /* strAddInfo   */ strMthInArgs );
@@ -731,11 +746,11 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUn
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "convert",
         /* strAddInfo   */ strMthInArgs );
@@ -1691,17 +1706,24 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
             strGraphObjType = m_pObjFactory->getGraphObjTypeAsString();
         }
         if (bAdjustItemsStates) {
-            QList<QGraphicsItem*> arpGraphicsItems = items();
+            // The items call returns a list of all items currently under the cursor.
+            // This list may also include selection points. When deselecting an object
+            // the selection points are destroyed and the entries, pointing to those
+            // selection points, are referencing destroyed objects. To avoid crashes the
+            // selection points will be removed from the list before deselecting the items.
+            QList<QGraphicsItem*> arpGraphicsItems;
+            QList<QGraphicsItem*> arpGraphicsItemsTmp = items();
+            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsTmp) {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint()) {
+                    arpGraphicsItems.append(pGraphicsItem);
+                }
+            }
             for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                 if (pGraphObj != nullptr) {
-                    // !! Selection points may never accept hover events !!
-                    // (see comment in constructor of class CGraphObjSelectionPoint).
-                    // Selection points are also not selectable.
-                    if (!pGraphObj->isSelectionPoint()) {
-                        pGraphicsItem->setAcceptHoverEvents(m_pObjFactory == nullptr);
-                        pGraphicsItem->setSelected(m_pObjFactory == nullptr ? pGraphicsItem->isSelected() : false);
-                    }
+                    pGraphicsItem->setAcceptHoverEvents(m_pObjFactory == nullptr);
+                    pGraphicsItem->setSelected(m_pObjFactory == nullptr ? pGraphicsItem->isSelected() : false);
                 }
             }
         }
@@ -1813,7 +1835,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Returns the proposed mouse cursor shape.
+/*! @brief Returns the proposed mouse cursor shape.
 
     The mouse cursor shape depends on the graphic item at the given position
     and the currently selected edit tool and edit mode.
@@ -1827,11 +1849,11 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
@@ -1843,31 +1865,54 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
             if (m_pObjFactory != nullptr) {
                 cursor = Qt::CrossCursor;
             }
-            else {
-                QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptScenePos);
-                for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
-                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                    if (pGraphObj != nullptr /*&& pGraphObj->isSelectionPoint()*/) {
-                        QPointF ptPos = pGraphicsItem->mapFromScene(i_ptScenePos);
-                        cursor = pGraphObj->getProposedCursor(ptPos);
-                        break;
-                    }
-                    else if (pGraphicsItem->hasCursor()) {
-                        cursor = pGraphicsItem->cursor();
-                        break;
-                    }
-                    //CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                    //if (pGraphObj != nullptr) {
-                    //    pGraphObj->getProposedCursor(i_ptScenePos);
-                    //    break;
-                    //}
-                    //if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
-                    //    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
-                    //    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
-                    //    break;
-                    //}
-                }
-            }
+            //else {
+            //    // Mouse events are sent to the objects via hover events. The object is hit
+            //    // and the cursor is set.
+            //    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            //        mthTracer.trace("-+ QGraphicsScene::items(" + qPoint2Str(i_ptScenePos) + ")");
+            //    }
+            //    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptScenePos);
+            //    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            //        QString strMthRet = "[" + QString::number(arpGraphicsItemsUnderCursor.size()) + "]";
+            //        if (!arpGraphicsItemsUnderCursor.isEmpty()) {
+            //            strMthRet += "(";
+            //            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
+            //                if (!strMthRet.endsWith("(")) strMthRet += ", ";
+            //                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            //                if (pGraphObj == nullptr) {
+            //                    strMthRet += "GraphicsItem {Type: " + qGraphicsItemType2Str(pGraphicsItem->type()) + "}";
+            //                }
+            //                else {
+            //                    strMthRet += "GraphObj {Type: " + pGraphObj->typeAsString() + ", " + pGraphObj->path() + "}";
+            //                }
+            //            }
+            //            strMthRet += ")";
+            //        }
+            //        mthTracer.trace("+- QGraphicsScene::items(): " + strMthRet);
+            //    }
+            //    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
+            //        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            //        if (pGraphObj != nullptr /*&& pGraphObj->isSelectionPoint()*/) {
+            //            QPointF ptPos = pGraphicsItem->mapFromScene(i_ptScenePos);
+            //            cursor = pGraphObj->getProposedCursor(ptPos);
+            //            break;
+            //        }
+            //        else if (pGraphicsItem->hasCursor()) {
+            //            cursor = pGraphicsItem->cursor();
+            //            break;
+            //        }
+            //        //CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            //        //if (pGraphObj != nullptr) {
+            //        //    pGraphObj->getProposedCursor(i_ptScenePos);
+            //        //    break;
+            //        //}
+            //        //if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
+            //        //    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            //        //    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+            //        //    break;
+            //        //}
+            //    }
+            //}
         }
         //if (m_editTool == EEditTool::Select) {
         //    if (m_editMode == EEditMode::EditText) {
@@ -3294,7 +3339,7 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneDragDropEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3322,6 +3367,10 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
     }
 
     //QGraphicsScene::dragEnterEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -3330,7 +3379,7 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneDragDropEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3356,8 +3405,11 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
     else {
         i_pEv->ignore();
     }
-
     //QGraphicsScene::dragMoveEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -3366,7 +3418,7 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneDragDropEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3398,6 +3450,10 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         i_pEv->ignore();
     }
     //QGraphicsScene::dragLeaveEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -3406,7 +3462,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneDragDropEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3481,6 +3537,10 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         i_pEv->ignore();
     }
     //QGraphicsScene::dropEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 /*==============================================================================
@@ -3511,11 +3571,11 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
@@ -3687,6 +3747,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     //traceItemsStates(mthTracer, EMethodDir::Leave);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
@@ -3714,13 +3777,13 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     int iMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
-    CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjMouseMoveEvent;
+    CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjMouseMoveEvents;
     if (iMouseButtonState != Qt::NoButton) {
         pTrcAdminObj = m_pTrcAdminObj;
     }
     QString strMthInArgs;
     if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ pTrcAdminObj,
@@ -3919,6 +3982,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     //traceItemsStates(mthTracer, EMethodDir::Leave);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 } // mouseMoveEvent
 
 //------------------------------------------------------------------------------
@@ -3928,11 +3994,11 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
@@ -3999,6 +4065,9 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     //traceItemsStates(mthTracer, EMethodDir::Leave);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -4008,11 +4077,11 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
@@ -4081,6 +4150,9 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     //traceItemsStates(mthTracer, EMethodDir::Leave);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 } // mouseDoubleClickEvent
 
 /*==============================================================================
@@ -4094,11 +4166,11 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qKeyEvent2Str(i_pEv) + "}";
+    if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qKeyEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
@@ -4536,6 +4608,10 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 } // keyPressEvent
 
 //------------------------------------------------------------------------------
@@ -4545,11 +4621,11 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qKeyEvent2Str(i_pEv) + "}";
+    if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qKeyEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
@@ -4563,6 +4639,10 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 } // keyReleaseEvent
 
 /*==============================================================================
@@ -4574,11 +4654,11 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qRect2Str(i_rect);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawBackground",
         /* strAddInfo   */ strMthInArgs );
@@ -4630,11 +4710,11 @@ void CDrawingScene::drawForeground( QPainter* i_pPainter, const QRectF& i_rect )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjPaintEvent, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qRect2Str(i_rect);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawForeground",
         /* strAddInfo   */ strMthInArgs );
@@ -5135,7 +5215,7 @@ void CDrawingScene::drawGridLines(QPainter* i_pPainter, const QRectF& i_rect)
         strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawGridLines",
         /* strAddInfo   */ strMthInArgs );
@@ -5178,7 +5258,7 @@ void CDrawingScene::drawPhysValShapes(QPainter* i_pPainter, const QRectF& i_rect
         strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "drawPhysValShapes",
         /* strAddInfo   */ strMthInArgs );
@@ -5314,11 +5394,11 @@ void CDrawingScene::emit_mousePosChanged( const QPointF& i_ptMousePos )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = qPoint2Str(i_ptMousePos);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_mousePosChanged",
         /* strAddInfo   */ strMthInArgs );

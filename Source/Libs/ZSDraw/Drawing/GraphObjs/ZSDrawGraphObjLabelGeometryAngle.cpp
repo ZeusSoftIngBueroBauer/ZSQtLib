@@ -218,30 +218,6 @@ QRectF CGraphObjLabelGeometryAngle::boundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Called internally by QGraphicsItem::boundingRect.
-*/
-QPainterPath CGraphObjLabelGeometryAngle::shape() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
-        /* strMethod    */ "shape",
-        /* strAddInfo   */ "" );
-
-    QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    painterPath.addEllipse(m_rectPie);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
-        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
-        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
-        mthTracer.setMethodReturn(strMthRet);
-    }
-    return painterPath;
-}
-
-//------------------------------------------------------------------------------
 void CGraphObjLabelGeometryAngle::paint(
     QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,

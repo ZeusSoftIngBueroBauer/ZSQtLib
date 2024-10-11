@@ -74,17 +74,26 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     m_pDrawingScene(i_pDrawingScene),
     m_iZoomFactor_perCent(100),
     m_pTrcAdminObj(nullptr),
-    m_pTrcAdminObjMouseMoveEvent(nullptr),
-    m_pTrcAdminObjPaintEvent(nullptr)
+    m_pTrcAdminObjCursor(nullptr),
+    m_pTrcAdminObjPaint(nullptr),
+    m_pTrcAdminObjMouseClickEvents(nullptr),
+    m_pTrcAdminObjMouseMoveEvents(nullptr),
+    m_pTrcAdminObjKeyEvents(nullptr)
 {
     setObjectName("theInst");
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Widgets::Drawing", ClassName(), objectName());
-    m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Widgets::Drawing", ClassName() + "::MouseMoveEvent", objectName());
-    m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Widgets::Drawing", ClassName() + "::PaintEvent", objectName());
+    m_pTrcAdminObjCursor = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Widgets::Drawing", ClassName() + "::Cursor", objectName());
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Widgets::Drawing", ClassName() + "::Paint", objectName());
+    m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Widgets::Drawing", ClassName() + "::MouseClickEvents", objectName());
+    m_pTrcAdminObjMouseMoveEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Widgets::Drawing", ClassName() + "::MouseMoveEvents", objectName());
+    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Widgets::Drawing", ClassName() + "::KeyEvents", objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -134,14 +143,20 @@ CDrawingView::~CDrawingView()
     mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCursor);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseClickEvents);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvents);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
 
     m_pDrawingScene = nullptr;
     m_iZoomFactor_perCent = 0;
     m_pTrcAdminObj = nullptr;
-    m_pTrcAdminObjMouseMoveEvent = nullptr;
-    m_pTrcAdminObjPaintEvent = nullptr;
+    m_pTrcAdminObjCursor = nullptr;
+    m_pTrcAdminObjPaint = nullptr;
+    m_pTrcAdminObjMouseClickEvents = nullptr;
+    m_pTrcAdminObjMouseMoveEvents = nullptr;
+    m_pTrcAdminObjKeyEvents = nullptr;
 
 } // dtor
 
@@ -273,11 +288,11 @@ void CDrawingView::setCursor(const QCursor& i_cursor)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qCursor2Str(i_cursor);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCursor",
         /* strAddInfo   */ strMthInArgs );
@@ -295,7 +310,7 @@ void CDrawingView::unsetCursor()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "unsetCursor",
         /* strAddInfo   */ "" );
@@ -317,18 +332,34 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qMouseEvent2Str(i_pEv);
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-
     emit_mousePosChanged(i_pEv->pos());
+
+    // Before dispatching the mouse event to the drawing scene the drawing scene
+    // will be asked for its proposed cursor which depends on whether which (if any)
+    // drawing tool has been selected. Setting the cursor by the drawing view after
+    // dispatching the mouse event would overwrite the cursor set by the graphics
+    // items in hoverEvents.
+    QPointF ptScenePos = mapToScene(i_pEv->pos());
+    QRectF rctScene = m_pDrawingScene->sceneRect();
+    if (rctScene.contains(ptScenePos)) {
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+    }
+    else {
+        unsetCursor();
+    }
     QGraphicsView::mousePressEvent(i_pEv);
-    adjustCursor(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -336,18 +367,34 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qMouseEvent2Str(i_pEv);
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-
     emit_mousePosChanged(i_pEv->pos());
+
+    // Before dispatching the mouse event to the drawing scene the drawing scene
+    // will be asked for its proposed cursor which depends on whether which (if any)
+    // drawing tool has been selected. Setting the cursor by the drawing view after
+    // dispatching the mouse event would overwrite the cursor set by the graphics
+    // items in hoverEvents.
+    QPointF ptScenePos = mapToScene(i_pEv->pos());
+    QRectF rctScene = m_pDrawingScene->sceneRect();
+    if (rctScene.contains(ptScenePos)) {
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+    }
+    else {
+        unsetCursor();
+    }
     QGraphicsView::mouseMoveEvent(i_pEv);
-    adjustCursor(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -355,18 +402,34 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qMouseEvent2Str(i_pEv);
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-
     emit_mousePosChanged(i_pEv->pos());
+
+    // Before dispatching the mouse event to the drawing scene the drawing scene
+    // will be asked for its proposed cursor which depends on whether which (if any)
+    // drawing tool has been selected. Setting the cursor by the drawing view after
+    // dispatching the mouse event would overwrite the cursor set by the graphics
+    // items in hoverEvents.
+    QPointF ptScenePos = mapToScene(i_pEv->pos());
+    QRectF rctScene = m_pDrawingScene->sceneRect();
+    if (rctScene.contains(ptScenePos)) {
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+    }
+    else {
+        unsetCursor();
+    }
     QGraphicsView::mouseReleaseEvent(i_pEv);
-    adjustCursor(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -374,18 +437,34 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qMouseEvent2Str(i_pEv);
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
-
     emit_mousePosChanged(i_pEv->pos());
+
+    // Before dispatching the mouse event to the drawing scene the drawing scene
+    // will be asked for its proposed cursor which depends on whether which (if any)
+    // drawing tool has been selected. Setting the cursor by the drawing view after
+    // dispatching the mouse event would overwrite the cursor set by the graphics
+    // items in hoverEvents.
+    QPointF ptScenePos = mapToScene(i_pEv->pos());
+    QRectF rctScene = m_pDrawingScene->sceneRect();
+    if (rctScene.contains(ptScenePos)) {
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+    }
+    else {
+        unsetCursor();
+    }
     QGraphicsView::mouseDoubleClickEvent(i_pEv);
-    adjustCursor(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 /*==============================================================================
@@ -397,16 +476,20 @@ void CDrawingView::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qKeyEvent2Str(i_pEv);
+    if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qKeyEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyPressEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -414,16 +497,20 @@ void CDrawingView::keyReleaseEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qKeyEvent2Str(i_pEv);
+    if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qKeyEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsView::keyReleaseEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 /*==============================================================================
@@ -459,7 +546,7 @@ void CDrawingView::resizeEvent( QResizeEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qResizeEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qResizeEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -474,51 +561,9 @@ void CDrawingView::resizeEvent( QResizeEvent* i_pEv )
     // Workaround for bug in Qt? Without invalidate here some regions
     // are not updated and the grid for example has gaps.
     m_pDrawingScene->invalidate();
-}
 
-/*==============================================================================
-protected: // auxiliary methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qMouseEvent2Str(i_pEv);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "adjustCursor",
-        /* strAddInfo   */ strMthInArgs );
-
-    //QCursor crsor;
-    //bool bGraphicsItemHasCursor = false;
-
-    //QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
-    //for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++) {
-    //    QGraphicsItem* pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-    //    if (pGraphicsItem->hasCursor()) {
-    //        bGraphicsItemHasCursor = true;
-    //        crsor = pGraphicsItem->cursor();
-    //        break;
-    //    }
-    //}
-    //if (bGraphicsItemHasCursor) {
-    //    //if (cursor() != crsor) {
-    //        setCursor(crsor);
-    //    //}
-    //}
-    //else {
-    QPointF ptScenePos = mapToScene(i_pEv->pos());
-    QRectF rctScene = m_pDrawingScene->sceneRect();
-    if (rctScene.contains(ptScenePos)) {
-        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
-    }
-    else {
-        unsetCursor();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
 }
 
@@ -607,11 +652,11 @@ void CDrawingView::emit_mousePosChanged( const QPointF& i_ptMousePos )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal) ) {
         strMthInArgs = qPoint2Str(i_ptMousePos);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_mousePosChanged",
         /* strAddInfo   */ strMthInArgs );
@@ -624,7 +669,7 @@ void CDrawingView::emit_contentAreaChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
+        /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_contentAreaChanged",
         /* strAddInfo   */ "" );

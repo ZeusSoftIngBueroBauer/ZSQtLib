@@ -217,9 +217,10 @@ protected: // overridable slots of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
+    //virtual bool sceneEventFilter( QGraphicsItem* ik_pGraphicsItemWatched, QEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
     virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;

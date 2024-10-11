@@ -620,7 +620,7 @@ public: // overridables
     virtual void setIsHighlighted(bool i_bIsHighlighted);
     bool isHighlighted() const;
 public: // overridables
-    virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
+    virtual QCursor getProposedCursor(const QPointF& i_pt) const;
 public: // overridables
     virtual double bringToFront();
     virtual double setStackingOrderValue(double i_fZValue, ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current);

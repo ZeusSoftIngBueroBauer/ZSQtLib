@@ -94,8 +94,6 @@ protected: // overridables of base class QWidget
 protected: // overridables of base class QGraphicsView
     virtual void scrollContentsBy( int i_dx, int i_dy ) override;
     virtual void resizeEvent( QResizeEvent* i_pEv ) override;
-protected: // auxiliary methods
-    void adjustCursor(QMouseEvent* i_pEv);
 protected slots:
     void onSceneDrawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void onSceneGridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
@@ -108,8 +106,11 @@ protected: // instance members
     CDrawingScene* m_pDrawingScene;
     int m_iZoomFactor_perCent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;
 
 }; // class CDrawingView
 

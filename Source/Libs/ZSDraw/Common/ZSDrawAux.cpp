@@ -450,6 +450,40 @@ QString ZS::Draw::qGraphicsItemFlags2Str( const QGraphicsItem::GraphicsItemFlags
 }
 
 /*==============================================================================
+QGraphicsItem::Type
+==============================================================================*/
+
+const SEnumEntry s_arEnumStrGraphicsItemType[] =
+{
+    SEnumEntry(0, "? (0)"),
+    SEnumEntry(1, "? (1)"),
+    SEnumEntry(2, "Path"),
+    SEnumEntry(3, "Rect"),
+    SEnumEntry(4, "Ellipse"),
+    SEnumEntry(5, "Polygon"),
+    SEnumEntry(6, "Line"),
+    SEnumEntry(7, "Pixmap"),
+    SEnumEntry(8, "Text"),
+    SEnumEntry(9, "SimpleText"),
+    SEnumEntry(10, "Group")
+};
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsItemType2Str( int i_type )
+//------------------------------------------------------------------------------
+{
+    if (i_type >= 0 && i_type < _ZSArrLen(s_arEnumStrGraphicsItemType)) {
+        return SEnumEntry::enumerator2Str(s_arEnumStrGraphicsItemType, _ZSArrLen(s_arEnumStrGraphicsItemType), i_type);
+    }
+    else if (i_type == QGraphicsItem::UserType) {
+        return "User";
+    }
+    else {
+        return "? (" + QString::number(i_type) + ")";
+    }
+}
+
+/*==============================================================================
 QGraphicsItem::QGraphicsSceneEvents
 ==============================================================================*/
 
@@ -464,7 +498,8 @@ bool ZS::Draw::isGraphicsSceneDragDropEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str = "Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+        ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
         ", Buttons {" + qMouseButtons2Str(i_pEv->buttons()) + "}" +
@@ -473,7 +508,6 @@ QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* 
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", ProposedAction: " + qDropAction2Str(i_pEv->proposedAction()) +
         ", MimeData: " + QString(i_pEv->mimeData() == nullptr ? "null" : i_pEv->mimeData()->text());
-    return str;
 }
 
 //------------------------------------------------------------------------------
@@ -487,10 +521,10 @@ bool ZS::Draw::isGraphicsSceneHoverEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str = "Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+        ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}";
-    return str;
 }
 
 //------------------------------------------------------------------------------
@@ -504,7 +538,8 @@ bool ZS::Draw::isGraphicsSceneMouseEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    return "Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+        ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
         ", Button: " + qMouseButton2Str(i_pEv->button()) +
@@ -523,9 +558,9 @@ bool ZS::Draw::isGraphicsSceneResizeEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str = "NewSize {" + qSize2Str(i_pEv->newSize()) + "}" +
+    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+        "m NewSize {" + qSize2Str(i_pEv->newSize()) + "}" +
         ", OldSize {" + qSize2Str(i_pEv->oldSize()) + "}";
-    return str;
 }
 
 /*******************************************************************************

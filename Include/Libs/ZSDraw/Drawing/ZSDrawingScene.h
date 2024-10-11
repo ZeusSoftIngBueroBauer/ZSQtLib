@@ -345,9 +345,12 @@ protected: // instance members
     QVector<CDrawSettings> m_arDrawSettingsPhysValShapes;
     /*!< Objects to control method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjConversions;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;
 
 }; // class CDrawingScene
 

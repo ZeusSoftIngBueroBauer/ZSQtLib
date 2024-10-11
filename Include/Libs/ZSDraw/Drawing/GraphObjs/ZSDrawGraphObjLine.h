@@ -163,7 +163,7 @@ public: // must overridables of base class CGraphObj
     //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
     //virtual void setGroupScale(double i_fXScale, double i_fYScale) override;
 public: // overridables of base class CGraphObj
-    virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
+    virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj
     virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
     virtual QPointF getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_selPt ) const override;
@@ -185,7 +185,7 @@ public: // must overridables of base class QGraphicsItem
     virtual QPainterPath shape() const override;
     virtual void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr) override;
 protected: // overridables of base class QGraphicsItem
-    virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
+    //virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;

@@ -117,7 +117,6 @@ protected: // instance methods
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-
     void createTestGroupAddObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -135,7 +134,6 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-
     void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -144,15 +142,15 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
     void doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepMainWindowSetGeometry(ZS::Test::CTestStep* i_pTestStep);

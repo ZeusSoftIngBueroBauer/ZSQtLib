@@ -2998,7 +2998,7 @@ QPointF CGraphObj::toLocalCoors(const CPhysValPoint& i_physValPoint) const
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "toLocalCoors",
+        /* strMethod    */ "CGraphObj::toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3036,7 +3036,7 @@ QLineF CGraphObj::toLocalCoors(const CPhysValLine& i_physValLine) const
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "toLocalCoors",
+        /* strMethod    */ "CGraphObj::toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3075,7 +3075,7 @@ QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "toLocalCoors",
+        /* strMethod    */ "CGraphObj::toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3184,7 +3184,7 @@ CPhysValPoint CGraphObj::fromLocalCoors(const QPointF& i_pt) const
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "fromLocalCoors",
+        /* strMethod    */ "CGraphObj::fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3236,7 +3236,7 @@ CPhysValLine CGraphObj::fromLocalCoors(const QLineF& i_line) const
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "fromLocalCoors",
+        /* strMethod    */ "CGraphObj::fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3281,7 +3281,7 @@ CPhysValRect CGraphObj::fromLocalCoors(const QRectF& i_rect) const
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "fromLocalCoors",
+        /* strMethod    */ "CGraphObj::fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3343,7 +3343,7 @@ CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint, const Z
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "mapToScene",
+        /* strMethod    */ "CGraphObj::mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -3387,7 +3387,7 @@ CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine, const ZS::
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "mapToScene",
+        /* strMethod    */ "CGraphObj::mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -3431,7 +3431,7 @@ CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect, const ZS::
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "mapToScene",
+        /* strMethod    */ "CGraphObj::mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -3481,7 +3481,7 @@ CPhysValPoint CGraphObj::mapToParent(const CPhysValPoint& i_physValPoint, const 
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "mapToParent",
+        /* strMethod    */ "CGraphObj::mapToParent",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -3532,7 +3532,7 @@ CPhysValLine CGraphObj::mapToParent(const CPhysValLine& i_physValLine, const ZS:
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "mapToParent",
+        /* strMethod    */ "CGraphObj::mapToParent",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -3584,7 +3584,7 @@ CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect, const ZS:
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "mapToParent",
+        /* strMethod    */ "CGraphObj::mapToParent",
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -4232,7 +4232,7 @@ bool CGraphObj::isHit() const
 //        /* pAdminObj    */ m_pTrcAdminObjIsHit,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strObjName   */ path(),
-//        /* strMethod    */ "isHit",
+//        /* strMethod    */ "CGraphObj::isHit",
 //        /* strAddInfo   */ strMthInArgs );
 //
 //    bool bIsHit = false;
@@ -4341,7 +4341,7 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
         /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "getProposedCursor",
+        /* strMethod    */ "CGraphObj::getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::ArrowCursor;
@@ -4356,7 +4356,7 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs(qCursorShape2Str(cursor.shape()));
+        mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
     }
     return cursor;
 }
@@ -4901,6 +4901,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
+        QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
         for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
             ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
             bool bShowSelPt = false;
@@ -4939,7 +4940,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
                     m_pDrawingScene->addItem(pGraphObjSelPt);
 
                     // Event filters can only be installed on items in a scene.
-                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
+                    //pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
 
                     QObject::connect(
                         pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -5039,6 +5040,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
+        QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
         if (m_arpSelPtsPolygon.size() != i_plg.size()) {
             if (m_arpSelPtsPolygon.size() > 0) {
                 for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
@@ -5072,7 +5074,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 m_pDrawingScene->addItem(pGraphObjSelPt);
 
                 // Event filters can only be installed on items in a scene.
-                pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
+                //pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
 
                 QObject::connect(
                     pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,

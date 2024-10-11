@@ -225,40 +225,6 @@ QRectF CGraphObjLabelGeometryDY::boundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Called internally by QGraphicsItem::boundingRect.
-*/
-QPainterPath CGraphObjLabelGeometryDY::shape() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
-        /* strMethod    */ "shape",
-        /* strAddInfo   */ "" );
-
-    QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
-        for (const QLineF& anchorLine : m_anchorLines) {
-            painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
-        }
-    }
-    if (m_plgP1ArrowHead.size() > 0) {
-        painterPath.addPolygon(m_plgP1ArrowHead);
-    }
-    if (m_plgP2ArrowHead.size() > 0) {
-        painterPath.addPolygon(m_plgP2ArrowHead);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
-        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
-        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
-        mthTracer.setMethodReturn(strMthRet);
-    }
-    return painterPath;
-}
-
-//------------------------------------------------------------------------------
 void CGraphObjLabelGeometryDY::paint(
     QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,

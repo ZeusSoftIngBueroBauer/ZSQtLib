@@ -71,6 +71,7 @@ ZSDRAWDLL_API QString qTransformationType2Str( int i_type );
 ZSDRAWDLL_API QStringList qTransformation2StrList( const QTransform& i_transform );
 ZSDRAWDLL_API QString qGraphicsItemChange2Str( int i_change, const QVariant& i_value, bool i_bIncludeChange = true );
 ZSDRAWDLL_API QString qGraphicsItemFlags2Str( const QGraphicsItem::GraphicsItemFlags& i_flags );
+ZSDRAWDLL_API QString qGraphicsItemType2Str( int i_type );
 ZSDRAWDLL_API bool isGraphicsSceneDragDropEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv );
 ZSDRAWDLL_API bool isGraphicsSceneHoverEvent( QEvent* i_pEv );

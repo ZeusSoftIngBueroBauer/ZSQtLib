@@ -88,7 +88,7 @@ public: // overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // overridables of base class CGraphObj
-    virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
+    virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
     //virtual void setIsHit( bool /*i_bHit*/ ) override {}
     //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
@@ -101,6 +101,7 @@ protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
     virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;

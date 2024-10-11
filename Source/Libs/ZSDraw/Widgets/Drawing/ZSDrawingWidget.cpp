@@ -122,7 +122,7 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
     m_pDrawingScene = new CDrawingScene("theInst");
 
     m_pDrawingView = new CDrawingView(m_pDrawingScene);
-    m_pDrawingView->setMouseTracking(true);
+    //m_pDrawingView->setMouseTracking(true); already set in ctor of CDrawingView
     m_pLyt->addWidget(m_pDrawingView, 1, 1, 1, 1);
 
     m_pWdgtGridLabelsXTop = new CWdgtGridLabels(

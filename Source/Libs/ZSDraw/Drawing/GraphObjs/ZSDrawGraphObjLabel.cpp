@@ -855,11 +855,6 @@ QPainterPath CGraphObjLabel::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
-        for (const QLineF& anchorLine : m_anchorLines) {
-            painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
-        }
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
@@ -969,7 +964,7 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
@@ -980,6 +975,10 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     setIsHit(true);
     setCursor(getProposedCursor(i_pEv->pos()));
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -988,7 +987,7 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
@@ -999,6 +998,10 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     setIsHit(true);
     setCursor(getProposedCursor(i_pEv->pos()));
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1007,7 +1010,7 @@ void CGraphObjLabel::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
@@ -1018,6 +1021,10 @@ void CGraphObjLabel::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     setIsHit(false);
     unsetCursor();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 /*==============================================================================
@@ -1030,7 +1037,7 @@ void CGraphObjLabel::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -1040,6 +1047,10 @@ void CGraphObjLabel::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::mousePressEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1048,7 +1059,7 @@ void CGraphObjLabel::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
@@ -1058,6 +1069,10 @@ void CGraphObjLabel::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::mouseMoveEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1066,7 +1081,7 @@ void CGraphObjLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -1076,6 +1091,10 @@ void CGraphObjLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::mouseReleaseEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1084,7 +1103,7 @@ void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -1101,6 +1120,10 @@ void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     //QGraphicsSimpleTextItem::mouseDoubleClickEvent(i_pEv);
 
     i_pEv->accept();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 /*==============================================================================

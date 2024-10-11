@@ -76,7 +76,7 @@ double CGraphObjSelectionPoint::GetDefaultRadiusInPx()
 protected: // class members
 ==============================================================================*/
 
-double CGraphObjSelectionPoint::s_fRadius_px = 2.0;
+double CGraphObjSelectionPoint::s_fRadius_px = 4.0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -117,7 +117,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 
     // When setting the ItemIsSelectable Flag the application crashes. Somehow the item
     // is added to an internal group which is not accessible when forwarding the mouse
-    // press events. Couldn't figure out what it wrong but anyway the selection point
+    // press events. Couldn't figure out what is wrong but anyway the selection point
     // doesn't need this flag.
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
            //| QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
@@ -127,7 +127,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     // Selection points are created by the hover enter event and deleted by the hover
     // leave event of the graphical object the selection points belong to.
     // If the selection points would accept hover events and the mouse cursor is
-    // hover over a selection point, graphics scene invokes hoverLeaveEvent for other
+    // hovered over a selection point, graphics scene invokes hoverLeaveEvent for other
     // items (as well as for the object the selection points belong to). This would
     // delete the selection points and the graphics scene will dispatch the hover event
     // to the already deleted selection point. !!! Crash !!! as a dangled pointer will
@@ -533,11 +533,15 @@ public: // overridables of base class CGraphObj
 
     @param i_pt [in] Point to be check in local coordinates.
 */
-QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_ptScenePos) const
+QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point {" + qPoint2Str(i_pt) + "}";
+    }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "getProposedCursor",
@@ -726,6 +730,28 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Reimplements QGraphicsItem::shape.
+*/
+QPainterPath CGraphObjSelectionPoint::shape() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "shape",
+        /* strAddInfo   */ "" );
+    QPainterPath painterPath = QGraphicsEllipseItem::shape();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
+        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
+        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return painterPath;
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::paint(
     QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,
@@ -796,7 +822,7 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -805,7 +831,12 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    setCursor(getProposedCursor(i_pEv->pos()));
     i_pEv->accept();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -814,7 +845,7 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
@@ -823,6 +854,7 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    setCursor(getProposedCursor(i_pEv->pos()));
     // Eat the event. Don't pass it to other objects otherwise the object
     // the selection point is connected to will also be moved and gets a
     // itemChanged(PositionChanged) call which will move the complete object
@@ -830,6 +862,10 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     i_pEv->accept();
     setPos(i_pEv->scenePos());
     //QGraphicsEllipseItem::mouseMoveEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -838,7 +874,7 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -847,7 +883,12 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    unsetCursor();
     QGraphicsEllipseItem::mouseReleaseEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -856,7 +897,7 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -871,6 +912,10 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
     // This is not necessary here.
     QGraphicsEllipseItem::mouseDoubleClickEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 /*==============================================================================

@@ -57,7 +57,6 @@ public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
-    virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;

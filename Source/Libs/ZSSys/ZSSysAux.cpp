@@ -1846,43 +1846,33 @@ QString ZS::System::qEventType2Str( int i_type, bool i_bShort )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_type == 512 )
-    {
+    if (i_type == 512) {
         str = "ReservedQtJambisMetaCall";
     }
-    else if( i_type == 513 )
-    {
+    else if (i_type == 513 ) {
         str = "ReservedQtJambisDeleteOnMainThread";
     }
-    else if( i_type == 1000 )
-    {
-        if( i_bShort ) str = "User";
+    else if (i_type == 1000) {
+        if (i_bShort) str = "User";
         else str = "First user event id";
     }
-    else if( i_type == 65535 )
-    {
-        if( i_bShort ) str = "MaxUser";
+    else if (i_type == 65535) {
+        if (i_bShort) str = "MaxUser";
         else str = "Max user event id";
     }
-    else if( i_type < _ZSArrLen(s_arEnumStrQEventType) )
-    {
-        if( i_bShort )
-        {
+    else if (i_type < _ZSArrLen(s_arEnumStrQEventType)) {
+        if (i_bShort) {
             str = SEnumEntry::enumerator2Str(s_arEnumStrQEventType, _ZSArrLen(s_arEnumStrQEventType), i_type);
         }
-        else
-        {
+        else {
             str = SEnumEntry::enumerator2Str(s_arEnumStrQEventType, _ZSArrLen(s_arEnumStrQEventType), i_type, 1);
         }
     }
-    else
-    {
+    else {
         str = "? (=" + QString::number(i_type) + ")";
     }
     return str;
-
-} // qEventType2Str
+}
 
 /*==============================================================================
 Enum Qt::FocusReasong
