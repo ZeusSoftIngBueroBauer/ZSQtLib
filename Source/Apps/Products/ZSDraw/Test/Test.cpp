@@ -1833,246 +1833,6 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pTestStep->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepModifyGraphObjLineByDirectMethodCalls",
-        /* strAddInfo   */ strMthInArgs );
-
-    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
-
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
-    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
-
-    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
-    if (pGraphObjLine != nullptr) {
-        if (strMethod.compare("setLine", Qt::CaseInsensitive) == 0) {
-            if (i_pTestStep->hasConfigValue("P1")) {
-                CPhysValPoint physValPoint1(*m_pDrawingScene);
-                physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
-                pGraphObjLine->setP1(physValPoint1);
-            }
-            if (i_pTestStep->hasConfigValue("P2")) {
-                CPhysValPoint physValPoint2(*m_pDrawingScene);
-                physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
-                pGraphObjLine->setP2(physValPoint2);
-            }
-        }
-        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
-            CPhysValPoint physValPos(*m_pDrawingScene);
-            physValPos = i_pTestStep->getConfigValue("Pos").toPointF();
-            pGraphObjLine->setPosition(physValPos);
-        }
-        else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
-            CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
-            QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
-            physValAngle = strAngle;
-            pGraphObjLine->setRotationAngle(physValAngle);
-        }
-    }
-
-    QStringList strlstResultValues;
-    if (pGraphObjLine != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObjLine));
-    }
-    i_pTestStep->setResultValues(strlstResultValues);
-}
-
-//------------------------------------------------------------------------------
-void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pTestStep->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepModifyGraphObjGroupByDirectMethodCalls",
-        /* strAddInfo   */ strMthInArgs );
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unit = drawingSize.unit();
-
-    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
-
-    QString strGroupName = i_pTestStep->getConfigValue("GroupName").toString();
-    QString strGroupKeyInTree = i_pTestStep->getConfigValue("GroupKeyInTree").toString();
-    QString strGraphObjChildName;
-    if (i_pTestStep->hasConfigValue("GraphObjChildName")) {
-        strGraphObjChildName = i_pTestStep->getConfigValue("GraphObjChildName").toString();
-    }
-    QString strGraphObjChildKeyInTree;
-    if (i_pTestStep->hasConfigValue("GraphObjChildKeyInTree")) {
-        strGraphObjChildKeyInTree = i_pTestStep->getConfigValue("GraphObjChildKeyInTree").toString();
-    }
-    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
-
-    QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
-        strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
-    }
-
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupKeyInTree));
-    CGraphObj* pGraphObjChild = nullptr;
-    if (!strGraphObjChildKeyInTree.isEmpty()) {
-        pGraphObjChild = m_pDrawingScene->findGraphObj(strGraphObjChildKeyInTree);
-    }
-    if (pGraphObjGroup != nullptr) {
-        if (strMethod.compare("ungroup", Qt::CaseInsensitive) == 0) {
-            m_pDrawingScene->ungroup(pGraphObjGroup);
-            pGraphObjGroup = nullptr;
-        }
-        else if (strMethod.compare("addToGroup", Qt::CaseInsensitive) == 0) {
-            if (pGraphObjChild != nullptr) {
-                pGraphObjGroup->addToGroup(pGraphObjChild);
-            }
-        }
-        else if (strMethod.compare("removeFromGroup", Qt::CaseInsensitive) == 0) {
-            if (pGraphObjChild != nullptr) {
-                pGraphObjGroup->removeFromGroup(pGraphObjChild);
-                if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
-                    strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
-                    if (pGraphObjChild->isGroup()) {
-                        CGraphObjGroup* pGraphObjGroupChild = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
-                        for (CGraphObj* pGraphObjChildTmp : pGraphObjGroupChild->childs()) {
-                            strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChildTmp->keyInTree());
-                        }
-                    }
-                }
-            }
-        }
-        else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
-            CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
-            QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
-            physValAngle = strAngle;
-            pGraphObjGroup->setRotationAngle(physValAngle);
-        }
-        else if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
-            pGraphObjGroup->resizeToContent();
-        }
-        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("Pos").toPointF();
-            if (i_pTestStep->hasConfigValue("Pos.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("Pos.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
-            pGraphObjGroup->setPosition(physValPoint);
-        }
-        else if (strMethod.compare("setCenter", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("Center").toPointF();
-            if (i_pTestStep->hasConfigValue("Center.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("Center.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
-            pGraphObjGroup->setCenter(physValPoint);
-        }
-        else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("TopLeft").toPointF();
-            if (i_pTestStep->hasConfigValue("TopLeft.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
-            pGraphObjGroup->setTopLeft(physValPoint);
-        }
-        else if (strMethod.compare("setTopRight", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("TopRight").toPointF();
-            if (i_pTestStep->hasConfigValue("TopRight.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("TopRight.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
-            pGraphObjGroup->setTopRight(physValPoint);
-        }
-        else if (strMethod.compare("setBottomRight", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("BottomRight").toPointF();
-            if (i_pTestStep->hasConfigValue("BottomRight.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("BottomRight.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
-            pGraphObjGroup->setBottomRight(physValPoint);
-        }
-        else if (strMethod.compare("setBottomLeft", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("BottomLeft").toPointF();
-            if (i_pTestStep->hasConfigValue("BottomLeft.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("BottomLeft.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
-            pGraphObjGroup->setBottomLeft(physValPoint);
-        }
-        else if (strMethod.compare("setSize", Qt::CaseInsensitive) == 0) {
-            QSizeF size = i_pTestStep->getConfigValue("Size").toSizeF();
-            if (i_pTestStep->hasConfigValue("Size.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("Size.unit").toString();
-                unit = strUnit;
-            }
-            CPhysValSize physValSize(*m_pDrawingScene, size, unit);
-            pGraphObjGroup->setSize(physValSize);
-        }
-        else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
-            CPhysVal physVal(unit);
-            if (i_pTestStep->hasConfigValue("Width.unit")) {
-                double fVal = i_pTestStep->getConfigValue("Width").toDouble();
-                QString strUnit = i_pTestStep->getConfigValue("Width.unit").toString();
-                unit = strUnit;
-                physVal = CPhysVal(fVal, unit);
-            }
-            else {
-                QString strVal = i_pTestStep->getConfigValue("Width").toString();
-                physVal = strVal;
-            }
-            pGraphObjGroup->setWidth(physVal);
-        }
-        else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
-            CPhysVal physVal(unit);
-            if (i_pTestStep->hasConfigValue("Height.unit")) {
-                double fVal = i_pTestStep->getConfigValue("Height").toDouble();
-                QString strUnit = i_pTestStep->getConfigValue("Height.unit").toString();
-                unit = strUnit;
-                physVal = CPhysVal(fVal, unit);
-            }
-            else {
-                QString strVal = i_pTestStep->getConfigValue("Height").toString();
-                physVal = strVal;
-            }
-            pGraphObjGroup->setHeight(physVal);
-        }
-
-        if (pGraphObjGroup != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
-            strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjGroup->keyInTree());
-            for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
-                strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
-            }
-        }
-    }
-
-    QStringList strlstResultValues;
-    for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-        if (pGraphObj != nullptr) {
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
-        }
-    }
-    i_pTestStep->setResultValues(strlstResultValues);
-}
-
-//------------------------------------------------------------------------------
 void CTest::doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -2319,6 +2079,9 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         }
         CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strKeyInTreeLineCreated));
         if (pGraphObjGroup != nullptr) {
+            // Deselect the object before changing the name. Otherwise the selection points keep their current names.
+            // This would not be a problem. But this might be confusing when reading the log file.
+            pGraphObjGroup->setSelected(false);
             pGraphObjGroup->rename(strGraphObjName);
         }
         if (pGraphObjGroup != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
@@ -2339,7 +2102,7 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pTestStep)
+void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2349,7 +2112,247 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepModifyGraphObjBySceneMouseEvents",
+        /* strMethod    */ "doTestStepModifyGraphObjLineByDirectMethodCalls",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
+
+    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    if (pGraphObjLine != nullptr) {
+        if (strMethod.compare("setLine", Qt::CaseInsensitive) == 0) {
+            if (i_pTestStep->hasConfigValue("P1")) {
+                CPhysValPoint physValPoint1(*m_pDrawingScene);
+                physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
+                pGraphObjLine->setP1(physValPoint1);
+            }
+            if (i_pTestStep->hasConfigValue("P2")) {
+                CPhysValPoint physValPoint2(*m_pDrawingScene);
+                physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
+                pGraphObjLine->setP2(physValPoint2);
+            }
+        }
+        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
+            CPhysValPoint physValPos(*m_pDrawingScene);
+            physValPos = i_pTestStep->getConfigValue("Pos").toPointF();
+            pGraphObjLine->setPosition(physValPos);
+        }
+        else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
+            CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
+            QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
+            physValAngle = strAngle;
+            pGraphObjLine->setRotationAngle(physValAngle);
+        }
+    }
+
+    QStringList strlstResultValues;
+    if (pGraphObjLine != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObjLine));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepModifyGraphObjGroupByDirectMethodCalls",
+        /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
+
+    QString strGroupName = i_pTestStep->getConfigValue("GroupName").toString();
+    QString strGroupKeyInTree = i_pTestStep->getConfigValue("GroupKeyInTree").toString();
+    QString strGraphObjChildName;
+    if (i_pTestStep->hasConfigValue("GraphObjChildName")) {
+        strGraphObjChildName = i_pTestStep->getConfigValue("GraphObjChildName").toString();
+    }
+    QString strGraphObjChildKeyInTree;
+    if (i_pTestStep->hasConfigValue("GraphObjChildKeyInTree")) {
+        strGraphObjChildKeyInTree = i_pTestStep->getConfigValue("GraphObjChildKeyInTree").toString();
+    }
+    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
+
+    QStringList strlstGraphObjsKeyInTreeGetResultValues;
+    if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
+        strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
+    }
+
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupKeyInTree));
+    CGraphObj* pGraphObjChild = nullptr;
+    if (!strGraphObjChildKeyInTree.isEmpty()) {
+        pGraphObjChild = m_pDrawingScene->findGraphObj(strGraphObjChildKeyInTree);
+    }
+    if (pGraphObjGroup != nullptr) {
+        if (strMethod.compare("ungroup", Qt::CaseInsensitive) == 0) {
+            m_pDrawingScene->ungroup(pGraphObjGroup);
+            pGraphObjGroup = nullptr;
+        }
+        else if (strMethod.compare("addToGroup", Qt::CaseInsensitive) == 0) {
+            if (pGraphObjChild != nullptr) {
+                pGraphObjGroup->addToGroup(pGraphObjChild);
+            }
+        }
+        else if (strMethod.compare("removeFromGroup", Qt::CaseInsensitive) == 0) {
+            if (pGraphObjChild != nullptr) {
+                pGraphObjGroup->removeFromGroup(pGraphObjChild);
+                if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+                    strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
+                    if (pGraphObjChild->isGroup()) {
+                        CGraphObjGroup* pGraphObjGroupChild = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
+                        for (CGraphObj* pGraphObjChildTmp : pGraphObjGroupChild->childs()) {
+                            strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChildTmp->keyInTree());
+                        }
+                    }
+                }
+            }
+        }
+        else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
+            CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
+            QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
+            physValAngle = strAngle;
+            pGraphObjGroup->setRotationAngle(physValAngle);
+        }
+        else if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
+            pGraphObjGroup->resizeToContent();
+        }
+        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("Pos").toPointF();
+            if (i_pTestStep->hasConfigValue("Pos.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Pos.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setPosition(physValPoint);
+        }
+        else if (strMethod.compare("setCenter", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("Center").toPointF();
+            if (i_pTestStep->hasConfigValue("Center.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Center.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setCenter(physValPoint);
+        }
+        else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("TopLeft").toPointF();
+            if (i_pTestStep->hasConfigValue("TopLeft.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setTopLeft(physValPoint);
+        }
+        else if (strMethod.compare("setTopRight", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("TopRight").toPointF();
+            if (i_pTestStep->hasConfigValue("TopRight.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("TopRight.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setTopRight(physValPoint);
+        }
+        else if (strMethod.compare("setBottomRight", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("BottomRight").toPointF();
+            if (i_pTestStep->hasConfigValue("BottomRight.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("BottomRight.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setBottomRight(physValPoint);
+        }
+        else if (strMethod.compare("setBottomLeft", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("BottomLeft").toPointF();
+            if (i_pTestStep->hasConfigValue("BottomLeft.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("BottomLeft.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setBottomLeft(physValPoint);
+        }
+        else if (strMethod.compare("setSize", Qt::CaseInsensitive) == 0) {
+            QSizeF size = i_pTestStep->getConfigValue("Size").toSizeF();
+            if (i_pTestStep->hasConfigValue("Size.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Size.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValSize physValSize(*m_pDrawingScene, size, unit);
+            pGraphObjGroup->setSize(physValSize);
+        }
+        else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
+            CPhysVal physVal(unit);
+            if (i_pTestStep->hasConfigValue("Width.unit")) {
+                double fVal = i_pTestStep->getConfigValue("Width").toDouble();
+                QString strUnit = i_pTestStep->getConfigValue("Width.unit").toString();
+                unit = strUnit;
+                physVal = CPhysVal(fVal, unit);
+            }
+            else {
+                QString strVal = i_pTestStep->getConfigValue("Width").toString();
+                physVal = strVal;
+            }
+            pGraphObjGroup->setWidth(physVal);
+        }
+        else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
+            CPhysVal physVal(unit);
+            if (i_pTestStep->hasConfigValue("Height.unit")) {
+                double fVal = i_pTestStep->getConfigValue("Height").toDouble();
+                QString strUnit = i_pTestStep->getConfigValue("Height.unit").toString();
+                unit = strUnit;
+                physVal = CPhysVal(fVal, unit);
+            }
+            else {
+                QString strVal = i_pTestStep->getConfigValue("Height").toString();
+                physVal = strVal;
+            }
+            pGraphObjGroup->setHeight(physVal);
+        }
+
+        if (pGraphObjGroup != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjGroup->keyInTree());
+            for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
+                strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
+            }
+        }
+    }
+
+    QStringList strlstResultValues;
+    for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
+        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
+        }
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepModifyGraphObjByMovingSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -2360,6 +2363,8 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
 
+    // P0 got to be set if the object need to be selected before clicking on and moving the selection point.
+    QPointF pt0 = i_pTestStep->hasConfigValue("P0") ? i_pTestStep->getConfigValue("P0").toPointF() : QPointF();
     QPointF pt1 = i_pTestStep->getConfigValue("P1").toPointF();
     QPointF pt2 = i_pTestStep->getConfigValue("P2").toPointF();
     QString strMethod = "moveSelectionPoint";
@@ -2369,13 +2374,16 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
 
     if (strMethod == "moveSelectionPoint") {
         m_pDrawingScene->setCurrentDrawingTool(nullptr);
-        QPoint ptMousePosStart = pt1.toPoint();
-        QPoint ptMousePosStop = pt2.toPoint();
+        i_pTestStep->setConfigValue("Method", "mousePressEvent");
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mousePressEvent") {
         Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
         if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
             keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
         }
-        QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePosStart);
+        QPoint ptMousePos = pt0.isNull() ? pt1.toPoint() : pt0.toPoint();
+        QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
         QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
         ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
         ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
@@ -2389,9 +2397,16 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
         m_pDrawingView->mousePressEvent(pMouseEv);
         delete pMouseEv;
         pMouseEv = nullptr;
-        addMouseMoveEventDataRows(i_pTestStep, ptMousePosStart, ptMousePosStop);
-        i_pTestStep->setConfigValue("Method", "mouseMoveEvent");
-        triggerDoTestStep();
+        // Mouse press event used to to select the object before clicking on the selection point?
+        if (!pt0.isNull()) {
+            i_pTestStep->setConfigValue("Method", "mouseReleaseEvent");
+            triggerDoTestStep();
+        }
+        else {
+            addMouseMoveEventDataRows(i_pTestStep, pt1.toPoint(), pt2.toPoint());
+            i_pTestStep->setConfigValue("Method", "mouseMoveEvent");
+            triggerDoTestStep();
+        }
     }
     else if (strMethod == "mouseMoveEvent") {
         int iMouseMovesRemaining = i_pTestStep->getDataRowCount();
@@ -2401,8 +2416,8 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
                 mouseBtn = static_cast<Qt::MouseButton>(i_pTestStep->getConfigValue("MouseButtons").toInt());
             }
             QHash<QString, QVariant> dataRow = i_pTestStep->takeDataRow(0);
-            QPoint ptMouseMovePos = dataRow["MousePos"].toPoint();
-            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMouseMovePos);
+            QPoint ptMousePos = dataRow["MousePos"].toPoint();
+            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
             QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
             QMouseEvent* pMouseEv = new QMouseEvent(
                 /* type      */ QEvent::MouseMove,
@@ -2421,11 +2436,11 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
         triggerDoTestStep();
     }
     else if (strMethod == "mouseReleaseEvent") {
-        QPoint ptMousePos = pt2.toPoint();
         Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
         if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
             keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
         }
+        QPoint ptMousePos = pt0.isNull() ? pt2.toPoint() : pt0.toPoint();
         QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
         QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
         ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
@@ -2440,6 +2455,123 @@ void CTest::doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pT
         m_pDrawingView->mouseReleaseEvent(pMouseEv);
         delete pMouseEv;
         pMouseEv = nullptr;
+        // Mouse press event used to to select the object before selecting the selection point?
+        if (!pt0.isNull()) {
+            i_pTestStep->setConfigValue("Method", "mousePressEvent");
+            i_pTestStep->removeConfigValue("P0"); // next press on the selection point and start to move it
+        }
+        else {
+            i_pTestStep->setConfigValue("Method", "setResultValues");
+        }
+        triggerDoTestStep();
+    }
+    else if (strMethod == "setResultValues") {
+        QStringList strlstResultValues;
+        QStringList strlstGraphObjsKeyInTreeGetResultValues;
+        if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
+            strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
+        }
+        if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            strlstGraphObjsKeyInTreeGetResultValues.append(strGraphObjKeyInTree);
+            if (graphObjType == EGraphObjTypeGroup) {
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+                if (pGraphObjGroup != nullptr) {
+                    for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
+                        strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
+                    }
+                }
+            }
+        }
+        int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+            i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+        for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
+            CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+            if (pGraphObj != nullptr) {
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+            }
+        }
+        i_pTestStep->setResultValues(strlstResultValues);
+        i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepSelectAndUngroup",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+
+    // P0 got to be set if the object need to be selected before clicking on and moving the selection point.
+    QPointF pt0 = i_pTestStep->getConfigValue("P0").toPointF();
+    QString strMethod = "mousePressEvent";
+    if (i_pTestStep->hasConfigValue("Method")) {
+        strMethod = i_pTestStep->getConfigValue("Method").toString();
+    }
+
+    if (strMethod == "mousePressEvent") {
+        Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+        if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+            keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+        }
+        QPoint ptMousePos = pt0.toPoint();
+        QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
+        QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+        ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+        ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+        QMouseEvent* pMouseEv = new QMouseEvent(
+            /* type      */ QEvent::MouseButtonPress,
+            /* pos       */ ptDrawingViewMousePos,
+            /* globalPos */ ptMousePosGlobal,
+            /* button    */ Qt::LeftButton,
+            /* button    */ Qt::LeftButton,
+            /* modifiers */ keyboardModifiers );
+        m_pDrawingView->mousePressEvent(pMouseEv);
+        delete pMouseEv;
+        pMouseEv = nullptr;
+        i_pTestStep->setConfigValue("Method", "mouseReleaseEvent");
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mouseReleaseEvent") {
+        Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+        if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+            keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+        }
+        QPoint ptMousePos = pt0.toPoint();
+        QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
+        QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+        ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+        ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+        QMouseEvent* pMouseEv = new QMouseEvent(
+            /* type      */ QEvent::MouseButtonRelease,
+            /* pos       */ ptDrawingViewMousePos,
+            /* globalPos */ ptMousePosGlobal,
+            /* button    */ Qt::LeftButton,
+            /* buttons   */ Qt::NoButton,
+            /* modifiers */ keyboardModifiers );
+        m_pDrawingView->mouseReleaseEvent(pMouseEv);
+        delete pMouseEv;
+        pMouseEv = nullptr;
+        i_pTestStep->setConfigValue("Method", "ungroup");
+        triggerDoTestStep();
+    }
+    else if (strMethod == "ungroup") {
+        m_pDrawingScene->ungroupGraphObjsSelected();
         i_pTestStep->setConfigValue("Method", "setResultValues");
         triggerDoTestStep();
     }
@@ -2619,6 +2751,57 @@ void CTest::addMouseMoveEventDataRows(
 }
 
 //------------------------------------------------------------------------------
+void CTest::getSelectionPointCoors(
+    ESelectionPoint i_selPt, const CPhysValRect& i_physValRectCurr, const CPhysValRect& i_physValRectNew,
+    QPointF& o_pt1SelPt, QPointF& o_pt2SelPt)
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+
+    if (i_selPt == ESelectionPoint::TopRight) {
+        CPhysValPoint physValPoint = i_physValRectCurr.topRight();
+        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        physValPoint = i_physValRectNew.topRight();
+        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+    }
+    if (i_selPt == ESelectionPoint::BottomRight) {
+        CPhysValPoint physValPoint = i_physValRectCurr.bottomRight();
+        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        physValPoint = i_physValRectNew.bottomRight();
+        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+    }
+    else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
+        // ESelectionPoint::RotateTop: 270° (clockwise counted)
+        // ESelectionPoint::RotateBottom: 90° (clockwise counted)
+        // Original position
+        double fAngle_degree = i_physValRectCurr.angle().getVal(Units.Angle.Degree);
+        fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
+        fAngle_degree = ZS::System::Math::toCounterClockWiseAngleDegree(fAngle_degree);
+        double fAngle_rad = ZS::System::Math::degree2Rad(fAngle_degree);
+        double dxSelPt = ZS::Draw::getSelectionPointRotateDistance() * cos(fAngle_rad);
+        double dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
+        CPhysValPoint physValPoint = i_selPt == ESelectionPoint::RotateTop ?
+            i_physValRectCurr.topCenter() : i_physValRectCurr.bottomCenter();
+        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_pt1SelPt.setX(o_pt1SelPt.x() + dxSelPt);
+        o_pt1SelPt.setY(o_pt1SelPt.y() - dySelPt);
+        // New position
+        fAngle_degree = i_physValRectNew.angle().getVal(Units.Angle.Degree);
+        fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
+        fAngle_degree = ZS::System::Math::toCounterClockWiseAngleDegree(fAngle_degree);
+        fAngle_rad = ZS::System::Math::degree2Rad(fAngle_degree);
+        dxSelPt = ZS::Draw::getSelectionPointRotateDistance() * cos(fAngle_rad);
+        dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
+        physValPoint = i_selPt == ESelectionPoint::RotateTop ?
+            i_physValRectNew.topCenter() : i_physValRectNew.bottomCenter();
+        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_pt2SelPt.setX(o_pt2SelPt.x() + dxSelPt);
+        o_pt2SelPt.setY(o_pt2SelPt.y() - dySelPt);
+    }
+}
+
+//------------------------------------------------------------------------------
 SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const
 //------------------------------------------------------------------------------
 {
@@ -2648,7 +2831,7 @@ SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_s
 }
 
 //------------------------------------------------------------------------------
-QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues) const
+QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QStringList strlstResultValues;
@@ -2658,7 +2841,7 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
             const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
             if (pGraphObjGroup != nullptr) {
                 strlstResultValues = resultValuesForGroup(
-                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect());
+                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect(), i_iPrecision);
             }
         }
         else if (i_pGraphObj->isLine()) {
@@ -2666,7 +2849,7 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
             if (pGraphObjLine != nullptr) {
                 strlstResultValues = resultValuesForLine(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjLine->line(), pGraphObjLine->getLine());
+                    pGraphObjLine->line(), pGraphObjLine->getLine(), i_iPrecision);
             }
         }
         if (i_bAddLabelResultValues) {
@@ -2698,29 +2881,45 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForGroup(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const CPhysValRect& i_physValRect) const
+    const CPhysValRect& i_physValRect, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
     QRectF rctBounding(QPointF(-size.width()/2.0, -size.height()/2.0), size);
-    return QStringList({
-        strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
-        strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
-        strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
-        strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
-        strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
-        strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
-    });
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
+            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ",", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ",", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ",", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getRect {" + i_physValRect.toString(false, ",", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ",", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
+        });
+    }
+    return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForLine(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const QLineF& i_line, const CPhysValLine& i_physValLine) const
+    const QLineF& i_line, const CPhysValLine& i_physValLine, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QRectF rctBounding(i_line.p1(), i_line.p2());
-    return QStringList({
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
         strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
         strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
         strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
@@ -2728,7 +2927,20 @@ QStringList CTest::resultValuesForLine(
         strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
         strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
         strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
-    });
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ",", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ",", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".line {" + qLine2Str(i_line, ",", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".position {" + i_physValLine.center().toString(false, ",", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".getLine {" + i_physValLine.toString(false, ",", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
+            strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
+        });
+    }
+    return strlst;
 }
 
 //------------------------------------------------------------------------------
@@ -2739,7 +2951,7 @@ QStringList CTest::resultValuesForLabel(
     QStringList strlstResultValues;
     if (!i_pos.isNull()) {
         strlstResultValues = QStringList({
-            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ",", 'f', 6) + "} px"});
     }
     strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
     return strlstResultValues;

@@ -170,6 +170,9 @@ public: // instance methods
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
+public: // must overridables of base class CGraphObj
+    virtual void setRotationAngle(double i_fAngle_degree) override;
+    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
     CPhysValPoint convert(const QPointF& i_pt) const;
     CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
@@ -201,8 +204,6 @@ public: // must overridables of base class CGraphObj
     virtual QRectF getEffectiveBoundingRectOnScene() const override;
 public: // must overridables of base class CGraphObj
     //virtual QRectF getOriginalBoundingRectInParent() const override;
-public: // must overridables of base class CGraphObj
-    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;

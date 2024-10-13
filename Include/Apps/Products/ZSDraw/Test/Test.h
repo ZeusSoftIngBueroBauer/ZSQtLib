@@ -170,23 +170,25 @@ protected slots:
     void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
-    void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
-    void doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
-    void doTestStepModifyGraphObjBySceneMouseEvents(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep);
 protected: // auxiliary instance methods
     void initInstCounts();
     void initObjectCoors();
     void addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop);
+    void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_pt1SelPt, QPointF& o_pt2SelPt);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
-    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false) const;
+    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
     QStringList resultValuesForGroup(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const ZS::Draw::CPhysValRect& i_physValRect) const;
+        const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
     QStringList resultValuesForLine(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine) const;
+        const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine, int i_iPrecision = -1) const;
     QStringList resultValuesForLabel(
         const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const;
 public: // overridables of base class CTest (make protected method public)

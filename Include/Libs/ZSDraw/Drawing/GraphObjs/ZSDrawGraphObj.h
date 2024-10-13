@@ -604,6 +604,7 @@ public: // overridables
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
     //virtual void setGroupScale(double i_fXScale, double i_fYScale);
+    virtual void setRotationAngle(double i_fAngle_degree);
     virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual ZS::PhysVal::CPhysVal rotationAngle() const;
     virtual ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const;
@@ -644,6 +645,9 @@ protected: // must overridables
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) = 0;
 protected: // overridables
     virtual void hideSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
+protected: // auxiliary instance methods
+    void connectGeometryOnSceneChangedSlotWithSelectionPoints();
+    void disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
 protected: // overridables
     virtual void showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectionPointTypes i_selPts = c_uSelectionPointsBoundingRectAll);
     virtual void showSelectionPointsOfPolygon(const QPolygonF& i_plg);

@@ -959,7 +959,25 @@ CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the clockwise rotation angle, in degrees, around the z axis.
+void CGraphObjLine::setRotationAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fAngle_degree, 'f', 3);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRotationAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the clockwise rotation angle around the z axis.
 
     For lines the z-axis goes through P1.
 

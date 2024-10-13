@@ -1076,15 +1076,6 @@ void CGraphObjSelectionPoint::updatePosition()
     else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
         ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_selPt.m_idxPt);
     }
-
-    if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
-            ptSelScenePosParent.setY(ptSelScenePosParent.y() - getSelectionPointRotateDistance());
-        }
-        else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-            ptSelScenePosParent.setY(ptSelScenePosParent.y() + getSelectionPointRotateDistance());
-        }
-    }
     setPos(ptSelScenePosParent);
 
     m_bUpdatePositionInProgress = false;

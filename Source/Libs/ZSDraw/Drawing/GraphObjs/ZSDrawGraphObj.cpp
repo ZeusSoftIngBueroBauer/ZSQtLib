@@ -3938,13 +3938,40 @@ CPhysValPoint CGraphObj::position(const ZS::PhysVal::CUnit& i_unit) const
 //}
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the clockwise rotation angle, in degrees, around the Z axis.
+/*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
+           around the Z axis.
 
-    The default value is 0 (i.e., the item is not rotated). Assigning a negative
-    value will rotate the item counter-clockwise.
+    @param [in] i_fAngle_degree
+        Rotation angle in degree.
+*/
+void CGraphObj::setRotationAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fAngle_degree, 'f', 3);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRotationAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the clockwise rotation angle.
+
+    The default value is 0 which is at 3o'clock (the item is not rotated).
+    Assigning a negative value will rotate the item counter-clockwise.
     Normally the rotation angle is in the range (-360, 360), but it's also possible
     to assign values outside of this range (e.g., a rotation of 370 degrees is the
     same as a rotation of 10 degrees).
+
+    @param [in] i_physValAngle
+        Angle to be set.
 */
 void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
 //------------------------------------------------------------------------------
@@ -4748,13 +4775,10 @@ void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr)
-    {
-        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++)
-        {
+    if (pGraphicsItem != nullptr) {
+        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
             ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
             bool bHideSelPt = false;
-
             if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
                 if (i_selPts & c_uSelectionPointsBoundingRectCorner) {
                     bHideSelPt = true;
@@ -4775,7 +4799,6 @@ void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
                     bHideSelPt = true;
                 }
             }
-
             if (bHideSelPt) {
                 // Deleting child objects leads to itemChange and an updateToolTip call
                 // accessing the array of selection points.
@@ -4788,7 +4811,6 @@ void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
                 }
             }
         }
-
         if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
             if (m_arpSelPtsPolygon.size() > 0) {
                 for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
@@ -4805,6 +4827,82 @@ void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
         }
     }
 } // hideSelectionPoints
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Connects the onSelectionPointGeometryOnSceneChanged slot with the
+           geometryOnSceneChanged signals of the visible (created) selection points.
+*/
+void CGraphObj::connectGeometryOnSceneChangedSlotWithSelectionPoints()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "connectGeometryOnSceneChangedSlotWithSelectionPoints",
+        /* strAddInfo   */ "" );
+
+    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsBoundingRect.size(); ++idxSelPt) {
+        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+        if (pGraphObjSelPt != nullptr) {
+            QObject::connect(
+                pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
+        }
+    }
+    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); ++idxSelPt) {
+        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+        if (pGraphObjSelPt != nullptr) {
+            QObject::connect(
+                pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Disconnects the onSelectionPointGeometryOnSceneChanged slot from the
+           geometryOnSceneChanged signals of the visible (created) selection points.
+
+    Moving a selection point will modify the shape of the object and the position
+    of all other selection points got to be updated. If the position of the other
+    selection points will be changed, those selection points are emitting the
+    geometryOnSceneChanged signal whereupon the slot method would be called again
+    for each other selection point. This will not end up in an endless loop but
+    is useless and anything else but performant. So the slot should be temporarily
+    disconnected from the geometryOnSceneChanged signal of the selection points.
+*/
+void CGraphObj::disconnectGeometryOnSceneChangedSlotFromSelectionPoints()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "disconnectGeometryOnSceneChangedSlotFromSelectionPoints",
+        /* strAddInfo   */ "" );
+
+    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsBoundingRect.size(); ++idxSelPt) {
+        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+        if (pGraphObjSelPt != nullptr) {
+            QObject::disconnect(
+                pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
+        }
+    }
+    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); ++idxSelPt) {
+        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+        if (pGraphObjSelPt != nullptr) {
+            QObject::disconnect(
+                pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
+        }
+    }
+}
 
 ////------------------------------------------------------------------------------
 //void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )

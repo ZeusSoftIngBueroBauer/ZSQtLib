@@ -777,7 +777,8 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
                 QGraphicsItem_setPos(ptPos);
             }
             if (physValAngle != m_physValRotationAngle) {
-                setRotationAngle(physValAngle);
+                m_physValRotationAngle = physValAngle;
+                QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
             }
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
@@ -1412,6 +1413,59 @@ CPhysValPoint CGraphObjGroup::getBottomLeft(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).bottomLeft();
+}
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::setRotationAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fAngle_degree, 'f', 3);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRotationAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::setRotationAngle(const CPhysVal& i_physValAngle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValAngle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setAngle(i_physValAngle);
+    setRect(physValRect);
+
+    //if (m_physValRotationAngle != i_physValAngle) {
+    //    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+    //        m_physValRotationAngle = i_physValAngle;
+    //        CPhysValRect physValRect = m_physValRectScaledAndRotated;
+    //        physValRect.setAngle(i_physValAngle);
+    //        setPhysValRectScaledAndRotated(physValRect);
+    //        QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+    //    }
+    //    emit_geometryOnSceneChanged();
+    //}
 }
 
 /*==============================================================================
@@ -2102,47 +2156,6 @@ public: // must overridables of base class CGraphObj
 //    }
 //    return rctBounding;
 //}
-
-/*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the clockwise rotation angle, in degrees, around the Z axis.
-
-    The default value is 0 (i.e., the item is not rotated). Assigning a negative
-    value will rotate the item counter-clockwise.
-    Normally the rotation angle is in the range (-360, 360), but it's also possible
-    to assign values outside of this range (e.g., a rotation of 370 degrees is the
-    same as a rotation of 10 degrees).
-*/
-void CGraphObjGroup::setRotationAngle(const CPhysVal& i_physValAngle)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValAngle.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setRotationAngle",
-        /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
-
-    if (m_physValRotationAngle != i_physValAngle) {
-        {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-            m_physValRotationAngle = i_physValAngle;
-            CPhysValRect physValRect = m_physValRectScaledAndRotated;
-            physValRect.setAngle(i_physValAngle);
-            setPhysValRectScaledAndRotated(physValRect);
-            QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
-        }
-        emit_geometryOnSceneChanged();
-    }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
-}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -2878,7 +2891,7 @@ void CGraphObjGroup::paint(
         pn.setStyle(Qt::DotLine);
         pn.setWidth(1);
         if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
-            && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
+         && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
             CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
             CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
             QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
@@ -2888,7 +2901,7 @@ void CGraphObjGroup::paint(
             i_pPainter->drawLine(ptRctM, ptRotM);
         }
         if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
-            && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
+         && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
             CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
             CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
             QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
@@ -3737,64 +3750,90 @@ void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelect
     QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
-    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
+    ptPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
+    QPointF ptPosThis = pos();
+    CPhysValPoint physValPointParentPosSelPt(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
-        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
+        physValPointParentPosSelPt = parentGroup()->convert(ptPosSelPt);
     }
     else {
-        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+        physValPointParentPosSelPt = m_pDrawingScene->convert(ptPosSelPt);
     }
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
     if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        // Moving a selection point will modify the shape of the object and the position
+        // of all other selection points got to be updated. If the position of the other
+        // selection points will be changed, those selection points are emitting the
+        // geometryOnSceneChanged signal whereupon this slot method would be called again
+        // for each other selection point. This will not end up in an endless loop but
+        // is useless and anything else but performant. So the slot will be temporarily
+        // disconnected from the geometryOnSceneChanged signal of the selection points.
+        disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
+
         switch (selPt.m_selPt) {
             case ESelectionPoint::TopLeft: {
-                setTopLeft(physValParentSelPt);
+                setTopLeft(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::TopRight: {
-                setTopRight(physValParentSelPt);
+                setTopRight(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::BottomRight: {
-                setBottomRight(physValParentSelPt);
+                setBottomRight(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::BottomLeft: {
-                setBottomLeft(physValParentSelPt);
+                setBottomLeft(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::TopCenter: {
-                setHeightByMovingTopCenter(physValParentSelPt);
+                setHeightByMovingTopCenter(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::RightCenter: {
-                setWidthByMovingRightCenter(physValParentSelPt);
+                setWidthByMovingRightCenter(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::BottomCenter: {
-                setHeightByMovingBottomCenter(physValParentSelPt);
+                setHeightByMovingBottomCenter(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::LeftCenter: {
-                setWidthByMovingLeftCenter(physValParentSelPt);
+                setWidthByMovingLeftCenter(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::Center: {
-                setCenter(physValParentSelPt);
+                setCenter(physValPointParentPosSelPt);
                 break;
             }
             case ESelectionPoint::RotateTop: {
+                // The angle returned by getAngleDegree is counted counterclockwise
+                // with 0° at 3 o'clock.
+                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptPosSelPt);
+                // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
+                fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
+                // RotateTop is at 270°.
+                fAngle_degree -= 270.0;
+                fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
+                setRotationAngle(fAngle_degree);
                 break;
             }
             case ESelectionPoint::RotateBottom: {
+                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptPosSelPt);
+                fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
+                // RotateBottom is at 90°.
+                fAngle_degree -= 90.0;
+                fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
+                setRotationAngle(fAngle_degree);
                 break;
             }
             default: {
                 break;
             }
         }
+        connectGeometryOnSceneChangedSlotWithSelectionPoints();
     }
 }
 

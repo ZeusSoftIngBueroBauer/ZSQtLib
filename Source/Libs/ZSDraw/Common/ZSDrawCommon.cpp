@@ -371,7 +371,7 @@ QString ZS::Draw::selectionPointTypes2Str( TSelectionPointTypes i_selPts )
 Enum ESelectionPoint
 ==============================================================================*/
 
-static double s_fSelectionPointRotateDistance_px = 10.0;
+static double s_fSelectionPointRotateDistance_px = 20.0;
 
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ESelectionPoint>::s_arEnumEntries =

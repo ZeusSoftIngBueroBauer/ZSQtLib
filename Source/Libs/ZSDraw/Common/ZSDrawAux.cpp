@@ -1884,15 +1884,17 @@ double ZS::Draw::getAngleDegree(const QSizeF& i_size, int* o_piQuadrant)
     Point 1 is considered to be the origin of the coordinate system.
     The returned angle is counted counterclockwise.
 
-            Q2        |      Q1        
-      (PI/2 .. PI)    | (0.0 .. PI/2)  
-      (90° .. 180°)   | (0 .. 90°)     
-                      |                
-    -----------------Pt1---------------
-                      |                
-      (-180° .. -90°) | (-90 .. 0°)    
-      (-PI .. -PI/2)  | (-PI/2 .. 0.0) 
-            Q3        |      Q4        
+                         90°
+                Q2        |      Q1        
+          (PI/2 .. PI)    | (0.0 .. PI/2)  
+          (90° .. 180°)   | (0 .. 90°)     
+                          |                
+    180° -----------------Pt1--------------- 0.0°
+                          |                
+          (-180° .. -90°) | (-90 .. 0°)    
+          (-PI .. -PI/2)  | (-PI/2 .. 0.0) 
+                Q3        |      Q4        
+                        270°
 */
 double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
 //------------------------------------------------------------------------------
@@ -2299,10 +2301,10 @@ QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i
         pt = QPointF(i_rct.left(), i_rct.center().y());
     }
     else if (i_selPt == ESelectionPoint::RotateTop) {
-        pt = QPointF(i_rct.center().x(), i_rct.top()-getSelectionPointRotateDistance());
+        pt = QPointF(i_rct.center().x(), i_rct.top() - getSelectionPointRotateDistance());
     }
     else if (i_selPt == ESelectionPoint::RotateBottom) {
-        pt = QPointF(i_rct.center().x(), i_rct.bottom()+getSelectionPointRotateDistance());
+        pt = QPointF(i_rct.center().x(), i_rct.bottom() + getSelectionPointRotateDistance());
     }
     return pt;
 }

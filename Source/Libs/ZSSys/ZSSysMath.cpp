@@ -697,20 +697,7 @@ double Math::round2Resolution( double i_fVal, double i_fRes )
     double fRes = fabs(i_fRes);
     if (fRes > 0.0) {
         fVal = i_fVal / fRes;
-        if (fVal >= 0.0) {
-            fVal = fVal + 0.5;
-            if (fRes < 1.0) {
-                fVal += fRes/10.0;
-            }
-            fVal = floor(fVal);
-        }
-        else {
-            fVal = fVal - 0.5;
-            if (fRes < 1.0) {
-                fVal -= fRes/10.0;
-            }
-            fVal = ceil(fVal);
-        }
+        fVal = round2Nearest(fVal, 0);
         fVal *= fRes;
     }
     return fVal;
