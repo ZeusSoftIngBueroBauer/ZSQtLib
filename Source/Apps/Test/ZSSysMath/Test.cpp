@@ -389,7 +389,7 @@ CTest::CTest() :
     /*  8 */ pTestStep->addDataRow({{"Val", 0.000015}, {"Resolution", 0.00001}, {"Result", 0.00002}});
     /*  9 */ pTestStep->addDataRow({{"Val", 0.000014}, {"Resolution", 0.00001}, {"Result", 0.00001}});
     /* 10 */ pTestStep->addDataRow({{"Val", 0.000016}, {"Resolution", 0.00001}, {"Result", 0.00002}});
-    /* 11 */ pTestStep->addDataRow({{"Val", 0.000065}, {"Resolution", 0.00001}, {"Result", 0.00007}});
+    /* 11 */ pTestStep->addDataRow({{"Val", 0.0000651}, {"Resolution", 0.00001}, {"Result", 0.00007}});
     /* 12 */ pTestStep->addDataRow({{"Val", 0.000064}, {"Resolution", 0.00001}, {"Result", 0.00006}});
     /* 13 */ pTestStep->addDataRow({{"Val", 0.000066}, {"Resolution", 0.00001}, {"Result", 0.00007}});
     /* 14 */ pTestStep->addDataRow({{"Val", -0.000015}, {"Resolution", 0.0001}, {"Result", 0.0}});
@@ -401,7 +401,7 @@ CTest::CTest() :
     /* 20 */ pTestStep->addDataRow({{"Val", -0.000015}, {"Resolution", 0.00001}, {"Result", -0.00002}});
     /* 21 */ pTestStep->addDataRow({{"Val", -0.000014}, {"Resolution", 0.00001}, {"Result", -0.00001}});
     /* 22 */ pTestStep->addDataRow({{"Val", -0.000016}, {"Resolution", 0.00001}, {"Result", -0.00002}});
-    /* 23 */ pTestStep->addDataRow({{"Val", -0.000065}, {"Resolution", 0.00001}, {"Result", -0.00007}});
+    /* 23 */ pTestStep->addDataRow({{"Val", -0.0000651}, {"Resolution", 0.00001}, {"Result", -0.00007}});
     /* 24 */ pTestStep->addDataRow({{"Val", -0.000064}, {"Resolution", 0.00001}, {"Result", -0.00006}});
     /* 25 */ pTestStep->addDataRow({{"Val", -0.000066}, {"Resolution", 0.00001}, {"Result", -0.00007}});
     /* 26 */ pTestStep->addDataRow({{"Val", 5.15}, {"Resolution", 0.0}, {"Result", 5.15}});
@@ -409,7 +409,7 @@ CTest::CTest() :
     /* 28 */ pTestStep->addDataRow({{"Val", 5.44}, {"Resolution", 0.1}, {"Result", 5.4}});
     /* 29 */ pTestStep->addDataRow({{"Val", 5.45}, {"Resolution", 0.1}, {"Result", 5.5}});
     /* 30 */ pTestStep->addDataRow({{"Val", 5.46}, {"Resolution", 0.1}, {"Result", 5.5}});
-    /* 31 */ pTestStep->addDataRow({{"Val", 5.55}, {"Resolution", 0.1}, {"Result", 5.6}});
+    /* 31 */ pTestStep->addDataRow({{"Val", 5.551}, {"Resolution", 0.1}, {"Result", 5.6}});
     /* 32 */ pTestStep->addDataRow({{"Val", 5.65}, {"Resolution", 0.1}, {"Result", 5.7}});
     /* 33 */ pTestStep->addDataRow({{"Val", 5.44}, {"Resolution", 0.01}, {"Result", 5.44}});
     /* 34 */ pTestStep->addDataRow({{"Val", 5.45}, {"Resolution", 0.01}, {"Result", 5.45}});

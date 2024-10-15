@@ -137,9 +137,9 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
 
     const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
     const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-    int iDecimals = 6;
+    int iDecimals = 3;
     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-        iDecimals = drawingSize.metricImageCoorsDecimals() + 2; // to avoid rounding errors add two digits
+        iDecimals = drawingSize.metricImageCoorsDecimals() + 3;// to avoid rounding errors add three digits
     }
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();

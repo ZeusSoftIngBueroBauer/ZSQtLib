@@ -132,9 +132,9 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
     const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-    int iDecimals = 6;
+    int iDecimals = 3;
     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-        iDecimals = drawingSize.metricImageCoorsDecimals() + 2; // to avoid rounding errors add two digits
+        iDecimals = drawingSize.metricImageCoorsDecimals() + 3; // to avoid rounding errors add three digits
     }
 
     const CDrawGridSettings& gridSettings = pGraphObj->gridSettings();
@@ -313,6 +313,10 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                 bConverted = false;
                             }
                             if (!bConverted) {
+                                i_xmlStreamReader.raiseError(
+                                    "Element \"" + strElemName + "\" (" + strElemAttr + ") cannot be converted to Size");
+                            }
+                            else if (!physValSizeTmp.isValid()) {
                                 i_xmlStreamReader.raiseError(
                                     "Element \"" + strElemName + "\" (" + strElemAttr + ") cannot be converted to Size");
                             }
