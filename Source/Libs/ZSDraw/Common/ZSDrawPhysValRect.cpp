@@ -1718,12 +1718,21 @@ void CPhysValRect::setAngle( double i_fAngle_degree )
     The angles are measured clockwise with 0° at 3 o'clock (90° at 6 o'clock).
 
     @param [in] i_physValAngle
-        Angle to be set.
+        Angle to be set. The angle will be normalized to fit into the range 0 .. 360°.
 */
 void CPhysValRect::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
-    m_physValAngle = i_physValAngle;
+    CPhysVal physValAngle = i_physValAngle;
+    double fAngle = i_physValAngle.getVal();
+    if (i_physValAngle.unit() == Units.Angle.Degree) {
+        fAngle = Math::normalizeAngleInDegree(fAngle);
+    }
+    else {
+        fAngle = Math::normalizeAngleInRad(fAngle);
+    }
+    physValAngle.setVal(fAngle);
+    m_physValAngle = physValAngle;
     invalidateSelectionPoints();
 }
 

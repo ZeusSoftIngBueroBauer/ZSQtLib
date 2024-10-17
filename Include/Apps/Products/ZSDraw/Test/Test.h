@@ -145,12 +145,6 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
     void doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepMainWindowSetGeometry(ZS::Test::CTestStep* i_pTestStep);
