@@ -73,38 +73,6 @@ public: // ctors
         const CDrawingScene& i_drawingScene,
         const QPointF& i_ptTL, const QSizeF& i_size,
         const ZS::PhysVal::CUnit& i_unit);
-//public: // ctors
-//    CPhysValRect(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
-//    CPhysValRect(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//        const ZS::PhysVal::CUnit& i_unit);
-//    CPhysValRect(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//        const QPointF& i_ptTL, const QPointF& i_ptBR);
-//    CPhysValRect(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//        const QPointF& i_ptTL, const QPointF& i_ptBR,
-//        const ZS::PhysVal::CUnit& i_unit);
-//    CPhysValRect(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//        const QPointF& i_ptTL, const QSizeF& i_size);
-//    CPhysValRect(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//        const QPointF& i_ptTL, const QSizeF& i_size,
-//        const ZS::PhysVal::CUnit& i_unit);
 public: // ctors
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
@@ -123,23 +91,21 @@ public: // must overridables of base class CPhysValShape
     bool isNull() const override;
     void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const override;
-public: // instance methods
-    CPhysValPoint center() const;
-    CPhysValSize size() const;
-    ZS::PhysVal::CPhysVal width() const;
-    ZS::PhysVal::CPhysVal height() const;
-    ZS::PhysVal::CPhysVal angle() const;
-    CPhysValPoint topLeft() const;
-    CPhysValPoint topRight() const;
-    CPhysValPoint bottomRight() const;
-    CPhysValPoint bottomLeft() const;
-    CPhysValPoint topCenter() const;
-    CPhysValPoint rightCenter() const;
-    CPhysValPoint bottomCenter() const;
-    CPhysValPoint leftCenter() const;
-    double resolution() const;
-    ZS::PhysVal::CUnit unit() const;
-public: // instance methods
+public: // overridables
+    virtual CPhysValPoint center() const;
+    virtual CPhysValSize size() const;
+    virtual ZS::PhysVal::CPhysVal width() const;
+    virtual ZS::PhysVal::CPhysVal height() const;
+    virtual ZS::PhysVal::CPhysVal angle() const;
+    virtual CPhysValPoint topLeft() const;
+    virtual CPhysValPoint topRight() const;
+    virtual CPhysValPoint bottomRight() const;
+    virtual CPhysValPoint bottomLeft() const;
+    virtual CPhysValPoint topCenter() const;
+    virtual CPhysValPoint rightCenter() const;
+    virtual CPhysValPoint bottomCenter() const;
+    virtual CPhysValPoint leftCenter() const;
+public: // overridables
     void setCenter(const QPointF& i_pt);
     void setCenter(const CPhysValPoint& i_physValPoint);
     void setSize(const QSizeF& i_size);
@@ -166,7 +132,7 @@ public: // instance methods
     void setBottomRight(const CPhysValPoint& i_physValPoint);
     void setBottomLeft(const QPointF& i_pt);
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
-protected: // auxiliary functions
+protected: // overridables
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
 protected: // instance members
@@ -182,8 +148,8 @@ protected: // instance members
          used to calculate the corner points, the corner points (and other selection points)
          are only calculated if needed. A dirty flag indicates for each point whether calculation
          is needed. */
-    mutable QVector<CPhysValPoint> m_arphysValPoints;
-    mutable QVector<bool> m_arbPointsCalculated;
+    mutable QVector<CPhysValPoint> m_arphysValRectSelectionPoints;
+    mutable QVector<bool> m_arbRectSelectionPointsCalculated;
 
 }; // class CPhysValRect
 

@@ -213,24 +213,32 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pDrawingView = CWidgetCentral::GetInstance()->drawingView();
     m_pDrawingScene = CWidgetCentral::GetInstance()->drawingScene();
 
-    m_pPhysValRectSmallPlusSign = new CPhysValRect(*m_pDrawingScene);
+    // Lines
+    //------
     m_pPhysValLineSmallPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
 
-    m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
 
-    m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineCheckmarkLeftLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineCheckmarkRightLine = new CPhysValLine(*m_pDrawingScene);
 
-    m_pPhysValRectSmallRect = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineSmallRectTopLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallRectRightLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallRectBottomLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallRectLeftLine = new CPhysValLine(*m_pDrawingScene);
 
+    // Polygons
+    //----------
+    m_pPhysValPolygonStar = new CPhysValPolygon(*m_pDrawingScene);
+
+    // Groups
+    //-------
+    m_pPhysValRectSmallPlusSign = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallRect = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
     CDrawGridSettings gridSettings;
@@ -306,25 +314,25 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* pTSGrpParent */ pGrpPixelsDrawing );
 
     createTestGroupPrepareScene(pGrpPixelsDrawing800x600px, drawingSize, gridSettings);
-#if 0
+
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
-
+#if 0
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupAddObjects(pGrpPixelsDrawing800x600pxAddObjects);
-#endif
+
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupDrawObjects(pGrpPixelsDrawing800x600pxDrawObjects);
-
+#endif
     // Metrics Drawings
     //-----------------
 
@@ -381,25 +389,25 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mm, drawingSize, gridSettings);
 
-#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects);
-#endif
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
+#endif
 
     // YScaleBottomUp
     //---------------
@@ -445,25 +453,25 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
-#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects);
-#endif
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
+#endif
 
     // Recall test step settings
     //--------------------------
@@ -857,8 +865,10 @@ void CTest::doTestStepClearDrawingScene(ZS::Test::CTestStep* i_pTestStep)
         /* strAddInfo   */ strMthInArgs );
 
     m_pDrawingScene->clear();
+    m_pDrawingScene->removeAndDeleteAllPhysValShapes();
 
     initInstCounts();
+    initObjectCoors();
 
     i_pTestStep->setResultValue("");
 }
@@ -1091,6 +1101,8 @@ void CTest::doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep)
     if (i_pTestStep->hasConfigValue("removeAndDeleteAllPhysValShapes")) {
         m_pDrawingScene->removeAndDeleteAllPhysValShapes();
     }
+
+    // Draw original shape in blue color
     if (i_pTestStep->hasConfigValue("addPhysValShape")) {
         CDrawSettings drawSettings(EGraphObjTypeRect);
         drawSettings.setPenColor(Qt::blue);
@@ -1098,6 +1110,8 @@ void CTest::doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep)
         m_pDrawingScene->addPhysValShape(pPhysValRect, drawSettings);
         pPhysValRect = nullptr;
     }
+
+    // Draw rotated shape in green color
     if (i_pTestStep->hasConfigValue("setAngle")) {
         CPhysVal physValAngle = i_pTestStep->getConfigValue("setAngle").toString();
         physValAngle.setRes(0.1);
@@ -1110,6 +1124,8 @@ void CTest::doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep)
             pPhysValRect = nullptr;
         }
     }
+
+    // Apply further methods and draw resulting shape in red color
     if (i_pTestStep->hasConfigValue("setCenter")) {
         QPointF pt = i_pTestStep->getConfigValue("setCenter").toPointF();
         if (i_pTestStep->hasConfigValue("setCenter.unit")) {
@@ -1270,6 +1286,234 @@ void CTest::doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep)
         strlstResultValues.append("RightCenter {" + physValRectResult.rightCenter().toString() + "} " + physValRectResult.rightCenter().unit().symbol());
         strlstResultValues.append("BottomCenter {" + physValRectResult.bottomCenter().toString() + "} " + physValRectResult.bottomCenter().unit().symbol());
         strlstResultValues.append("LeftCenter {" + physValRectResult.leftCenter().toString() + "} " + physValRectResult.leftCenter().unit().symbol());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepTransformPhysValPolygon",
+        /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValPolygon physValPolygonResult(*m_pDrawingScene);
+
+    if (i_pTestStep->hasConfigValue("create.numberOfPoints")) {
+        int iNumberOfPoints = i_pTestStep->getConfigValue("create.numberOfPoints").toInt();
+        QPolygonF polygon;
+        for (int idxPt = 0; idxPt < iNumberOfPoints; ++idxPt) {
+            polygon.append(i_pTestStep->getConfigValue("create.P" + QString::number(idxPt)).toPointF());
+        }
+        if (i_pTestStep->hasConfigValue("create.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("create.unit").toString();
+            CUnit unit = strUnitPoint;
+            physValPolygonResult = CPhysValPolygon(*m_pDrawingScene, polygon, unit);
+        }
+        else {
+            physValPolygonResult = CPhysValPolygon(*m_pDrawingScene, polygon);
+        }
+    }
+
+    if (i_pTestStep->hasConfigValue("removeAndDeleteAllPhysValShapes")) {
+        m_pDrawingScene->removeAndDeleteAllPhysValShapes();
+    }
+
+    // Draw original shape in blue color
+    if (i_pTestStep->hasConfigValue("addPhysValShape")) {
+        CDrawSettings drawSettings(EGraphObjTypePolygon);
+        drawSettings.setPenColor(Qt::blue);
+        CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
+        m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
+        pPhysValPolygon = nullptr;
+    }
+
+    // Draw rotated shape in green color
+    if (i_pTestStep->hasConfigValue("setAngle")) {
+        CPhysVal physValAngle = i_pTestStep->getConfigValue("setAngle").toString();
+        physValAngle.setRes(0.1);
+        physValPolygonResult.setAngle(physValAngle);
+        if (physValAngle.getVal() != 0.0 && i_pTestStep->hasConfigValue("addPhysValShape")) {
+            CDrawSettings drawSettings(EGraphObjTypePolygon);
+            drawSettings.setPenColor(Qt::darkGreen);
+            CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
+            m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
+            pPhysValPolygon = nullptr;
+        }
+    }
+
+    // Apply further methods and draw resulting shape in red color
+    if (i_pTestStep->hasConfigValue("setCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setCenter.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setSize")) {
+        QSizeF sizeF = i_pTestStep->getConfigValue("setSize").toSizeF();
+        if (i_pTestStep->hasConfigValue("setSize.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setSize.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValSize physValSize(*m_pDrawingScene, sizeF, unit);
+            physValPolygonResult.setSize(physValSize);
+        }
+        else {
+            CPhysValSize physValSize(*m_pDrawingScene, sizeF);
+            physValPolygonResult.setSize(physValSize);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setWidth")) {
+        CPhysVal physValWidth = i_pTestStep->getConfigValue("setWidth").toString();
+        physValPolygonResult.setWidth(physValWidth);
+    }
+    if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setWidthByMovingLeftCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setWidthByMovingLeftCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingRightCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingRightCenter.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setWidthByMovingRightCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setWidthByMovingRightCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setHeight")) {
+        CPhysVal physValHeight = i_pTestStep->getConfigValue("setHeight").toString();
+        physValPolygonResult.setHeight(physValHeight);
+    }
+    if (i_pTestStep->hasConfigValue("setHeightByMovingTopCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingTopCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setTopCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingTopCenter.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setHeightByMovingTopCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setHeightByMovingTopCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setHeightByMovingBottomCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setHeightByMovingBottomCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setTopLeft")) {
+        QPointF pt = i_pTestStep->getConfigValue("setTopLeft").toPointF();
+        if (i_pTestStep->hasConfigValue("setTopLeft.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setTopLeft.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setTopLeft(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setTopLeft(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setTopRight")) {
+        QPointF pt = i_pTestStep->getConfigValue("setTopRight").toPointF();
+        if (i_pTestStep->hasConfigValue("setTopRight.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setTopRight.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setTopRight(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setTopRight(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setBottomRight")) {
+        QPointF pt = i_pTestStep->getConfigValue("setBottomRight").toPointF();
+        if (i_pTestStep->hasConfigValue("setBottomRight.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setBottomRight.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setBottomRight(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setBottomRight(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setBottomLeft")) {
+        QPointF pt = i_pTestStep->getConfigValue("setBottomLeft").toPointF();
+        if (i_pTestStep->hasConfigValue("setBottomLeft.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setBottomLeft.unit").toString();
+            CUnit unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValPolygonResult.setBottomLeft(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValPolygonResult.setBottomLeft(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("addPhysValShape")) {
+        CDrawSettings drawSettings(EGraphObjTypeRect);
+        drawSettings.setPenColor(Qt::red);
+        CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
+        m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
+        pPhysValPolygon = nullptr;
+    }
+
+    QStringList strlstResultValues;
+    if (!physValPolygonResult.isNull()) {
+        strlstResultValues.append("Center {" + physValPolygonResult.center().toString() + "} " + physValPolygonResult.center().unit().symbol());
+        strlstResultValues.append("Width: " + physValPolygonResult.width().toString());
+        strlstResultValues.append("Height: " + physValPolygonResult.height().toString());
+        strlstResultValues.append("Angle: " + physValPolygonResult.angle().toString());
+        strlstResultValues.append("TopLeft {" + physValPolygonResult.topLeft().toString() + "} " + physValPolygonResult.topLeft().unit().symbol());
+        strlstResultValues.append("TopRight {" + physValPolygonResult.topRight().toString() + "} " + physValPolygonResult.topRight().unit().symbol());
+        strlstResultValues.append("BottomRight {" + physValPolygonResult.bottomRight().toString() + "} " + physValPolygonResult.bottomRight().unit().symbol());
+        strlstResultValues.append("BottomLeft {" + physValPolygonResult.bottomLeft().toString() + "} " + physValPolygonResult.bottomLeft().unit().symbol());
+        strlstResultValues.append("TopCenter {" + physValPolygonResult.topCenter().toString() + "} " + physValPolygonResult.topCenter().unit().symbol());
+        strlstResultValues.append("RightCenter {" + physValPolygonResult.rightCenter().toString() + "} " + physValPolygonResult.rightCenter().unit().symbol());
+        strlstResultValues.append("BottomCenter {" + physValPolygonResult.bottomCenter().toString() + "} " + physValPolygonResult.bottomCenter().unit().symbol());
+        strlstResultValues.append("LeftCenter {" + physValPolygonResult.leftCenter().toString() + "} " + physValPolygonResult.leftCenter().unit().symbol());
+        for (int idxPt = 0; idxPt < physValPolygonResult.count(); ++idxPt) {
+            strlstResultValues.append("P" + QString::number(idxPt) + ": {" + physValPolygonResult[idxPt].toString() + "} " + physValPolygonResult[idxPt].unit().symbol());
+        }
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -2666,11 +2910,14 @@ void CTest::initInstCounts()
     CGraphObjGroup::s_iInstCount = 0;
 
     m_hshGraphObjNameToKeys.clear();
+}
 
-    m_ptPosSmallPlusSign = QPointF();
-    m_sizeSmallPlusSign = QSizeF();
-    *m_pPhysValRectSmallPlusSign = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleSmallPlusSign = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+//------------------------------------------------------------------------------
+void CTest::initObjectCoors()
+//------------------------------------------------------------------------------
+{
+    // Lines
+    //------
     m_ptPosSmallPlusSignVerticalLine = QPointF();
     m_lineSmallPlusSignVerticalLine = QLineF();
     *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene);
@@ -2678,10 +2925,6 @@ void CTest::initInstCounts()
     m_lineSmallPlusSignHorizontalLine = QLineF();
     *m_pPhysValLineSmallPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene);
 
-    m_ptPosBigPlusSign = QPointF();
-    m_sizeBigPlusSign = QSizeF();
-    *m_pPhysValRectBigPlusSign = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleBigPlusSign = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     m_ptPosBigPlusSignVerticalLine = QPointF();
     m_lineBigPlusSignVerticalLine = QLineF();
     *m_pPhysValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene);
@@ -2689,10 +2932,6 @@ void CTest::initInstCounts()
     m_lineBigPlusSignHorizontalLine = QLineF();
     *m_pPhysValLineBigPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene);
 
-    m_ptPosCheckmark = QPointF();
-    m_sizeCheckmark = QSizeF();
-    *m_pPhysValRectCheckmark = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleCheckmark = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     m_ptPosCheckmarkLeftLine = QPointF();
     m_lineCheckmarkLeftLine = QLineF();
     *m_pPhysValLineCheckmarkLeftLine = CPhysValLine(*m_pDrawingScene);
@@ -2700,10 +2939,6 @@ void CTest::initInstCounts()
     m_lineCheckmarkRightLine = QLineF();
     *m_pPhysValLineCheckmarkRightLine = CPhysValLine(*m_pDrawingScene);
 
-    m_ptPosSmallRect = QPointF();
-    m_sizeSmallRect = QSizeF();
-    *m_pPhysValRectSmallRect = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleSmallRect = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     m_ptPosSmallRectTopLine = QPointF();
     m_lineSmallRectTopLine = QLineF();
     *m_pPhysValLineSmallRectTopLine = CPhysValLine(*m_pDrawingScene);
@@ -2717,16 +2952,38 @@ void CTest::initInstCounts()
     m_lineSmallRectLeftLine = QLineF();
     *m_pPhysValLineSmallRectLeftLine = CPhysValLine(*m_pDrawingScene);
 
+    // Polylines
+    //----------
+    m_ptPosPolygonStar = QPointF();
+    m_polygonStar = QPolygonF();
+    *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
+
+    // Groups
+    //-------
+    m_ptPosSmallPlusSign = QPointF();
+    m_sizeSmallPlusSign = QSizeF();
+    *m_pPhysValRectSmallPlusSign = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallPlusSign = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosBigPlusSign = QPointF();
+    m_sizeBigPlusSign = QSizeF();
+    *m_pPhysValRectBigPlusSign = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleBigPlusSign = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosCheckmark = QPointF();
+    m_sizeCheckmark = QSizeF();
+    *m_pPhysValRectCheckmark = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleCheckmark = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosSmallRect = QPointF();
+    m_sizeSmallRect = QSizeF();
+    *m_pPhysValRectSmallRect = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallRect = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
     m_ptPosTopGroup = QPointF();
     m_sizeTopGroup = QSizeF();
     *m_pPhysValRectTopGroup = CPhysValRect(*m_pDrawingScene);
     m_physValAngleTopGroup = CPhysVal(0.0, Units.Angle.Degree, 0.1);
-}
-
-//------------------------------------------------------------------------------
-void CTest::initObjectCoors()
-//------------------------------------------------------------------------------
-{
 }
 
 //------------------------------------------------------------------------------

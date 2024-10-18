@@ -54,16 +54,6 @@ public: // class methods
 public: // ctors
     CPhysValShape(const CDrawingScene& i_drawingScene);
     CPhysValShape(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
-//public: // ctors
-//    CPhysValShape(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
-//    CPhysValShape(
-//        const CDrawingScene& i_drawingScene,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//        const ZS::PhysVal::CUnit& i_unit);
 public: // copy ctor
     CPhysValShape(const CPhysValShape& i_physValShapeOther);
 public: // dtor
@@ -81,9 +71,9 @@ public: // must overridables
     virtual QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const = 0;
 public: // instance methods
     const CDrawingScene& drawingScene() const { return *m_pDrawingScene; }
-    //const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return *m_pDivLinesMetricsX; }
-    //const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY() const { return *m_pDivLinesMetricsY; }
     ZS::System::EYScaleAxisOrientation yScaleAxisOrientation() const;
+    double resolution() const;
+    ZS::PhysVal::CUnit unit() const;
 public: // instance methods
     void setIndexInDrawingScene(int i_idx);
     int indexInDrawingScene() const;

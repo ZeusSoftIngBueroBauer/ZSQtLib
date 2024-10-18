@@ -28,9 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObj_h
 
 #include "ZSSys/ZSSysIdxTreeEntry.h"
-#include "ZSDraw/Common/ZSDrawPhysValLine.h"
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
-#include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
 
@@ -563,27 +561,6 @@ public: // overridables
     virtual QPointF mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const;
     virtual QLineF mapFromTopLeftOfBoundingRect(const QLineF& i_line) const;
     virtual QRectF mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const;
-public: // overridables
-    //virtual QPointF toLocalCoors(const CPhysValPoint& i_physValPoint) const;
-    //virtual QLineF toLocalCoors(const CPhysValLine& i_physValLine) const;
-    //virtual QRectF toLocalCoors(const CPhysValRect& i_physValRect) const;
-    //virtual CPhysValPoint fromLocalCoors(const QPointF& i_pt) const;
-    //virtual CPhysValLine fromLocalCoors(const QLineF& i_line) const;
-    //virtual CPhysValRect fromLocalCoors(const QRectF& i_rect) const;
-public: // overridables
-    //virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
-    //virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
-    //virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
-    //virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
-public: // overridables
-    //virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint) const;
-    //virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine) const;
-    //virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect) const;
-    //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
     virtual QRectF getEffectiveBoundingRectOnScene() const;
@@ -591,19 +568,6 @@ public: // overridables
     virtual void setPosition(const CPhysValPoint& i_physValPos);
     virtual CPhysValPoint position() const;
     virtual CPhysValPoint position(const ZS::PhysVal::CUnit& i_unit) const;
-    //virtual void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
-    //virtual ZS::PhysVal::CPhysVal length() const;
-    //virtual ZS::PhysVal::CPhysVal length(const ZS::PhysVal::CUnit& i_unit) const;
-    //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
-    //virtual ZS::PhysVal::CPhysVal width() const;
-    //virtual ZS::PhysVal::CPhysVal width(const ZS::PhysVal::CUnit& i_unit) const;
-    //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
-    //virtual ZS::PhysVal::CPhysVal height() const;
-    //virtual ZS::PhysVal::CPhysVal height(const ZS::PhysVal::CUnit& i_unit) const;
-    //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
-    //virtual void setSize(const CPhysValSize& i_physValSize);
-    //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setGroupScale(double i_fXScale, double i_fYScale);
     virtual void setRotationAngle(double i_fAngle_degree);
     virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual ZS::PhysVal::CPhysVal rotationAngle() const;

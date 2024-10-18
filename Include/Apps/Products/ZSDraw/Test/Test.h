@@ -60,6 +60,8 @@ class CDrawGridSettings;
 class CGraphObj;
 class CPhysValLine;
 class CPhysValPoint;
+class CPhysValPolygon;
+class CPhysValPolyline;
 class CPhysValRect;
 class CPhysValSize;
 }
@@ -80,21 +82,28 @@ class CTest : public ZS::Test::CTest
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Products::Draw"; }
 public: // type definition and constants
-    const QString c_strGraphObjNameTopGroup = "Top";
-    const QString c_strGraphObjNameSmallPlusSign = "SmallPlusSign";
+    // Lines
+    //------
     const QString c_strGraphObjNameSmallPlusSignVerticalLine = "SmallPlusSign-VerticalLine";
     const QString c_strGraphObjNameSmallPlusSignHorizontalLine = "SmallPlusSign-HorizontalLine";
-    const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
     const QString c_strGraphObjNameBigPlusSignVerticalLine = "BigPlusSign-VerticalLine";
     const QString c_strGraphObjNameBigPlusSignHorizontalLine = "BigPlusSign-HorizontalLine";
-    const QString c_strGraphObjNameCheckmark = "Checkmark";
     const QString c_strGraphObjNameCheckmarkLeftLine = "Checkmark-LeftLine";
     const QString c_strGraphObjNameCheckmarkRightLine = "Checkmark-RightLine";
-    const QString c_strGraphObjNameSmallRect = "SmallRect";
     const QString c_strGraphObjNameSmallRectTopLine = "SmallRect-TopLine";
     const QString c_strGraphObjNameSmallRectRightLine = "SmallRect-RightLine";
     const QString c_strGraphObjNameSmallRectBottomLine = "SmallRect-BottomLine";
     const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
+    // Polylines
+    //----------
+    const QString c_strGraphObjNameStar = "Star";
+    // Groups
+    //-------
+    const QString c_strGraphObjNameTopGroup = "Top";
+    const QString c_strGraphObjNameSmallPlusSign = "SmallPlusSign";
+    const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
+    const QString c_strGraphObjNameCheckmark = "Checkmark";
+    const QString c_strGraphObjNameSmallRect = "SmallRect";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -108,9 +117,9 @@ protected: // instance methods
         const QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints> i_mapGraphObjTypeRenderHints = QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints>());
     void createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-
     void createTestGroupObjectCoordinatesTransformPhysValShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesTransformPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupObjectCoordinatesTransformPhysValPolygon(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesAddLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValPoint(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -123,6 +132,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolylinesStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -153,6 +163,7 @@ protected slots:
     void doTestStepSetGridSettings(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep* i_pTestStep);
@@ -193,11 +204,13 @@ protected: // instance members
     CMainWindow* m_pMainWindow = nullptr;
     ZS::Draw::CDrawingView* m_pDrawingView = nullptr;
     ZS::Draw::CDrawingScene* m_pDrawingScene = nullptr;
+    // Map with created objects. Key is name, value is current key in tree.
+    // Key in hash is not existing if the object has not been created or has been removed during the test run.
+    QMap<QString, QString> m_hshGraphObjNameToKeys;
+
+    // Lines
+    //------
     // SmallPlusSign
-    QPointF m_ptPosSmallPlusSign;
-    QSizeF m_sizeSmallPlusSign;
-    ZS::Draw::CPhysValRect* m_pPhysValRectSmallPlusSign = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleSmallPlusSign;
     QPointF m_ptPosSmallPlusSignVerticalLine;
     QLineF m_lineSmallPlusSignVerticalLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
@@ -205,10 +218,6 @@ protected: // instance members
     QLineF m_lineSmallPlusSignHorizontalLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineSmallPlusSignHorizontalLine = nullptr;
     // BigPlusSign
-    QPointF m_ptPosBigPlusSign;
-    QSizeF m_sizeBigPlusSign;
-    ZS::Draw::CPhysValRect* m_pPhysValRectBigPlusSign = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleBigPlusSign;
     QPointF m_ptPosBigPlusSignVerticalLine;
     QLineF m_lineBigPlusSignVerticalLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineBigPlusSignVerticalLine = nullptr;
@@ -216,10 +225,6 @@ protected: // instance members
     QLineF m_lineBigPlusSignHorizontalLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
     // Checkmark
-    QPointF m_ptPosCheckmark;
-    QSizeF m_sizeCheckmark;
-    ZS::Draw::CPhysValRect* m_pPhysValRectCheckmark = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleCheckmark;
     QPointF m_ptPosCheckmarkLeftLine;
     QLineF m_lineCheckmarkLeftLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineCheckmarkLeftLine = nullptr;
@@ -227,10 +232,6 @@ protected: // instance members
     QLineF m_lineCheckmarkRightLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineCheckmarkRightLine = nullptr;
     // SmallRect
-    QPointF m_ptPosSmallRect;
-    QSizeF m_sizeSmallRect;
-    ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
     QPointF m_ptPosSmallRectTopLine;
     QLineF m_lineSmallRectTopLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectTopLine = nullptr;
@@ -243,14 +244,40 @@ protected: // instance members
     QPointF m_ptPosSmallRectLeftLine;
     QLineF m_lineSmallRectLeftLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectLeftLine = nullptr;
+
+    // Polygons
+    //----------
+    QPointF m_ptPosPolygonStar;
+    QPolygonF m_polygonStar;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonStar = nullptr;
+
+    // Groups
+    //-------
+    // SmallPlusSign
+    QPointF m_ptPosSmallPlusSign;
+    QSizeF m_sizeSmallPlusSign;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallPlusSign = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallPlusSign;
+    // BigPlusSign
+    QPointF m_ptPosBigPlusSign;
+    QSizeF m_sizeBigPlusSign;
+    ZS::Draw::CPhysValRect* m_pPhysValRectBigPlusSign = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleBigPlusSign;
+    // Checkmark
+    QPointF m_ptPosCheckmark;
+    QSizeF m_sizeCheckmark;
+    ZS::Draw::CPhysValRect* m_pPhysValRectCheckmark = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleCheckmark;
+    // SmallRect
+    QPointF m_ptPosSmallRect;
+    QSizeF m_sizeSmallRect;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
     // TopGroup
     QPointF m_ptPosTopGroup;
     QSizeF m_sizeTopGroup;
     ZS::Draw::CPhysValRect* m_pPhysValRectTopGroup = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleTopGroup;
-    // Map with created objects. Key is name, value is current key in tree.
-    // Key in hash is not existing if the object has not been created or has been removed during the test run.
-    QMap<QString, QString> m_hshGraphObjNameToKeys;
 
 }; // class CTest
 

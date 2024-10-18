@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObjPolyline_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Common/ZSDrawPhysValPolygon.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsPolygonItem>

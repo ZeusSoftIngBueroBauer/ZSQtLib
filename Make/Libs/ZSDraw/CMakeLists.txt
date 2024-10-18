@@ -39,6 +39,8 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawingSize.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPolygon.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPolyline.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValRect.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValShape.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValSize.h
@@ -163,6 +165,8 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawingSize.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPolygon.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPolyline.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValShape.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValSize.cpp

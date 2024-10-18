@@ -739,6 +739,146 @@ void CTest::createTestGroupAddStandardShapesLinesSmallRect(
 }
 
 //------------------------------------------------------------------------------
+void CTest::createTestGroupAddStandardShapesPolylinesStar(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddStandardShapesPolylinesStar",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypePolyline);
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
+    -----------------------------------------------------------------------*/
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+
+    // Star (clockwise, starting at top)
+    //----------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameSmallRectTopLine + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectTopLine + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectTopLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectTopLine));
+    QPointF ptP1SmallRectTopLine(320.0, bYAxisTopDown ? 270.0 : 330.0);
+    QPointF ptP2SmallRectTopLine(330.0, bYAxisTopDown ? 270.0 : 330.0);
+    m_ptPosSmallRectTopLine = QPointF(325.0, 270.0);
+    m_lineSmallRectTopLine = QLineF(QPointF(-5.0, 0.0), QPointF(5.0, 0.0));
+    m_pPhysValLineSmallRectTopLine->setP1(ptP1SmallRectTopLine);
+    m_pPhysValLineSmallRectTopLine->setP2(ptP2SmallRectTopLine);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectTopLine);
+    pTestStep->setConfigValue("P1", ptP1SmallRectTopLine);
+    pTestStep->setConfigValue("P2", ptP2SmallRectTopLine);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameSmallRectTopLine, m_ptPosSmallRectTopLine,
+        m_lineSmallRectTopLine, *m_pPhysValLineSmallRectTopLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Right Line
+    //-----------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameSmallRectRightLine + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectRightLine + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectRightLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectRightLine));
+    QPointF ptP1SmallRectRightLine(330.0, bYAxisTopDown ? 270.0 : 330.0);
+    QPointF ptP2SmallRectRightLine(330.0, bYAxisTopDown ? 280.0 : 320.0);
+    m_ptPosSmallRectRightLine = QPointF(330.0, 275.0);
+    m_lineSmallRectRightLine = QLineF(QPointF(0.0, -5.0), QPointF(0.0, 5.0));
+    m_pPhysValLineSmallRectRightLine->setP1(ptP1SmallRectRightLine);
+    m_pPhysValLineSmallRectRightLine->setP2(ptP2SmallRectRightLine);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectRightLine);
+    pTestStep->setConfigValue("P1", ptP1SmallRectRightLine);
+    pTestStep->setConfigValue("P2", ptP2SmallRectRightLine);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameSmallRectRightLine, m_ptPosSmallRectRightLine,
+        m_lineSmallRectRightLine, *m_pPhysValLineSmallRectRightLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Bottom Line
+    //------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameSmallRectBottomLine + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectBottomLine + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectBottomLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectBottomLine));
+    QPointF ptP1SmallRectBottomLine(330.0, bYAxisTopDown ? 280.0 : 320.0);
+    QPointF ptP2SmallRectBottomLine(320.0, bYAxisTopDown ? 280.0 : 320.0);
+    m_ptPosSmallRectBottomLine = QPointF(325.0, 280.0);
+    m_lineSmallRectBottomLine = QLineF(QPointF(5.0, 0.0), QPointF(-5.0, 0.0));
+    m_pPhysValLineSmallRectBottomLine->setP1(ptP1SmallRectBottomLine);
+    m_pPhysValLineSmallRectBottomLine->setP2(ptP2SmallRectBottomLine);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectBottomLine);
+    pTestStep->setConfigValue("P1", ptP1SmallRectBottomLine);
+    pTestStep->setConfigValue("P2", ptP2SmallRectBottomLine);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameSmallRectBottomLine, m_ptPosSmallRectBottomLine,
+        m_lineSmallRectBottomLine, *m_pPhysValLineSmallRectBottomLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Left Line
+    //----------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameSmallRectLeftLine + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectLeftLine + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectLeftLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectLeftLine));
+    QPointF ptP1SmallRectLeftLine(320.0, bYAxisTopDown ? 280.0 : 320.0);
+    QPointF ptP2SmallRectLeftLine(320.0, bYAxisTopDown ? 270.0 : 330.0);
+    m_ptPosSmallRectLeftLine = QPointF(320.0, 275.0);
+    m_lineSmallRectLeftLine = QLineF(QPointF(0.0, 5.0), QPointF(0.0, -5.0));
+    m_pPhysValLineSmallRectLeftLine->setP1(ptP1SmallRectLeftLine);
+    m_pPhysValLineSmallRectLeftLine->setP2(ptP2SmallRectLeftLine);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectLeftLine);
+    pTestStep->setConfigValue("P1", ptP1SmallRectLeftLine);
+    pTestStep->setConfigValue("P2", ptP2SmallRectLeftLine);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameSmallRectLeftLine, m_ptPosSmallRectLeftLine,
+        m_lineSmallRectLeftLine, *m_pPhysValLineSmallRectLeftLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {

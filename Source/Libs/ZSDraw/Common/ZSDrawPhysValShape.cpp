@@ -51,8 +51,6 @@ CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(&i_drawingScene),
     m_bYAxisTopDown(i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
-    //m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
-    //m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
     m_unit(i_drawingScene.drawingSize().unit()),
     m_idxInDrawingScene(-1)
 {
@@ -66,57 +64,16 @@ CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene, const CUnit& i
 //------------------------------------------------------------------------------
     m_pDrawingScene(&i_drawingScene),
     m_bYAxisTopDown(!Units.Length.isMetricUnit(i_unit) || i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
-    //m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
-    //m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
     m_unit(i_unit),
     m_idxInDrawingScene(-1)
 {
 }
-
-////------------------------------------------------------------------------------
-///*! @brief Creates a physical line on the drawing scene in the current unit
-//           and current resolution of the drawing scene.
-//*/
-//CPhysValShape::CPhysValShape(
-//    const CDrawingScene& i_drawingScene,
-//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY ) :
-////------------------------------------------------------------------------------
-//    m_pDrawingScene(&i_drawingScene),
-//    m_bYAxisTopDown(i_divLinesMetricsY.yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
-//    m_pDivLinesMetricsX(&i_divLinesMetricsX),
-//    m_pDivLinesMetricsY(&i_divLinesMetricsY),
-//    m_unit(i_drawingScene.drawingSize().unit()),
-//    m_idxInDrawingScene(-1)
-//{
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Creates a physical line on the drawing scene in the current unit
-//           and current resolution of the drawing scene.
-//*/
-//CPhysValShape::CPhysValShape(
-//    const CDrawingScene& i_drawingScene,
-//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-//    const CUnit& i_unit) :
-////------------------------------------------------------------------------------
-//    m_pDrawingScene(&i_drawingScene),
-//    m_bYAxisTopDown(!Units.Length.isMetricUnit(i_unit) || i_divLinesMetricsY.yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
-//    m_pDivLinesMetricsX(&i_divLinesMetricsX),
-//    m_pDivLinesMetricsY(&i_divLinesMetricsY),
-//    m_unit(i_unit),
-//    m_idxInDrawingScene(-1)
-//{
-//}
 
 //------------------------------------------------------------------------------
 CPhysValShape::CPhysValShape(const CPhysValShape& i_physValShapeOther) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(i_physValShapeOther.m_pDrawingScene),
     m_bYAxisTopDown(i_physValShapeOther.m_bYAxisTopDown),
-    //m_pDivLinesMetricsX(i_physValShapeOther.m_pDivLinesMetricsX),
-    //m_pDivLinesMetricsY(i_physValShapeOther.m_pDivLinesMetricsY),
     m_unit(i_physValShapeOther.m_unit),
     m_idxInDrawingScene(-1)
 {
@@ -128,8 +85,6 @@ CPhysValShape::~CPhysValShape()
 {
     m_pDrawingScene = nullptr;
     m_bYAxisTopDown = false;
-    //m_pDivLinesMetricsX = nullptr;
-    //m_pDivLinesMetricsY = nullptr;
     //m_unit;
     m_idxInDrawingScene = 0;
 }
@@ -144,8 +99,6 @@ CPhysValShape& CPhysValShape::operator = ( const CPhysValShape& i_physValShapeOt
 {
     m_pDrawingScene = i_physValShapeOther.m_pDrawingScene;
     m_bYAxisTopDown = i_physValShapeOther.m_bYAxisTopDown;
-    //m_pDivLinesMetricsX = i_physValShapeOther.m_pDivLinesMetricsX;
-    //m_pDivLinesMetricsY = i_physValShapeOther.m_pDivLinesMetricsY;
     m_unit = i_physValShapeOther.m_unit;
     return *this;
 }
@@ -168,12 +121,6 @@ bool CPhysValShape::operator == ( const CPhysValShape& i_physValShapeOther ) con
     else if (m_bYAxisTopDown != i_physValShapeOther.m_bYAxisTopDown) {
         bEqual = false;
     }
-    //else if (m_pDivLinesMetricsX != i_physValShapeOther.m_pDivLinesMetricsX) {
-    //    bEqual = false;
-    //}
-    //else if (m_pDivLinesMetricsY != i_physValShapeOther.m_pDivLinesMetricsY) {
-    //    bEqual = false;
-    //}
     return bEqual;
 }
 
@@ -194,6 +141,31 @@ EYScaleAxisOrientation CPhysValShape::yScaleAxisOrientation() const
 {
     return m_bYAxisTopDown ? EYScaleAxisOrientation::TopDown : EYScaleAxisOrientation::BottomUp;
 }
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the resolution of the rectangle coordinates.
+
+    The resolution will be retrieved from the drawing scene's drawing size and
+    depends on the current unit.
+*/
+double CPhysValShape::resolution() const
+//------------------------------------------------------------------------------
+{
+    return m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit).getVal();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current unit the coordinates are stored.
+*/
+CUnit CPhysValShape::unit() const
+//------------------------------------------------------------------------------
+{
+    return m_unit;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CPhysValShape::setIndexInDrawingScene(int i_idx)
