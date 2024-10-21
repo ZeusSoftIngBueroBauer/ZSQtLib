@@ -1500,8 +1500,7 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     if (!physValPolygonResult.isNull()) {
         strlstResultValues.append("Center {" + physValPolygonResult.center().toString() + "} " + physValPolygonResult.center().unit().symbol());
-        strlstResultValues.append("Width: " + physValPolygonResult.width().toString());
-        strlstResultValues.append("Height: " + physValPolygonResult.height().toString());
+        strlstResultValues.append("Size {" + physValPolygonResult.size().toString() + "} " + physValPolygonResult.size().unit().symbol());
         strlstResultValues.append("Angle: " + physValPolygonResult.angle().toString());
         strlstResultValues.append("TopLeft {" + physValPolygonResult.topLeft().toString() + "} " + physValPolygonResult.topLeft().unit().symbol());
         strlstResultValues.append("TopRight {" + physValPolygonResult.topRight().toString() + "} " + physValPolygonResult.topRight().unit().symbol());

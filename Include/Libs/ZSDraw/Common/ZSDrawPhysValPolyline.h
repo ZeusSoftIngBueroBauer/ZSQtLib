@@ -39,6 +39,12 @@ namespace Draw
 
     Corresponds to QPolygonF but providing a physical unit and a resolution.
 
+    As the polygon’s bounding rectangle may be resized by mouse move events,
+    width and height of the bounding rectangle may become (at least temporarily) zero.
+    To handle several resize events correctly, the original polygon points,
+    the original size and the original center point of the bounding rectangle are
+    stored to calculate the current scale factor.
+
     Converting points from pixels to metric units is not supported.
     This conversion would have to be done by the parent group or scene to take
     the different Y-Scale-Axis orientation into account.
@@ -107,8 +113,14 @@ public: // instance methods (to convert the values into another unit)
     QPolygonF toQPolygonF() const;
     QPolygonF toQPolylognF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // instance members
-    /*!< Points of the polyline stored in "m_unit". */
-    QPolygonF m_polygon;
+    /*!< Original center point of the polygons bounding rectangle before resizing events. */
+    QPointF m_ptCenterOrig;
+    /*!< Original size of the polygons bounding rectangle before resizing events. */
+    QSizeF m_sizeOrig;
+    /*!< Points of the original polyline stored in "m_unit" before resizing events. */
+    QPolygonF m_polygonOrig;
+    /*!< Points of the scaled polyline stored in "m_unit" after resizing events. */
+    QPolygonF m_polygonModified;
 
 }; // class CPhysValPolyline
 

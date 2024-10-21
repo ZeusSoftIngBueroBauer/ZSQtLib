@@ -119,7 +119,7 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
     QPen pen(i_drawSettings.getPenColor());
     pen.setStyle(Qt::SolidLine);
     i_pPainter->setPen(pen);
-    QPolygonF polygon_px = m_polygon;
+    QPolygonF polygon_px = m_polygonModified;
     if (m_unit != Units.Length.px) {
         for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {
             polygon_px[idxPt] = m_pDrawingScene->convert((*this)[idxPt], Units.Length.px).toQPointF();
