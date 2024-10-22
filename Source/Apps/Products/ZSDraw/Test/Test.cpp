@@ -1307,211 +1307,285 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValPolygon physValPolygonResult(*m_pDrawingScene);
 
-    if (i_pTestStep->hasConfigValue("create.numberOfPoints")) {
-        int iNumberOfPoints = i_pTestStep->getConfigValue("create.numberOfPoints").toInt();
+    if (i_pTestStep->hasConfigValue("removeAndDeleteAllPhysValShapes")) {
+        m_pDrawingScene->removeAndDeleteAllPhysValShapes();
+    }
+
+    QString strMethod = "create";
+    if (i_pTestStep->hasConfigValue(strMethod + ".numberOfPoints")) {
+        int iNumberOfPoints = i_pTestStep->getConfigValue(strMethod + ".numberOfPoints").toInt();
         QPolygonF polygon;
         for (int idxPt = 0; idxPt < iNumberOfPoints; ++idxPt) {
-            polygon.append(i_pTestStep->getConfigValue("create.P" + QString::number(idxPt)).toPointF());
+            polygon.append(i_pTestStep->getConfigValue(strMethod + ".P" + QString::number(idxPt)).toPointF());
         }
-        if (i_pTestStep->hasConfigValue("create.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("create.unit").toString();
+        if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
             CUnit unit = strUnitPoint;
             physValPolygonResult = CPhysValPolygon(*m_pDrawingScene, polygon, unit);
         }
         else {
             physValPolygonResult = CPhysValPolygon(*m_pDrawingScene, polygon);
         }
-    }
-
-    if (i_pTestStep->hasConfigValue("removeAndDeleteAllPhysValShapes")) {
-        m_pDrawingScene->removeAndDeleteAllPhysValShapes();
-    }
-
-    // Draw original shape in blue color
-    if (i_pTestStep->hasConfigValue("addPhysValShape")) {
-        CDrawSettings drawSettings(EGraphObjTypePolygon);
-        drawSettings.setPenColor(Qt::blue);
-        CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
-        m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
-        pPhysValPolygon = nullptr;
-    }
-
-    // Draw rotated shape in green color
-    if (i_pTestStep->hasConfigValue("setAngle")) {
-        CPhysVal physValAngle = i_pTestStep->getConfigValue("setAngle").toString();
-        physValAngle.setRes(0.1);
-        physValPolygonResult.setAngle(physValAngle);
-        if (physValAngle.getVal() != 0.0 && i_pTestStep->hasConfigValue("addPhysValShape")) {
+        if (i_pTestStep->hasConfigValue("addPhysValShape")) {
             CDrawSettings drawSettings(EGraphObjTypePolygon);
-            drawSettings.setPenColor(Qt::darkGreen);
+            drawSettings.setPenColor(QColor(i_pTestStep->getConfigValue("addPhysValShape").toString()));
             CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
             m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
             pPhysValPolygon = nullptr;
         }
-    }
 
-    // Apply further methods and draw resulting shape in red color
-    if (i_pTestStep->hasConfigValue("setCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setCenter.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setCenter(physValPt);
+        int idxMethod = 0;
+        bool bHasMethod = true;
+        while (bHasMethod) {
+            bHasMethod = false;
+            QString strIdxMethod = "_" + QString::number(idxMethod);
+            strMethod = "setAngle" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                CPhysVal physValAngle;
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnit = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnit;
+                    physValAngle = CPhysVal(i_pTestStep->getConfigValue(strMethod).toDouble(), unit);
+                }
+                else {
+                    physValAngle = i_pTestStep->getConfigValue(strMethod).toString();
+                }
+                physValAngle.setRes(0.1);
+                physValPolygonResult.setAngle(physValAngle);
+            }
+            strMethod = "setCenter" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setCenter(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setCenter(physValPt);
+                }
+            }
+            strMethod = "setSize" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QSizeF sizeF = i_pTestStep->getConfigValue(strMethod).toSizeF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValSize physValSize(*m_pDrawingScene, sizeF, unit);
+                    physValPolygonResult.setSize(physValSize);
+                }
+                else {
+                    CPhysValSize physValSize(*m_pDrawingScene, sizeF);
+                    physValPolygonResult.setSize(physValSize);
+                }
+            }
+            strMethod = "setWidth" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                CPhysVal physValWidth;
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnit = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnit;
+                    physValWidth = CPhysVal(i_pTestStep->getConfigValue(strMethod).toDouble(), unit);
+                }
+                else {
+                    physValWidth = i_pTestStep->getConfigValue(strMethod).toString();
+                }
+                physValPolygonResult.setWidth(physValWidth);
+            }
+            strMethod = "setWidthByMovingLeftCenter" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setWidthByMovingLeftCenter(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setWidthByMovingLeftCenter(physValPt);
+                }
+            }
+            strMethod = "setWidthByMovingRightCenter" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setWidthByMovingRightCenter(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setWidthByMovingRightCenter(physValPt);
+                }
+            }
+            strMethod = "setHeight" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                CPhysVal physValHeight;
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnit = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnit;
+                    physValHeight = CPhysVal(i_pTestStep->getConfigValue(strMethod).toDouble(), unit);
+                }
+                else {
+                    physValHeight = i_pTestStep->getConfigValue(strMethod).toString();
+                }
+                physValPolygonResult.setHeight(physValHeight);
+            }
+            strMethod = "setHeightByMovingTopCenter" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setHeightByMovingTopCenter(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setHeightByMovingTopCenter(physValPt);
+                }
+            }
+            strMethod = "setHeightByMovingBottomCenter" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setHeightByMovingBottomCenter(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setHeightByMovingBottomCenter(physValPt);
+                }
+            }
+            strMethod = "setTopLeft" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setTopLeft(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setTopLeft(physValPt);
+                }
+            }
+            strMethod = "setTopRight" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setTopRight(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setTopRight(physValPt);
+                }
+            }
+            strMethod = "setBottomRight" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setBottomRight(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setBottomRight(physValPt);
+                }
+            }
+            strMethod = "setBottomLeft" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.setBottomLeft(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.setBottomLeft(physValPt);
+                }
+            }
+            strMethod = "addPhysValShape" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                CDrawSettings drawSettings(EGraphObjTypePolygon);
+                drawSettings.setPenColor(QColor(i_pTestStep->getConfigValue(strMethod).toString()));
+                CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
+                m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
+                pPhysValPolygon = nullptr;
+            }
+            ++idxMethod;
         }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setSize")) {
-        QSizeF sizeF = i_pTestStep->getConfigValue("setSize").toSizeF();
-        if (i_pTestStep->hasConfigValue("setSize.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setSize.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValSize physValSize(*m_pDrawingScene, sizeF, unit);
-            physValPolygonResult.setSize(physValSize);
-        }
-        else {
-            CPhysValSize physValSize(*m_pDrawingScene, sizeF);
-            physValPolygonResult.setSize(physValSize);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setWidth")) {
-        CPhysVal physValWidth = i_pTestStep->getConfigValue("setWidth").toString();
-        physValPolygonResult.setWidth(physValWidth);
-    }
-    if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setWidthByMovingLeftCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setWidthByMovingLeftCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingRightCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingRightCenter.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setWidthByMovingRightCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setWidthByMovingRightCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setHeight")) {
-        CPhysVal physValHeight = i_pTestStep->getConfigValue("setHeight").toString();
-        physValPolygonResult.setHeight(physValHeight);
-    }
-    if (i_pTestStep->hasConfigValue("setHeightByMovingTopCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingTopCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setTopCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingTopCenter.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setHeightByMovingTopCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setHeightByMovingTopCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setHeightByMovingBottomCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setHeightByMovingBottomCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setTopLeft")) {
-        QPointF pt = i_pTestStep->getConfigValue("setTopLeft").toPointF();
-        if (i_pTestStep->hasConfigValue("setTopLeft.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setTopLeft.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setTopLeft(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setTopLeft(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setTopRight")) {
-        QPointF pt = i_pTestStep->getConfigValue("setTopRight").toPointF();
-        if (i_pTestStep->hasConfigValue("setTopRight.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setTopRight.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setTopRight(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setTopRight(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setBottomRight")) {
-        QPointF pt = i_pTestStep->getConfigValue("setBottomRight").toPointF();
-        if (i_pTestStep->hasConfigValue("setBottomRight.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setBottomRight.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setBottomRight(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setBottomRight(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setBottomLeft")) {
-        QPointF pt = i_pTestStep->getConfigValue("setBottomLeft").toPointF();
-        if (i_pTestStep->hasConfigValue("setBottomLeft.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setBottomLeft.unit").toString();
-            CUnit unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValPolygonResult.setBottomLeft(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValPolygonResult.setBottomLeft(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("addPhysValShape")) {
-        CDrawSettings drawSettings(EGraphObjTypeRect);
-        drawSettings.setPenColor(Qt::red);
-        CPhysValPolygon* pPhysValPolygon = new CPhysValPolygon(physValPolygonResult);
-        m_pDrawingScene->addPhysValShape(pPhysValPolygon, drawSettings);
-        pPhysValPolygon = nullptr;
     }
 
     QStringList strlstResultValues;
     if (!physValPolygonResult.isNull()) {
-        strlstResultValues.append("Center {" + physValPolygonResult.center().toString() + "} " + physValPolygonResult.center().unit().symbol());
-        strlstResultValues.append("Size {" + physValPolygonResult.size().toString() + "} " + physValPolygonResult.size().unit().symbol());
-        strlstResultValues.append("Angle: " + physValPolygonResult.angle().toString());
-        strlstResultValues.append("TopLeft {" + physValPolygonResult.topLeft().toString() + "} " + physValPolygonResult.topLeft().unit().symbol());
-        strlstResultValues.append("TopRight {" + physValPolygonResult.topRight().toString() + "} " + physValPolygonResult.topRight().unit().symbol());
-        strlstResultValues.append("BottomRight {" + physValPolygonResult.bottomRight().toString() + "} " + physValPolygonResult.bottomRight().unit().symbol());
-        strlstResultValues.append("BottomLeft {" + physValPolygonResult.bottomLeft().toString() + "} " + physValPolygonResult.bottomLeft().unit().symbol());
-        strlstResultValues.append("TopCenter {" + physValPolygonResult.topCenter().toString() + "} " + physValPolygonResult.topCenter().unit().symbol());
-        strlstResultValues.append("RightCenter {" + physValPolygonResult.rightCenter().toString() + "} " + physValPolygonResult.rightCenter().unit().symbol());
-        strlstResultValues.append("BottomCenter {" + physValPolygonResult.bottomCenter().toString() + "} " + physValPolygonResult.bottomCenter().unit().symbol());
-        strlstResultValues.append("LeftCenter {" + physValPolygonResult.leftCenter().toString() + "} " + physValPolygonResult.leftCenter().unit().symbol());
+        int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+            i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+
+        strlstResultValues.append(
+            "Center {" + physValPolygonResult.center().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.center().unit().symbol());
+        strlstResultValues.append(
+            "Size {" + physValPolygonResult.size().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.size().unit().symbol());
+        strlstResultValues.append(
+            "Angle: " + physValPolygonResult.angle().toString());
+        strlstResultValues.append(
+            "TopLeft {" + physValPolygonResult.topLeft().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.topLeft().unit().symbol());
+        strlstResultValues.append(
+            "TopRight {" + physValPolygonResult.topRight().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.topRight().unit().symbol());
+        strlstResultValues.append(
+            "BottomRight {" + physValPolygonResult.bottomRight().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.bottomRight().unit().symbol());
+        strlstResultValues.append(
+            "BottomLeft {" + physValPolygonResult.bottomLeft().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.bottomLeft().unit().symbol());
+        strlstResultValues.append(
+            "TopCenter {" + physValPolygonResult.topCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.topCenter().unit().symbol());
+        strlstResultValues.append(
+            "RightCenter {" + physValPolygonResult.rightCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.rightCenter().unit().symbol());
+        strlstResultValues.append(
+            "BottomCenter {" + physValPolygonResult.bottomCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.bottomCenter().unit().symbol());
+        strlstResultValues.append(
+            "LeftCenter {" + physValPolygonResult.leftCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPolygonResult.leftCenter().unit().symbol());
         for (int idxPt = 0; idxPt < physValPolygonResult.count(); ++idxPt) {
-            strlstResultValues.append("P" + QString::number(idxPt) + ": {" + physValPolygonResult[idxPt].toString() + "} " + physValPolygonResult[idxPt].unit().symbol());
+            strlstResultValues.append(
+                "P" + QString::number(idxPt) + ": {" +
+                physValPolygonResult[idxPt].toString(false, ", ", iResultValuesPrecision) + "} " +
+                physValPolygonResult[idxPt].unit().symbol());
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);

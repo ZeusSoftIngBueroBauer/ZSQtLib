@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValPolyline.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -280,6 +281,7 @@ void CPhysValPolyline::draw(QPainter* i_pPainter, const QRectF& i_rect, const CD
     }
     for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {
         i_pPainter->drawText(polygon_px[idxPt], "P" + QString::number(idxPt));
+        break;
     }
     QPointF ptCenter = m_pDrawingScene->convert(center(), Units.Length.px).toQPointF();
     QPointF ptTL = m_pDrawingScene->convert(topLeft(), Units.Length.px).toQPointF();
@@ -401,9 +403,6 @@ void CPhysValPolyline::setCenter(const QPointF& i_pt)
 void CPhysValPolyline::setCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValRect::setCenter(i_physValPoint);
     QPointF ptCenterModified = center().toQPointF();
     QPointF ptCenterMove = ptCenterModified - m_ptCenterOrig;
@@ -457,21 +456,8 @@ void CPhysValPolyline::setSize(const QSizeF& i_size)
 void CPhysValPolyline::setSize(const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValSize.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValRect::setSize(i_physValSize);
-    QPointF ptCenterModified = center().toQPointF();
-    QSizeF sizeModified = size().toQSizeF();
-    double fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
-    double fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
-    for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
-        double fdxPrev = m_polygonOrig[idxPt].x() - m_ptCenterOrig.x();
-        double fdyPrev = m_polygonOrig[idxPt].y() - m_ptCenterOrig.y();
-        double fdxNew = fXScaleFactor * fdxPrev;
-        double fdyNew = fYScaleFactor * fdyPrev;
-        m_polygonModified[idxPt] = QPointF(ptCenterModified.x() + fdxNew, ptCenterModified.y() + fdyNew);
-    }
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -503,6 +489,7 @@ void CPhysValPolyline::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setWidth(i_physValWidth);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -552,6 +539,7 @@ void CPhysValPolyline::setWidthByMovingLeftCenter(const CPhysValPoint& i_physVal
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setWidthByMovingLeftCenter(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -590,6 +578,7 @@ void CPhysValPolyline::setWidthByMovingRightCenter(const CPhysValPoint& i_physVa
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setWidthByMovingRightCenter(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -632,6 +621,7 @@ void CPhysValPolyline::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setHeight(i_physValHeight);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -672,6 +662,7 @@ void CPhysValPolyline::setHeightByMovingTopCenter(const CPhysValPoint& i_physVal
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setHeightByMovingTopCenter(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -712,6 +703,7 @@ void CPhysValPolyline::setHeightByMovingBottomCenter(const CPhysValPoint& i_phys
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setHeightByMovingBottomCenter(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -746,6 +738,7 @@ void CPhysValPolyline::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setAngle(i_physValAngle);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -780,6 +773,7 @@ void CPhysValPolyline::setTopLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setTopLeft(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -814,6 +808,7 @@ void CPhysValPolyline::setTopRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setTopRight(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -848,6 +843,7 @@ void CPhysValPolyline::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setBottomRight(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -882,6 +878,7 @@ void CPhysValPolyline::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     CPhysValRect::setBottomLeft(i_physValPoint);
+    updateModifiedPolygon();
 }
 
 /*==============================================================================
@@ -910,4 +907,34 @@ QPolygonF CPhysValPolyline::toQPolylognF(const ZS::PhysVal::CUnit& i_unit) const
         }
     }
     return polyline;
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::updateModifiedPolygon()
+//------------------------------------------------------------------------------
+{
+    QPointF ptCenterModified = center().toQPointF();
+    QSizeF sizeModified = size().toQSizeF();
+    double fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
+    double fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
+    for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
+        double fdxPrev = m_polygonOrig[idxPt].x() - m_ptCenterOrig.x();
+        double fdyPrev = m_polygonOrig[idxPt].y() - m_ptCenterOrig.y();
+        double fdxNew = fXScaleFactor * fdxPrev;
+        double fdyNew = fYScaleFactor * fdyPrev;
+        m_polygonModified[idxPt] = QPointF(ptCenterModified.x() + fdxNew, ptCenterModified.y() + fdyNew);
+        if (m_physValAngle.getVal() != 0.0) {
+            double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
+            fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
+            if (!m_bYAxisTopDown) {
+                // For BottomUp YAxis scale reflection on the x-axis:
+                fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
+            }
+            m_polygonModified[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], fAngle_rad);
+        }
+    }
 }

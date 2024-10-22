@@ -112,6 +112,8 @@ public: // instance methods
 public: // instance methods (to convert the values into another unit)
     QPolygonF toQPolygonF() const;
     QPolygonF toQPolylognF(const ZS::PhysVal::CUnit& i_unit) const;
+protected: // auxiliary instance methods
+    void updateModifiedPolygon();
 protected: // instance members
     /*!< Original center point of the polygons bounding rectangle before resizing events. */
     QPointF m_ptCenterOrig;

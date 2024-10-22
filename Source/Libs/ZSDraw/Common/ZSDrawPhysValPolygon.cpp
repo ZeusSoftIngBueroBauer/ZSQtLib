@@ -133,6 +133,7 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
     }
     for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {
         i_pPainter->drawText(polygon_px[idxPt], "P" + QString::number(idxPt));
+        break;
     }
     QPointF ptCenter = m_pDrawingScene->convert(center(), Units.Length.px).toQPointF();
     QPointF ptTL = m_pDrawingScene->convert(topLeft(), Units.Length.px).toQPointF();

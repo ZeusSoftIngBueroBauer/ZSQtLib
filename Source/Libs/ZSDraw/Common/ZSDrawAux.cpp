@@ -559,7 +559,7 @@ QString ZS::Draw::qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pE
 //------------------------------------------------------------------------------
 {
     return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
-        "m NewSize {" + qSize2Str(i_pEv->newSize()) + "}" +
+        ", NewSize {" + qSize2Str(i_pEv->newSize()) + "}" +
         ", OldSize {" + qSize2Str(i_pEv->oldSize()) + "}";
 }
 
@@ -629,8 +629,8 @@ void ZS::Draw::getLineEndPolygons(
     QPolygonF* i_pplgLineEnd )
 //------------------------------------------------------------------------------
 {
-    if( (i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal)
-     || (i_drawSettings.getLineEndStyle(ELinePoint::End) != ELineEndStyle::Normal) )
+    if ((i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal)
+     || (i_drawSettings.getLineEndStyle(ELinePoint::End) != ELineEndStyle::Normal))
     {
         double fdx = i_line.dx();
         double fdy = i_line.dy();
@@ -651,8 +651,7 @@ void ZS::Draw::getLineEndPolygons(
             }
         }
         // Left of y axis ..
-        else
-        {
+        else {
             // "Above" x axis ( 3. quadrant, angle returned by acos: 0° <= f <= 90°) ..
             if (fdy <= 0.0) {
             }
