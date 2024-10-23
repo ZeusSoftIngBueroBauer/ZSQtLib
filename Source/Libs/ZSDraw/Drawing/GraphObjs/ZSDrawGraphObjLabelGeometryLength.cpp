@@ -499,7 +499,7 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
-    getLineEndPolygons(
+    getLineEndArrowPolygons(
         /* line          */ m_anchorLines[2],
         /* drawSetings   */ m_drawSettingsArrowHeads,
         /* pplgLineStart */ &m_plgP1ArrowHead,

@@ -1176,7 +1176,7 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndSizesModel( ELinePoint i_linePoin
         {
             drawSettings.setArrowHeadLength(i_linePoint,lineEndLength.enumerator());
 
-            getLineEndPolygons(
+            getLineEndArrowPolygons(
                 /* line          */ s_arlineLineEndSizes[static_cast<int>(i_linePoint)],
                 /* drawSetings   */ drawSettings,
                 /* pplgLineStart */ i_linePoint == ELinePoint::Start ? &plgArrowHead : nullptr,
@@ -2127,7 +2127,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         drawSettings.setArrowHeadBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
         drawSettings.setArrowHeadFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
 
-        getLineEndPolygons(
+        getLineEndArrowPolygons(
             /* line          */ s_arlineLineEndSizes[static_cast<int>(i_linePoint)],
             /* drawSetings   */ drawSettings,
             /* pplgLineStart */ i_linePoint == ELinePoint::Start ? &plgArrowHead : nullptr,

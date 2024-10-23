@@ -87,8 +87,10 @@ CPhysValPolyline::CPhysValPolyline(const CDrawingScene& i_drawingScene, QPolygon
     m_polygonOrig(std::move(i_polygon)),
     m_polygonModified()
 {
-    CPhysValRect::setSize(m_polygonOrig.boundingRect().size());
-    CPhysValRect::setCenter(m_polygonOrig.boundingRect().center());
+    // Must not call overriden method CPhysValPolyline::setSize
+    CPhysValRect::setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    // Must not call overriden method CPhysValPolyline::setCenter
+    CPhysValRect::setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     m_ptCenterOrig = m_ptCenter;
     m_sizeOrig = m_size;
     m_polygonModified = m_polygonOrig;
@@ -103,8 +105,10 @@ CPhysValPolyline::CPhysValPolyline(
     m_polygonOrig(std::move(i_polygon)),
     m_polygonModified()
 {
-    CPhysValRect::setSize(m_polygonOrig.boundingRect().size());
-    CPhysValRect::setCenter(m_polygonOrig.boundingRect().center());
+    // Must not call overriden method CPhysValPolyline::setSize
+    CPhysValRect::setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    // Must not call overriden method CPhysValPolyline::setCenter
+    CPhysValRect::setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     m_ptCenterOrig = m_ptCenter;
     m_sizeOrig = m_size;
     m_polygonModified = m_polygonOrig;
@@ -145,8 +149,10 @@ CPhysValPolyline& CPhysValPolyline::operator = ( const QPolygonF& i_polyline )
 {
     m_polygonOrig = i_polyline;
     m_polygonModified = i_polyline;
-    CPhysValRect::setSize(m_polygonOrig.boundingRect().size());
-    CPhysValRect::setCenter(m_polygonOrig.boundingRect().center());
+    // Must not call overriden method CPhysValPolyline::setSize
+    CPhysValRect::setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    // Must not call overriden method CPhysValPolyline::setCenter
+    CPhysValRect::setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     m_ptCenterOrig = m_ptCenter;
     m_sizeOrig = m_size;
     return *this;
@@ -191,7 +197,7 @@ bool CPhysValPolyline::operator == ( const CPhysValShape& i_physValPolylineOther
         }
         else if (m_unit != physValPolylineOther.m_unit && m_polygonOrig != physValPolylineOther.m_polygonOrig) {
             for (int idxPt = 0; idxPt < physValPolylineOther.count(); ++idxPt) {
-                if ((*this)[idxPt] != physValPolylineOther[idxPt]) {
+                if (at(idxPt) != physValPolylineOther.at(idxPt)) {
                     bEqual = false;
                     break;
                 }
@@ -206,17 +212,6 @@ bool CPhysValPolyline::operator != ( const CPhysValShape& i_physValLineOther ) c
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physValLineOther);
-}
-
-/*==============================================================================
-public: // operators
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValPoint CPhysValPolyline::operator[](int i_idx) const
-//------------------------------------------------------------------------------
-{
-    return CPhysValPoint(*m_pDrawingScene, m_polygonModified[i_idx]);
 }
 
 /*==============================================================================
@@ -271,7 +266,7 @@ void CPhysValPolyline::draw(QPainter* i_pPainter, const QRectF& i_rect, const CD
     QPolygonF polygon_px = m_polygonModified;
     if (m_unit != Units.Length.px) {
         for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {
-            polygon_px[idxPt] = m_pDrawingScene->convert((*this)[idxPt], Units.Length.px).toQPointF();
+            polygon_px[idxPt] = m_pDrawingScene->convert(at(idxPt), Units.Length.px).toQPointF();
         }
     }
     if (polygon_px.size() > 1) {
@@ -354,23 +349,7 @@ QString CPhysValPolyline::toString(bool i_bAddUnit, const QString& i_strSeparato
 }
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief returns the number of polygon points.
-
-    Cannot be named "size" as size is already used by base class CPhysValRect
-    returning the size (width and height) of the rectangle.
-*/
-int CPhysValPolyline::count() const
-//------------------------------------------------------------------------------
-{
-    return m_polygonModified.size();
-}
-
-/*==============================================================================
-public: // overridables
+public: // overridables of base class CPhysValRect
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -882,6 +861,114 @@ void CPhysValPolyline::setBottomLeft(const CPhysValPoint& i_physValPoint)
 }
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true, if the polygon is empty.
+*/
+bool CPhysValPolyline::isEmpty() const
+//------------------------------------------------------------------------------
+{
+    return m_polygonModified.isEmpty();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of polygon points.
+
+    Cannot be named "size" as size is already used by base class CPhysValRect
+    returning the size (width and height) of the rectangle.
+*/
+int CPhysValPolyline::count() const
+//------------------------------------------------------------------------------
+{
+    return m_polygonModified.size();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the point at index position as a copy.
+
+    Same as method "at(i_idx)".
+
+    @note An operator or method returning a modifiable reference is not provided
+          as on modifying the point, some further calculations as updating the
+          bounding rectangle must be triggered.
+
+    @param [in] i_idx
+        The index must be a valid index position in the range 0 <= i_idx < count().
+*/
+CPhysValPoint CPhysValPolyline::at(int i_idx) const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene, m_polygonModified[i_idx]);
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::append(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::insert(int i_idx, const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::remove(int i_idx, int i_iCount)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::removeAt(int i_idx)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::removeFirst()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::removeLast()
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPolyline::replace(int i_idx, const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.replace(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValPolyline::takeAt(int i_idx)
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValPolyline::takeFirst()
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValPolyline::takeLast()
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene);
+}
+
+/*==============================================================================
 public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
@@ -914,6 +1001,21 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Internal method to update the points in the modified polygon.
+
+    The original points had an original distance vector to the original center point.
+
+    The bounding rectangle of the polygon have have been resized and rotated.
+    The resized bounding rectangle has a new, modified center point and a new,
+    modified size. The polygon may also be rotated.
+
+    The original distance to the center point will be scaled according to the
+    scale factor calculated by the modified and original size. The point will
+    then be moved by this distance to the new, modified center point of the
+    polygon's bounding rectangle.
+
+    The point will then be rotated by the angle around the new, modified center point.
+*/
 void CPhysValPolyline::updateModifiedPolygon()
 //------------------------------------------------------------------------------
 {
@@ -937,4 +1039,45 @@ void CPhysValPolyline::updateModifiedPolygon()
             m_polygonModified[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], fAngle_rad);
         }
     }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method to update the original polygon coordinates.
+
+    When changing the polygon directly by either modifying points, inserting
+    or removing points, the bounding rectangle need to be updated.
+
+    The original coordinates of the bounding rectangle (size, center point)
+    will be newly calculated and the modified polygon points will be further
+    on used as the original polygon points.
+*/
+void CPhysValPolyline::updateOriginalPolygon()
+//------------------------------------------------------------------------------
+{
+    QPointF ptCenterModified = center().toQPointF();
+    QSizeF sizeModified = size().toQSizeF();
+    double fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
+    double fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
+    for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
+        if (m_physValAngle.getVal() != 0.0) {
+            double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
+            fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
+            if (!m_bYAxisTopDown) {
+                // For BottomUp YAxis scale reflection on the x-axis:
+                fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
+            }
+            // Rotate back:
+            fAngle_rad *= -1;
+            m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], fAngle_rad);
+        }
+        double fdxPrev = m_polygonOrig[idxPt].x() - m_ptCenterOrig.x();
+        double fdyPrev = m_polygonOrig[idxPt].y() - m_ptCenterOrig.y();
+        double fdxNew = fXScaleFactor * fdxPrev;
+        double fdyNew = fYScaleFactor * fdyPrev;
+        m_polygonOrig[idxPt] = QPointF(ptCenterModified.x() - fdxNew, ptCenterModified.y() - fdyNew);
+    }
+    CPhysValRect::setSize(m_polygonOrig.boundingRect().size());
+    CPhysValRect::setCenter(m_polygonOrig.boundingRect().center());
+    m_ptCenterOrig = m_ptCenter;
+    m_sizeOrig = m_size;
 }

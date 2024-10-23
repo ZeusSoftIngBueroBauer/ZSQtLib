@@ -122,7 +122,7 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
     QPolygonF polygon_px = m_polygonModified;
     if (m_unit != Units.Length.px) {
         for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {
-            polygon_px[idxPt] = m_pDrawingScene->convert((*this)[idxPt], Units.Length.px).toQPointF();
+            polygon_px[idxPt] = m_pDrawingScene->convert(at(idxPt), Units.Length.px).toQPointF();
         }
     }
     if (polygon_px.size() > 1) {

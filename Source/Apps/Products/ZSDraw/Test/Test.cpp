@@ -150,44 +150,47 @@ CTest::~CTest()
         }
     }
 
-    delete m_pPhysValRectSmallPlusSign;
     delete m_pPhysValLineSmallPlusSignVerticalLine;
+    m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
     delete m_pPhysValLineSmallPlusSignHorizontalLine;
+    m_pPhysValLineSmallPlusSignHorizontalLine = nullptr;
 
-    delete m_pPhysValRectBigPlusSign;
     delete m_pPhysValLineBigPlusSignVerticalLine;
+    m_pPhysValLineBigPlusSignVerticalLine = nullptr;
     delete m_pPhysValLineBigPlusSignHorizontalLine;
+    m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
 
-    delete m_pPhysValRectCheckmark;
     delete m_pPhysValLineCheckmarkLeftLine;
+    m_pPhysValLineCheckmarkLeftLine = nullptr;
     delete m_pPhysValLineCheckmarkRightLine;
+    m_pPhysValLineCheckmarkRightLine = nullptr;
 
-    delete m_pPhysValRectSmallRect;
     delete m_pPhysValLineSmallRectTopLine;
+    m_pPhysValLineSmallRectTopLine = nullptr;
     delete m_pPhysValLineSmallRectRightLine;
+    m_pPhysValLineSmallRectRightLine = nullptr;
     delete m_pPhysValLineSmallRectBottomLine;
+    m_pPhysValLineSmallRectBottomLine = nullptr;
     delete m_pPhysValLineSmallRectLeftLine;
+    m_pPhysValLineSmallRectLeftLine = nullptr;
 
+    delete m_pPhysValPolygonStar;
+    m_pPhysValPolygonStar = nullptr;
+
+    delete m_pPhysValRectSmallPlusSign;
+    m_pPhysValRectSmallPlusSign = nullptr;
+    delete m_pPhysValRectBigPlusSign;
+    m_pPhysValRectBigPlusSign = nullptr;
+    delete m_pPhysValRectCheckmark;
+    m_pPhysValRectCheckmark = nullptr;
+    delete m_pPhysValRectSmallRect;
+    m_pPhysValRectSmallRect = nullptr;
     delete m_pPhysValRectTopGroup;
+    m_pPhysValRectTopGroup = nullptr;
 
     m_pMainWindow = nullptr;
     m_pDrawingView = nullptr;
     m_pDrawingScene = nullptr;
-    m_pPhysValRectSmallPlusSign = nullptr;
-    m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
-    m_pPhysValLineSmallPlusSignHorizontalLine = nullptr;
-    m_pPhysValRectBigPlusSign = nullptr;
-    m_pPhysValLineBigPlusSignVerticalLine = nullptr;
-    m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
-    m_pPhysValRectCheckmark = nullptr;
-    m_pPhysValLineCheckmarkLeftLine = nullptr;
-    m_pPhysValLineCheckmarkRightLine = nullptr;
-    m_pPhysValRectSmallRect = nullptr;
-    m_pPhysValLineSmallRectTopLine = nullptr;
-    m_pPhysValLineSmallRectRightLine = nullptr;
-    m_pPhysValLineSmallRectBottomLine = nullptr;
-    m_pPhysValLineSmallRectLeftLine = nullptr;
-    m_pPhysValRectTopGroup = nullptr;
 
 } // dtor
 
@@ -1532,6 +1535,24 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
                     physValPolygonResult.setBottomLeft(physValPt);
                 }
             }
+            strMethod = "replace" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                int idxPt = i_pTestStep->getConfigValue(strMethod).toInt();
+                if (i_pTestStep->hasConfigValue(strMethod + ".point")) {
+                    QPointF pt = i_pTestStep->getConfigValue(strMethod + ".point").toPointF();
+                    if (i_pTestStep->hasConfigValue(strMethod + ".point.unit")) {
+                        QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".point.unit").toString();
+                        CUnit unit = strUnitPoint;
+                        CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                        physValPolygonResult.replace(idxPt, physValPt);
+                    }
+                    else {
+                        CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                        physValPolygonResult.replace(idxPt, physValPt);
+                    }
+                }
+            }
             strMethod = "addPhysValShape" + strIdxMethod;
             if (i_pTestStep->hasConfigValue(strMethod)) {
                 CDrawSettings drawSettings(EGraphObjTypePolygon);
@@ -1584,8 +1605,8 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
         for (int idxPt = 0; idxPt < physValPolygonResult.count(); ++idxPt) {
             strlstResultValues.append(
                 "P" + QString::number(idxPt) + ": {" +
-                physValPolygonResult[idxPt].toString(false, ", ", iResultValuesPrecision) + "} " +
-                physValPolygonResult[idxPt].unit().symbol());
+                physValPolygonResult.at(idxPt).toString(false, ", ", iResultValuesPrecision) + "} " +
+                physValPolygonResult.at(idxPt).unit().symbol());
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);

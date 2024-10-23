@@ -500,7 +500,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
         QLineF(lineSelPts.p1(), lineSelPts.p2()), lineEndOfSegment.p2(), 10.0);
 
-    getLineEndPolygons(
+    getLineEndArrowPolygons(
         /* line          */ perpendicularLineEndOfSegment,
         /* drawSetings   */ m_drawSettingsArrowHeads,
         /* pplgLineStart */ &m_plgP2ArrowHead,

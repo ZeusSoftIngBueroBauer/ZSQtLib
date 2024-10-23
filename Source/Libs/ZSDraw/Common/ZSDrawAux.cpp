@@ -622,7 +622,7 @@ exported methods implementation
         If not nullptr the polygon points for the arrow head at the line end
         point (P2) are calculated and stored in the passed polygon.
 */
-void ZS::Draw::getLineEndPolygons(
+void ZS::Draw::getLineEndArrowPolygons(
     const QLineF& i_line,
     const CDrawSettings& i_drawSettings,
     QPolygonF* i_pplgLineStart,
@@ -727,257 +727,257 @@ void ZS::Draw::getLineEndPolygons(
             }
         }
     } // if( i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal ..
-} // getLineEndPolygons
+} // getLineEndArrowPolygons
 
-//------------------------------------------------------------------------------
-QRectF ZS::Draw::resizeRect(
-    const QRectF& i_rect,
-    const CEnumSelectionPoint& i_selPt,
-    const QPointF& i_ptSel,
-    CEnumSelectionPoint* o_pSelPt )
-//------------------------------------------------------------------------------
-{
-    CEnumSelectionPoint selPt = i_selPt;
+////------------------------------------------------------------------------------
+//QRectF ZS::Draw::resizeRect(
+//    const QRectF& i_rect,
+//    const CEnumSelectionPoint& i_selPt,
+//    const QPointF& i_ptSel,
+//    CEnumSelectionPoint* o_pSelPt )
+////------------------------------------------------------------------------------
+//{
+//    CEnumSelectionPoint selPt = i_selPt;
+//
+//    QRectF rctResult = i_rect;
+//
+//    double fXPos = i_ptSel.x();
+//    double fYPos = i_ptSel.y();
+//
+//    switch (i_selPt.enumerator()) {
+//        case ESelectionPoint::TopLeft: {
+//            // Moved right and below right bottom corner ..
+//            if (fXPos > rctResult.right() && fYPos > rctResult.bottom()) {
+//                rctResult.setLeft(rctResult.right());
+//                rctResult.setRight(fXPos);
+//                rctResult.setTop(rctResult.bottom());
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomRight;
+//            }
+//            // Moved right of right border ..
+//            else if (fXPos > rctResult.right()) {
+//                rctResult.setLeft(rctResult.right());
+//                rctResult.setRight(fXPos);
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopRight;
+//            }
+//            // Moved below bottom border ..
+//            else if (fYPos > rctResult.bottom()) {
+//                rctResult.setLeft(fXPos);
+//                rctResult.setTop(rctResult.bottom());
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomLeft;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setLeft(fXPos);
+//                rctResult.setTop(fYPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::BottomLeft: {
+//            // Moved right and above right top corner ..
+//            if (fXPos > rctResult.right() && fYPos < rctResult.top()) {
+//                rctResult.setLeft(rctResult.right());
+//                rctResult.setRight(fXPos);
+//                rctResult.setBottom(rctResult.top());
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopRight;
+//            }
+//            // Moved right of right border ..
+//            else if (fXPos > rctResult.right()) {
+//                rctResult.setLeft(rctResult.right());
+//                rctResult.setRight(fXPos);
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomRight;
+//            }
+//            // Moved above top border ..
+//            else if (fYPos < rctResult.top()) {
+//                rctResult.setLeft(fXPos);
+//                rctResult.setBottom(rctResult.top());
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopLeft;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setLeft(fXPos);
+//                rctResult.setBottom(fYPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::TopRight: {
+//            // Moved left and below left bottom corner ..
+//            if (fXPos < rctResult.left() && fYPos > rctResult.bottom()) {
+//                rctResult.setRight(rctResult.left());
+//                rctResult.setLeft(fXPos);
+//                rctResult.setTop(rctResult.bottom());
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomLeft;
+//            }
+//            // Moved left of left border ..
+//            else if (fXPos < rctResult.left()) {
+//                rctResult.setRight(rctResult.left());
+//                rctResult.setLeft(fXPos);
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopLeft;
+//            }
+//            // Moved below bottom border ..
+//            else if (fYPos > rctResult.bottom()) {
+//                rctResult.setRight(fXPos);
+//                rctResult.setTop(rctResult.bottom());
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomRight;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setRight(fXPos);
+//                rctResult.setTop(fYPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::BottomRight: {
+//            // Moved left and above left top corner ..
+//            if (fXPos < rctResult.left() && fYPos < rctResult.top()) {
+//                rctResult.setRight(rctResult.left());
+//                rctResult.setLeft(fXPos);
+//                rctResult.setBottom(rctResult.top());
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopLeft;
+//            }
+//            // Moved left of left border ..
+//            else if (fXPos < rctResult.left()) {
+//                rctResult.setRight(rctResult.left());
+//                rctResult.setLeft(fXPos);
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomLeft;
+//            }
+//            // Moved above top border ..
+//            else if (fYPos < rctResult.top()) {
+//                rctResult.setRight(fXPos);
+//                rctResult.setBottom(rctResult.top());
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopRight;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setRight(fXPos);
+//                rctResult.setBottom(fYPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::LeftCenter: {
+//            // Moved right of right border ..
+//            if (fXPos > rctResult.right()) {
+//                rctResult.setLeft(rctResult.right());
+//                rctResult.setRight(fXPos);
+//                selPt = ESelectionPoint::RightCenter;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setLeft(fXPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::RightCenter: {
+//            // Moved left of left border ..
+//            if (fXPos < rctResult.left()) {
+//                rctResult.setRight(rctResult.left());
+//                rctResult.setLeft(fXPos);
+//                selPt = ESelectionPoint::LeftCenter;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setRight(fXPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::TopCenter:
+//        {
+//            // Moved below bottom border ..
+//            if (fYPos > rctResult.bottom()) {
+//                rctResult.setTop(rctResult.bottom());
+//                rctResult.setBottom(fYPos);
+//                selPt = ESelectionPoint::BottomCenter;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setTop(fYPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::BottomCenter: {
+//            // Moved above top border ..
+//            if (fYPos < rctResult.top()) {
+//                rctResult.setBottom(rctResult.top());
+//                rctResult.setTop(fYPos);
+//                selPt = ESelectionPoint::TopCenter;
+//            }
+//            // If the bounding rectangle don't need to be twisted ...
+//            else {
+//                rctResult.setBottom(fYPos);
+//            }
+//            break;
+//        }
+//        case ESelectionPoint::Center:
+//        case ESelectionPoint::RotateTop:
+//        case ESelectionPoint::RotateBottom:
+//        default:
+//        {
+//            break;
+//        }
+//    }
+//    if (o_pSelPt != nullptr) {
+//        *o_pSelPt = selPt;
+//    }
+//    return rctResult;
+//}
 
-    QRectF rctResult = i_rect;
-
-    double fXPos = i_ptSel.x();
-    double fYPos = i_ptSel.y();
-
-    switch (i_selPt.enumerator()) {
-        case ESelectionPoint::TopLeft: {
-            // Moved right and below right bottom corner ..
-            if (fXPos > rctResult.right() && fYPos > rctResult.bottom()) {
-                rctResult.setLeft(rctResult.right());
-                rctResult.setRight(fXPos);
-                rctResult.setTop(rctResult.bottom());
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomRight;
-            }
-            // Moved right of right border ..
-            else if (fXPos > rctResult.right()) {
-                rctResult.setLeft(rctResult.right());
-                rctResult.setRight(fXPos);
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopRight;
-            }
-            // Moved below bottom border ..
-            else if (fYPos > rctResult.bottom()) {
-                rctResult.setLeft(fXPos);
-                rctResult.setTop(rctResult.bottom());
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomLeft;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setLeft(fXPos);
-                rctResult.setTop(fYPos);
-            }
-            break;
-        }
-        case ESelectionPoint::BottomLeft: {
-            // Moved right and above right top corner ..
-            if (fXPos > rctResult.right() && fYPos < rctResult.top()) {
-                rctResult.setLeft(rctResult.right());
-                rctResult.setRight(fXPos);
-                rctResult.setBottom(rctResult.top());
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopRight;
-            }
-            // Moved right of right border ..
-            else if (fXPos > rctResult.right()) {
-                rctResult.setLeft(rctResult.right());
-                rctResult.setRight(fXPos);
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomRight;
-            }
-            // Moved above top border ..
-            else if (fYPos < rctResult.top()) {
-                rctResult.setLeft(fXPos);
-                rctResult.setBottom(rctResult.top());
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopLeft;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setLeft(fXPos);
-                rctResult.setBottom(fYPos);
-            }
-            break;
-        }
-        case ESelectionPoint::TopRight: {
-            // Moved left and below left bottom corner ..
-            if (fXPos < rctResult.left() && fYPos > rctResult.bottom()) {
-                rctResult.setRight(rctResult.left());
-                rctResult.setLeft(fXPos);
-                rctResult.setTop(rctResult.bottom());
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomLeft;
-            }
-            // Moved left of left border ..
-            else if (fXPos < rctResult.left()) {
-                rctResult.setRight(rctResult.left());
-                rctResult.setLeft(fXPos);
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopLeft;
-            }
-            // Moved below bottom border ..
-            else if (fYPos > rctResult.bottom()) {
-                rctResult.setRight(fXPos);
-                rctResult.setTop(rctResult.bottom());
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomRight;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setRight(fXPos);
-                rctResult.setTop(fYPos);
-            }
-            break;
-        }
-        case ESelectionPoint::BottomRight: {
-            // Moved left and above left top corner ..
-            if (fXPos < rctResult.left() && fYPos < rctResult.top()) {
-                rctResult.setRight(rctResult.left());
-                rctResult.setLeft(fXPos);
-                rctResult.setBottom(rctResult.top());
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopLeft;
-            }
-            // Moved left of left border ..
-            else if (fXPos < rctResult.left()) {
-                rctResult.setRight(rctResult.left());
-                rctResult.setLeft(fXPos);
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomLeft;
-            }
-            // Moved above top border ..
-            else if (fYPos < rctResult.top()) {
-                rctResult.setRight(fXPos);
-                rctResult.setBottom(rctResult.top());
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopRight;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setRight(fXPos);
-                rctResult.setBottom(fYPos);
-            }
-            break;
-        }
-        case ESelectionPoint::LeftCenter: {
-            // Moved right of right border ..
-            if (fXPos > rctResult.right()) {
-                rctResult.setLeft(rctResult.right());
-                rctResult.setRight(fXPos);
-                selPt = ESelectionPoint::RightCenter;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setLeft(fXPos);
-            }
-            break;
-        }
-        case ESelectionPoint::RightCenter: {
-            // Moved left of left border ..
-            if (fXPos < rctResult.left()) {
-                rctResult.setRight(rctResult.left());
-                rctResult.setLeft(fXPos);
-                selPt = ESelectionPoint::LeftCenter;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setRight(fXPos);
-            }
-            break;
-        }
-        case ESelectionPoint::TopCenter:
-        {
-            // Moved below bottom border ..
-            if (fYPos > rctResult.bottom()) {
-                rctResult.setTop(rctResult.bottom());
-                rctResult.setBottom(fYPos);
-                selPt = ESelectionPoint::BottomCenter;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setTop(fYPos);
-            }
-            break;
-        }
-        case ESelectionPoint::BottomCenter: {
-            // Moved above top border ..
-            if (fYPos < rctResult.top()) {
-                rctResult.setBottom(rctResult.top());
-                rctResult.setTop(fYPos);
-                selPt = ESelectionPoint::TopCenter;
-            }
-            // If the bounding rectangle don't need to be twisted ...
-            else {
-                rctResult.setBottom(fYPos);
-            }
-            break;
-        }
-        case ESelectionPoint::Center:
-        case ESelectionPoint::RotateTop:
-        case ESelectionPoint::RotateBottom:
-        default:
-        {
-            break;
-        }
-    }
-    if (o_pSelPt != nullptr) {
-        *o_pSelPt = selPt;
-    }
-    return rctResult;
-}
-
-//------------------------------------------------------------------------------
-QPolygonF ZS::Draw::resizePolygon(
-    const QPolygonF& i_plg,
-    const QRectF& i_rctBoundingNew,
-    const QRectF& i_rctBoundingOld )
-//------------------------------------------------------------------------------
-{
-    QPolygonF plgResult = i_plg;
-
-    QRectF rctBoundingOld = i_rctBoundingOld;
-
-    if (!rctBoundingOld.isValid()) {
-        rctBoundingOld = plgResult.boundingRect();
-    }
-
-    double fx0Old = rctBoundingOld.left();
-    double fy0Old = rctBoundingOld.top();
-    double fWOld  = fabs(rctBoundingOld.width());
-    double fHOld  = fabs(rctBoundingOld.height());
-
-    double fx0New = i_rctBoundingNew.left();
-    double fy0New = i_rctBoundingNew.top();
-    double fWNew  = fabs(i_rctBoundingNew.width());
-    double fHNew  = fabs(i_rctBoundingNew.height());
-
-    double fScaleX = 1.0;
-    double fScaleY = 1.0;
-
-    if (fWOld > 0.0) {
-        fScaleX = fWNew / fWOld;
-    }
-    if (fHOld > 0.0) {
-        fScaleY = fHNew / fHOld;
-    }
-
-    for (QPointF& pt : plgResult) {
-        double fxdOld = pt.x() - fx0Old;
-        double fydOld = pt.y() - fy0Old;
-        double fxdNew = fScaleX * fxdOld;
-        double fydNew = fScaleY * fydOld;
-        pt.setX(fx0New + fxdNew);
-        pt.setY(fy0New + fydNew);
-        //plgResult[idxPt] = pt;
-    }
-    return plgResult;
-}
+////------------------------------------------------------------------------------
+//QPolygonF ZS::Draw::resizePolygon(
+//    const QPolygonF& i_plg,
+//    const QRectF& i_rctBoundingNew,
+//    const QRectF& i_rctBoundingOld )
+////------------------------------------------------------------------------------
+//{
+//    QPolygonF plgResult = i_plg;
+//
+//    QRectF rctBoundingOld = i_rctBoundingOld;
+//
+//    if (!rctBoundingOld.isValid()) {
+//        rctBoundingOld = plgResult.boundingRect();
+//    }
+//
+//    double fx0Old = rctBoundingOld.left();
+//    double fy0Old = rctBoundingOld.top();
+//    double fWOld  = fabs(rctBoundingOld.width());
+//    double fHOld  = fabs(rctBoundingOld.height());
+//
+//    double fx0New = i_rctBoundingNew.left();
+//    double fy0New = i_rctBoundingNew.top();
+//    double fWNew  = fabs(i_rctBoundingNew.width());
+//    double fHNew  = fabs(i_rctBoundingNew.height());
+//
+//    double fScaleX = 1.0;
+//    double fScaleY = 1.0;
+//
+//    if (fWOld > 0.0) {
+//        fScaleX = fWNew / fWOld;
+//    }
+//    if (fHOld > 0.0) {
+//        fScaleY = fHNew / fHOld;
+//    }
+//
+//    for (QPointF& pt : plgResult) {
+//        double fxdOld = pt.x() - fx0Old;
+//        double fydOld = pt.y() - fy0Old;
+//        double fxdNew = fScaleX * fxdOld;
+//        double fydNew = fScaleY * fydOld;
+//        pt.setX(fx0New + fxdNew);
+//        pt.setY(fy0New + fydNew);
+//        //plgResult[idxPt] = pt;
+//    }
+//    return plgResult;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle of the circle defined by its center
@@ -1776,106 +1776,106 @@ QPointF ZS::Draw::getCornerPoint(
     return QPointF(fX, fY);
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Calculates the angle in radiant of the diagonal line of a rectangle
-           from the bottom left corner to the top right corner.
-
-    The returned angle is counted counterclockwise.
-    In addition to the angle in radiant the quadrant of the angle is returned.
-
-    The rectangle is defined by its size (width and height). Width and height
-    may both be less than 0.
-
-    - If both width and height are greater than 0 the resulting angle is in quadrant Q1.
-    - If width is less than 0 and height is greater than 0 the resulting angle is in quadrant Q2.
-    - If width is less than 0 and height is less than 0 the resulting angle is in quadrant Q3.
-    - If width is greater than 0 and height is less than 0 the resulting angle is in quadrant Q4.
-    - If width is zero and height is greater than 0 the resulting angle is PI/2 (90°) in quadrant Q1.
-    - If width is zero and height is less than 0 the resulting angle is 3PI/2 (270°) in quadrant Q3.
-    - If height is zero and width is greater than 0 the resulting angle is 0 (0°) in quadrant Q1.
-    - If height is zero and width is less than 0 the resulting angle is PI (180°) in quadrant Q2.
-    - If both width and height are 0 the angle cannot be calculated. If a valid pointer for the
-      quadrant is passed, the quadrant is set to -1 (invalid). If no valid pointer for the quadrant
-      is passed an exception is thrown.
-
-                      (w < 0)  <-- 0 -->  (w > 0)
-                +-----------------+-----------------+
-        (h > 0) |       Q2        |      Q1         |
-              ^ |                 | (0.0 .. PI/2)   |
-              | |                 | (0 .. 90°)      |
-              0 +-----------------X-----------------+
-              | |                 |                 |
-              + |                 |                 |
-        (h < 0) |       Q3        |      Q4         |
-                +-----------------+-----------------+
-
-    @param [in] i_size
-    @param [out] (optional) o_piQuadrant Range [-1, 1, 2, 3, 4]
-        -1 indicates that the angle could not be converted.
-*/
-double ZS::Draw::getAngleRad(const QSizeF& i_size, int* o_piQuadrant)
-//------------------------------------------------------------------------------
-{
-    double fAngle_rad = 0.0;
-    int iQuadrant = -1; // invalid as default
-    if (i_size.width() == 0.0 && i_size.height() == 0.0) {
-        if (o_piQuadrant == nullptr) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
-    }
-    else if (i_size.width() == 0.0) {
-        if (i_size.height() > 0.0) {
-            fAngle_rad = Math::c_f90Degrees_rad;
-            iQuadrant = 1;
-        }
-        else {
-            fAngle_rad = Math::c_f270Degrees_rad;
-            iQuadrant = 3;
-        }
-    }
-    else if (i_size.height() == 0.0) {
-        if (i_size.width() > 0.0) {
-            fAngle_rad = 0.0;
-            iQuadrant = 1;
-        }
-        else {
-            fAngle_rad = Math::c_f180Degrees_rad;
-            iQuadrant = 2;
-        }
-    }
-    else {
-        fAngle_rad = atan(fabs(i_size.height()) / fabs(i_size.width()));
-        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
-            iQuadrant = 1;
-        }
-        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
-            iQuadrant = 2;
-            fAngle_rad = Math::c_f180Degrees_rad - fAngle_rad;
-        }
-        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
-            iQuadrant = 3;
-            fAngle_rad = Math::c_f180Degrees_rad + fAngle_rad;
-        }
-        else /*if (i_size.width() > 0.0 && i_size.height() < 0.0)*/ {
-            iQuadrant = 4;
-            fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
-        }
-    }
-    if (o_piQuadrant != nullptr) {
-        *o_piQuadrant = iQuadrant;
-    }
-    return fAngle_rad;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Same as method getAngleRad but returns the angle in degrees.
-*/
-double ZS::Draw::getAngleDegree(const QSizeF& i_size, int* o_piQuadrant)
-//------------------------------------------------------------------------------
-{
-    double fAngle_rad = getAngleRad(i_size, o_piQuadrant);
-    return Math::rad2Degree(fAngle_rad);
-}
+////------------------------------------------------------------------------------
+///*! @brief Calculates the angle in radiant of the diagonal line of a rectangle
+//           from the bottom left corner to the top right corner.
+//
+//    The returned angle is counted counterclockwise.
+//    In addition to the angle in radiant the quadrant of the angle is returned.
+//
+//    The rectangle is defined by its size (width and height). Width and height
+//    may both be less than 0.
+//
+//    - If both width and height are greater than 0 the resulting angle is in quadrant Q1.
+//    - If width is less than 0 and height is greater than 0 the resulting angle is in quadrant Q2.
+//    - If width is less than 0 and height is less than 0 the resulting angle is in quadrant Q3.
+//    - If width is greater than 0 and height is less than 0 the resulting angle is in quadrant Q4.
+//    - If width is zero and height is greater than 0 the resulting angle is PI/2 (90°) in quadrant Q1.
+//    - If width is zero and height is less than 0 the resulting angle is 3PI/2 (270°) in quadrant Q3.
+//    - If height is zero and width is greater than 0 the resulting angle is 0 (0°) in quadrant Q1.
+//    - If height is zero and width is less than 0 the resulting angle is PI (180°) in quadrant Q2.
+//    - If both width and height are 0 the angle cannot be calculated. If a valid pointer for the
+//      quadrant is passed, the quadrant is set to -1 (invalid). If no valid pointer for the quadrant
+//      is passed an exception is thrown.
+//
+//                      (w < 0)  <-- 0 -->  (w > 0)
+//                +-----------------+-----------------+
+//        (h > 0) |       Q2        |      Q1         |
+//              ^ |                 | (0.0 .. PI/2)   |
+//              | |                 | (0 .. 90°)      |
+//              0 +-----------------X-----------------+
+//              | |                 |                 |
+//              + |                 |                 |
+//        (h < 0) |       Q3        |      Q4         |
+//                +-----------------+-----------------+
+//
+//    @param [in] i_size
+//    @param [out] (optional) o_piQuadrant Range [-1, 1, 2, 3, 4]
+//        -1 indicates that the angle could not be converted.
+//*/
+//double ZS::Draw::getAngleRad(const QSizeF& i_size, int* o_piQuadrant)
+////------------------------------------------------------------------------------
+//{
+//    double fAngle_rad = 0.0;
+//    int iQuadrant = -1; // invalid as default
+//    if (i_size.width() == 0.0 && i_size.height() == 0.0) {
+//        if (o_piQuadrant == nullptr) {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//        }
+//    }
+//    else if (i_size.width() == 0.0) {
+//        if (i_size.height() > 0.0) {
+//            fAngle_rad = Math::c_f90Degrees_rad;
+//            iQuadrant = 1;
+//        }
+//        else {
+//            fAngle_rad = Math::c_f270Degrees_rad;
+//            iQuadrant = 3;
+//        }
+//    }
+//    else if (i_size.height() == 0.0) {
+//        if (i_size.width() > 0.0) {
+//            fAngle_rad = 0.0;
+//            iQuadrant = 1;
+//        }
+//        else {
+//            fAngle_rad = Math::c_f180Degrees_rad;
+//            iQuadrant = 2;
+//        }
+//    }
+//    else {
+//        fAngle_rad = atan(fabs(i_size.height()) / fabs(i_size.width()));
+//        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+//            iQuadrant = 1;
+//        }
+//        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+//            iQuadrant = 2;
+//            fAngle_rad = Math::c_f180Degrees_rad - fAngle_rad;
+//        }
+//        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+//            iQuadrant = 3;
+//            fAngle_rad = Math::c_f180Degrees_rad + fAngle_rad;
+//        }
+//        else /*if (i_size.width() > 0.0 && i_size.height() < 0.0)*/ {
+//            iQuadrant = 4;
+//            fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
+//        }
+//    }
+//    if (o_piQuadrant != nullptr) {
+//        *o_piQuadrant = iQuadrant;
+//    }
+//    return fAngle_rad;
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Same as method getAngleRad but returns the angle in degrees.
+//*/
+//double ZS::Draw::getAngleDegree(const QSizeF& i_size, int* o_piQuadrant)
+////------------------------------------------------------------------------------
+//{
+//    double fAngle_rad = getAngleRad(i_size, o_piQuadrant);
+//    return Math::rad2Degree(fAngle_rad);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Calculates the angle between point 2 and point 1.

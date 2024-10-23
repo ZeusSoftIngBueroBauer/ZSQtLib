@@ -2806,7 +2806,7 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
     if (!i_linePoint.isValid() || i_linePoint == ELinePoint::Start) {
         CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::Start);
         if (lineEndStyle != ELineEndStyle::Normal) {
-            getLineEndPolygons(
+            getLineEndArrowPolygons(
                 /* line          */ lineF,
                 /* drawSetings   */ m_drawSettings,
                 /* pplgLineStart */ &m_plgP1ArrowHead,
@@ -2816,7 +2816,7 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
     if (!i_linePoint.isValid() || i_linePoint == ELinePoint::End) {
         CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::End);
         if (lineEndStyle != ELineEndStyle::Normal) {
-            getLineEndPolygons(
+            getLineEndArrowPolygons(
                 /* line          */ lineF,
                 /* drawSetings   */ m_drawSettings,
                 /* pplgLineStart */ nullptr,

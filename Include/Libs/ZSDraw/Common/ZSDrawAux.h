@@ -81,19 +81,24 @@ ZSDRAWDLL_API QString qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_
 ZSDRAWDLL_API bool isGraphicsSceneResizeEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv );
 
-ZSDRAWDLL_API void getLineEndPolygons(
+// QPolygon is defined in QtGui. If available in QtCore some methods should be moved to ZS::System::Math.
+
+ZSDRAWDLL_API void getLineEndArrowPolygons(
     const QLineF& i_line,
     const CDrawSettings& i_drawSettings,
     QPolygonF* i_pplgLineStart, // != nullptr to calculate it, may be resized
     QPolygonF* i_pplgLineEnd ); // != nullptr to calculate it, may be resized
 
-ZSDRAWDLL_API QRectF resizeRect(
-    const QRectF& i_rect,
-    const CEnumSelectionPoint& i_selPt,
-    const QPointF& i_ptSel,
-    CEnumSelectionPoint* o_pSelPt = nullptr );
+//ZSDRAWDLL_API QRectF resizeRect(
+//    const QRectF& i_rect,
+//    const CEnumSelectionPoint& i_selPt,
+//    const QPointF& i_ptSel,
+//    CEnumSelectionPoint* o_pSelPt = nullptr );
 
-ZSDRAWDLL_API QPolygonF resizePolygon(const QPolygonF& i_plg, const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingOld = QRectF());
+//ZSDRAWDLL_API QPolygonF resizePolygon(
+//    const QPolygonF& i_plg,
+//    const QRectF& i_rctBoundingNew,
+//    const QRectF& i_rctBoundingOld = QRectF());
 
 ZSDRAWDLL_API QRectF boundingRect(const QPointF& i_pt, double i_fRadius);
 ZSDRAWDLL_API QRectF boundingRect(const QLineF& i_line);
@@ -109,8 +114,8 @@ ZSDRAWDLL_API bool isPolygonHit(const QPolygonF& i_rct, const CEnumFillStyle& i_
 ZSDRAWDLL_API double getDistance(const QPointF& i_pt, const QLineF& i_line);
 ZSDRAWDLL_API double getRadius(const QSizeF& i_size);
 ZSDRAWDLL_API QPointF getCornerPoint(const QPointF& i_ptCenter, const QSizeF& i_size, double i_fAngle_rad, ESelectionPoint i_selPt);
-ZSDRAWDLL_API double getAngleRad(const QSizeF& i_size, int* o_piQuadrant = nullptr);
-ZSDRAWDLL_API double getAngleDegree(const QSizeF& i_size, int* o_piQuadrant = nullptr);
+//ZSDRAWDLL_API double getAngleRad(const QSizeF& i_size, int* o_piQuadrant = nullptr);
+//ZSDRAWDLL_API double getAngleDegree(const QSizeF& i_size, int* o_piQuadrant = nullptr);
 ZSDRAWDLL_API double getAngleRad(const QPointF& i_pt1, const QPointF& i_pt2);
 ZSDRAWDLL_API double getAngleDegree(const QPointF& i_pt1, const QPointF& i_pt2);
 ZSDRAWDLL_API QPointF rotatePoint(const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad);
@@ -128,12 +133,11 @@ ZSDRAWDLL_API QPointF getSelectionPointCoors(const QLineF& i_lin, const QRectF& 
 ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line);
 ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px = 0.0);
 
-// QPolygon is defined in QtGui. If available in QtCore the methods should be moved to ZS::System::Aux.
-//ZSDRAWDLL_API QString   qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );
-//ZSDRAWDLL_API QString   qRect2Str( const QPolygonF& i_plgRect, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QString   qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator = ", " );
-ZSDRAWDLL_API QString   qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator = ", ", char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QPolygon  str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+//ZSDRAWDLL_API QString qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );
+//ZSDRAWDLL_API QString qRect2Str( const QPolygonF& i_plgRect, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSDRAWDLL_API QString qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator = ", " );
+ZSDRAWDLL_API QString qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator = ", ", char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSDRAWDLL_API QPolygon str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
 ZSDRAWDLL_API QPolygonF str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
 
 

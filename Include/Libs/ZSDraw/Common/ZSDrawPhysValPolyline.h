@@ -72,48 +72,59 @@ public: // must overridable operators of base class CPhysValShape
 public: // must overridables of base class CPhysValShape
     bool operator == (const CPhysValShape& i_physValLineOther) const override;
     bool operator != (const CPhysValShape& i_physValLineOther) const override;
-public: // operators
-    CPhysValPoint operator[](int i_idx) const;
 public: // must overridables of base class CPhysValShape
     void invalidate() override;
     bool isValid() const override;
     bool isNull() const override;
     void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const override;
+public: // overridables of base class CPhysValRect
+    void setCenter(const QPointF& i_pt) override;
+    void setCenter(const CPhysValPoint& i_physValPoint) override;
+    void setSize(const QSizeF& i_size) override;
+    void setSize(const CPhysValSize& i_physValSize) override;
+    void setWidth(double i_fWidth) override;
+    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) override;
+    void setWidthByMovingLeftCenter(const QPointF& i_pt) override;
+    void setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint) override;
+    void setWidthByMovingRightCenter(const QPointF& i_pt) override;
+    void setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint) override;
+    void setHeight(double i_fHeight) override;
+    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) override;
+    void setHeightByMovingTopCenter(const QPointF& i_pt) override;
+    void setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint) override;
+    void setHeightByMovingBottomCenter(const QPointF& i_pt) override;
+    void setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint) override;
+    void setAngle(double i_fAngle_degree) override;
+    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+    void setTopLeft(const QPointF& i_pt) override;
+    void setTopLeft(const CPhysValPoint& i_physValPoint) override;
+    void setTopRight(const QPointF& i_pt) override;
+    void setTopRight(const CPhysValPoint& i_physValPoint) override;
+    void setBottomRight(const QPointF& i_pt) override;
+    void setBottomRight(const CPhysValPoint& i_physValPoint) override;
+    void setBottomLeft(const QPointF& i_pt) override;
+    void setBottomLeft(const CPhysValPoint& i_physValPoint) override;
 public: // instance methods
+    bool isEmpty() const;
     int count() const;
-public: // instance methods
-    void setCenter(const QPointF& i_pt);
-    void setCenter(const CPhysValPoint& i_physValPoint);
-    void setSize(const QSizeF& i_size);
-    void setSize(const CPhysValSize& i_physValSize);
-    void setWidth(double i_fWidth);
-    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
-    void setWidthByMovingLeftCenter(const QPointF& i_pt);
-    void setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint);
-    void setWidthByMovingRightCenter(const QPointF& i_pt);
-    void setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint);
-    void setHeight(double i_fHeight);
-    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
-    void setHeightByMovingTopCenter(const QPointF& i_pt);
-    void setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint);
-    void setHeightByMovingBottomCenter(const QPointF& i_pt);
-    void setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint);
-    void setAngle(double i_fAngle_degree);
-    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
-    void setTopLeft(const QPointF& i_pt);
-    void setTopLeft(const CPhysValPoint& i_physValPoint);
-    void setTopRight(const QPointF& i_pt);
-    void setTopRight(const CPhysValPoint& i_physValPoint);
-    void setBottomRight(const QPointF& i_pt);
-    void setBottomRight(const CPhysValPoint& i_physValPoint);
-    void setBottomLeft(const QPointF& i_pt);
-    void setBottomLeft(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint at(int i_idx) const;
+    void append(const CPhysValPoint& i_physValPoint);
+    void insert(int i_idx, const CPhysValPoint& i_physValPoint);
+    void remove(int i_idx, int i_iCount);
+    void removeAt(int i_idx);
+    void removeFirst();
+    void removeLast();
+    void replace(int i_idx, const CPhysValPoint& i_physValPoint);
+    CPhysValPoint takeAt(int i_idx);
+    CPhysValPoint takeFirst();
+    CPhysValPoint takeLast();
 public: // instance methods (to convert the values into another unit)
     QPolygonF toQPolygonF() const;
     QPolygonF toQPolylognF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // auxiliary instance methods
     void updateModifiedPolygon();
+    void updateOriginalPolygon();
 protected: // instance members
     /*!< Original center point of the polygons bounding rectangle before resizing events. */
     QPointF m_ptCenterOrig;

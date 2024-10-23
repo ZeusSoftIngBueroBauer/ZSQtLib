@@ -2275,7 +2275,7 @@ void CGraphObjConnectionLine::updateLineEndPolygonCoors()
 
                 if( lineEndStyleLineStart != ELineEndStyle::Normal )
                 {
-                    getLineEndPolygons(
+                    getLineEndArrowPolygons(
                         /* line          */ linFirst,
                         /* drawSetings   */ m_drawSettings,
                         /* pplgLineStart */ &m_plgLineStart,
@@ -2292,7 +2292,7 @@ void CGraphObjConnectionLine::updateLineEndPolygonCoors()
 
                 if( lineEndStyleLineEnd != ELineEndStyle::Normal )
                 {
-                    getLineEndPolygons(
+                    getLineEndArrowPolygons(
                         /* line          */ linLast,
                         /* drawSetings   */ m_drawSettings,
                         /* pplgLineStart */ nullptr,
