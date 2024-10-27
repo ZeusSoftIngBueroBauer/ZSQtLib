@@ -135,15 +135,15 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
         i_pPainter->drawText(polygon_px[idxPt], "P" + QString::number(idxPt));
         break;
     }
-    QPointF ptCenter = m_pDrawingScene->convert(center(), Units.Length.px).toQPointF();
-    QPointF ptTL = m_pDrawingScene->convert(topLeft(), Units.Length.px).toQPointF();
-    QPointF ptTR = m_pDrawingScene->convert(topRight(), Units.Length.px).toQPointF();
-    QPointF ptBR = m_pDrawingScene->convert(bottomRight(), Units.Length.px).toQPointF();
-    QPointF ptBL = m_pDrawingScene->convert(bottomLeft(), Units.Length.px).toQPointF();
-    QPointF ptTC = m_pDrawingScene->convert(topCenter(), Units.Length.px).toQPointF();
-    QPointF ptRC = m_pDrawingScene->convert(rightCenter(), Units.Length.px).toQPointF();
-    QPointF ptBC = m_pDrawingScene->convert(bottomCenter(), Units.Length.px).toQPointF();
-    QPointF ptLC = m_pDrawingScene->convert(leftCenter(), Units.Length.px).toQPointF();
+    QPointF ptCenter = m_pDrawingScene->convert(m_physValRect.center(), Units.Length.px).toQPointF();
+    QPointF ptTL = m_pDrawingScene->convert(m_physValRect.topLeft(), Units.Length.px).toQPointF();
+    QPointF ptTR = m_pDrawingScene->convert(m_physValRect.topRight(), Units.Length.px).toQPointF();
+    QPointF ptBR = m_pDrawingScene->convert(m_physValRect.bottomRight(), Units.Length.px).toQPointF();
+    QPointF ptBL = m_pDrawingScene->convert(m_physValRect.bottomLeft(), Units.Length.px).toQPointF();
+    QPointF ptTC = m_pDrawingScene->convert(m_physValRect.topCenter(), Units.Length.px).toQPointF();
+    QPointF ptRC = m_pDrawingScene->convert(m_physValRect.rightCenter(), Units.Length.px).toQPointF();
+    QPointF ptBC = m_pDrawingScene->convert(m_physValRect.bottomCenter(), Units.Length.px).toQPointF();
+    QPointF ptLC = m_pDrawingScene->convert(m_physValRect.leftCenter(), Units.Length.px).toQPointF();
     pen.setStyle(Qt::DotLine);
     i_pPainter->setPen(pen);
     i_pPainter->drawLine(ptTL, ptTR);
