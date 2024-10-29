@@ -123,22 +123,22 @@ public: // instance methods
     bool isEmpty() const;
     int count() const;
     CPhysValPoint at(int i_idx) const;
+    void replace(int i_idx, const CPhysValPoint& i_physValPoint);
     void append(const CPhysValPoint& i_physValPoint);
     void insert(int i_idx, const CPhysValPoint& i_physValPoint);
     void remove(int i_idx, int i_iCount);
     void removeAt(int i_idx);
     void removeFirst();
     void removeLast();
-    void replace(int i_idx, const CPhysValPoint& i_physValPoint);
     CPhysValPoint takeAt(int i_idx);
     CPhysValPoint takeFirst();
     CPhysValPoint takeLast();
 public: // instance methods (to convert the values into another unit)
     QPolygonF toQPolygonF() const;
-    QPolygonF toQPolylognF(const ZS::PhysVal::CUnit& i_unit) const;
+    QPolygonF toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // auxiliary instance methods
     void updateModifiedPolygon();
-    //void updateOriginalPolygon();
+    void updateOriginalPolygon();
 protected: // instance members
     /*!< Rectangle around the polygon which may be rotated.
          This is not the bounding rectangle. The bounding rectangle

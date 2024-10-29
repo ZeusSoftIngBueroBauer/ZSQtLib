@@ -1004,45 +1004,11 @@ CPhysValPoint CPhysValPolyline::at(int i_idx) const
 }
 
 //------------------------------------------------------------------------------
-void CPhysValPolyline::append(const CPhysValPoint& i_physValPoint)
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPolyline::insert(int i_idx, const CPhysValPoint& i_physValPoint)
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPolyline::remove(int i_idx, int i_iCount)
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPolyline::removeAt(int i_idx)
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPolyline::removeFirst()
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPolyline::removeLast()
-//------------------------------------------------------------------------------
-{
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Replaces the point at the given index.
 
-    The scale factor will be removed (set to 1.0) but the rotation angle will be kept.
+    When moving a point of the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
 
     @param [in] i_idx
         Index of the point to be replaced.
@@ -1053,49 +1019,156 @@ void CPhysValPolyline::replace(int i_idx, const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     m_polygonModified.replace(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
-
-    if (m_physValRect.angle().getVal() != 0.0) {
-        QPointF ptCenterModified = m_physValRect.center().toQPointF();
-        double fAngle_rad = m_physValRect.angle().getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
-        fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
-        if (!m_bYAxisTopDown) {
-            // For BottomUp YAxis scale reflection on the x-axis:
-            fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
-        }
-        // Rotate back:
-        fAngle_rad *= -1;
-        for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
-            m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], fAngle_rad);
-        }
-    }
-    else {
-        m_polygonOrig = m_polygonModified;
-    }
-    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
-    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
-    m_ptCenterOrig = m_physValRect.center().toQPointF();
-    m_sizeOrig = m_physValRect.size().toQSizeF();
+    updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Appends the point at the end of the polygon.
+
+    When adding a point to the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+
+    @param [in] i_physValPoint
+        Point to be added.
+*/
+void CPhysValPolyline::append(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.append(std::move(i_physValPoint.toQPointF(m_unit)));
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Inserts the point at the given index to the polygon.
+
+    When adding a point to the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+
+    @param [in] i_idx
+        Index of the point to be replaced.
+    @param [in] i_physValPoint
+        Point to be inserted.
+*/
+void CPhysValPolyline::insert(int i_idx, const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.insert(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the given number of points from the polygon starting at the given index.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+
+    @param [in] i_idx
+        Index where the remove starts.
+    @param [in] i_iCount
+        Number of points to be removed.
+*/
+void CPhysValPolyline::remove(int i_idx, int i_iCount)
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.remove(i_idx, i_iCount);
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the point from the polygon at the given index.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+
+    @param [in] i_idx
+        Index to be removed.
+*/
+void CPhysValPolyline::removeAt(int i_idx)
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.removeAt(i_idx);
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the first point from the polygon.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+*/
+void CPhysValPolyline::removeFirst()
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.removeFirst();
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the last point from the polygon.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+*/
+void CPhysValPolyline::removeLast()
+//------------------------------------------------------------------------------
+{
+    m_polygonModified.removeLast();
+    updateOriginalPolygon();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the point from the polygon at the given index and returns
+           the removed point.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+
+    @param [in] i_idx
+        Index to be removed.
+*/
 CPhysValPoint CPhysValPolyline::takeAt(int i_idx)
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(*m_pDrawingScene);
+    QPointF pt = m_polygonModified.takeAt(i_idx);
+    updateOriginalPolygon();
+    return CPhysValPoint(*m_pDrawingScene, pt, m_unit);
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Removes the first point from the polygon and returns the removed point.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+*/
 CPhysValPoint CPhysValPolyline::takeFirst()
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(*m_pDrawingScene);
+    QPointF pt = m_polygonModified.takeFirst();
+    updateOriginalPolygon();
+    return CPhysValPoint(*m_pDrawingScene, pt, m_unit);
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Removes the first point from the polygon and returns the removed point.
+
+    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    The modified polygon points become the original polygon points by the means that
+    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+*/
 CPhysValPoint CPhysValPolyline::takeLast()
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(*m_pDrawingScene);
+    QPointF pt = m_polygonModified.takeLast();
+    updateOriginalPolygon();
+    return CPhysValPoint(*m_pDrawingScene, pt, m_unit);
 }
 
 /*==============================================================================
@@ -1103,27 +1176,31 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the polygon as a QPolygonF instance in the current unit.
+*/
 QPolygonF CPhysValPolyline::toQPolygonF() const
 //------------------------------------------------------------------------------
 {
-    return m_polygonOrig;
+    return m_polygonModified;
 }
 
 //------------------------------------------------------------------------------
-QPolygonF CPhysValPolyline::toQPolylognF(const ZS::PhysVal::CUnit& i_unit) const
+/*! @brief Returns the polygon as a QPolygonF instance in the desired unit.
+*/
+QPolygonF CPhysValPolyline::toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QPolygonF polyline = m_polygonOrig;
+    QPolygonF polygon = m_polygonModified;
     if (i_unit != m_unit) {
-        for (int idxPt = 0; idxPt < polyline.size(); ++idxPt) {
-            polyline[idxPt].setX(CPhysVal(polyline[idxPt].x(), m_unit).getVal(i_unit));
-            polyline[idxPt].setY(CPhysVal(polyline[idxPt].y(), m_unit).getVal(i_unit));
+        for (int idxPt = 0; idxPt < polygon.size(); ++idxPt) {
+            polygon[idxPt].setX(CPhysVal(polygon[idxPt].x(), m_unit).getVal(i_unit));
+            polygon[idxPt].setY(CPhysVal(polygon[idxPt].y(), m_unit).getVal(i_unit));
         }
     }
-    return polyline;
+    return polygon;
 }
 
 /*==============================================================================
@@ -1171,43 +1248,63 @@ void CPhysValPolyline::updateModifiedPolygon()
     }
 }
 
-////------------------------------------------------------------------------------
-///*! @brief Internal method to update the original polygon coordinates.
-//
-//    When changing the polygon directly by either modifying points, inserting
-//    or removing points, the bounding rectangle need to be updated.
-//
-//    The original coordinates of the bounding rectangle (size, center point)
-//    will be newly calculated and the modified polygon points will be further
-//    on used as the original polygon points.
-//*/
-//void CPhysValPolyline::updateOriginalPolygon()
-////------------------------------------------------------------------------------
-//{
-//    QSizeF sizeModified = size().toQSizeF();
-//    QPointF ptCenterModified = center().toQPointF();
-//    double fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
-//    double fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
-//    for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
-//        if (m_physValAngle.getVal() != 0.0) {
-//            double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
-//            fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
-//            if (!m_bYAxisTopDown) {
-//                // For BottomUp YAxis scale reflection on the x-axis:
-//                fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
-//            }
-//            // Rotate back:
-//            fAngle_rad *= -1;
-//            m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], fAngle_rad);
-//        }
-//        double fdxModified = m_polygonModified[idxPt].x() - ptCenterModified.x();
-//        double fdyModified = m_polygonModified[idxPt].y() - ptCenterModified.y();
-//        double fdxOrig = fXScaleFactor != 0.0 ? fdxModified / fXScaleFactor : 0.0;
-//        double fdyOrig = fYScaleFactor != 0.0 ? fdyModified / fYScaleFactor : 0.0;
-//        m_polygonOrig[idxPt] = QPointF(m_ptCenterOrig.x() + fdxOrig, m_ptCenterOrig.y() + fdyOrig);
-//    }
-//    sizeModified = m_polygonOrig.boundingRect().size();
-//    ptCenterModified = m_polygonOrig.boundingRect().center();
-//    m_ptCenterOrig = m_ptCenter;
-//    m_sizeOrig = m_size;
-//}
+//------------------------------------------------------------------------------
+/*! @brief Internal method to update the original polygon coordinates.
+
+    When changing the polygon directly by either modifying points, inserting
+    or removing points, the bounding rectangle need to be updated.
+
+    The original coordinates of the bounding rectangle (size, center point)
+    will be newly calculated and the modified polygon points will be further
+    on used as the original polygon points.
+
+    When changing a point in a rotated polygon, the modified points will first
+    be rotated back around the previous center point of the rotated bounding
+    rectangle (blue polygon in figure below). Afterwards the bounding rectangle
+    of the rotated back polygon is calculated (blue rectangle around blue polygon).
+
+    One of the rotated polygon points is rotated around the center point of the
+    blue bounding rectangle. This will result in an offset error between the
+    originally modified polygon point (in red color) and the newly calculated,
+    modified polygon point (green color).
+
+    The center of the new bounding rectangle will be moved by this offset.
+*/
+void CPhysValPolyline::updateOriginalPolygon()
+//------------------------------------------------------------------------------
+{
+    // Points may have been added or removed. The modified polygon may have a
+    // different size. Just assign the modified to the original coordinates
+    // to correct the sizes. For a not rotated polygon thats even the result.
+    m_polygonOrig = m_polygonModified;
+    double fAngle_rad = 0.0;
+    CPhysVal physValAngle = m_physValRect.angle();
+    if (physValAngle.getVal() != 0.0) {
+        QPointF ptCenterModified = m_physValRect.center().toQPointF();
+        fAngle_rad = physValAngle.getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
+        fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
+        if (!m_bYAxisTopDown) {
+            // For BottomUp YAxis scale reflection on the x-axis:
+            fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
+        }
+        // Rotate back:
+        for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
+            m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], -fAngle_rad);
+        }
+    }
+    m_physValRect = CPhysValRect(*m_pDrawingScene);
+    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
+    // Calculate the offset error by rotating one of the original points
+    // around the current center of the bounding rectangle.
+    if (!m_polygonOrig.isEmpty() && physValAngle.getVal() != 0.0) {
+        QPointF ptCenter = m_physValRect.center().toQPointF();
+        QPointF ptRotated = ZS::Draw::rotatePoint(ptCenter, m_polygonOrig[0], fAngle_rad);
+        QPointF ptOffset = ptRotated - m_polygonModified[0];
+        ptCenter -= ptOffset;
+        m_physValRect.setCenter(ptCenter);
+    }
+    m_physValRect.setAngle(physValAngle);
+    m_ptCenterOrig = m_physValRect.center().toQPointF();
+    m_sizeOrig = m_physValRect.size().toQSizeF();
+}

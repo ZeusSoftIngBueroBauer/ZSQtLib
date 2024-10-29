@@ -1309,6 +1309,7 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValPolygon physValPolygonResult(*m_pDrawingScene);
+    CPhysValPoint physValPointTaken(*m_pDrawingScene);
 
     if (i_pTestStep->hasConfigValue("removeAndDeleteAllPhysValShapes")) {
         m_pDrawingScene->removeAndDeleteAllPhysValShapes();
@@ -1553,6 +1554,80 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
                     }
                 }
             }
+            strMethod = "append" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                QPointF pt = i_pTestStep->getConfigValue(strMethod).toPointF();
+                if (i_pTestStep->hasConfigValue(strMethod + ".unit")) {
+                    QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".unit").toString();
+                    CUnit unit = strUnitPoint;
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                    physValPolygonResult.append(physValPt);
+                }
+                else {
+                    CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                    physValPolygonResult.append(physValPt);
+                }
+            }
+            strMethod = "insert" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                int idxPt = i_pTestStep->getConfigValue(strMethod).toInt();
+                if (i_pTestStep->hasConfigValue(strMethod + ".point")) {
+                    QPointF pt = i_pTestStep->getConfigValue(strMethod + ".point").toPointF();
+                    if (i_pTestStep->hasConfigValue(strMethod + ".point.unit")) {
+                        QString strUnitPoint = i_pTestStep->getConfigValue(strMethod + ".point.unit").toString();
+                        CUnit unit = strUnitPoint;
+                        CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+                        physValPolygonResult.insert(idxPt, physValPt);
+                    }
+                    else {
+                        CPhysValPoint physValPt(*m_pDrawingScene, pt);
+                        physValPolygonResult.insert(idxPt, physValPt);
+                    }
+                }
+            }
+            strMethod = "remove" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                int idxPt = i_pTestStep->getConfigValue(strMethod).toInt();
+                if (i_pTestStep->hasConfigValue(strMethod + ".count")) {
+                    int iCount = i_pTestStep->getConfigValue(strMethod + ".count").toInt();
+                    physValPolygonResult.remove(idxPt, iCount);
+                }
+            }
+            strMethod = "removeAt" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                int idxPt = i_pTestStep->getConfigValue(strMethod).toInt();
+                physValPolygonResult.removeAt(idxPt);
+            }
+            strMethod = "removeFirst" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                physValPolygonResult.removeFirst();
+            }
+            strMethod = "removeLast" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                physValPolygonResult.removeLast();
+            }
+            strMethod = "takeAt" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                int idxPt = i_pTestStep->getConfigValue(strMethod).toInt();
+                physValPointTaken = physValPolygonResult.takeAt(idxPt);
+            }
+            strMethod = "takeFirst" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                physValPointTaken = physValPolygonResult.takeFirst();
+            }
+            strMethod = "takeLast" + strIdxMethod;
+            if (i_pTestStep->hasConfigValue(strMethod)) {
+                bHasMethod = true;
+                physValPointTaken = physValPolygonResult.takeLast();
+            }
             strMethod = "addPhysValShape" + strIdxMethod;
             if (i_pTestStep->hasConfigValue(strMethod)) {
                 CDrawSettings drawSettings(EGraphObjTypePolygon);
@@ -1602,6 +1677,12 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
         strlstResultValues.append(
             "LeftCenter {" + physValPolygonResult.leftCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
             physValPolygonResult.leftCenter().unit().symbol());
+        if (!physValPointTaken.isNull()) {
+            strlstResultValues.append(
+                "Taken: {" +
+                physValPointTaken.toString(false, ", ", iResultValuesPrecision) + "} " +
+                physValPointTaken.unit().symbol());
+        }
         for (int idxPt = 0; idxPt < physValPolygonResult.count(); ++idxPt) {
             strlstResultValues.append(
                 "P" + QString::number(idxPt) + ": {" +

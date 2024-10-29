@@ -683,7 +683,7 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical line as a QLineF instance.
+/*! @brief Returns the physical line as a QLineF instance in the current unit.
 */
 QLineF CPhysValLine::toQLineF() const
 //------------------------------------------------------------------------------
@@ -692,8 +692,7 @@ QLineF CPhysValLine::toQLineF() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical point as a QPointF instance in the desired unit.
-* 
+/*! @brief Returns the physical point as a QLineF instance in the desired unit.
 */
 QLineF CPhysValLine::toQLineF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------

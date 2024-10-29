@@ -390,7 +390,7 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical size as a QSizeF instance.
+/*! @brief Returns the physical size as a QSizeF instance in the current unit.
 */
 QSizeF CPhysValSize::toQSizeF() const
 //------------------------------------------------------------------------------
@@ -399,7 +399,7 @@ QSizeF CPhysValSize::toQSizeF() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical point as a QPointF instance in the desired unit.
+/*! @brief Returns the physical point as a QSizeF instance in the desired unit.
 * 
 */
 QSizeF CPhysValSize::toQSizeF(const CUnit& i_unit) const
