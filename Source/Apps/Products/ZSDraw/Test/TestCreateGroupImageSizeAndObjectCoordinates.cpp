@@ -10938,6 +10938,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     double fYScaleFactor = 1.0;
     double fHalfHeight = sizeModified.height()/2.0;
     int idxPt;
+    int iCount;
     QPointF ptModified;
 
     // create Star
@@ -12066,6 +12067,205 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
         {bYAxisTopDown ? QPointF(635.355339, 364.644661) : QPointF(564.644661, 164.644661)},
         {bYAxisTopDown ? QPointF(600.000000, 346.966991) : QPointF(529.289322, 182.322330)},
         {bYAxisTopDown ? QPointF(600.000000, 200.000000) : QPointF(529.289322, 350.000000)},
+        {bYAxisTopDown ? QPointF(564.644661, 364.644661) : QPointF(493.933983, 164.644661)},
+        {bYAxisTopDown ? QPointF(582.322330, 329.289322) : QPointF(511.611652, 200.000000)},
+        {bYAxisTopDown ? QPointF(564.644661, 293.933983) : QPointF(493.933983, 235.355339)},
+        {bYAxisTopDown ? QPointF(600.000000, 311.611652) : QPointF(529.289322, 217.677670)}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Size {" + qSize2Str(sizeModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    for (int idxPt = 0; idxPt < polylineModified.size(); ++idxPt) {
+        strlstExpectedValues.append("P" + QString::number(idxPt) + ": {" + qPoint2Str(polylineModified[idxPt], ", ", 'f', iDigits) + "} " + strUnit);
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // remove(2, 2)
+    //-------------
+    iDigits = 6;
+    idxPt = 2;
+    iCount = 2;
+    strOperations = "remove(" + QString::number(idxPt) + ", " + QString::number(iCount) + ")";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strOperations,
+        /* strOperation    */ strOperations,
+        /* pGrpParent      */ pGrpTransformPolyline,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValPolygon(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    pTestStep->setConfigValue("create.numberOfPoints", polylineOrig.size());
+    for (int idxPt = 0; idxPt < polylineOrig.size(); ++idxPt) {
+        pTestStep->setConfigValue("create.P" + QString::number(idxPt), polylineOrig[idxPt]);
+    }
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape", QColor(Qt::black).name());
+    pTestStep->setConfigValue("setCenter_0", ptCenterOrig + ptMove);
+    pTestStep->setConfigValue("setCenter_0.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape_0", QColor(Qt::black).name());
+    pTestStep->setConfigValue("remove_1", idxPt);
+    pTestStep->setConfigValue("remove_1.count", iCount);
+    pTestStep->setConfigValue("addPhysValShape_1", QColor(Qt::red).name());
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    physValAngle.setVal(0.0);
+    sizeModified = QSizeF(125.000000, 200.000000);
+    ptCenterModified       = bYAxisTopDown ? QPointF(562.500000, 400.000000) : QPointF(562.500000, 200.000000);
+    ptTopLeftModified      = bYAxisTopDown ? QPointF(500.000000, 300.000000) : QPointF(500.000000, 300.000000);
+    ptTopRightModified     = bYAxisTopDown ? QPointF(625.000000, 300.000000) : QPointF(625.000000, 300.000000);
+    ptBottomRightModified  = bYAxisTopDown ? QPointF(625.000000, 500.000000) : QPointF(625.000000, 100.000000);
+    ptBottomLeftModified   = bYAxisTopDown ? QPointF(500.000000, 500.000000) : QPointF(500.000000, 100.000000);
+    ptTopCenterModified    = bYAxisTopDown ? QPointF(562.500000, 300.000000) : QPointF(562.500000, 300.000000);
+    ptRightCenterModified  = bYAxisTopDown ? QPointF(625.000000, 400.000000) : QPointF(625.000000, 200.000000);
+    ptBottomCenterModified = bYAxisTopDown ? QPointF(562.500000, 500.000000) : QPointF(562.500000, 100.000000);
+    ptLeftCenterModified   = bYAxisTopDown ? QPointF(500.000000, 400.000000) : QPointF(500.000000, 200.000000);
+    polylineModified = QPolygonF({
+        {bYAxisTopDown ? QPointF(600.000000, 300.000000) : QPointF(600.000000, 300.000000)},
+        {bYAxisTopDown ? QPointF(625.000000, 375.000000) : QPointF(625.000000, 225.000000)},
+        {bYAxisTopDown ? QPointF(600.000000, 500.000000) : QPointF(600.000000, 100.000000)},
+        {bYAxisTopDown ? QPointF(575.000000, 425.000000) : QPointF(575.000000, 175.000000)},
+        {bYAxisTopDown ? QPointF(500.000000, 400.000000) : QPointF(500.000000, 200.000000)},
+        {bYAxisTopDown ? QPointF(575.000000, 375.000000) : QPointF(575.000000, 225.000000)}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Size {" + qSize2Str(sizeModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    for (int idxPt = 0; idxPt < polylineModified.size(); ++idxPt) {
+        strlstExpectedValues.append("P" + QString::number(idxPt) + ": {" + qPoint2Str(polylineModified[idxPt], ", ", 'f', iDigits) + "} " + strUnit);
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setAngle(210.0°), remove(2, 2)
+    //-------------------------------
+    iDigits = 6;
+    physValAngle.setVal(210.0);
+    idxPt = 2;
+    iCount = 2;
+    strOperations =
+        "setAngle(" + physValAngle.toString() + "), " +
+        "remove(" + QString::number(idxPt) + ", " + QString::number(iCount) + ")";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strOperations,
+        /* strOperation    */ strOperations,
+        /* pGrpParent      */ pGrpTransformPolyline,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValPolygon(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    pTestStep->setConfigValue("create.numberOfPoints", polylineOrig.size());
+    for (int idxPt = 0; idxPt < polylineOrig.size(); ++idxPt) {
+        pTestStep->setConfigValue("create.P" + QString::number(idxPt), polylineOrig[idxPt]);
+    }
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape", QColor(Qt::black).name());
+    pTestStep->setConfigValue("setCenter_0", ptCenterOrig + ptMove);
+    pTestStep->setConfigValue("setCenter_0.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape_0", QColor(Qt::black).name());
+    pTestStep->setConfigValue("setAngle_1", physValAngle.toString());
+    pTestStep->setConfigValue("addPhysValShape_1", QColor(Qt::darkGreen).name());
+    pTestStep->setConfigValue("remove_2", idxPt);
+    pTestStep->setConfigValue("remove_2.count", iCount);
+    pTestStep->setConfigValue("addPhysValShape_2", QColor(Qt::red).name());
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    sizeModified = QSizeF(125.000000, 200.000000);
+    ptCenterModified       = bYAxisTopDown ? QPointF(632.475953, 418.750000) : QPointF(632.475953, 181.250000);
+    ptTopLeftModified      = bYAxisTopDown ? QPointF(636.602540, 536.602540) : QPointF(636.602540,  63.397460);
+    ptTopRightModified     = bYAxisTopDown ? QPointF(528.349365, 474.102540) : QPointF(528.349365, 125.897460);
+    ptBottomRightModified  = bYAxisTopDown ? QPointF(628.349365, 300.897460) : QPointF(628.349365, 299.102540);
+    ptBottomLeftModified   = bYAxisTopDown ? QPointF(736.602540, 363.397460) : QPointF(736.602540, 236.602540);
+    ptTopCenterModified    = bYAxisTopDown ? QPointF(582.475953, 505.352540) : QPointF(582.475953,  94.647460);
+    ptRightCenterModified  = bYAxisTopDown ? QPointF(578.349365, 387.500000) : QPointF(578.349365, 212.500000);
+    ptBottomCenterModified = bYAxisTopDown ? QPointF(682.475953, 332.147460) : QPointF(682.475953, 267.852540);
+    ptLeftCenterModified   = bYAxisTopDown ? QPointF(686.602540, 450.000000) : QPointF(686.602540, 150.000000);
+    polylineModified = QPolygonF({
+        {bYAxisTopDown ? QPointF(550.000000, 486.602540) : QPointF(550.000000, 113.397460)},
+        {bYAxisTopDown ? QPointF(565.849365, 409.150635) : QPointF(565.849365, 190.849365)},
+        {bYAxisTopDown ? QPointF(650.000000, 313.397460) : QPointF(650.000000, 286.602540)},
+        {bYAxisTopDown ? QPointF(634.150635, 390.849365) : QPointF(634.150635, 209.150635)},
+        {bYAxisTopDown ? QPointF(686.602540, 450.000000) : QPointF(686.602540, 150.000000)},
+        {bYAxisTopDown ? QPointF(609.150635, 434.150635) : QPointF(609.150635, 165.849365)}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Size {" + qSize2Str(sizeModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterModified, ", ", 'f', iDigits) + "} " + strUnit);
+    for (int idxPt = 0; idxPt < polylineModified.size(); ++idxPt) {
+        strlstExpectedValues.append("P" + QString::number(idxPt) + ": {" + qPoint2Str(polylineModified[idxPt], ", ", 'f', iDigits) + "} " + strUnit);
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setAngle(210.0°), setSize(100, 100), remove(2, 2)
+    //--------------------------------------------------
+    iDigits = 6;
+    physValAngle.setVal(45.0);
+    sizeModified = QSizeF(100.0, 100.0);
+    idxPt = 2;
+    iCount = 2;
+    strOperations =
+        "setAngle(" + physValAngle.toString() + "), " +
+        "setSize({" + qSize2Str(sizeModified) + "} " + unit.symbol() + "), " +
+        "remove(" + QString::number(idxPt) + ", " + QString::number(iCount) + ")";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strOperations,
+        /* strOperation    */ strOperations,
+        /* pGrpParent      */ pGrpTransformPolyline,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValPolygon(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    pTestStep->setConfigValue("create.numberOfPoints", polylineOrig.size());
+    for (int idxPt = 0; idxPt < polylineOrig.size(); ++idxPt) {
+        pTestStep->setConfigValue("create.P" + QString::number(idxPt), polylineOrig[idxPt]);
+    }
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape", QColor(Qt::black).name());
+    pTestStep->setConfigValue("setCenter_0", ptCenterOrig + ptMove);
+    pTestStep->setConfigValue("setCenter_0.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape_0", QColor(Qt::black).name());
+    pTestStep->setConfigValue("setAngle_1", physValAngle.toString());
+    pTestStep->setConfigValue("addPhysValShape_1", QColor(Qt::darkGreen).name());
+    pTestStep->setConfigValue("setSize_2", sizeModified);
+    pTestStep->setConfigValue("setSize_2.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape_2", QColor(Qt::blue).name());
+    pTestStep->setConfigValue("remove_3", idxPt);
+    pTestStep->setConfigValue("remove_3.count", iCount);
+    pTestStep->setConfigValue("addPhysValShape_3", QColor(Qt::red).name());
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    sizeModified = QSizeF(62.500000, 100.000000);
+    ptCenterModified       = bYAxisTopDown ? QPointF(586.741748, 316.031070) : QPointF(516.031070, 213.258252);
+    ptTopLeftModified      = bYAxisTopDown ? QPointF(600.000000, 258.578644) : QPointF(529.289322, 270.710678);
+    ptTopRightModified     = bYAxisTopDown ? QPointF(644.194174, 302.772818) : QPointF(573.483496, 226.516504);
+    ptBottomRightModified  = bYAxisTopDown ? QPointF(573.483496, 373.483496) : QPointF(502.772818, 155.805826);
+    ptBottomLeftModified   = bYAxisTopDown ? QPointF(529.289322, 329.289322) : QPointF(458.578644, 200.000000);
+    ptTopCenterModified    = bYAxisTopDown ? QPointF(622.097087, 280.675731) : QPointF(551.386409, 248.613591);
+    ptRightCenterModified  = bYAxisTopDown ? QPointF(608.838835, 338.128157) : QPointF(538.128157, 191.161165);
+    ptBottomCenterModified = bYAxisTopDown ? QPointF(551.386409, 351.386409) : QPointF(480.675731, 177.902913);
+    ptLeftCenterModified   = bYAxisTopDown ? QPointF(564.644661, 293.933983) : QPointF(493.933983, 235.355339);
+    polylineModified = QPolygonF({
+        {bYAxisTopDown ? QPointF(635.355339, 293.933983) : QPointF(564.644661, 235.355339)},
+        {bYAxisTopDown ? QPointF(617.677670, 329.289322) : QPointF(546.966991, 200.000000)},
         {bYAxisTopDown ? QPointF(564.644661, 364.644661) : QPointF(493.933983, 164.644661)},
         {bYAxisTopDown ? QPointF(582.322330, 329.289322) : QPointF(511.611652, 200.000000)},
         {bYAxisTopDown ? QPointF(564.644661, 293.933983) : QPointF(493.933983, 235.355339)},
