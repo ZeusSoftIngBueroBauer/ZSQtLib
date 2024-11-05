@@ -229,20 +229,6 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CGraphObjEllipse::getScenePolygonShapePointsString() const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QRectF rct = rect();
-    QPolygonF plgScene = pGraphicsItemThis->mapToScene(rct);
-    return qPolygon2Str(plgScene);
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CGraphObjEllipse::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {

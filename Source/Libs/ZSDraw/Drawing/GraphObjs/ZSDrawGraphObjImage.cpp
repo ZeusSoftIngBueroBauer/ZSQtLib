@@ -252,22 +252,6 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CGraphObjImage::getScenePolygonShapePointsString() const
-//------------------------------------------------------------------------------
-{
-    QString strScenePolygonShapePoints;
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    QPolygonF plgScene = mapToScene(m_rctCurr);
-    strScenePolygonShapePoints = polygon2Str(plgScene);
-#endif
-    return strScenePolygonShapePoints;
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CGraphObjImage::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {

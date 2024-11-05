@@ -94,8 +94,8 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallRectRightLine = "SmallRect-RightLine";
     const QString c_strGraphObjNameSmallRectBottomLine = "SmallRect-BottomLine";
     const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
-    // Polylines
-    //----------
+    // Polygons
+    //---------
     const QString c_strGraphObjNameStar = "Star";
     // Groups
     //-------
@@ -132,7 +132,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesPolylinesStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -174,6 +174,7 @@ protected slots:
     void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
@@ -188,14 +189,17 @@ protected: // auxiliary instance methods
     void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_pt1SelPt, QPointF& o_pt2SelPt);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
-    QStringList resultValuesForGroup(
-        const QString& strGraphObjName, const QPointF& i_pos,
-        const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
     QStringList resultValuesForLine(
         const QString& strGraphObjName, const QPointF& i_pos,
         const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine, int i_iPrecision = -1) const;
+    QStringList resultValuesForPolygon(
+        const QString& strGraphObjName, const QPointF& i_pos,
+        const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;
     QStringList resultValuesForLabel(
         const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const;
+    QStringList resultValuesForGroup(
+        const QString& strGraphObjName, const QPointF& i_pos,
+        const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
 public: // overridables of base class CTest (make protected method public)
     void triggerDoTestStep(int i_iInterval_ms = -1) override;
 protected: // class members

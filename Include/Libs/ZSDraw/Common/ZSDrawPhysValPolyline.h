@@ -68,7 +68,7 @@ public: // dtor
 public: // operators
     CPhysValPolyline& operator = (const QPolygonF& i_polyline);
 public: // must overridable operators of base class CPhysValShape
-    CPhysValShape& operator = (const CPhysValShape& i_physValLineOther) override;
+    CPhysValShape& operator = (const CPhysValShape& i_physValPolylineOther) override;
 public: // must overridables of base class CPhysValShape
     bool operator == (const CPhysValShape& i_physValLineOther) const override;
     bool operator != (const CPhysValShape& i_physValLineOther) const override;

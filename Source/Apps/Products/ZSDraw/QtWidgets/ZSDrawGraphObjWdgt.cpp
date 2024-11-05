@@ -125,20 +125,6 @@ public: // must overridables of base class CGraphObj
 //} // setIsHit
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString CGraphObjWdgt::getScenePolygonShapePointsString() const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QRectF rctBounding = QGraphicsProxyWidget::boundingRect();
-    QPolygonF plgScene = pGraphicsItemThis->mapToScene(rctBounding);
-    return qPolygon2Str(plgScene);
-}
-
-/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 

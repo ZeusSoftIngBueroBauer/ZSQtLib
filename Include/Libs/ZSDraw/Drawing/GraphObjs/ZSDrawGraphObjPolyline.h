@@ -49,6 +49,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjPolyline"; }
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // ctors
     CGraphObjPolyline(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
@@ -57,33 +61,79 @@ protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
         const QString& i_strFactoryGroupName,
         EGraphObjType i_type,
         const QString& i_strObjName);
+    void initInstance();
 public: // dtor
     virtual ~CGraphObjPolyline();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
-public: // replacing methods of QGraphicsPolygonItem
-    void setPolygon( const QPolygonF& i_plg );
-public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
+public: // must overridables of base class CGraphObj
+    virtual void onCreateAndExecDlgFormatGraphObjs() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-public: // overridables of base class CGraphObj
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    virtual void acceptCurrentAsOriginalCoors() override;
-#endif
-//public: // must overridables of base class CGraphObj
-//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
+public: // instance methods
+    void setPolyline(const CPhysValPolyline& i_physValPolyline);
+    void setPolyline(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPolyline getPolyline() const;
+    CPhysValPolyline getPolyline(const ZS::PhysVal::CUnit& i_unit) const;
+    void setCenter(const QPointF& i_pt);
+    void setCenter(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getCenter() const;
+    CPhysValPoint getCenter(const ZS::PhysVal::CUnit& i_unit) const;
+    void setSize(const QSizeF& i_size);
+    void setSize(const CPhysValSize& i_physValSize);
+    CPhysValSize getSize() const;
+    CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit) const;
+    void setWidth(double i_fWidth);
+    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    void setWidthByMovingLeftCenter(const QPointF& i_pt);
+    void setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint);
+    void setWidthByMovingRightCenter(const QPointF& i_pt);
+    void setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint);
+    ZS::PhysVal::CPhysVal getWidth() const;
+    ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit) const;
+    void setHeight(double i_fHeight);
+    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    void setHeightByMovingTopCenter(const QPointF& i_pt);
+    void setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint);
+    void setHeightByMovingBottomCenter(const QPointF& i_pt);
+    void setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint);
+    ZS::PhysVal::CPhysVal getHeight() const;
+    ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setTopLeft(const QPointF& i_pt);
+    void setTopLeft(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getTopLeft() const;
+    CPhysValPoint getTopLeft(const ZS::PhysVal::CUnit& i_unit) const;
+    void setTopRight(const QPointF& i_pt);
+    void setTopRight(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getTopRight() const;
+    CPhysValPoint getTopRight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setBottomRight(const QPointF& i_pt);
+    void setBottomRight(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getBottomRight() const;
+    CPhysValPoint getBottomRight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setBottomLeft(const QPointF& i_pt);
+    void setBottomLeft(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getBottomLeft() const;
+    CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
-    //virtual void setIsHit( bool i_bHit ) override;
-public: // overridables of base class CGraphObj
-    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
-public: // reimplementing methods of base class QGraphicItem
-    //void setCursor( const QCursor& cursor );
+    virtual void setRotationAngle(double i_fAngle_degree) override;
+    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+public: // instance methods
+    bool isEmpty() const;
+    int count() const;
+    CPhysValPoint at(int i_idx) const;
+    void replace(int i_idx, const CPhysValPoint& i_physValPoint);
+    void append(const CPhysValPoint& i_physValPoint);
+    void insert(int i_idx, const CPhysValPoint& i_physValPoint);
+    void remove(int i_idx, int i_iCount);
+    void removeAt(int i_idx);
+    void removeFirst();
+    void removeLast();
+    CPhysValPoint takeAt(int i_idx);
+    CPhysValPoint takeFirst();
+    CPhysValPoint takeLast();
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
 public: // must overridables of base class QGraphicsItem
@@ -103,22 +153,41 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
-protected: // instance methods
+protected: // auxiliary instance methods
+    virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
+    virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
+    QPointF getItemPosAndLocalCoors(const CPhysValPolyline& i_physValPolyline, QPolygonF& o_polyline) const;
     virtual void normalize(); // removes "unnecessary" points
-    virtual void updateLineEndPolygonCoors();
+protected: // auxiliary instance methods (method tracing)
+    QPolygonF setPolylineOrig(const QPolygonF& i_polyline);
+    QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polyline);
+    CPhysValPolyline setPhysValPolylineOrig(const CPhysValPolyline& i_physValPolyline);
+    CPhysValPolyline setPhysValPolylineScaled(const CPhysValPolyline& i_physValPolyline);
+    CPhysValPolyline setPhysValPolylineScaledAndRotated(const CPhysValPolyline& i_physValPolyline);
+    void QGraphicsItem_prepareGeometryChange() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    virtual void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
          Used to create a unique name for newly created objects of this type.
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
-    bool      m_bCoorsDirty;
-    QPolygonF m_plgCurr;        // First and lasst point may differ from polygon() depending on line end base line types
-    QPolygonF m_plgOrig;
-    QPolygonF m_plgLineStart;
-    QPolygonF m_plgLineEnd;
-    QPolygonF m_plgOnMousePressEvent; // in item's coordinate system (original size before editing (resizing) the object by mouse events)
+    /*!< First and lasst point may differ from polygon() depending on line end base line types. */
+    QPolygonF m_polylineOrig;
+    CPhysValPolyline m_physValPolylineOrig;
+    CPhysValPolyline m_physValPolylineScaled;
+    CPhysValPolyline m_physValPolylineScaledAndRotated;
+    QPolygonF m_plgLineStartArrowHead;
+    QPolygonF m_plgLineEndArrowHead;
+    /*!< In item's coordinate system (original size before editing (resizing) the object by mouse events) */
+    //QPolygonF m_plgOnMousePressEvent;
 
 }; // class CGraphObjPolyline
 

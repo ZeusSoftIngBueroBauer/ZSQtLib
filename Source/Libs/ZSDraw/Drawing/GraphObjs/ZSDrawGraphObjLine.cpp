@@ -29,8 +29,8 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -206,9 +206,9 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_arpSelPtsPolygon.append(nullptr);
     m_arpSelPtsPolygon.append(nullptr);
 
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
-           | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
-    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemSendsGeometryChanges
+            |QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 
 } // ctor
@@ -227,15 +227,7 @@ CGraphObjLine::~CGraphObjLine()
         /* strAddInfo   */ "" );
 
     emit_aboutToBeDestroyed();
-
-    //m_lineOrig;
-    //m_physValLineOrig;
-    //m_physValLineScaled;
-    //m_physValLineScaledAndRotated;
-    //m_plgP1ArrowHead;
-    //m_plgP2ArrowHead;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -273,23 +265,7 @@ CGraphObj* CGraphObjLine::clone()
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString CGraphObjLine::getScenePolygonShapePointsString() const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF lineF = line();
-    QPolygonF plgScene;
-    plgScene.append(pGraphicsItemThis->mapToScene(lineF.p1()));
-    plgScene.append(pGraphicsItemThis->mapToScene(lineF.p2()));
-    return qPolygon2Str(plgScene);
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
+public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -411,13 +387,13 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-            // Store physical line coordinates.
+            // Store physical coordinates.
             setPhysValLineOrig(i_physValLine);
             setPhysValLineScaled(i_physValLine);
             setPhysValLineScaledAndRotated(i_physValLine);
 
             // Set the line in local coordinate system.
-            // Also note that itemChange must not overwrite the current line value (refCountGuard).
+            // Also note that itemChange must not overwrite the current values (refCountGuard).
             setLineOrig(lineF);
             QGraphicsLineItem_setLine(lineF);
 
@@ -430,7 +406,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
             // "setPos" will trigger an itemChange call which will update the position of the
             // selection points and labels. To position the selection points and labels correctly
             // the local coordinate system must be up-to-date.
-            // Also note that itemChange must not overwrite the current line value (refCountGuard).
+            // Also note that itemChange must not overwrite the current values (refCountGuard).
             // If the position is not changed, itemChange is not called with PositionHasChanged and
             // the position of the arrow heads will not be updated. We got to do this here "manually".
             if (ptPos != ptPosPrev) {
@@ -466,13 +442,11 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         X coordinate of point 2 passed by the given unit.
     @param [in] i_fY2
         y coordinate of point 2 passed by the given unit.
-    @param [in] i_fRes
-        Resolution of the line coordinates.
     @param [in] i_unit
         Unit in which the coordinates are passed.
 */
 void CGraphObjLine::setLine(
-    double i_fX1, double i_fY1, double i_fX2, double i_fY2, double i_fRes, const CUnit& i_unit)
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -504,13 +478,11 @@ void CGraphObjLine::setLine(
         X and Y coordinates of point 1 passed by the given unit.
     @param [in] i_p2
         X and Y coordinates of point 2 passed by the given unit.
-    @param [in] i_fRes
-        Resolution of the line coordinates.
     @param [in] i_unit
         Unit in which the coordinates are passed.
 */
 void CGraphObjLine::setLine(
-    const QPointF& i_p1, const QPointF& i_p2, double i_fRes, const CUnit& i_unit)
+    const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -536,17 +508,15 @@ void CGraphObjLine::setLine(
 
     @param [in] i_line
         Line coordinates passed by the given unit.
-    @param [in] i_fRes
-        Resolution of the line coordinates.
     @param [in] i_unit
         Unit in which the coordinates are passed.
 */
-void CGraphObjLine::setLine(const QLineF& i_line, double i_fRes, const CUnit& i_unit)
+void CGraphObjLine::setLine(const QLineF& i_line, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + qLine2Str(i_line) + "}, Res: " + QString::number(i_fRes) + " " + i_unit.symbol();
+        strMthInArgs = "Line {" + qLine2Str(i_line) + "} " + i_unit.symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1056,6 +1026,10 @@ public: // must overridables of base class CGraphObj
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the current bounding rectangle of the object in local coordinates.
+
+    Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
+    into account. So we cannot call this method to get the real bounding rectangle of
+    the line if only the real shape points should be considered.
 
     @return Bounding rectangle in local coordinates.
 */
@@ -1857,9 +1831,6 @@ QRectF CGraphObjLine::boundingRect() const
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
-    // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
-    // into account. So we cannot call this method to get the real bounding rectangle of
-    // the line if only the real shape points should be considered.
     QRectF rctBounding = QGraphicsLineItem::boundingRect();
     for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsPolygon) {
         if (pGraphObjSelPt != nullptr) {
@@ -1868,10 +1839,10 @@ QRectF CGraphObjLine::boundingRect() const
             rctBounding |= plgSelPt.boundingRect();
         }
     }
-    if (m_plgP1ArrowHead.size() > 0) {
+    if (!m_plgP1ArrowHead.isEmpty()) {
         rctBounding |= m_plgP1ArrowHead.boundingRect();
     }
-    if (m_plgP2ArrowHead.size() > 0) {
+    if (!m_plgP2ArrowHead.isEmpty()) {
         rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
     rctBounding = QRectF(
@@ -1899,10 +1870,10 @@ QPainterPath CGraphObjLine::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsLineItem::shape();
-    if (m_plgP1ArrowHead.size() > 0) {
+    if (!m_plgP1ArrowHead.isEmpty()) {
         painterPath.addPolygon(m_plgP1ArrowHead);
     }
-    if (m_plgP2ArrowHead.size() > 0) {
+    if (!m_plgP2ArrowHead.isEmpty()) {
         painterPath.addPolygon(m_plgP2ArrowHead);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1935,13 +1906,8 @@ void CGraphObjLine::paint(
     i_pPainter->save();
 
     QPen pn = pen();
-
     QLineF lineF = line();
-
     if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || m_bIsHighlighted || isSelected())) {
-        QPainterPath outline;
-        outline.moveTo(lineF.p1());
-        outline.lineTo(lineF.p2());
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
@@ -1951,19 +1917,16 @@ void CGraphObjLine::paint(
             pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         pn.setStyle(Qt::SolidLine);
+        QPainterPath outline;
+        outline.moveTo(lineF.p1());
+        outline.lineTo(lineF.p2());
         i_pPainter->strokePath(outline, pn);
         pn.setWidth(1 + m_drawSettings.getPenWidth());
     }
-
     pn.setColor(m_drawSettings.getPenColor());
     pn.setWidth(m_drawSettings.getPenWidth());
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
-
     i_pPainter->setPen(pn);
-
-    // This will draw the bounding rectangle with dashed lines. I don't want this.
-    //QGraphicsLineItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
-
     i_pPainter->setRenderHints(s_painterRenderHints);
     i_pPainter->drawLine(lineF);
 
@@ -1978,8 +1941,6 @@ void CGraphObjLine::paint(
     CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.getLineEndStyle(ELinePoint::Start);
     CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);
     if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
-        i_pPainter->setPen(pn);
-        //i_pPainter->setRenderHint(QPainter::Antialiasing);
         CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
         CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
         pn.setWidth(1);
@@ -2019,10 +1980,8 @@ void CGraphObjLine::paint(
             }
         }
     }
-
     i_pPainter->restore();
-
-} // paint
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
@@ -2756,7 +2715,7 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
 }
 
 /*==============================================================================
-protected: // instance methods
+protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -2824,63 +2783,6 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
         }
     }
 }
-
-/*==============================================================================
-protected: // overridables of base class CGraphObj
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CGraphObjLine::updateToolTip()
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "updateToolTip",
-//        /* strAddInfo   */ "" );
-//
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-//
-//    if (pGraphicsItem != nullptr)
-//    {
-//        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
-//        QLineF  lineF = line();
-//        QPointF ptPos;
-//
-//        m_strToolTip  = "ObjPath:\t" + path();
-//
-//        m_strToolTip += "\nP1:\t\t" + point2Str(lineF.p1());
-//        m_strToolTip += "\nP2:\t\t" + point2Str(lineF.p2());
-//
-//        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
-//        // position of the item's top left corner before applying the rotation
-//        // transformation matrix but includes the transformation. What we want
-//        // (or what I want) is the position of the item before rotating the item
-//        // around the rotation origin point. In contrary it looks like "pos"
-//        // always returns the top left corner before rotating the object.
-//
-//        if( pGraphicsItem->parentItem() != nullptr )
-//        {
-//            ptPos = pGraphicsItem->pos();
-//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-//        }
-//        else
-//        {
-//            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
-//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-//        }
-//
-//        m_strToolTip += "\nSize:\t\t" + getSize(Units.Length.px).toString();
-//        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
-//
-//        pGraphicsItem->setToolTip(m_strToolTip);
-//    }
-//} // updateToolTip
-
-/*==============================================================================
-protected: // auxiliary instance methods
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Calculates the scaled, not rotated line in pixels in item coordinates
@@ -3030,8 +2932,8 @@ CPhysValLine CGraphObjLine::getPhysValLineScaled(const CPhysValLine& i_physValLi
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the item position relative to the parent item or the drawing
-           scene and the item coordinates of the rectangle in local coordinates.
+/*! @brief Calculates the item position relative to the parent item or drawing scene
+           as well as the item coordinates local coordinates.
 
     @param [in] i_physValLine
         Line in parent coordinates, depending on the Y scale orientation
@@ -3097,10 +2999,10 @@ protected: // auxiliary instance methods (method tracing)
            coordinates in local coordinates relative to the origin of the
            line's bounding rectangle
 
-    @param [in] i_rect
-        Rectangle coordinates in local coordinates to be set.
+    @param [in] i_line
+        Coordinates in local coordinates to be set.
 
-    @return Previous original rectangle coordinates.
+    @return Previous original coordinates.
 */
 QLineF CGraphObjLine::setLineOrig(const QLineF& i_line)
 //------------------------------------------------------------------------------
@@ -3129,16 +3031,16 @@ QLineF CGraphObjLine::setLineOrig(const QLineF& i_line)
            coordinates relative to the origin of the item's bounding rectangle.
 
     @param [in] i_line
-        Line coordinates to be set.
+        Coordinates to be set.
 
-    @return Previous line coordinates.
+    @return Previous coordinates.
 */
 QLineF CGraphObjLine::QGraphicsLineItem_setLine(const QLineF& i_line)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + qLine2Str(i_line) + "}";
+        strMthInArgs = "New {" + qLine2Str(i_line) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3169,7 +3071,7 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, doub
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + qLine2Str(QLineF(i_fX1, i_fY1, i_fX2, i_fY2)) + "}";
+        strMthInArgs = "New {" + qLine2Str(QLineF(i_fX1, i_fY1, i_fX2, i_fY2)) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3191,8 +3093,8 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, doub
            coordinates with unit in parent coordinates relative to the top left
            or bottom left corner of the parent.
 
-    @param [in] i_line
-        Line coordinates to be set.
+    @param [in] i_physValLine
+        Coordinates to be set.
 
     @return Previous original line coordinates.
 */

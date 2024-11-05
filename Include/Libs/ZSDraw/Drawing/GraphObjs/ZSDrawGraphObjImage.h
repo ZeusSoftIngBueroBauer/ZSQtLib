@@ -61,8 +61,6 @@ public: // instance methods
 public: // replacing methods of QGraphicsRectItem
     void setPixmap( const QPixmap& i_pxm );
 public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
-public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 //public: // must overridables of base class CGraphObj
 //    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;

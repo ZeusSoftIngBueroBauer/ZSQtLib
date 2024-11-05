@@ -61,8 +61,6 @@ public: // replacing methods of QGraphicsTextItem
 public: // instance methods
     QRectF rect() const; // returns "boundingRect" of QGraphicsTextItem
 public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
-public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;

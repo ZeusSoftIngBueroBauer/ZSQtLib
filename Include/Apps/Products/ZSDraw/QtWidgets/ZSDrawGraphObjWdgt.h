@@ -75,8 +75,6 @@ public: // overridables of base class CGraphObj
     virtual int type() const override { return EGraphObjTypeUserDefined; }
 public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;
-public: // overridables
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 //public: // must overridables of base class CGraphObj
 //    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
 //    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;

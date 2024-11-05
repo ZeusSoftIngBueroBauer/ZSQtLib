@@ -369,82 +369,11 @@ QRectF CGraphObjPolygon::boundingRect() const
         /* strAddInfo   */ strMthInArgs );
 
     QRectF rctBounding = QGraphicsPolygonItem::boundingRect();
-
-    CGraphObjSelectionPoint* pGraphObjSelPt;
-    QRectF                   rctSelPt;
-    QPolygonF                plgSelPt;
-    ESelectionPoint          selPt;
-    int                      idxSelPt;
-
-    for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
-    {
-        pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-
-        if( pGraphObjSelPt != nullptr )
-        {
-            rctSelPt = pGraphObjSelPt->boundingRect();
-            plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
-            rctBounding |= plgSelPt.boundingRect();
-        }
-    }
-
-    for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-    {
-        selPt = static_cast<ESelectionPoint>(idxSelPt);
-
-        pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-
-        if( pGraphObjSelPt != nullptr )
-        {
-            rctSelPt = pGraphObjSelPt->boundingRect();
-            plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
-            rctBounding |= plgSelPt.boundingRect();
-        }
-    }
-
-    if( m_plgLineStart.size() > 0 )
-    {
-        rctBounding |= m_plgLineStart.boundingRect();
-    }
-
-    if( m_plgLineEnd.size() > 0 )
-    {
-        rctBounding |= m_plgLineEnd.boundingRect();
-    }
-
-    //if( m_bIsHit || isSelected() )
-    //{
-    //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-    //    CGraphObjLabel* pGraphObjLabel;
-    //    QRectF          rctLabel;
-    //    QPolygonF       plgLabel;
-
-    //    while( itLabels.hasNext() )
-    //    {
-    //        itLabels.next();
-    //        pGraphObjLabel = itLabels.value();
-
-    //        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-    //        {
-    //            // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
-    //            // label itself may call the boundingRect method of its parent item (which is
-    //            // this item) if the label is selected or has been hit. For this we call
-    //            // boundingRect of the label with a different signature to indicate that we
-    //            // are only interested in the bounding rect of the simple text item.
-    //            rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
-    //            plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
-    //            rctBounding |= plgLabel.boundingRect();
-    //        }
-    //    }
-    //}
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
-
     return rctBounding;
-
-} // boundingRect
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjPolygon::paint(

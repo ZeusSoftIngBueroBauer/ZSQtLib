@@ -121,17 +121,15 @@ public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
-public: // overridables of base class CGraphObj (for subsystem test)
-    virtual QString getScenePolygonShapePointsString() const override;
-public: // overridables of base class CGraphObj
+public: // must overridables of base class CGraphObj
     virtual void onCreateAndExecDlgFormatGraphObjs() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setLine(const CPhysValLine& i_physValLine);
-    void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
-    void setLine(const QPointF& i_p1, const QPointF& i_p2, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
-    void setLine(const QLineF& i_line, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
     void setLine(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2);
     CPhysValLine getLine() const;
     CPhysValLine getLine(const ZS::PhysVal::CUnit& i_unit) const;
@@ -206,12 +204,9 @@ public: // must overridables of base class CGraphObj
     virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     virtual void updateTransformedCoorsOnParentGeometryChanged() override;
     virtual void updateTransformedCoorsOnItemPositionChanged() override;
-protected: // instance methods
+protected: // auxiliary instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
-protected: // overridables of base class CGraphObj
-    //virtual void updateToolTip() override;
-protected: // auxiliary instance methods
     QLineF getLineScaled(const QLineF& i_lineOrig) const;
     CPhysValLine getPhysValLineOrig(const QLineF& i_lineOrig) const;
     CPhysValLine getPhysValLineScaled(const CPhysValLine& i_physValLineOrig) const;

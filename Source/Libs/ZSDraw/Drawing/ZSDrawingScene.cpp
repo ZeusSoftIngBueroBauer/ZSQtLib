@@ -359,66 +359,6 @@ const CDrawingSize& CDrawingScene::drawingSize() const
 public: // instance methods
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-///*! @brief Converts the given X coordinate in pixels into a physical value containing
-//           the coordinate in the unit and the resolution of the drawing scene.
-//
-//    If the drawing is not setup to use metric coordinate system, the method just
-//    adds the unit pixels and the resolution to the returned physical value.
-//
-//    If the drawing is setup to use metric coordinate system, the given pixel
-//    coordinate will be converted to a physical value with the metric unit
-//    of the drawing scene adding the resolution to the returned physical value.
-//
-//    @return Converted value.
-//*/
-//CPhysVal CDrawingScene::toPhysValXCoor(double i_fXCoor_px) const
-////------------------------------------------------------------------------------
-//{
-//    return m_drawingSize.toPhysValXCoor(i_fXCoor_px);
-//}
-
-////------------------------------------------------------------------------------
-///*! @brief Converts the given Y coordinate in pixels into a physical value containing
-//           the coordinate in the unit and the resolution of the drawing scene.
-//
-//    If the drawing is not setup to use metric coordinate system, the method just
-//    adds the unit pixels and the resolution to the returned physical value.
-//
-//    If the drawing is setup to use metric coordinate system, the given pixel
-//    coordinate will be converted to a physical value with the metric unit
-//    of the drawing scene adding the resolution to the returned physical value.
-//
-//    @return Converted value.
-//*/
-//CPhysVal CDrawingScene::toPhysValYCoor(double i_fYCoor_px) const
-////------------------------------------------------------------------------------
-//{
-//    return m_drawingSize.toPhysValYCoor(i_fYCoor_px);
-//}
-
-////------------------------------------------------------------------------------
-///*! @brief Converts the given size coordinate in pixels into a physical size value
-//           containing the coordinates in the unit and the resolution of the drawing scene.
-//
-//    If the drawing is not setup to use metric coordinate system, the method just
-//    adds the unit pixels and the resolution to the returned physical value.
-//
-//    If the drawing is setup to use metric coordinate system, the given pixel
-//    coordinate will be converted to a physical value with the metric unit
-//    of the drawing scene adding the resolution to the returned physical value.
-//
-//    @return Converted value.
-//*/
-//CPhysValSize CDrawingScene::toPhysValSize(const QSizeF& i_size) const
-////------------------------------------------------------------------------------
-//{
-//    QSizeF size(
-//        Units.Length.px.convertValue(i_size.width(), m_drawingSize.unit()),
-//        Units.Length.px.convertValue(i_size.height(), m_drawingSize.unit()));
-//    return CPhysValSize(size, m_drawingSize.unit());
-//}
-
 //------------------------------------------------------------------------------
 /*! @brief Converts the given point in pixels into the current unit of the drawing scene.
 
@@ -470,16 +410,6 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint) const
 CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "convert",
-        /* strAddInfo   */ strMthInArgs );
-
     CPhysValPoint physValPoint = i_physValPoint;
     if (i_physValPoint.unit() != i_unitDst) {
         if (Units.Length.isMetricUnit(i_physValPoint.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
@@ -506,9 +436,6 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
             double fY_px = m_divLinesMetricsY.getValInPix(physValY.getVal(m_drawingSize.unit()));
             physValPoint = CPhysValPoint(*this, fX_px, fY_px, i_unitDst);
         }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
     }
     return physValPoint;
 }
@@ -564,16 +491,6 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize) const
 CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Size {" + i_physValSize.toString() + "} " + i_physValSize.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "convert",
-        /* strAddInfo   */ strMthInArgs );
-
     CPhysValSize physValSize = i_physValSize;
     if (i_physValSize.unit() != i_unitDst) {
         if (Units.Length.isMetricUnit(i_physValSize.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
@@ -610,9 +527,6 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             CPhysVal physValHeight(dy_px, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
             physValSize = CPhysValSize(*this, physValWidth, physValHeight);
         }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Size {" + physValSize.toString() + "} " + physValSize.unit().symbol());
     }
     return physValSize;
 }
@@ -668,23 +582,43 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine) const
 CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "convert",
-        /* strAddInfo   */ strMthInArgs );
-
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
     CPhysValLine physValLine(physValP1, physValP2);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-    }
     return physValLine;
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CDrawingScene::convert(const QPolygonF& i_polyline) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValPolyline(*this, i_polyline, Units.Length.px), m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CDrawingScene::convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValPolyline(*this, i_polyline, Units.Length.px), i_unitDst);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CDrawingScene::convert(const CPhysValPolyline& i_physValPolyline) const
+//------------------------------------------------------------------------------
+{
+    return convert(i_physValPolyline, m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CDrawingScene::convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPolyline physValPolyline(*this, i_unitDst);
+    for (int idxPt = 0; idxPt < i_physValPolyline.count(); ++idxPt) {
+        CPhysValPoint physValPt = convert(i_physValPolyline.at(idxPt), i_unitDst);
+        physValPolyline.append(physValPt);
+    }
+    return physValPolyline;
 }
 
 //------------------------------------------------------------------------------

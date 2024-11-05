@@ -2187,6 +2187,56 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepAddGraphObjPolygon",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    CPhysValPoint physValPoint1(*m_pDrawingScene);
+    physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
+    CPhysValPoint physValPoint2(*m_pDrawingScene);
+    physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
+
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    if (pObjFactory != nullptr) {
+        CDrawSettings drawSettings(EGraphObjTypeLine);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, physValPoint1, drawSettings);
+        m_pDrawingScene->addGraphObj(pGraphObj);
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+        if (pGraphObjLine != nullptr) {
+            pGraphObjLine->setP2(physValPoint2);
+        }
+        pGraphObjLine->rename(strGraphObjName);
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -3395,38 +3445,6 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
 }
 
 //------------------------------------------------------------------------------
-QStringList CTest::resultValuesForGroup(
-    const QString& strGraphObjName, const QPointF& i_pos,
-    const CPhysValRect& i_physValRect, int i_iPrecision) const
-//------------------------------------------------------------------------------
-{
-    QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
-    QRectF rctBounding(QPointF(-size.width()/2.0, -size.height()/2.0), size);
-    QStringList strlst;
-    if (i_iPrecision < 0) {
-        strlst = QStringList({
-            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
-            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
-            strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
-            strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
-            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
-        });
-    }
-    else {
-        strlst = QStringList({
-            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
-            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
-            strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
-            strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
-            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
-        });
-    }
-    return strlst;
-}
-
-//------------------------------------------------------------------------------
 QStringList CTest::resultValuesForLine(
     const QString& strGraphObjName, const QPointF& i_pos,
     const QLineF& i_line, const CPhysValLine& i_physValLine, int i_iPrecision) const
@@ -3460,6 +3478,38 @@ QStringList CTest::resultValuesForLine(
 }
 
 //------------------------------------------------------------------------------
+QStringList CTest::resultValuesForPolygon(
+    const QString& strGraphObjName, const QPointF& i_pos,
+    const CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        //strlst = QStringList({
+        //strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+        //strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
+        //strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
+        //strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
+        //strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
+        //strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
+        //strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
+        //});
+    }
+    else {
+        //strlst = QStringList({
+        //    strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
+        //    strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
+        //    strGraphObjName + ".line {" + qLine2Str(i_line, ", ", 'f', i_iPrecision) + "} px",
+        //    strGraphObjName + ".position {" + i_physValLine.center().toString(false, ", ", 1) + "} " + i_physValLine.unit().symbol(),
+        //    strGraphObjName + ".getLine {" + i_physValLine.toString(false, ", ", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
+        //    strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
+        //    strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
+        //});
+    }
+    return strlst;
+}
+
+//------------------------------------------------------------------------------
 QStringList CTest::resultValuesForLabel(
     const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const
 //------------------------------------------------------------------------------
@@ -3471,6 +3521,38 @@ QStringList CTest::resultValuesForLabel(
     }
     strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
     return strlstResultValues;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForGroup(
+    const QString& strGraphObjName, const QPointF& i_pos,
+    const CPhysValRect& i_physValRect, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
+    QRectF rctBounding(QPointF(-size.width()/2.0, -size.height()/2.0), size);
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
+            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
+        });
+    }
+    return strlst;
 }
 
 //------------------------------------------------------------------------------

@@ -132,8 +132,6 @@ public: // instance methods
     void hideAnchorLines();
     bool isAnchorLineVisible() const;
 public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
-public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;

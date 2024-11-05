@@ -30,11 +30,11 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesDlg.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -144,6 +144,64 @@ CGraphObjGroup::CGraphObjGroup(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    initInstance();
+}
+
+/*==============================================================================
+protected: // ctor (used by derived classes)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CGraphObjGroup::CGraphObjGroup(
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strFactoryGroupName,
+    EGraphObjType i_type,
+    const QString& i_strType,
+    const QString& i_strObjName) :
+//------------------------------------------------------------------------------
+    CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ i_strFactoryGroupName,
+        /* type                */ i_type,
+        /* strType             */ i_strType,
+        /* strObjName          */ i_strObjName),
+    QGraphicsItemGroup(),
+    m_divLinesMetricsX(EScaleAxis::X),
+    m_divLinesMetricsY(EScaleAxis::Y),
+    m_gridSettings(),
+    m_rectOrig(),
+    m_rectScaled(),
+    m_physValRectOrig(*m_pDrawingScene),
+    m_physValRectScaled(*m_pDrawingScene),
+    m_physValRectScaledAndRotated(*m_pDrawingScene)
+{
+    createTraceAdminObjs("StandardShapes::" + ClassName());
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ObjName: " + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObjGroup::ctor",
+        /* strAddInfo   */ strMthInArgs );
+
+    initInstance();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::initInstance()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObjGroup::initInstance",
+        /* strAddInfo   */ "" );
+
     m_strlstPredefinedLabelNames.append(c_strLabelName);
     m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopLeft);
     m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopRight);
@@ -207,42 +265,11 @@ CGraphObjGroup::CGraphObjGroup(
         }
     }
 
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
-           | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
-    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
+           | QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
-
-} // ctor
-
-/*==============================================================================
-protected: // ctor (used by derived classes)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CGraphObjGroup::CGraphObjGroup(
-    CDrawingScene* i_pDrawingScene,
-    const QString& i_strFactoryGroupName,
-    EGraphObjType i_type,
-    const QString& i_strType,
-    const QString& i_strObjName) :
-//------------------------------------------------------------------------------
-    CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ i_strFactoryGroupName,
-        /* type                */ i_type,
-        /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName),
-    QGraphicsItemGroup(),
-    m_divLinesMetricsX(EScaleAxis::X),
-    m_divLinesMetricsY(EScaleAxis::Y),
-    m_gridSettings(),
-    m_rectOrig(),
-    m_rectScaled(),
-    m_physValRectOrig(*m_pDrawingScene),
-    m_physValRectScaled(*m_pDrawingScene),
-    m_physValRectScaledAndRotated(*m_pDrawingScene)
-{
-} // ctor
+}
 
 /*==============================================================================
 public: // dtor
@@ -326,6 +353,43 @@ CGraphObj* CGraphObjGroup::clone()
 #endif
 
     return pGraphObj;
+}
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/* @brief
+
+    Must be overridden to create a user defined dialog.
+*/
+void CGraphObjGroup::onCreateAndExecDlgFormatGraphObjs()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onCreateAndExecDlgFormatGraphObjs",
+        /* strAddInfo   */ "" );
+
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Line";
+    CDlgGraphObjGroupProperties* pDlg = CDlgGraphObjGroupProperties::GetInstance(this);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgGraphObjGroupProperties::CreateInstance(strDlgTitle, this);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->setModal(false);
+        pDlg->show();
+    }
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
 }
 
 /*==============================================================================
@@ -684,19 +748,6 @@ QVector<CGraphObj*> CGraphObjGroup::childs() const
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString CGraphObjGroup::getScenePolygonShapePointsString() const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPolygonF plgScene = pGraphicsItemThis->mapToScene(getBoundingRect());
-    return qPolygon2Str(plgScene);
-}
-
-/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -755,7 +806,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-            // Store original, untransformed rectangle coordinates.
+            // Store physical coordinates.
             CPhysValRect physValRect(i_physValRect);
             physValRect.setAngle(0.0);
             setPhysValRectOrig(physValRect);
@@ -1431,7 +1482,7 @@ void CGraphObjGroup::setRotationAngle(double i_fAngle_degree)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strMethod    */ "setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
 
     setRotationAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
@@ -1449,7 +1500,7 @@ void CGraphObjGroup::setRotationAngle(const CPhysVal& i_physValAngle)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strMethod    */ "setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValRect physValRect = getRect();
@@ -1497,7 +1548,6 @@ CPhysValPoint CGraphObjGroup::convert(const QPointF& i_pt) const
 CPhysValPoint CGraphObjGroup::convert(const QPointF& i_pt, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     return convert(CPhysValPoint(*m_pDrawingScene, i_pt, Units.Length.px), i_unitDst);
 }
 
@@ -1582,7 +1632,6 @@ CPhysValSize CGraphObjGroup::convert(const QSizeF& i_size) const
 CPhysValSize CGraphObjGroup::convert(const QSizeF& i_size, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     return convert(CPhysValSize(*m_pDrawingScene, i_size, Units.Length.px), i_unitDst);
 }
 
@@ -1677,7 +1726,6 @@ CPhysValLine CGraphObjGroup::convert(const QLineF& i_line) const
 CPhysValLine CGraphObjGroup::convert(const QLineF& i_line, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     return convert(CPhysValLine(*m_pDrawingScene, i_line, Units.Length.px), i_unitDst);
 }
 
@@ -1712,6 +1760,41 @@ CPhysValLine CGraphObjGroup::convert(const CPhysValLine& i_physValLine, const CU
 }
 
 //------------------------------------------------------------------------------
+CPhysValPolyline CGraphObjGroup::convert(const QPolygonF& i_polyline) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValPolyline(*m_pDrawingScene, i_polyline, Units.Length.px), drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CGraphObjGroup::convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValPolyline(*m_pDrawingScene, i_polyline, Units.Length.px), i_unitDst);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CGraphObjGroup::convert(const CPhysValPolyline& i_physValPolyline) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(i_physValPolyline, drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolyline CGraphObjGroup::convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPolyline physValPolyline(*m_pDrawingScene, i_unitDst);
+    for (int idxPt = 0; idxPt < i_physValPolyline.count(); ++idxPt) {
+        CPhysValPoint physValPt = convert(i_physValPolyline.at(idxPt), i_unitDst);
+        physValPolyline.append(physValPt);
+    }
+    return physValPolyline;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Converts the given rectangle in pixels into the current unit of the drawing scene.
 
     @param [in] i_rect
@@ -1736,7 +1819,6 @@ CPhysValRect CGraphObjGroup::convert(const QRectF& i_rect) const
 CPhysValRect CGraphObjGroup::convert(const QRectF& i_rect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     return convert(CPhysValRect(*m_pDrawingScene, i_rect.topLeft(), i_rect.size(), Units.Length.px), i_unitDst);
 }
 
@@ -2852,16 +2934,8 @@ void CGraphObjGroup::paint(
 
     QPen pn;
     QBrush brush;
-
     QRectF rctBounding = getBoundingRect();
-
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
-        QPainterPath outline;
-        outline.moveTo(rctBounding.topLeft());
-        outline.lineTo(rctBounding.topRight());
-        outline.lineTo(rctBounding.bottomRight());
-        outline.lineTo(rctBounding.bottomLeft());
-        outline.lineTo(rctBounding.topLeft());
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
@@ -2871,6 +2945,12 @@ void CGraphObjGroup::paint(
             pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         pn.setStyle(Qt::SolidLine);
+        QPainterPath outline;
+        outline.moveTo(rctBounding.topLeft());
+        outline.lineTo(rctBounding.topRight());
+        outline.lineTo(rctBounding.bottomRight());
+        outline.lineTo(rctBounding.bottomLeft());
+        outline.lineTo(rctBounding.topLeft());
         i_pPainter->strokePath(outline, pn);
         pn.setWidth(1 + m_drawSettings.getPenWidth());
     }
@@ -4183,8 +4263,8 @@ CPhysValRect CGraphObjGroup::getPhysValRectScaled(const CPhysValRect& i_physValR
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the item position relative to the parent item or the drawing
-           scene and the item coordinates of the rectangle in local coordinates.
+/*! @brief Calculates the item position relative to the parent item or drawing scene
+           as well as the item coordinates in local coordinates.
 
     @param [in] i_physValRect
         Rectangle in parent coordinates, depending on the Y scale orientation

@@ -1003,22 +1003,6 @@ QString CGraphObj::getFactoryGroupName() const
 }
 
 /*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns a human readable string containing the coordinates of all
-           shape points of the object.
-
-    This method is mainly used for debugging and test purposes.
-*/
-QString CGraphObj::getScenePolygonShapePointsString() const
-//------------------------------------------------------------------------------
-{
-    return "";
-}
-
-/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -1081,12 +1065,7 @@ void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onCreateAndExecDlgFormatGraphObjs",
         /* strAddInfo   */ "" );
-
-    CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene, this);
-    pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLineStyle);
-    pDlgFormatGraphObjs->exec();
-    delete pDlgFormatGraphObjs;
-    pDlgFormatGraphObjs = nullptr;
+    throw CException(__FILE__, __LINE__, EResultMethodNotYetImplemented, "should become pure virtual");
 }
 
 /*==============================================================================

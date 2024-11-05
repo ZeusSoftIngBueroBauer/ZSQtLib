@@ -105,6 +105,7 @@ protected: // ctor (used by derived classes)
         EGraphObjType i_type,
         const QString& i_strType,
         const QString& i_strObjName);
+    void initInstance();
 public: // dtor
     virtual ~CGraphObjGroup();
 public: // overridables of base class QGraphicsItem
@@ -115,6 +116,8 @@ signals:
     void gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
+public: // must overridables of base class CGraphObj
+    virtual void onCreateAndExecDlgFormatGraphObjs() override;
 public: // instance methods
     void setGridSettings(const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
@@ -124,8 +127,6 @@ public: // instance methods
     void resizeToContent();
     CGraphObj* findGraphObj(const QString& i_strObjName);
     QVector<CGraphObj*> childs() const;
-public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     CPhysValRect getRect() const;
@@ -186,6 +187,10 @@ public: // instance methods
     CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolyline convert(const QPolygonF& i_polyline) const;
+    CPhysValPolyline convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolyline convert(const CPhysValPolyline& i_physValPolyline) const;
+    CPhysValPolyline convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const QRectF& i_rect) const;
     CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const CPhysValRect& i_physValRect) const;

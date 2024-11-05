@@ -60,6 +60,10 @@ public: // copy ctor
     CPhysValPolygon(const CPhysValPolygon& i_physValPolygonOther);
 public: // dtor
     virtual ~CPhysValPolygon();
+public: // operators
+    CPhysValPolygon& operator = (const QPolygonF& i_polygon);
+public: // must overridable operators of base class CPhysValShape
+    CPhysValShape& operator = (const CPhysValShape& i_physValPolygonOther) override;
 public: // must overridables of base class CPhysValShape
     void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
 

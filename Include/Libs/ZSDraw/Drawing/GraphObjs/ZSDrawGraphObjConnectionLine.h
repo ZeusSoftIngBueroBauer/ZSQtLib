@@ -64,8 +64,6 @@ public: // overridables
 public: // replacing methods of QGraphicsRectItem
     void setPolygon( const QPolygonF& i_plg );
 public: // overridables of base class CGraphObj
-    virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
-public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettings) override;
 public: // overridables of base class CGraphObj
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

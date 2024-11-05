@@ -106,6 +106,42 @@ CPhysValPolygon::~CPhysValPolygon()
 }
 
 /*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValPolygon& CPhysValPolygon::operator = ( const QPolygonF& i_polyline )
+//------------------------------------------------------------------------------
+{
+    m_polygonOrig = i_polyline;
+    m_polygonModified = i_polyline;
+    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
+    m_ptCenterOrig = m_physValRect.center().toQPointF();
+    m_sizeOrig = m_physValRect.size().toQSizeF();
+    return *this;
+}
+
+/*==============================================================================
+public: // must overridable operators of base class CPhysValShape
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValShape& CPhysValPolygon::operator = ( const CPhysValShape& i_physValPolylineOther )
+//------------------------------------------------------------------------------
+{
+    const CPhysValPolygon& physValPolygonOther = dynamic_cast<const CPhysValPolygon&>(i_physValPolylineOther);
+    m_bYAxisTopDown = physValPolygonOther.m_bYAxisTopDown;
+    m_unit = physValPolygonOther.m_unit;
+    m_physValRect = physValPolygonOther.m_physValRect;
+    m_ptCenterOrig = physValPolygonOther.m_ptCenterOrig;
+    m_sizeOrig = physValPolygonOther.m_sizeOrig;
+    m_polygonOrig = physValPolygonOther.m_polygonOrig;
+    m_polygonModified = physValPolygonOther.m_polygonModified;
+    return *this;
+}
+
+/*==============================================================================
 public: // must overridables of base class CPhysValShape
 ==============================================================================*/
 

@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObj_h
 
 #include "ZSSys/ZSSysIdxTreeEntry.h"
-#include "ZSDraw/Common/ZSDrawPhysValRect.h"
+#include "ZSDraw/Common/ZSDrawPhysValPolyline.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
 
@@ -469,8 +469,6 @@ protected: // overridables of base class CIdxTreeEntry
     virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
     QString getFactoryGroupName() const;
-public: // overridables (for subsystem test)
-    virtual QString getScenePolygonShapePointsString() const;
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
