@@ -208,8 +208,6 @@ public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
     virtual QRectF getEffectiveBoundingRectOnScene() const override;
 public: // must overridables of base class CGraphObj
-    //virtual QRectF getOriginalBoundingRectInParent() const override;
-public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
 protected: // must overridables of base class CGraphObj

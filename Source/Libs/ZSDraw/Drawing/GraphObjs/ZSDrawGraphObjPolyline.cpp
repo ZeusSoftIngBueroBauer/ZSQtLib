@@ -471,7 +471,12 @@ CPhysValPolyline CGraphObjPolyline::getPolyline() const
 CPhysValPolyline CGraphObjPolyline::getPolyline(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return m_physValPolylineScaledAndRotated;
+    if (parentGroup() != nullptr) {
+        return parentGroup()->convert(m_physValPolylineScaledAndRotated, i_unit);
+    }
+    else {
+        return m_pDrawingScene->convert(m_physValPolylineScaledAndRotated, i_unit);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1333,40 +1338,83 @@ CPhysValPoint CGraphObjPolyline::takeLast()
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CGraphObjPolyline::setIsHit( bool i_bHit )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs = "Hit:" + bool2Str(i_bHit);
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "setIsHit",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if( m_bIsHit != i_bHit )
-//    {
-//        m_bIsHit = i_bHit;
-//
-//        if( i_bHit )
-//        {
-//            showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter);
-//        }
-//        else if( !isSelected() )
-//        {
-//            hideSelectionPoints();
-//        }
-//        update();
-//    }
-//
-//} // setIsHit
+//------------------------------------------------------------------------------
+/*! @brief Returns the scaled but not rotated coordinates in local coordinates
+           relative to the origin of the bounding rectangle.
+
+    Please note that the boundingRect call of QGraphicsItem als takes the pen width
+    into account. So we cannot call this method to get the real bounding rectangle of
+    the object if only the real shape points should be considered.
+
+    @return Bounding rectangle in local coordinates.
+*/
+QRectF CGraphObjPolyline::getBoundingRect() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getBoundingRect",
+        /* strAddInfo   */ "" );
+
+    // Points in local coordinates.
+    QPolygonF polyline = polygon();
+    QRectF rctBounding = polyline.boundingRect();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the effective (resulting) bounding rectangle of this item
+           on the drawing scene.
+
+    To get the effective bounding rectangle the left most, the right most
+    as well as the top most and bottom most shape points of the transformed
+    (rotated and scaled) object are are taken into account.
+
+    If the object is rotated the effective bounding rectangle is not the
+    bounding rectangle (in item coordinates) mapped to the scene.
+    Before mapping the points to the scene the TopMost, BottomMost, LeftMost
+    and RightMost points of the rotated object have to be calculated and each
+    point has to be mapped to the scene.
+
+    E.g. rotated trapez on the scene:
+
+                             + TopMost
+                            / \
+                           /   \
+                          /     \
+                LeftMost +       + RightMost
+                          \     /
+                           \   /
+                            \ /
+                             + BottomMost
+*/
+QRectF CGraphObjPolyline::getEffectiveBoundingRectOnScene() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getEffectiveBoundingRectOnScene",
+        /* strAddInfo   */ "" );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPolygonF plg({
+        pGraphicsItemThis->mapToScene(getTopLeft().toQPointF(Units.Length.px)),
+        pGraphicsItemThis->mapToScene(getTopRight().toQPointF(Units.Length.px)),
+        pGraphicsItemThis->mapToScene(getBottomRight().toQPointF(Units.Length.px)),
+        pGraphicsItemThis->mapToScene(getBottomLeft().toQPointF(Units.Length.px))});
+    QRectF rctBounding = plg.boundingRect();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -1456,32 +1504,6 @@ public: // overridables of base class CGraphObj
 //} // isHit
 
 /*==============================================================================
-public: // reimplementing methods of base class QGraphicItem
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CGraphObjPolyline::setCursor( const QCursor& i_cursor )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs = qCursorShape2Str(i_cursor.shape());
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "setCursor",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    QGraphicsPolygonItem::setCursor(i_cursor);
-//
-//} // setCursor
-
-/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -1490,12 +1512,9 @@ void CGraphObjPolyline::showSelectionPoints(TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
+        if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + selectionPointTypes2Str(i_selPts) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1503,23 +1522,18 @@ void CGraphObjPolyline::showSelectionPoints(TSelectionPointTypes i_selPts)
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    if( parentItem() == nullptr )
-    {
-        QPolygonF plg = polygon();
-        QRectF    rct = plg.boundingRect();
-
+    if (parentItem() == nullptr) {
         // Create bounding rectangle's selection points before shape edge points so that
         // the shape edge points receive mouse events before the bounding rectangle's
         // selection points (as they are "above" them).
-
-        showSelectionPointsOfBoundingRect( rct, i_selPts );
-
-        if( i_selPts & c_uSelectionPointsPolygonShapePoints )
-        {
-            showSelectionPointsOfPolygon( plg );
+        if (i_selPts & c_uSelectionPointsBoundingRectAll) {
+            showSelectionPointsOfBoundingRect(getBoundingRect());
+        }
+        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
+            showSelectionPointsOfPolygon(polygon());
         }
     }
-} // showSelectionPoints
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -1881,28 +1895,16 @@ void CGraphObjPolyline::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //QPointF ptItemPos = i_pEv->pos();
-
-    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-    //{
-    //    SGraphObjHitInfo hitInfo;
-
-    //    bool bIsHit = isHit(ptItemPos,&hitInfo);
-
-    //    if( bIsHit )
-    //    {
-    //        if( cursor().shape() != hitInfo.m_cursor.shape() )
-    //        {
-    //            setCursor(hitInfo.m_cursor);
-    //        }
-    //    }
-
-    //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-
-} // hoverEnterEvent
+    // Ignore hover events if the object is currently being created.
+    if (m_editMode != EEditMode::CreatingByMouseEvents) {
+        showSelectionPoints();
+        setIsHit(true);
+        setCursor(getProposedCursor(i_pEv->pos()));
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjPolyline::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -1919,28 +1921,16 @@ void CGraphObjPolyline::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //QPointF ptItemPos = i_pEv->pos();
-
-    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-    //{
-    //    SGraphObjHitInfo hitInfo;
-
-    //    bool bIsHit = isHit(ptItemPos,&hitInfo);
-
-    //    if( bIsHit )
-    //    {
-    //        if( cursor().shape() != hitInfo.m_cursor.shape() )
-    //        {
-    //            setCursor(hitInfo.m_cursor);
-    //        }
-    //    }
-
-    //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-
-} // hoverMoveEvent
+    // Ignore hover events if the object is currently being created.
+    if (m_editMode != EEditMode::CreatingByMouseEvents) {
+        showSelectionPoints();
+        setIsHit(true);
+        setCursor(getProposedCursor(i_pEv->pos()));
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjPolyline::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -1957,9 +1947,17 @@ void CGraphObjPolyline::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    // If the object is selected the selection points should remain visible.
+    if (!isSelected()) {
+        hideSelectionPoints();
+    }
+    setIsHit(false);
     unsetCursor();
 
-} // hoverLeaveEvent
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
@@ -2685,6 +2683,11 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Reimplments the itemChange method.
+
+    The object may be moved or transformed by several methods.
+    "itemChange" is a central point to update the coordinates upon those changes.
+*/
 QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
 //------------------------------------------------------------------------------
 {
@@ -2702,76 +2705,93 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
         /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
+    traceGraphObjStates(mthTracer);
+
+    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
     QVariant valChanged = i_value;
 
+    bool bGeometryChanged = false;
+    bool bSelectedChanged = false;
     bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
 
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            updateLineEndArrowHeadPolygons();
+            bGeometryChanged = true;
+            bTreeEntryChanged = true;
         }
     }
+    else if (i_change == ItemParentHasChanged) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            //tracePositionInfo(mthTracer, EMethodDir::Enter);
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
+            // If the item is not a group and as long as the item is not added as a child to
+            // a group, the current (transformed) and original coordinates are equal.
+            // If the item is a child of a group, the current (transformed) coordinates are only
+            // taken over as the original coordinates if initially creating the item or when
+            // adding the item to or removing the item from a group.
+            //initParentScaleParameters();
+            //bGeometryChanged = true;
+        }
+        updateLineEndArrowHeadPolygons();
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemPositionHasChanged) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
+            // If the item is not a group and as long as the item is not added as a child to
+            // a group, the current (transformed) and original coordinates are equal.
+            // If the item is a child of a group, the current (transformed) coordinates are only
+            // taken over as the original coordinates if initially creating the item or when
+            // adding the item to or removing the item from a group.
+            updateTransformedCoorsOnItemPositionChanged();
+            bGeometryChanged = true;
+        }
+        updateLineEndArrowHeadPolygons();
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemRotationHasChanged) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+        bGeometryChanged = true;
+        bTreeEntryChanged = true;
+    }
+
     else if (i_change == ItemSelectedHasChanged) {
         QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
-            //if (m_editMode == EEditMode::Creating) {
-            //    showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
-            //}
-            //else {
-            //    showSelectionPoints();
-            //}
+            showSelectionPoints();
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
             setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else {
-            setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
-            //m_editMode = EEditMode::None;
-            //m_editResizeMode = EEditResizeMode::None;
-            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
-            //m_idxSelPtSelectedPolygon = -1;
         }
-        //updateEditInfo();
-        //updateToolTip();
+        bSelectedChanged = true;
         bTreeEntryChanged = true;
-    }
-    else if (i_change == ItemTransformHasChanged) {
-        QPolygonF plg = polygon();
-        QRectF    rctBounding = plg.boundingRect();
-        //updateEditInfo();
-        //updateToolTip();
-    }
-    else if( i_change == ItemTransformChange
-          || i_change == ItemPositionHasChanged
-          || i_change == ItemParentHasChanged
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemScenePositionHasChanged
-          || i_change == ItemRotationHasChanged
-          || i_change == ItemScaleHasChanged
-          || i_change == ItemTransformOriginPointHasChanged )
-          #else
-          || i_change == ItemScenePositionHasChanged )
-          #endif
-    {
-        //updateTransform();
-
-        QPolygonF plg = polygon();
-        QRectF    rctBounding = plg.boundingRect();
-
-        //updateEditInfo();
-        //updateToolTip();
+        bTreeEntryChanged = true;
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;
         bTreeEntryChanged = true;
     }
 
+    if (bGeometryChanged) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+        emit_geometryOnSceneChanged();
+    }
+    if (bSelectedChanged) {
+        emit_selectedChanged(isSelected());
+    }
     if (bZValueChanged) {
         emit_zValueChanged(zValue());
     }
@@ -2786,8 +2806,7 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
-
-} // itemChange
+}
 
 /*==============================================================================
 protected: // auxiliary instance methods
@@ -2838,27 +2857,27 @@ void CGraphObjPolyline::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_l
 
     const QPolygonF polygonF = polygon();
     if (polygonF.size() >= 2) {
-    if (!i_linePoint.isValid() || i_linePoint == ELinePoint::Start) {
-        QLineF lineF(polygonF[0], polygonF[1] );
-        CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-        if (lineEndStyle != ELineEndStyle::Normal) {
-            getLineEndArrowPolygons(
-                /* line          */ lineF,
-                /* drawSetings   */ m_drawSettings,
-                /* pplgLineStart */ &m_plgLineStartArrowHead,
-                /* pplgLineEnd   */ nullptr );
+        if (!i_linePoint.isValid() || i_linePoint == ELinePoint::Start) {
+            QLineF lineF(polygonF[0], polygonF[1]);
+            CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+            if (lineEndStyle != ELineEndStyle::Normal) {
+                getLineEndArrowPolygons(
+                    /* line          */ lineF,
+                    /* drawSetings   */ m_drawSettings,
+                    /* pplgLineStart */ &m_plgLineStartArrowHead,
+                    /* pplgLineEnd   */ nullptr );
             }
         }
-    }
-    if (!i_linePoint.isValid() || i_linePoint == ELinePoint::End) {
-        QLineF lineF(polygonF[polygonF.size()-2], polygonF[polygonF.size()-1] );
-        CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::End);
-        if (lineEndStyle != ELineEndStyle::Normal) {
-            getLineEndArrowPolygons(
-                /* line          */ lineF,
-                /* drawSetings   */ m_drawSettings,
-                /* pplgLineStart */ nullptr,
-                /* pplgLineEnd   */ &m_plgLineEndArrowHead );
+        if (!i_linePoint.isValid() || i_linePoint == ELinePoint::End) {
+            QLineF lineF(polygonF[polygonF.size()-2], polygonF[polygonF.size()-1]);
+            CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::End);
+            if (lineEndStyle != ELineEndStyle::Normal) {
+                getLineEndArrowPolygons(
+                    /* line          */ lineF,
+                    /* drawSetings   */ m_drawSettings,
+                    /* pplgLineStart */ nullptr,
+                    /* pplgLineEnd   */ &m_plgLineEndArrowHead );
+            }
         }
     }
 }

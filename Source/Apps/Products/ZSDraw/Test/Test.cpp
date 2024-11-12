@@ -268,7 +268,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing",
         /* pTSGrpParent */ nullptr );
 
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing100x100px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
@@ -305,7 +305,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* pTSGrpParent */ pGrpPixelsDrawing101x101px );
     // For 101x101 pixel drawing we want to show that the right and bottom lines becomes even if no aliasing is set.
     createTestGroupObjectCoordinatesAddLines(pGrpPixelsDrawing101x101pxObjectCoordinates);
-#endif
+//#endif
     drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
     // drawing size to name test groups and steps and to parametrize the test steps.
@@ -323,7 +323,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
@@ -335,7 +335,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupDrawObjects(pGrpPixelsDrawing800x600pxDrawObjects);
-#endif
+//#endif
     // Metrics Drawings
     //-----------------
 
@@ -351,6 +351,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // YScaleTopDown
     //--------------
 
+//#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale TopDown",
@@ -363,7 +364,6 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
-#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown100x100mm = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + drawingSize.metricImageWidth().toString() + ", " + drawingSize.metricImageHeight().toString() + ")",
@@ -376,7 +376,6 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown100x100mm );
     createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100mmObjectCoordinates);
-#endif
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
@@ -398,7 +397,6 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
 
-#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
@@ -410,7 +408,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
-#endif
+//#endif
 
     // YScaleBottomUp
     //---------------
@@ -427,7 +425,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // drawing size to name test groups and steps and to parametrize the test steps.
     m_pDrawingScene->setDrawingSize(drawingSize);
 
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp100x100mm = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + drawingSize.metricImageWidth().toString() + ", " + drawingSize.metricImageHeight().toString() + ")",
@@ -440,7 +438,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp100x100mm );
     createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100mmObjectCoordinates);
-#endif
+//#endif
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
@@ -456,25 +454,27 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
+//#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
+//#endif
 
-#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects);
 
+//#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
-#endif
+//#endif
 
     // Recall test step settings
     //--------------------------
@@ -1277,18 +1277,43 @@ void CTest::doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep)
 
     QStringList strlstResultValues;
     if (!ptTL.isNull()) {
-        strlstResultValues.append("Center {" + physValRectResult.center().toString() + "} " + physValRectResult.center().unit().symbol());
-        strlstResultValues.append("Width: " + physValRectResult.width().toString());
-        strlstResultValues.append("Height: " + physValRectResult.height().toString());
+        int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+            i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+
+        strlstResultValues.append(
+            "Center {" + physValRectResult.center().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.center().unit().symbol());
+        strlstResultValues.append(
+            "Width: " + QString::number(Math::round2Nearest(physValRectResult.width().getVal(), iResultValuesPrecision), 'f', iResultValuesPrecision) + " " +
+            physValRectResult.width().unit().symbol());
+        strlstResultValues.append(
+            "Height: " + QString::number(Math::round2Nearest(physValRectResult.height().getVal(), iResultValuesPrecision), 'f', iResultValuesPrecision) + " " +
+            physValRectResult.height().unit().symbol());
         strlstResultValues.append("Angle: " + physValRectResult.angle().toString());
-        strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString() + "} " + physValRectResult.topLeft().unit().symbol());
-        strlstResultValues.append("TopRight {" + physValRectResult.topRight().toString() + "} " + physValRectResult.topRight().unit().symbol());
-        strlstResultValues.append("BottomRight {" + physValRectResult.bottomRight().toString() + "} " + physValRectResult.bottomRight().unit().symbol());
-        strlstResultValues.append("BottomLeft {" + physValRectResult.bottomLeft().toString() + "} " + physValRectResult.bottomLeft().unit().symbol());
-        strlstResultValues.append("TopCenter {" + physValRectResult.topCenter().toString() + "} " + physValRectResult.topCenter().unit().symbol());
-        strlstResultValues.append("RightCenter {" + physValRectResult.rightCenter().toString() + "} " + physValRectResult.rightCenter().unit().symbol());
-        strlstResultValues.append("BottomCenter {" + physValRectResult.bottomCenter().toString() + "} " + physValRectResult.bottomCenter().unit().symbol());
-        strlstResultValues.append("LeftCenter {" + physValRectResult.leftCenter().toString() + "} " + physValRectResult.leftCenter().unit().symbol());
+        strlstResultValues.append(
+            "TopLeft {" + physValRectResult.topLeft().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.topLeft().unit().symbol());
+        strlstResultValues.append(
+            "TopRight {" + physValRectResult.topRight().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.topRight().unit().symbol());
+        strlstResultValues.append(
+            "BottomRight {" + physValRectResult.bottomRight().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.bottomRight().unit().symbol());
+        strlstResultValues.append(
+            "BottomLeft {" + physValRectResult.bottomLeft().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.bottomLeft().unit().symbol());
+        strlstResultValues.append(
+            "TopCenter {" + physValRectResult.topCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.topCenter().unit().symbol());
+        strlstResultValues.append(
+            "RightCenter {" + physValRectResult.rightCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.rightCenter().unit().symbol());
+        strlstResultValues.append(
+            "BottomCenter {" + physValRectResult.bottomCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.bottomCenter().unit().symbol());
+        strlstResultValues.append(
+            "LeftCenter {" + physValRectResult.leftCenter().toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValRectResult.leftCenter().unit().symbol());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -1651,8 +1676,7 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
         strlstResultValues.append(
             "Size {" + physValPolygonResult.size().toString(false, ", ", iResultValuesPrecision) + "} " +
             physValPolygonResult.size().unit().symbol());
-        strlstResultValues.append(
-            "Angle: " + physValPolygonResult.angle().toString());
+        strlstResultValues.append("Angle: " + physValPolygonResult.angle().toString());
         strlstResultValues.append(
             "TopLeft {" + physValPolygonResult.topLeft().toString(false, ", ", iResultValuesPrecision) + "} " +
             physValPolygonResult.topLeft().unit().symbol());
@@ -2201,29 +2225,27 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypePolyline);
 
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    CPhysValPoint physValPoint1(*m_pDrawingScene);
-    physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
-    CPhysValPoint physValPoint2(*m_pDrawingScene);
-    physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
+    QPolygonF polyline = i_pTestStep->getConfigValue("Points").value<QPolygonF>();
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
-        CDrawSettings drawSettings(EGraphObjTypeLine);
-        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, physValPoint1, drawSettings);
+        CDrawSettings drawSettings(EGraphObjTypePolyline);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
-        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
-        if (pGraphObjLine != nullptr) {
-            pGraphObjLine->setP2(physValPoint2);
+        CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(pGraphObj);
+        if (pGraphObjPolyline != nullptr) {
+            pGraphObjPolyline->setPolyline(polyline, drawingSize.unit());
         }
-        pGraphObjLine->rename(strGraphObjName);
+        pGraphObjPolyline->rename(strGraphObjName);
     }
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
@@ -2270,7 +2292,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeGroup);
-        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, CPhysValPoint(*m_pDrawingScene), drawSettings);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
         pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
         if (pGraphObjGroup != nullptr) {

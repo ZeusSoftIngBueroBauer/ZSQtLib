@@ -80,6 +80,40 @@ public: // interface methods
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryEllipse::createGraphObj(
     CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
+        mthTracer.trace(strMthInArgs);
+    }
+
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeEllipse);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
+
+#if 0
+    QPointF ptStart = i_ptItemPos;
+    QPointF ptEnd( i_ptItemPos.x()+1, i_ptItemPos.y()+1 );
+    pGraphObj->setRect( QRectF(ptStart,ptEnd) );
+#endif
+
+    return pGraphObj;
+
+} // createGraphObj
+
+//------------------------------------------------------------------------------
+CGraphObj* CObjFactoryEllipse::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------

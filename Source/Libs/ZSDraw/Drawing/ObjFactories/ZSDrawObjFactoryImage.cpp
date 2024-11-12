@@ -80,6 +80,38 @@ public: // interface methods
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryImage::createGraphObj(
     CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
+        mthTracer.trace(strMthInArgs);
+    }
+
+    QString strFilePath = getFilePath();
+
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeImage);
+    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
+
+    pGraphObj->setImageFilePath(strFilePath);
+
+    return pGraphObj;
+
+} // createGraphObj
+
+//------------------------------------------------------------------------------
+CGraphObj* CObjFactoryImage::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------

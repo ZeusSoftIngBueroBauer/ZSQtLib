@@ -134,6 +134,9 @@ public: // instance methods
     CPhysValPoint takeAt(int i_idx);
     CPhysValPoint takeFirst();
     CPhysValPoint takeLast();
+public: // must overridables of base class CGraphObj
+    virtual QRectF getBoundingRect() const override;
+    virtual QRectF getEffectiveBoundingRectOnScene() const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
 public: // must overridables of base class QGraphicsItem

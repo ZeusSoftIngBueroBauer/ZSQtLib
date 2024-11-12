@@ -175,7 +175,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     ZS::Test::CTestStepGroup* pGrpPolygonsStar = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameStar,
-        /* pTSGrpParent */ pGrpLines );
+        /* pTSGrpParent */ pGrpPolygons );
     createTestGroupAddStandardShapesPolygonStar(pGrpPolygonsStar);
 
     // Groups
@@ -830,6 +830,7 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
     });
     *m_pPhysValPolygonStar = polygon;
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameStar);
+    pTestStep->setConfigValue("Points", polygon);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(c_strGraphObjNameStar, m_ptPosSmallRectTopLine,*m_pPhysValPolygonStar));
     pTestStep->setExpectedValues(strlstExpectedValues);

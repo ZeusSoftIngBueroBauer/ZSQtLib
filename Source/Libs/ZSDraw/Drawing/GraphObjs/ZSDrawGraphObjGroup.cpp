@@ -507,7 +507,6 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         // The bounding rectangle of the new child item need to be mapped into the parent
         // coordinates of this group. The parent of this group may either be the scene or a group.
         QRectF rctBoundingChild = i_pGraphObj->getEffectiveBoundingRectOnScene();
-        //rctBoundingChild = pGraphicsItemChild->mapRectToScene(rctBoundingChild);
         QGraphicsItem* pGraphicsItemParentThis = parentItem();
         CGraphObjGroup* pGraphObjGroupParentThis = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParentThis);
         if (pGraphicsItemParentThis != nullptr) {
@@ -871,7 +870,7 @@ CPhysValRect CGraphObjGroup::getRect() const
 CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return m_physValRectScaledAndRotated;
+    return convert(m_physValRectScaledAndRotated, i_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -1853,9 +1852,13 @@ CPhysValRect CGraphObjGroup::convert(const CPhysValRect& i_physValRect) const
 CPhysValRect CGraphObjGroup::convert(const CPhysValRect& i_physValRect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
-    CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    return CPhysValRect(physValTL, physValBR);
+    CPhysValRect physValRect(*m_pDrawingScene, i_unitDst);
+    CPhysValSize physValSize = convert(i_physValRect.size(), i_unitDst);
+    CPhysValPoint physValCenter = convert(i_physValRect.center(), i_unitDst);
+    physValRect.setSize(physValSize);
+    physValRect.setCenter(physValCenter);
+    physValRect.setAngle(i_physValRect.angle());
+    return physValRect;
 }
 
 /*==============================================================================
@@ -1899,25 +1902,11 @@ CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint) co
 CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mapToScene",
-        /* strAddInfo   */ strMthInArgs );
-
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPointF pt = convert(i_physValPoint, Units.Length.px).toQPointF();
     pt = mapFromTopLeftOfBoundingRect(pt);
     pt = pGraphicsItemThis->mapToScene(pt);
     CPhysValPoint physValPoint = m_pDrawingScene->convert(pt, i_unitDst);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
-    }
     return physValPoint;
 }
 
@@ -1958,26 +1947,12 @@ CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine) const
 CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mapToScene",
-        /* strAddInfo   */ strMthInArgs );
-
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF lineF = convert(i_physValLine, Units.Length.px).toQLineF();
     lineF = mapFromTopLeftOfBoundingRect(lineF);
     lineF.setP1(pGraphicsItemThis->mapToScene(lineF.p1()));
     lineF.setP2(pGraphicsItemThis->mapToScene(lineF.p2()));
     CPhysValLine physValLine = m_pDrawingScene->convert(lineF, i_unitDst);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-    }
     return physValLine;
 }
 
@@ -2015,17 +1990,6 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect) const
 CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mapToScene",
-        /* strAddInfo   */ strMthInArgs );
-
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     CPhysValRect physValRect(i_physValRect);
     physValRect.setAngle(0.0);
@@ -2035,9 +1999,7 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const
     rectF = mapFromTopLeftOfBoundingRect(rectF);
     physValRect.setTopLeft(rectF.topLeft());
     physValRect.setSize(rectF.size());
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
-    }
+    physValRect = convert(physValRect, i_unitDst);
     return physValRect;
 }
 
@@ -2045,23 +2007,9 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const
 CPhysVal CGraphObjGroup::mapRotationAngleToScene(const CPhysVal& i_physValAngle)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValAngle.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mapRotationAngleToScene",
-        /* strAddInfo   */ strMthInArgs );
-
     CPhysVal physValAngle = i_physValAngle;
     if (parentGroup() != nullptr) {
         physValAngle = parentGroup()->mapRotationAngleToScene(physValAngle);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(physValAngle.toString());
     }
     return physValAngle;
 }
@@ -2070,17 +2018,6 @@ CPhysVal CGraphObjGroup::mapRotationAngleToScene(const CPhysVal& i_physValAngle)
 CPhysVal CGraphObjGroup::mapRotationAngleTo(const CPhysVal& i_physValAngle, CGraphObjGroup* i_pGraphObjGroup)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValAngle.toString() + ", " + QString(i_pGraphObjGroup == nullptr ? "null" : i_pGraphObjGroup->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mapRotationAngleTo",
-        /* strAddInfo   */ strMthInArgs );
-
     CPhysVal physValAngle = i_physValAngle;
     if (isChildOf(i_pGraphObjGroup)) {
         CGraphObjGroup* pGraphObjGroupParent = parentGroup();
@@ -2097,9 +2034,6 @@ CPhysVal CGraphObjGroup::mapRotationAngleTo(const CPhysVal& i_physValAngle, CGra
     else {
         #pragma message(__TODO__"Implement method")
         throw CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(physValAngle.toString());
     }
     return physValAngle;
 }
@@ -2166,78 +2100,29 @@ QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
         /* strAddInfo   */ "" );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPolygonF plg({
-        pGraphicsItemThis->mapToScene(m_rectScaled.topLeft()),
-        pGraphicsItemThis->mapToScene(m_rectScaled.topRight()),
-        pGraphicsItemThis->mapToScene(m_rectScaled.bottomRight()),
-        pGraphicsItemThis->mapToScene(m_rectScaled.bottomLeft())});
+    CPhysValRect physValRect = getRect();
+    if (parentGroup() != nullptr) {
+        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
+        physValRect = parentGroup()->mapToScene(physValRect);
+    }
+    else {
+        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
+    }
+    CPhysValPoint physValPointTL = physValRect.topLeft();
+    CPhysValPoint physValPointTR = physValRect.topRight();
+    CPhysValPoint physValPointBR = physValRect.bottomRight();
+    CPhysValPoint physValPointBL = physValRect.bottomLeft();
+    QPointF ptTL = physValPointTL.toQPointF();
+    QPointF ptTR = physValPointTR.toQPointF();
+    QPointF ptBR = physValPointBR.toQPointF();
+    QPointF ptBL = physValPointBL.toQPointF();
+    QPolygonF plg({ptTL, ptTR, ptBR, ptBL});
     QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
 }
-
-/*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-///*! @brief Returns the bounding rectangle of the object in local coordinates.
-//
-//    This method is used by a group to resize its children.
-//
-//    @param [in] i_version
-//        Transform (default) will return the current bounding rectangle.
-//        For Origin the original line values before adding the object as a child
-//        to a group is returned.
-//
-//    @return Bounding rectangle in local coordinates.
-//*/
-//QRectF CGraphObjGroup::getOriginalBoundingRectInParent() const
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "getOriginalBoundingRectInParent",
-//        /* strAddInfo   */ "" );
-//
-//    QRectF rctBounding = m_physValRectOrig.toQRectF();
-//    QPointF ptTL = rctBounding.topLeft();
-//    QPointF ptBR = rctBounding.bottomRight();
-//    QGraphicsItem* pGraphicsItemParent = parentItem();
-//    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-//    // If the line belongs to a group ...
-//    if (pGraphObjParent != nullptr) {
-//        // The original coordinates in m_physValRectOrig are relative to the
-//        // top left corner of the parent's bounding rectangle.
-//        // The coordinates must be mapped to local coordinates.
-//        QRectF rctBoundingParent = pGraphObjParent->getOriginalBoundingRectInParent();
-//        QPointF ptOriginParent = rctBoundingParent.topLeft();
-//        ptTL -= ptOriginParent;
-//        ptBR -= ptOriginParent;
-//        rctBounding = QRectF(ptTL, ptBR);
-//    }
-//    // If the item does not belong to a group ...
-//    else {
-//        // .. the current (transformed) and original coordinates must be the same
-//        // and relative to the top left corner of the scene.
-//        // The coordinates must be mapped to local coordinates.
-//        // The center point of the original rectangle is the original position
-//        // of the group on the scene. mapFromScene cannot be used as the current
-//        // and original position may be different.
-//        QPointF ptOriginParent = rctBounding.center();
-//        ptTL -= ptOriginParent;
-//        ptBR -= ptOriginParent;
-//        rctBounding = QRectF(ptTL, ptBR);
-//    }
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-//    }
-//    return rctBounding;
-//}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -3526,6 +3411,11 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Reimplments the itemChange method.
+
+    The object may be moved or transformed by several methods.
+    "itemChange" is a central point to update the coordinates upon those changes.
+*/
 QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
 //------------------------------------------------------------------------------
 {
@@ -3565,8 +3455,6 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         }
     }
     else if (i_change == ItemParentHasChanged) {
-        // The object may be moved or transformed by several methods.
-        // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             //tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
@@ -3578,8 +3466,6 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemPositionHasChanged) {
-        // The object may be moved or transformed by several methods.
-        // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
@@ -3593,8 +3479,6 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
     else if (i_change == ItemRotationHasChanged) {
         tracePositionInfo(mthTracer, EMethodDir::Enter);
-        //updateLineEndArrowHeadPolygons();
-        //tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }

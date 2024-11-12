@@ -2072,6 +2072,44 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
 }
 
 /*==============================================================================
+public: // instance methods (to convert the values into another unit)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the physical rectangle as a QPolygonF instance in the current unit.
+
+    The points are returned in clockwise order starting with the top left corner.
+
+    @note The physical rectangle may be rotated and therefore a QRectF instance
+          cannot be returned.
+*/
+QPolygonF CPhysValRect::toQPolygonF() const
+//------------------------------------------------------------------------------
+{
+    QPointF ptTL = topLeft().toQPointF();
+    QPointF ptTR = topRight().toQPointF();
+    QPointF ptBR = bottomRight().toQPointF();
+    QPointF ptBL = bottomLeft().toQPointF();
+    return QPolygonF({ptTL, ptTR, ptBR, ptBL});
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the physical rectangle as a QPolygonF instance in the desired unit.
+*/
+QPolygonF CPhysValRect::toQPolygonF(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    QPointF ptTL = topLeft().toQPointF(i_unit);
+    QPointF ptTR = topRight().toQPointF(i_unit);
+    QPointF ptBR = bottomRight().toQPointF(i_unit);
+    QPointF ptBL = bottomLeft().toQPointF(i_unit);
+    return QPolygonF({ptTL, ptTR, ptBR, ptBL});
+}
+
+/*==============================================================================
 protected: // overridables
 ==============================================================================*/
 

@@ -582,7 +582,12 @@ CPhysValLine CGraphObjLine::getLine() const
 CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return m_physValLineScaledAndRotated;
+    if (parentGroup() != nullptr) {
+        return parentGroup()->convert(m_physValLineScaledAndRotated, i_unit);
+    }
+    else {
+        return m_pDrawingScene->convert(m_physValLineScaledAndRotated, i_unit);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1027,9 +1032,9 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns the current bounding rectangle of the object in local coordinates.
 
-    Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
+    Please note that the boundingRect call of QGraphicsItem als takes the pen width
     into account. So we cannot call this method to get the real bounding rectangle of
-    the line if only the real shape points should be considered.
+    the object if only the real shape points should be considered.
 
     @return Bounding rectangle in local coordinates.
 */
@@ -1106,237 +1111,6 @@ QRectF CGraphObjLine::getEffectiveBoundingRectOnScene() const
     }
     return rctBounding;
 }
-
-/*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-///*! @brief Returns the bounding rectangle of the object in local coordinates.
-//
-//    This method is used by a group to resize its children.
-//
-//    Please refer to documentation about the difference between current (transformed)
-//    and original coordinates at base class CGraphObj.
-//
-//    @return Original bounding rectangle in local coordinates.
-//*/
-//QRectF CGraphObjLine::getOriginalBoundingRectInParent() const
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "getOriginalBoundingRectInParent",
-//        /* strAddInfo   */ "" );
-//
-//    // Line points in local coordinates.
-//    QLineF lineF = line();
-//    QGraphicsItem* pGraphicsItemParent = parentItem();
-//    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-//    // If the line belongs to a group ...
-//    if (pGraphObjParent != nullptr) {
-//        lineF = m_physValLineOrig.toQLineF();
-//        // The original coordinates in m_physValLineOrig are relative to the
-//        // top left corner of the parent's bounding rectangle.
-//        QPointF pt1 = lineF.p1();
-//        QPointF pt2 = lineF.p2();
-//        // The coordinates must be mapped to local coordinates.
-//        QRectF rctBoundingParent = pGraphObjParent->getOriginalBoundingRectInParent();
-//        QPointF ptOriginParent = rctBoundingParent.topLeft();
-//        pt1 += ptOriginParent;
-//        pt2 += ptOriginParent;
-//        lineF = QLineF(pt1, pt2);
-//    }
-//    // If the item does not belong to a group ...
-//    else {
-//        // .. the current (transformed) and original coordinates must be the same.
-//        // lineF already contains the local coordinates.
-//    }
-//    QRectF rctBounding = ZS::Draw::boundingRect(lineF);
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-//    }
-//    return rctBounding;
-//}
-
-////------------------------------------------------------------------------------
-///*! @brief Pure virtual method which must be overridden by derived classes to
-//           set the bounding rectangle of the object in local coordinates.
-//
-//    This method is used by a group to resize its children.
-//
-//    P1 and P2 should not be swapped when invoking this method.
-//
-//    If P1 is right of P2, P1 should stay right of P1.
-//    If P1 is below of P2, P1 should stay below of P1.
-//
-//    @param [in] i_rectBounding
-//        New bounding rectangle of the object in local coordinates.
-//*/
-//void CGraphObjLine::setCurrentBoundingRectInParent(const QRectF& i_rectBounding)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = qRect2Str(i_rectBounding);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "setCurrentBoundingRectInParent",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    double fXL = i_rectBounding.left();
-//    double fYT = i_rectBounding.top();
-//    double fXR = i_rectBounding.right();
-//    double fYB = i_rectBounding.bottom();
-//
-//    QLineF lineF = line();
-//    QPointF pt1 = lineF.p1();
-//    QPointF pt2 = lineF.p2();
-//
-//    if (pt1.x() < pt2.x()) {
-//        pt1.setX(i_rectBounding.left());
-//        pt2.setX(i_rectBounding.right());
-//    }
-//    else {
-//        pt1.setX(i_rectBounding.right());
-//        pt2.setX(i_rectBounding.left());
-//    }
-//    if (lineF.y1() < lineF.y2()) {
-//        pt1.setY(i_rectBounding.top());
-//        pt2.setY(i_rectBounding.bottom());
-//    }
-//    else {
-//        pt1.setY(i_rectBounding.bottom());
-//        pt2.setY(i_rectBounding.top());
-//    }
-//
-//    lineF = QLineF(pt1, pt2);
-//
-//    // The points are in local coordinates whose origin is at the center point of the line.
-//    // The physical line values as provided to the user must be relative to the top left
-//    // corner of the parent's bounding rectangle or to the scene, if the item does not
-//    // have another item as parent.
-//    QGraphicsItem* pGraphicsItemParent = parentItem();
-//    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-//    if (pGraphObjParent != nullptr) {
-//        // .. the coordinates were passed relative to the top left
-//        // corner of the parent item's bounding rectangle.
-//        QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
-//        QPointF ptOriginParent = rectBoundingParent.topLeft();
-//        pt1 -= ptOriginParent;
-//        pt2 -= ptOriginParent;
-//    }
-//    // If the item does not belong to a group but has already been added to the scene ...
-//    else if (scene() != nullptr) {
-//        // .. the coordinates were passed relative to the top left corner of the scene.
-//        // The origin of the local coordinates is the center point of the line. We need
-//        // to move P1 and P2 so that the center line will get the local coordinates (0/0).
-//        pt1 = mapToScene(pt1);
-//        pt2 = mapToScene(pt2);
-//    }
-//
-//    // The current coordinates need to be updated (if changed)
-//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-//    CPhysValLine physValLine(pt1, pt2, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-//    if (m_pDrawingScene->drawingSize().unit() != physValLine.unit()) {
-//        physValLine = m_pDrawingScene->convert(physValLine);
-//    }
-//
-//    if (m_physValLineCurr != physValLine) {
-//        setPhysValLine(physValLine, ECoordinatesVersion::Transformed);
-//        // The coordinates of the bounding rectangle are passed in local coordinates.
-//        QGraphicsLineItem_setLine(lineF);
-//        emit_geometryOnSceneChanged();
-//    }
-//
-//    // If the scene position has been changed, the position of the labels got to be updated.
-//    updateInternalScenePos();
-//}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the group scale for the line.
-
-    The current lines position is moved to keep the relative position in the
-    parent group.
-    The current lines horizontal (dx) and vertical (dy) components are resized.
-
-         +----+----+----+----+----+----+----+----+
-         0    5    10   15   20   25   30   35   40
-       0 +-Group---------------------------------+ -30
-         |                                       |
-      10 |     P1 x (9/10) (-11/-20)             | -20
-         |         x                             |
-      20 |          x                            | -10
-         |       Pos x (12/25) (-8/-5)           |
-      30 +------------x------X-------------------+   0
-         |             x   (0/0)                 |
-      40 |           P1 x (15/40) (-5/10)        |  10
-         |                                       |
-      50 |                                       |  20
-         |                                       |
-      60 +---------------------------------------+  30
-        -20  -15  -10  -5    0    5    10   15   20
-         +----+----+----+----+----+----+----+----+
-
-     ScaleX = 1.5; ScaleY = 1.5
-
-        +----+----+----+----+----+----+----+----+----+----+----+----+
-        0    5    10   15   20   25   30   35   40   45   50   55   60
-      0 +-Group'----------------------------------------------------+
-        |                                                           | -40
-     10 |                                                           |
-        |        P1' x (13.5/15) (-16.5/-30)                        | -30
-     20 |             x                                             |
-        |              x                                            | -20
-     30 |               x                                           |
-        |                x (18/37.5) (-12/-7.5)                     | -10
-     40 |            Pos' x                                         |
-        +------------------x----------X'----------------------------+   0
-     50 |                   x       (0/0)                           |
-        |                    x                                      |  10
-     60 |                 P2' x (22.5/60) (-7.5/15)                 |
-        |                                                           |  20
-     70 |                                                           |
-        |                                                           |  30
-     80 |                                                           |
-        |                                                           |  40
-     90 +-----------------------------------------------------------+
-       -30  -25  -20  -15  -10  -5    0    5    10   15   20   25   30
-        +----+----+----+----+----+----+----+----+----+----+----+----+
-*/
-//void CGraphObjLine::setGroupScale(double i_fXScale, double i_fYScale)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "setGroupScale",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    //QPointF posOrig = m_physValLineOrig.center().toQPointF();
-//    //QPointF posCurr = posOrig;
-//    //posCurr.setX(posCurr.x() * i_fXScale);
-//    //posCurr.setY(posCurr.y() * i_fYScale);
-//    //double fTranslateDX = posCurr.x() - posOrig.x();
-//    //double fTranslateDY = posCurr.y() - posOrig.y();
-//    //m_transformationsByGroup.translate(fTranslateDX, fTranslateDY);
-//    //m_transformationsByGroup.scale(i_fXScale, i_fYScale);
-//    //QLineF lineOrig = m_physValLineOrig.toQLineF();
-//    //QLineF lineCurr = m_transformationsByGroup.map(lineOrig);
-//    //CPhysValLine physValLineCurr = m_physValLineCurr;
-//    //physValLineCurr = lineCurr;
-//    //setLine(physValLineCurr);
-//}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -2067,13 +1841,9 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if the line is currently being created.
+    // Ignore hover events if the object is currently being created.
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        QLineF lineF = line();
-        QPolygonF plg;
-        plg.append(lineF.p1());
-        plg.append(lineF.p2());
-        showSelectionPointsOfPolygon(plg);
+        showSelectionPoints();
         setIsHit(true);
         setCursor(getProposedCursor(i_pEv->pos()));
     }
@@ -2097,13 +1867,9 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if the line is currently being created.
+    // Ignore hover events if the object is currently being created.
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        QLineF lineF = line();
-        QPolygonF plg;
-        plg.append(lineF.p1());
-        plg.append(lineF.p2());
-        showSelectionPointsOfPolygon(plg);
+        showSelectionPoints();
         setIsHit(true);
         setCursor(getProposedCursor(i_pEv->pos()));
     }
@@ -2266,6 +2032,11 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Reimplments the itemChange method.
+
+    The object may be moved or transformed by several methods.
+    "itemChange" is a central point to update the coordinates upon those changes.
+*/
 QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
 //------------------------------------------------------------------------------
 {
@@ -2305,8 +2076,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         }
     }
     else if (i_change == ItemParentHasChanged) {
-        // The object may be moved or transformed by several methods.
-        // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             //tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
@@ -2322,8 +2091,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemPositionHasChanged) {
-        // The object may be moved or transformed by several methods.
-        // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
@@ -2340,7 +2107,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
     else if (i_change == ItemRotationHasChanged) {
         tracePositionInfo(mthTracer, EMethodDir::Enter);
-        //updateLineEndArrowHeadPolygons();
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -2355,7 +2121,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             //setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else {
-            //setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             //m_editMode = EEditMode::None;

@@ -89,6 +89,30 @@ public: // interface methods
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryCapacitor::createGraphObj(
     CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
+        mthTracer.trace(strMthInArgs);
+    }
+
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeGroup);
+    CGraphObj* pGraphObj = new CGraphObjCapacitor(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
+    return pGraphObj;
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CObjFactoryCapacitor::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------

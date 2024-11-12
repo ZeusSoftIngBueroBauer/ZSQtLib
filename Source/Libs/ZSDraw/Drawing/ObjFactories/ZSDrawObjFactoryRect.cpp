@@ -80,6 +80,40 @@ public: // interface methods
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryRect::createGraphObj(
     CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeRect);
+    CGraphObjRect* pGraphObj = new CGraphObjRect(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
+
+    // We need to create an object with at least one pixel size so that the
+    // drawing scene can "find" the object and can dispatch events to it.
+    // It is not important whether width or height is set to one pixel.
+    // For a rectangle it makes sense to set both extents to one pixel.
+#if 0
+    QPointF ptStart = i_ptItemPos;
+    QPointF ptEnd( i_ptItemPos.x()+1, i_ptItemPos.y()+1 );
+    pGraphObj->setRect( QRectF(ptStart,ptEnd) );
+#endif
+
+    return pGraphObj;
+
+} // createGraphObj
+
+//------------------------------------------------------------------------------
+CGraphObj* CObjFactoryRect::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------

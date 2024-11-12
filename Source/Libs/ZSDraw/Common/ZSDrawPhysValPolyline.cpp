@@ -1292,7 +1292,7 @@ void CPhysValPolyline::updateOriginalPolygon()
             m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], -fAngle_rad);
         }
     }
-    m_physValRect = CPhysValRect(*m_pDrawingScene);
+    m_physValRect = CPhysValRect(*m_pDrawingScene, m_unit);
     m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
     m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     // Calculate the offset error by rotating one of the original points

@@ -679,22 +679,12 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect) const
 CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "convert",
-        /* strAddInfo   */ strMthInArgs );
-
-    CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
-    CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    CPhysValRect physValRect(physValTL, physValBR);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
-    }
+    CPhysValRect physValRect(*this, i_unitDst);
+    CPhysValSize physValSize = convert(i_physValRect.size(), i_unitDst);
+    CPhysValPoint physValCenter = convert(i_physValRect.center(), i_unitDst);
+    physValRect.setSize(physValSize);
+    physValRect.setCenter(physValCenter);
+    physValRect.setAngle(i_physValRect.angle());
     return physValRect;
 }
 
@@ -2475,10 +2465,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<QGraphicsItem*> i_arpGraphic
         // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
         QRectF rctGroupSceneCoors = getBoundingRect(i_arpGraphicsItems);
 
-        pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(
-            /* pDrawingScene */ this,
-            /* ptItemPos     */ CPhysValPoint(*this),
-            /* drawSettings  */ CDrawSettings(EGraphObjTypeGroup) ));
+        pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(this, CDrawSettings(EGraphObjTypeGroup)));
         if (pGraphObjGroup == nullptr) {
             throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
         }
@@ -3427,10 +3414,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                             QString strObjPath = strlstObjPath.join("::");
                             CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
                             if (pObjFactory != nullptr) {
-                                CGraphObj* pGraphObj = pObjFactory->createGraphObj(
-                                    /* pDrawingScene */ this,
-                                    /* ptItemPos     */ convert(i_pEv->scenePos()),
-                                    /* drawSettings  */ m_drawSettings );
+                                CGraphObj* pGraphObj = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
                                 QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                                 if (pGraphicsItem == nullptr) {
                                     throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
@@ -3577,10 +3561,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // Graphical objects must always be created at their transformation origin points.
                 // Otherwise mapping coordinates to group coordinates does not work correctly.
                 // This is especially true for connection points and circles.
-                CGraphObj* pGraphObj = m_pObjFactory->createGraphObj(
-                    /* pDrawingScene */ this,
-                    /* ptItemPos     */ convert(i_pEv->scenePos()),
-                    /* drawSettings  */ m_drawSettings );
+                CGraphObj* pGraphObj = m_pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
                 if (pGraphObj != nullptr) {
                     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                     if (pGraphicsItem == nullptr) {

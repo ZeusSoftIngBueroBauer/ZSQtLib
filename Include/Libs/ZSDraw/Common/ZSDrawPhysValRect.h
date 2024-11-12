@@ -132,6 +132,9 @@ public: // instance methods
     void setBottomRight(const CPhysValPoint& i_physValPoint);
     void setBottomLeft(const QPointF& i_pt);
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
+public: // instance methods (to convert the values into another unit)
+    QPolygonF toQPolygonF() const;
+    QPolygonF toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // overridables
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);

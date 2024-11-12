@@ -80,6 +80,44 @@ public: // interface methods
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
+        mthTracer.trace(strMthInArgs);
+    }
+
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
+    drawSettings.setPenColor(Qt::black);
+    drawSettings.setPenWidth(1);
+    drawSettings.setLineStyle(ELineStyle::SolidLine);
+    drawSettings.setFillStyle(EFillStyle::SolidPattern);
+    drawSettings.setFillColor(Qt::black);
+
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
+
+#if 0
+    pGraphObj->setPos(i_ptItemPos);
+#endif
+
+    return pGraphObj;
+
+} // createGraphObj
+
+//------------------------------------------------------------------------------
+CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------

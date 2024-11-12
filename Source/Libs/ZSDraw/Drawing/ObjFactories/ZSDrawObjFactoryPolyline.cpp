@@ -80,14 +80,35 @@ public: // interface methods
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolyline::createGraphObj(
     CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+
+    CDrawSettings drawSettings = i_drawSettings;
+    drawSettings.setGraphObjType(EGraphObjTypePolyline);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
+    return pGraphObj;
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CObjFactoryPolyline::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point {" + i_physValPoint.toString() + "}" +
-                        ", DrawSettings {" + i_drawSettings.toString() + "}";
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -100,16 +121,11 @@ CGraphObj* CObjFactoryPolyline::createGraphObj(
     CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
 
-#if 0
-    QPolygonF plg;
-    plg.append(i_ptItemPos);
-    plg.append(i_ptItemPos);
-    pGraphObj->setPolygon(plg);
-#endif
-
+    QPolygonF polyline({i_physValPoint.toQPointF()});
+    CPhysValPolyline physValPolyline(*i_pDrawingScene, polyline, i_physValPoint.unit());
+    pGraphObj->setPolyline(physValPolyline);
     return pGraphObj;
-
-} // createGraphObj
+}
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryPolyline::saveGraphObj(

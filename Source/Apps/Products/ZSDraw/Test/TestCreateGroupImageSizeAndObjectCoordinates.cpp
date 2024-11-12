@@ -69,7 +69,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValShapes(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValShapeTransformations",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    //createTestGroupObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes);
+    createTestGroupObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes);
     createTestGroupObjectCoordinatesTransformPhysValPolygon(pGrpPhysValShapes);
 }
 
@@ -78,7 +78,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
-#if 0
+//#if 0
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
@@ -94,6 +94,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CUnit unit = drawingSize.unit();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
     int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
@@ -149,6 +150,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     double fWidthSetAngle0 = 200.0;
     double fHeightSetAngle0 = 100.0;
     QPointF ptCenterSetAngle0(300.0, 300.0);
@@ -214,6 +216,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -283,6 +286,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -333,6 +337,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -383,6 +388,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -434,6 +440,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -484,6 +491,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -535,6 +543,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -604,6 +613,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -654,6 +664,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -707,6 +718,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -757,6 +769,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -812,6 +825,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -865,6 +879,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle0);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -919,6 +934,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle0);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -975,6 +991,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle0);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1030,6 +1047,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptTopLeftBeyondBottomRightAngle0);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1083,6 +1101,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle0);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1135,6 +1154,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle0);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1189,6 +1209,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle0);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1245,6 +1266,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle0);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1298,6 +1320,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeforeTopLeftAngle0);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1352,6 +1375,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle0);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1404,6 +1428,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle0);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1463,6 +1488,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle0);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1516,6 +1542,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle0);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1570,6 +1597,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle0);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1622,6 +1650,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle0);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1678,6 +1707,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle0);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle0, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1743,6 +1773,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     // Center, Width and Height must remain the same for all following setAngle test steps
     double fWidthSetAngle90 = 200.0;
     double fHeightSetAngle90 = 100.0;
@@ -1801,6 +1832,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1844,6 +1876,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1887,6 +1920,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1934,6 +1968,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -1982,6 +2017,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2027,6 +2063,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2072,6 +2109,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2115,6 +2153,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2159,6 +2198,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2204,6 +2244,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2248,6 +2289,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2293,6 +2335,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2337,6 +2380,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle90);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2381,6 +2425,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle90);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2425,6 +2470,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle90);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2469,6 +2515,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle90);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2512,6 +2559,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle90);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2556,6 +2604,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle90);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2600,6 +2649,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle90);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2644,6 +2694,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle90);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2687,6 +2738,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle90);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2731,6 +2783,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle90);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2775,6 +2828,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle90);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2819,6 +2873,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle90);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2862,6 +2917,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle90);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2906,6 +2962,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle90);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2950,6 +3007,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle90);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -2994,6 +3052,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle90);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle90, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3055,6 +3114,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     // Center, Width and Height must remain the same for all following setAngle test steps
     double fWidthSetAngle180 = 200.0;
     double fHeightSetAngle180 = 100.0;
@@ -3113,6 +3173,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3156,6 +3217,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3199,6 +3261,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3246,6 +3309,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3294,6 +3358,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3339,6 +3404,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3384,6 +3450,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3427,6 +3494,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3471,6 +3539,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3516,6 +3585,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3560,6 +3630,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3605,6 +3676,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3649,6 +3721,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle180);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3693,6 +3766,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle180);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3737,6 +3811,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle180);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3781,6 +3856,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle180);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3824,6 +3900,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle180);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3868,6 +3945,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle180);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3912,6 +3990,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle180);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3956,6 +4035,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle180);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -3999,6 +4079,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle180);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4043,6 +4124,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle180);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4087,6 +4169,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle180);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4131,6 +4214,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle180);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4174,6 +4258,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle180);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4218,6 +4303,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle180);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4262,6 +4348,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle180);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4306,6 +4393,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle180);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle180, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4371,6 +4459,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     // Center, Width and Height must remain the same for all following setAngle test steps
     double fWidthSetAngle270 = 200.0;
     double fHeightSetAngle270 = 100.0;
@@ -4429,6 +4518,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4472,6 +4562,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4515,6 +4606,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4562,6 +4654,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4610,6 +4703,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4655,6 +4749,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4700,6 +4795,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4743,6 +4839,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4787,6 +4884,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4832,6 +4930,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4876,6 +4975,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4921,6 +5021,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -4965,6 +5066,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle270);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5009,6 +5111,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle270);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5053,6 +5156,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle270);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5097,6 +5201,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle270);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5140,6 +5245,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle270);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5184,6 +5290,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle270);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5228,6 +5335,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle270);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5272,6 +5380,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle270);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5315,6 +5424,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle270);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5359,6 +5469,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle270);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5403,6 +5514,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle270);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5447,6 +5559,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle270);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5490,6 +5603,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle270);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5534,6 +5648,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle270);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5578,6 +5693,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle270);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5622,6 +5738,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle270);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle270, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5662,8 +5779,8 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(30.0°)
-    ------------------
-    */
+    ------------------*/
+    //iDigits = 6;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
@@ -5676,17 +5793,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     double fWidthSetAngle30 = fWidthSetAngle0;
     double fHeightSetAngle30 = fHeightSetAngle0;
     QPointF ptCenterSetAngle30 = ptCenterSetAngle0;
-    QPointF ptTopLeftSetAngle30(238.4, bYAxisTopDown ? 206.7 : 393.3);
-    QPointF ptTopRightSetAngle30(411.6, bYAxisTopDown ? 306.7 : 293.3);
-    QPointF ptBottomRightSetAngle30(361.6, bYAxisTopDown ? 393.3 : 206.7);
-    QPointF ptBottomLeftSetAngle30(188.4, bYAxisTopDown ? 293.3 : 306.7);
-    QPointF ptTopCenterSetAngle30 = QLineF(ptTopRightSetAngle30, ptTopLeftSetAngle30).center();
-    QPointF ptRightCenterSetAngle30 = QLineF(ptTopRightSetAngle30, ptBottomRightSetAngle30).center();
+    QPointF ptTopLeftSetAngle30(238.397460, bYAxisTopDown ? 206.698730 : fYAxisMaxVal - 206.698730);
+    QPointF ptTopRightSetAngle30(411.602540, bYAxisTopDown ? 306.698730 : fYAxisMaxVal - 306.698730);
+    QPointF ptBottomRightSetAngle30(361.602540, bYAxisTopDown ? 393.301270 : fYAxisMaxVal - 393.301270);
+    QPointF ptBottomLeftSetAngle30(188.397460, bYAxisTopDown ? 293.301270 : fYAxisMaxVal - 293.301270);
+    QPointF ptTopCenterSetAngle30    = QLineF(ptTopRightSetAngle30, ptTopLeftSetAngle30).center();
+    QPointF ptRightCenterSetAngle30  = QLineF(ptTopRightSetAngle30, ptBottomRightSetAngle30).center();
     QPointF ptBottomCenterSetAngle30 = QLineF(ptBottomRightSetAngle30, ptBottomLeftSetAngle30).center();
-    QPointF ptLeftCenterSetAngle30 = QLineF(ptTopLeftSetAngle30, ptBottomLeftSetAngle30).center();
+    QPointF ptLeftCenterSetAngle30   = QLineF(ptTopLeftSetAngle30, ptBottomLeftSetAngle30).center();
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5705,7 +5823,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setCenter(400, 400)
     ----------------------
     */
-    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     fdx = ptCenter.x() - ptCenterSetAngle30.x();
     fdy = ptCenter.y() - ptCenterSetAngle30.y();
     double fWidthSetCenterAngle30 = fWidthSetAngle30;
@@ -5715,10 +5833,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetCenterAngle30(ptTopRightSetAngle30.x() + fdx, ptTopRightSetAngle30.y() + fdy);
     QPointF ptBottomRightSetCenterAngle30(ptBottomRightSetAngle30.x() + fdx, ptBottomRightSetAngle30.y() + fdy);
     QPointF ptBottomLeftSetCenterAngle30(ptBottomLeftSetAngle30.x() + fdx, ptBottomLeftSetAngle30.y() + fdy);
-    QPointF ptTopCenterSetCenterAngle30 = QLineF(ptTopRightSetCenterAngle30, ptTopLeftSetCenterAngle30).center();
-    QPointF ptRightCenterSetCenterAngle30 = QLineF(ptTopRightSetCenterAngle30, ptBottomRightSetCenterAngle30).center();
+    QPointF ptTopCenterSetCenterAngle30    = QLineF(ptTopRightSetCenterAngle30, ptTopLeftSetCenterAngle30).center();
+    QPointF ptRightCenterSetCenterAngle30  = QLineF(ptTopRightSetCenterAngle30, ptBottomRightSetCenterAngle30).center();
     QPointF ptBottomCenterSetCenterAngle30 = QLineF(ptBottomRightSetCenterAngle30, ptBottomLeftSetCenterAngle30).center();
-    QPointF ptLeftCenterSetCenterAngle30 = QLineF(ptTopLeftSetCenterAngle30, ptBottomLeftSetCenterAngle30).center();
+    QPointF ptLeftCenterSetCenterAngle30   = QLineF(ptTopLeftSetCenterAngle30, ptBottomLeftSetCenterAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
@@ -5733,6 +5851,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5753,15 +5872,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle30 = size300x200.width();
     double fHeightSetSizeAngle30 = size300x200.height();
-    QPointF ptCenterSetSizeAngle30 = bYAxisTopDown ? QPointF(318.3, 368.3) : QPointF(368.3, 318.3);
+    QPointF ptCenterSetSizeAngle30 = bYAxisTopDown ? QPointF(318.301270, 368.301270) : QPointF(368.301270, 318.301270);
     QPointF ptTopLeftSetSizeAngle30 = bYAxisTopDown ? ptTopLeftSetAngle30 : QPointF(288.4, 479.9);
-    QPointF ptTopRightSetSizeAngle30 = bYAxisTopDown ? QPointF(498.2, 356.7) : QPointF(548.2, 329.9);
-    QPointF ptBottomRightSetSizeAngle30 = bYAxisTopDown ? QPointF(398.2, 529.9) : QPointF(448.2, 156.7);
-    QPointF ptBottomLeftSetSizeAngle30 = bYAxisTopDown ? QPointF(138.4, 379.9) : ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetSizeAngle30 = QLineF(ptTopRightSetSizeAngle30, ptTopLeftSetSizeAngle30).center();
-    QPointF ptRightCenterSetSizeAngle30 = QLineF(ptTopRightSetSizeAngle30, ptBottomRightSetSizeAngle30).center();
+    QPointF ptTopRightSetSizeAngle30 = bYAxisTopDown ? QPointF(498.205081, 356.698730) : QPointF(548.2, 329.9);
+    QPointF ptBottomRightSetSizeAngle30 = bYAxisTopDown ? QPointF(398.205081, 529.903811) : QPointF(448.2, 156.7);
+    QPointF ptBottomLeftSetSizeAngle30 = bYAxisTopDown ? QPointF(138.397460, 379.903811) : ptBottomLeftSetAngle30;
+    QPointF ptTopCenterSetSizeAngle30    = QLineF(ptTopRightSetSizeAngle30, ptTopLeftSetSizeAngle30).center();
+    QPointF ptRightCenterSetSizeAngle30  = QLineF(ptTopRightSetSizeAngle30, ptBottomRightSetSizeAngle30).center();
     QPointF ptBottomCenterSetSizeAngle30 = QLineF(ptBottomRightSetSizeAngle30, ptBottomLeftSetSizeAngle30).center();
-    QPointF ptLeftCenterSetSizeAngle30 = QLineF(ptTopLeftSetSizeAngle30, ptBottomLeftSetSizeAngle30).center();
+    QPointF ptLeftCenterSetSizeAngle30   = QLineF(ptTopLeftSetSizeAngle30, ptBottomLeftSetSizeAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
@@ -5776,6 +5895,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5796,15 +5916,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetWidthAngle30 = physValWidth300.getVal();
     double fHeightSetWidthAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetWidthAngle30(343.3, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptCenterSetWidthAngle30(343.301270, bYAxisTopDown ? 325.000000 : fYAxisMaxVal - 325.000000);
     QPointF ptTopLeftSetWidthAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetWidthAngle30(498.2, bYAxisTopDown ? 356.7 : 243.3);
-    QPointF ptBottomRightSetWidthAngle30(448.2, bYAxisTopDown ? 443.3 : 156.7);
+    QPointF ptTopRightSetWidthAngle30(498.205081, bYAxisTopDown ? 356.698730 : fYAxisMaxVal - 356.698730);
+    QPointF ptBottomRightSetWidthAngle30(448.205081, bYAxisTopDown ? 443.301270 : fYAxisMaxVal - 443.301270);
     QPointF ptBottomLeftSetWidthAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetWidthAngle30 = QLineF(ptTopRightSetWidthAngle30, ptTopLeftSetWidthAngle30).center();
-    QPointF ptRightCenterSetWidthAngle30 = QLineF(ptTopRightSetWidthAngle30, ptBottomRightSetWidthAngle30).center();
+    QPointF ptTopCenterSetWidthAngle30    = QLineF(ptTopRightSetWidthAngle30, ptTopLeftSetWidthAngle30).center();
+    QPointF ptRightCenterSetWidthAngle30  = QLineF(ptTopRightSetWidthAngle30, ptBottomRightSetWidthAngle30).center();
     QPointF ptBottomCenterSetWidthAngle30 = QLineF(ptBottomRightSetWidthAngle30, ptBottomLeftSetWidthAngle30).center();
-    QPointF ptLeftCenterSetWidthAngle30 = ptLeftCenterSetAngle30;
+    QPointF ptLeftCenterSetWidthAngle30   = QLineF(ptTopLeftSetWidthAngle30, ptBottomLeftSetWidthAngle30).center();;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
@@ -5819,6 +5939,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5848,10 +5969,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptTopRightSetAngle30;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(368.3, bYAxisTopDown ? 281.7 : 318.3);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptRightCenterSetAngle30;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(318.3, bYAxisTopDown ? 368.3 : 231.7);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30  = QLineF(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();;
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30 = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30   = QLineF(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
@@ -5866,6 +5987,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5892,15 +6014,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     physValAngleCorrected.setVal(210.0);
     double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle30 = fWidthSetAngle30 / 2.0;
     double fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(429.9, bYAxisTopDown ? 375.0 : 225.0);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30(448.2, bYAxisTopDown ? 443.3 : 156.7);
+    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(429.903810, bYAxisTopDown ? 375.000000 : fYAxisMaxVal - 375.000000);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30(448.205080, bYAxisTopDown ? 443.301270 : fYAxisMaxVal - 443.301270);
     QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30(498.2, bYAxisTopDown ? 356.7 : 243.3);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(404.9, bYAxisTopDown ? 418.3 : 181.7);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30 = ptRightCenterSetAngle30;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(454.9, bYAxisTopDown ? 331.7 : 268.3);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(473.2, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30(498.205080, bYAxisTopDown ? 356.698730 : fYAxisMaxVal - 356.698730);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30  = QLineF(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
@@ -5915,6 +6037,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5937,15 +6060,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptTopCenterSetAngle30;
     double fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle30 = fWidthSetAngle30 / 2.0;
     double fHeightSetWidthMoveRightCenterBeforeLeftBorderAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(256.7, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(256.698730, bYAxisTopDown ? 275.000000 : fYAxisMaxVal - 275.000000);
     QPointF ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptTopLeftSetAngle30;
     QPointF ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptTopCenterSetAngle30;
     QPointF ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptBottomCenterSetAngle30;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(281.7, bYAxisTopDown ? 231.7 : 368.3);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(231.7, bYAxisTopDown ? 318.3 : 281.7);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptLeftCenterSetAngle30;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30    = QLineF(ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30  = QLineF(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 = QLineF(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
@@ -5960,6 +6083,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -5983,15 +6107,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     physValAngleCorrected.setVal(210.0);
     double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle30 = fWidthSetAngle30 / 2.0;
     double fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(170.1, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(170.096190, bYAxisTopDown ? 225.000000 : fYAxisMaxVal - 225.000000);
     QPointF ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30(101.8, bYAxisTopDown ? 243.3 : 356.7);
+    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30(101.794920, bYAxisTopDown ? 243.301271 : fYAxisMaxVal - 243.301271);
     QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptMoved;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(145.1, bYAxisTopDown ? 268.3 : 331.7);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(126.8, bYAxisTopDown ? 200.0 : 400.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(195.1, bYAxisTopDown ? 181.7 : 418.3);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptLeftCenterSetAngle30;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30    = QLineF(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30  = QLineF(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 = QLineF(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
@@ -6006,6 +6130,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6026,15 +6151,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetHeightAngle30 = fWidthSetAngle30;
     double fHeightSetHeightAngle30 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle30 = bYAxisTopDown ? QPointF(275.0, 343.3) : QPointF(325.0, 343.3);
+    QPointF ptCenterSetHeightAngle30 = bYAxisTopDown ? QPointF(275.000000, 343.301270) : QPointF(325.0, 343.3);
     QPointF ptTopLeftSetHeightAngle30 = bYAxisTopDown ? ptTopLeftSetAngle30 : QPointF(288.4, 479.9);
     QPointF ptTopRightSetHeightAngle30 = bYAxisTopDown ? ptTopRightSetAngle30 : QPointF(461.6, 379.9);
-    QPointF ptBottomRightSetHeightAngle30 = bYAxisTopDown ? QPointF(311.6, 479.9) : ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetHeightAngle30 = bYAxisTopDown ? QPointF(138.4, 379.9) : ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetHeightAngle30 = QLineF(ptTopLeftSetHeightAngle30, ptTopRightSetHeightAngle30).center();
-    QPointF ptRightCenterSetHeightAngle30 = QLineF(ptTopRightSetHeightAngle30, ptBottomRightSetHeightAngle30).center();
+    QPointF ptBottomRightSetHeightAngle30 = bYAxisTopDown ? QPointF(311.602540, 479.903811) : ptBottomRightSetAngle30;
+    QPointF ptBottomLeftSetHeightAngle30 = bYAxisTopDown ? QPointF(138.397460, 379.903811) : ptBottomLeftSetAngle30;
+    QPointF ptTopCenterSetHeightAngle30    = QLineF(ptTopLeftSetHeightAngle30, ptTopRightSetHeightAngle30).center();
+    QPointF ptRightCenterSetHeightAngle30  = QLineF(ptTopRightSetHeightAngle30, ptBottomRightSetHeightAngle30).center();
     QPointF ptBottomCenterSetHeightAngle30 = QLineF(ptBottomRightSetHeightAngle30, ptBottomLeftSetHeightAngle30).center();
-    QPointF ptLeftCenterSetHeightAngle30 = QLineF(ptTopLeftSetHeightAngle30, ptBottomLeftSetHeightAngle30).center();
+    QPointF ptLeftCenterSetHeightAngle30   = QLineF(ptTopLeftSetHeightAngle30, ptBottomLeftSetHeightAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
@@ -6049,6 +6174,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6070,15 +6196,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle30;
     double fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle30 = fWidthSetAngle30;
     double fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle30 = fHeightSetAngle30 / 2.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(287.49, bYAxisTopDown ? 321.7 : 278.3);
+    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(287.500000, bYAxisTopDown ? 321.650635 : fYAxisMaxVal - 321.650635);
     QPointF ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptLeftCenterSetAngle30;
     QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptRightCenterSetAngle30;
     QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(374.1, bYAxisTopDown ? 371.7 : 228.3);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(200.9, bYAxisTopDown ? 271.7 : 328.3);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30    = QLineF(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30  = QLineF(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30 = QLineF(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
@@ -6093,6 +6219,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6116,15 +6243,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     physValAngleCorrected.setVal(210.0);
     double fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle30 = fWidthSetAngle30;
     double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle30 = fHeightSetAngle30 / 2.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(262.5, bYAxisTopDown ? 365.0 : 235.0);
-    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30(336.6, bYAxisTopDown ? 436.6 : 163.4);
-    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30(163.4, bYAxisTopDown ? 336.6 : 263.4);
+    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(262.500000, bYAxisTopDown ? 364.951905 : fYAxisMaxVal - 364.951905);
+    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30(336.602540, bYAxisTopDown ? 436.602540 : fYAxisMaxVal - 436.602540);
+    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30(163.397460, bYAxisTopDown ? 336.602540 : fYAxisMaxVal - 336.602540);
     QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30 = ptBottomLeftSetAngle30;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30 = ptBottomRightSetAngle30;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(250.0, bYAxisTopDown ? 386.6 : 213.4);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(175.9, bYAxisTopDown ? 315.0 : 285.0);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(349.1, bYAxisTopDown ? 415.0 : 185.0);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30    = QLineF(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30  = QLineF(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 = QLineF(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
@@ -6139,6 +6266,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6160,15 +6288,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle30;
     double fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle30 = fWidthSetHeightAngle30;
     double fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle30 = fHeightSetAngle30 / 2.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(312.49, bYAxisTopDown ? 278.4 : 321.7);
+    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(312.500000, bYAxisTopDown ? 278.349365 : fYAxisMaxVal - 278.349365);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptTopLeftSetAngle30;
     QPointF ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptTopRightSetAngle30;
     QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptRightCenterSetAngle30;
     QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptLeftCenterSetAngle30;
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptTopCenterSetAngle30;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(399.1, bYAxisTopDown ? 328.4 : 271.7);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(225.9, bYAxisTopDown ? 228.4 : 371.7);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30  = QLineF(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
@@ -6183,6 +6311,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6206,15 +6335,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     physValAngleCorrected.setVal(210.0);
     double fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle30 = fWidthSetHeightAngle30;
     double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle30 = fHeightSetAngle30 / 2.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(337.499, bYAxisTopDown ? 235.1 : 365.0);
+    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(337.500000, bYAxisTopDown ? 235.048095 : fYAxisMaxVal - 235.048095);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30 = ptTopRightSetAngle30;
     QPointF ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30(263.4, bYAxisTopDown ? 163.4 : 436.6);
-    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30(436.6, bYAxisTopDown ? 263.4 : 336.6);
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30 = ptTopCenterSetAngle30;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(250.9, bYAxisTopDown ? 185.1 : 415.0);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(350.0, bYAxisTopDown ? 213.4 : 386.6);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(424.1, bYAxisTopDown ? 285.1 : 315.0);
+    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30(263.397459, bYAxisTopDown ? 163.397460 : fYAxisMaxVal - 163.397460);
+    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30(436.602540, bYAxisTopDown ? 263.397460 : fYAxisMaxVal - 263.397460);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30  = QLineF(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
@@ -6229,6 +6358,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6247,18 +6377,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setTopLeft(BeforeBottomRight)
     --------------------------------
     */
-    QPointF ptSetTopLeftBeforeBottomRightAngle30 = QPointF(350.0, bYAxisTopDown ? 210.0 : 390.0);
-    double fWidthSetTopLeftBeforeBottomRightAngle30 = 101.7;
-    double fHeightSetTopLeftBeforeBottomRightAngle30 = 152.9;
-    QPointF ptCenterSetTopLeftBeforeBottomRightAngle30(355.8, bYAxisTopDown ? 301.7 : 298.4);
+    QPointF ptSetTopLeftBeforeBottomRightAngle30 = QPointF(350.0, bYAxisTopDown ? 210.0 : fYAxisMaxVal - 210.0);
+    double fWidthSetTopLeftBeforeBottomRightAngle30 = 101.698730;
+    double fHeightSetTopLeftBeforeBottomRightAngle30 = 152.942286;
+    QPointF ptCenterSetTopLeftBeforeBottomRightAngle30(355.801270, bYAxisTopDown ? 301.650635 : fYAxisMaxVal - 301.650635);
     QPointF ptTopLeftSetTopLeftBeforeBottomRightAngle30 = ptSetTopLeftBeforeBottomRightAngle30;
-    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle30(438.1, bYAxisTopDown ? 260.9 : 339.2);
+    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle30(438.073684, bYAxisTopDown ? 260.849365 : fYAxisMaxVal - 260.849365);
     QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle30(273.5, bYAxisTopDown ? 342.499 : 257.501);
-    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle30(394.0, bYAxisTopDown ? 235.4 : 364.6);
-    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle30(399.8, bYAxisTopDown ? 327.1 : 272.9);
-    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle30(317.6, bYAxisTopDown ? 367.9 : 232.1);
-    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle30(311.8, bYAxisTopDown ? 276.2 : 323.8);
+    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle30(273.528857, bYAxisTopDown ? 342.451905 : fYAxisMaxVal - 342.451905);
+    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle30    = QLineF(ptTopLeftSetTopLeftBeforeBottomRightAngle30, ptTopRightSetTopLeftBeforeBottomRightAngle30).center();
+    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle30  = QLineF(ptTopRightSetTopLeftBeforeBottomRightAngle30, ptBottomRightSetTopLeftBeforeBottomRightAngle30).center();
+    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle30 = QLineF(ptBottomRightSetTopLeftBeforeBottomRightAngle30, ptBottomLeftSetTopLeftBeforeBottomRightAngle30).center();
+    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle30   = QLineF(ptBottomLeftSetTopLeftBeforeBottomRightAngle30, ptTopLeftSetTopLeftBeforeBottomRightAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
@@ -6273,6 +6403,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle30);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6290,19 +6421,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondRightBorder)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondRightBorderAngle30(470, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptSetTopLeftBeyondRightBorderAngle30(470, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetTopLeftBeyondRightBorderAngle30 = 48.4;
-    double fHeightSetTopLeftBeyondRightBorderAngle30 = 97.2;
-    QPointF ptCenterSetTopLeftBeyondRightBorderAngle30(415.8, bYAxisTopDown ? 396.7 : 203.4);
+    double fWidthSetTopLeftBeyondRightBorderAngle30 = 48.397460;
+    double fHeightSetTopLeftBeyondRightBorderAngle30 = 97.224319;
+    QPointF ptCenterSetTopLeftBeyondRightBorderAngle30(415.801270, bYAxisTopDown ? 396.650635 : fYAxisMaxVal - 396.650635);
     QPointF ptTopLeftSetTopLeftBeyondRightBorderAngle30 = ptSetTopLeftBeyondRightBorderAngle30;
-    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle30(445.8, bYAxisTopDown ? 441.9 : 158.1);
+    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle30(445.801270, bYAxisTopDown ? 441.913430 : fYAxisMaxVal - 441.913430);
     QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle30(385.8, bYAxisTopDown ? 351.4 : 248.6);
-    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle30(457.9, bYAxisTopDown ? 421.0 : 179.0);
-    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle30(403.7, bYAxisTopDown ? 417.6 : 182.4);
-    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle30(373.7, bYAxisTopDown ? 372.3 : 227.7);
-    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle30(427.9, bYAxisTopDown ? 375.7 : 224.3);
+    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle30(385.801270, bYAxisTopDown ? 351.387841 : fYAxisMaxVal - 351.387841);
+    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle30    = QLineF(ptTopLeftSetTopLeftBeyondRightBorderAngle30, ptTopRightSetTopLeftBeyondRightBorderAngle30).center();
+    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle30  = QLineF(ptTopRightSetTopLeftBeyondRightBorderAngle30, ptBottomRightSetTopLeftBeyondRightBorderAngle30).center();
+    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle30 = QLineF(ptBottomRightSetTopLeftBeyondRightBorderAngle30, ptBottomLeftSetTopLeftBeyondRightBorderAngle30).center();
+    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle30   = QLineF(ptBottomLeftSetTopLeftBeyondRightBorderAngle30, ptTopLeftSetTopLeftBeyondRightBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
@@ -6317,6 +6448,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle30);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6334,19 +6466,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomBorder)
     ---------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomBorderAngle30(250.0, bYAxisTopDown ? 380.0 : 220.0);
+    QPointF ptSetTopLeftBeyondBottomBorderAngle30(250.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetTopLeftBeyondBottomBorderAngle30 = 44.3;
-    double fHeightSetTopLeftBeyondBottomBorderAngle30 = 103.3;
-    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle30(305.8, bYAxisTopDown ? 386.7 : 213.4);
+    double fWidthSetTopLeftBeyondBottomBorderAngle30 = 44.282032;
+    double fHeightSetTopLeftBeyondBottomBorderAngle30 = 103.301270;
+    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle30(305.801270, bYAxisTopDown ? 386.650635 : fYAxisMaxVal - 386.650635);
     QPointF ptTopLeftSetTopLeftBeyondBottomBorderAngle30 = ptSetTopLeftBeyondBottomBorderAngle30;
-    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle30(272.1, bYAxisTopDown ? 341.7 : 258.4);
+    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle30(272.141016, bYAxisTopDown ? 341.650635 : fYAxisMaxVal - 341.650635);
     QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle30(339.499, bYAxisTopDown ? 431.7 : 168.4);
-    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle30(261.1, bYAxisTopDown ? 360.8 : 239.2);
-    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle30(316.9, bYAxisTopDown ? 367.499 : 232.5);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle30(350.5, bYAxisTopDown ? 412.499 : 187.5);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle30(294.7, bYAxisTopDown ? 405.8 : 194.2);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle30(339.461524, bYAxisTopDown ? 431.650635 : fYAxisMaxVal - 431.650635);
+    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle30    = QLineF(ptTopLeftSetTopLeftBeyondBottomBorderAngle30, ptTopRightSetTopLeftBeyondBottomBorderAngle30).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle30  = QLineF(ptTopRightSetTopLeftBeyondBottomBorderAngle30, ptBottomRightSetTopLeftBeyondBottomBorderAngle30).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle30 = QLineF(ptBottomRightSetTopLeftBeyondBottomBorderAngle30, ptBottomLeftSetTopLeftBeyondBottomBorderAngle30).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle30   = QLineF(ptBottomLeftSetTopLeftBeyondBottomBorderAngle30, ptTopLeftSetTopLeftBeyondBottomBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
@@ -6361,6 +6493,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle30);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6378,19 +6511,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomRight)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomRightAngle30 = QPointF(400.0, bYAxisTopDown ? 530.0 : 70.0);
+    QPointF ptSetTopLeftBeyondBottomRightAngle30 = QPointF(400.0, bYAxisTopDown ? 530.0 : fYAxisMaxVal - 530.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetTopLeftBeyondBottomRightAngle30 = 101.6;
-    double fHeightSetTopLeftBeyondBottomRightAngle30 = 99.2;
-    QPointF ptCenterSetTopLeftBeyondBottomRightAngle30(380.8, bYAxisTopDown ? 461.7 : 138.4);
+    double fWidthSetTopLeftBeyondBottomRightAngle30 = 101.602540;
+    double fHeightSetTopLeftBeyondBottomRightAngle30 = 99.185843;
+    QPointF ptCenterSetTopLeftBeyondBottomRightAngle30(380.801270, bYAxisTopDown ? 461.650635 : fYAxisMaxVal - 461.650635);
     QPointF ptTopLeftSetTopLeftBeyondBottomRightAngle30 = ptSetTopLeftBeyondBottomRightAngle30;
-    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle30(312.0, bYAxisTopDown ? 479.2 : 120.8);
+    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle30(312.009619, bYAxisTopDown ? 479.198730 : fYAxisMaxVal - 479.198730);
     QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle30(449.6, bYAxisTopDown ? 444.1 : 155.9);
-    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle30(356.0, bYAxisTopDown ? 504.6 : 95.4);
-    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle30(336.8, bYAxisTopDown ? 436.3 : 163.8);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle30(405.6, bYAxisTopDown ? 418.7 : 181.3);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle30(424.8, bYAxisTopDown ? 487.1 : 112.9);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle30(449.592921, bYAxisTopDown ? 444.102540 : fYAxisMaxVal - 444.102540);
+    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle30    = QLineF(ptTopLeftSetTopLeftBeyondBottomRightAngle30, ptTopRightSetTopLeftBeyondBottomRightAngle30).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle30  = QLineF(ptTopRightSetTopLeftBeyondBottomRightAngle30, ptBottomRightSetTopLeftBeyondBottomRightAngle30).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle30 = QLineF(ptBottomRightSetTopLeftBeyondBottomRightAngle30, ptBottomLeftSetTopLeftBeyondBottomRightAngle30).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle30   = QLineF(ptBottomLeftSetTopLeftBeyondBottomRightAngle30, ptTopLeftSetTopLeftBeyondBottomRightAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
@@ -6405,6 +6538,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle30);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6422,18 +6556,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeforeBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeforeBottomLeftAngle30 = QPointF(350.0, bYAxisTopDown ? 200.0 : 400.0);
-    double fWidthSetTopRightBeforeBottomLeftAngle30 = 93.3;
-    double fHeightSetTopRightBeforeBottomLeftAngle30 = 161.6;
-    QPointF ptCenterSetTopRightBeforeBottomLeftAngle30(269.2, bYAxisTopDown ? 246.7 : 353.4);
-    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle30(269.2, bYAxisTopDown ? 153.4 : 446.7);
+    QPointF ptSetTopRightBeforeBottomLeftAngle30 = QPointF(350.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    double fWidthSetTopRightBeforeBottomLeftAngle30 = 93.301270;
+    double fHeightSetTopRightBeforeBottomLeftAngle30 = 161.602540;
+    QPointF ptCenterSetTopRightBeforeBottomLeftAngle30(269.198730, bYAxisTopDown ? 246.650635 : fYAxisMaxVal - 246.650635);
+    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle30(269.198730, bYAxisTopDown ? 153.349365 : fYAxisMaxVal - 153.349365);
     QPointF ptTopRightSetTopRightBeforeBottomLeftAngle30 = ptSetTopRightBeforeBottomLeftAngle30;
-    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle30(269.2, bYAxisTopDown ? 340.0 : 260.0);
+    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle30(269.198730, bYAxisTopDown ? 339.951905 : fYAxisMaxVal - 339.951905);
     QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle30(309.6, bYAxisTopDown ? 176.7 : 423.3);
-    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle30(309.6, bYAxisTopDown ? 270.0 : 330.0);
-    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle30(228.8, bYAxisTopDown ? 316.6 : 283.4);
-    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle30(228.8, bYAxisTopDown ? 223.3 : 376.7);
+    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle30    = QLineF(ptTopLeftSetTopRightBeforeBottomLeftAngle30, ptTopRightSetTopRightBeforeBottomLeftAngle30).center();
+    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle30  = QLineF(ptTopRightSetTopRightBeforeBottomLeftAngle30, ptBottomRightSetTopRightBeforeBottomLeftAngle30).center();
+    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle30 = QLineF(ptBottomRightSetTopRightBeforeBottomLeftAngle30, ptBottomLeftSetTopRightBeforeBottomLeftAngle30).center();
+    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle30   = QLineF(ptBottomLeftSetTopRightBeforeBottomLeftAngle30, ptTopLeftSetTopRightBeforeBottomLeftAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
@@ -6448,6 +6582,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle30);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6465,19 +6600,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondLeftBorder)
     ---------------------------------*/
-    QPointF ptSetTopRightBeyondLeftBorderAngle30(150.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetTopRightBeyondLeftBorderAngle30(150.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetTopRightBeyondLeftBorderAngle30 = 61.6;
-    double fHeightSetTopRightBeyondLeftBorderAngle30 = 79.9;
-    QPointF ptCenterSetTopRightBeyondLeftBorderAngle30(169.2, bYAxisTopDown ? 246.7 : 353.4);
-    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle30(119.2, bYAxisTopDown ? 253.4 : 346.7);
+    double fWidthSetTopRightBeyondLeftBorderAngle30 = 61.602540;
+    double fHeightSetTopRightBeyondLeftBorderAngle30 = 79.903811;
+    QPointF ptCenterSetTopRightBeyondLeftBorderAngle30(169.198730, bYAxisTopDown ? 246.650635 : fYAxisMaxVal - 246.650635);
+    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle30(119.198730, bYAxisTopDown ? 253.349365 : fYAxisMaxVal - 253.349365);
     QPointF ptTopRightSetTopRightBeyondLeftBorderAngle30 = ptSetTopRightBeyondLeftBorderAngle30;
-    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle30(219.2, bYAxisTopDown ? 240.0 : 360.0);
+    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle30(219.198730, bYAxisTopDown ? 239.951905 : fYAxisMaxVal - 239.951905);
     QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle30(134.6, bYAxisTopDown ? 226.7 : 373.3);
-    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle30(184.6, bYAxisTopDown ? 220.0 : 380.0);
-    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle30(203.8, bYAxisTopDown ? 266.6 : 333.4);
-    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle30(153.8, bYAxisTopDown ? 273.3 : 326.7);
+    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle30    = QLineF(ptTopLeftSetTopRightBeyondLeftBorderAngle30, ptTopRightSetTopRightBeyondLeftBorderAngle30).center();
+    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle30  = QLineF(ptTopRightSetTopRightBeyondLeftBorderAngle30, ptBottomRightSetTopRightBeyondLeftBorderAngle30).center();
+    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle30 = QLineF(ptBottomRightSetTopRightBeyondLeftBorderAngle30, ptBottomLeftSetTopRightBeyondLeftBorderAngle30).center();
+    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle30   = QLineF(ptBottomLeftSetTopRightBeyondLeftBorderAngle30, ptTopLeftSetTopRightBeyondLeftBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
@@ -6492,6 +6627,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle30);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6509,19 +6645,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomBorder)
     ----------------------------------*/
-    QPointF ptSetTopRightBeyondBottomBorderAngle30(250.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptSetTopRightBeyondBottomBorderAngle30(250.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetTopRightBeyondBottomBorderAngle30 = 61.6;
-    double fHeightSetTopRightBeyondBottomBorderAngle30 = 106.7;
-    QPointF ptCenterSetTopRightBeyondBottomBorderAngle30(219.2, bYAxisTopDown ? 346.7 : 253.4);
-    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle30(280.8, bYAxisTopDown ? 346.7 : 253.4);
+    double fWidthSetTopRightBeyondBottomBorderAngle30 = 61.602540;
+    double fHeightSetTopRightBeyondBottomBorderAngle30 = 106.698730;
+    QPointF ptCenterSetTopRightBeyondBottomBorderAngle30(219.198730, bYAxisTopDown ? 346.650635 : fYAxisMaxVal - 346.650635);
+    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle30(280.801270, bYAxisTopDown ? 346.650635 : fYAxisMaxVal - 346.650635);
     QPointF ptTopRightSetTopRightBeyondBottomBorderAngle30 = ptSetTopRightBeyondBottomBorderAngle30;
-    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle30(157.6, bYAxisTopDown ? 346.7 : 253.4);
+    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle30(157.596189, bYAxisTopDown ? 346.650635 : fYAxisMaxVal - 346.650635);
     QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle30(265.4, bYAxisTopDown ? 373.3 : 226.7);
-    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle30(203.8, bYAxisTopDown ? 373.3 : 226.7);
-    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle30(173.0, bYAxisTopDown ? 320.0 : 280.0);
-    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle30(234.6, bYAxisTopDown ? 320.0 : 280.0);
+    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle30    = QLineF(ptTopLeftSetTopRightBeyondBottomBorderAngle30, ptTopRightSetTopRightBeyondBottomBorderAngle30).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle30  = QLineF(ptTopRightSetTopRightBeyondBottomBorderAngle30, ptBottomRightSetTopRightBeyondBottomBorderAngle30).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle30 = QLineF(ptBottomRightSetTopRightBeyondBottomBorderAngle30, ptBottomLeftSetTopRightBeyondBottomBorderAngle30).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle30   = QLineF(ptBottomLeftSetTopRightBeyondBottomBorderAngle30, ptTopLeftSetTopRightBeyondBottomBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
@@ -6536,6 +6672,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle30);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6553,19 +6690,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeyondBottomLeftAngle30 = QPointF(50.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptSetTopRightBeyondBottomLeftAngle30 = QPointF(50.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetTopRightBeyondBottomLeftAngle30 = 91.5;
-    double fHeightSetTopRightBeyondBottomLeftAngle30 = 118.3;
-    QPointF ptCenterSetTopRightBeyondBottomLeftAngle30(119.2, bYAxisTopDown ? 321.7 : 278.4);
-    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle30(129.2, bYAxisTopDown ? 395.8 : 204.2);
+    double fWidthSetTopRightBeyondBottomLeftAngle30 = 91.506351;
+    double fHeightSetTopRightBeyondBottomLeftAngle30 = 118.301270;
+    QPointF ptCenterSetTopRightBeyondBottomLeftAngle30(119.198730, bYAxisTopDown ? 321.650635 : fYAxisMaxVal - 321.650635);
+    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle30(129.246825, bYAxisTopDown ? 395.753175 : fYAxisMaxVal - 395.753175);
     QPointF ptTopRightSetTopRightBeyondBottomLeftAngle30 = ptSetTopRightBeyondBottomLeftAngle30;
-    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle30(109.2, bYAxisTopDown ? 247.5 : 352.5);
+    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle30(109.150635, bYAxisTopDown ? 247.548095 : fYAxisMaxVal - 247.548095);
     QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle30(89.6, bYAxisTopDown ? 372.9 : 227.1);
-    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle30(79.6, bYAxisTopDown ? 298.8 : 301.2);
-    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle30(148.8, bYAxisTopDown ? 270.4 : 329.6);
-    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle30(158.8, bYAxisTopDown ? 344.5 : 255.5);
+    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle30    = QLineF(ptTopLeftSetTopRightBeyondBottomLeftAngle30, ptTopRightSetTopRightBeyondBottomLeftAngle30).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle30  = QLineF(ptTopRightSetTopRightBeyondBottomLeftAngle30, ptBottomRightSetTopRightBeyondBottomLeftAngle30).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle30 = QLineF(ptBottomRightSetTopRightBeyondBottomLeftAngle30, ptBottomLeftSetTopRightBeyondBottomLeftAngle30).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle30   = QLineF(ptBottomLeftSetTopRightBeyondBottomLeftAngle30, ptTopLeftSetTopRightBeyondBottomLeftAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
@@ -6580,6 +6717,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle30);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6597,18 +6735,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeforeTopLeft)
     --------------------------------*/
-    QPointF ptSetSetBottomRightBeforeTopLeftAngle30 = QPointF(250.0, bYAxisTopDown ? 400.0 : 200.0);
-    double fWidthSetBottomRightBeforeTopLeftAngle30 = 106.7;
-    double fHeightSetBottomRightBeforeTopLeftAngle30 = 161.6;
-    QPointF ptCenterSetBottomRightBeforeTopLeftAngle30 (244.2, bYAxisTopDown ? 303.4 : 296.7);
+    QPointF ptSetSetBottomRightBeforeTopLeftAngle30 = QPointF(250.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    double fWidthSetBottomRightBeforeTopLeftAngle30 = 106.698730;
+    double fHeightSetBottomRightBeforeTopLeftAngle30 = 161.602540;
+    QPointF ptCenterSetBottomRightBeforeTopLeftAngle30 (244.198730, bYAxisTopDown ? 303.349365 : fYAxisMaxVal - 303.349365);
     QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle30(330.8, bYAxisTopDown ? 260.0 : 340.0);
+    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle30(330.801270, bYAxisTopDown ? 260.048095 : fYAxisMaxVal - 260.048095);
     QPointF ptBottomRightSetBottomRightBeforeTopLeftAngle30 = ptSetSetBottomRightBeforeTopLeftAngle30;
-    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle30(157.6, bYAxisTopDown ? 346.7 : 253.4);
-    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle30(284.6, bYAxisTopDown ? 233.4 : 366.6);
-    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle30(290.4, bYAxisTopDown ? 330.0 : 270.0);
-    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle30(203.8, bYAxisTopDown ? 373.3 : 226.7);
-    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle30(198.0, bYAxisTopDown ? 276.7 : 323.3);
+    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle30(157.596189, bYAxisTopDown ? 346.650635 : fYAxisMaxVal - 346.650635);
+    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle30    = QLineF(ptTopLeftSetBottomRightBeforeTopLeftAngle30, ptTopRightSetBottomRightBeforeTopLeftAngle30).center();
+    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle30  = QLineF(ptTopRightSetBottomRightBeforeTopLeftAngle30, ptBottomRightSetBottomRightBeforeTopLeftAngle30).center();
+    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle30 = QLineF(ptBottomRightSetBottomRightBeforeTopLeftAngle30, ptBottomLeftSetBottomRightBeforeTopLeftAngle30).center();
+    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle30   = QLineF(ptBottomLeftSetBottomRightBeforeTopLeftAngle30, ptTopLeftSetBottomRightBeforeTopLeftAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
@@ -6623,6 +6761,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle30);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6640,19 +6779,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopBorder)
     ----------------------------------*/
-    QPointF ptSetBottomRightBeyondTopBorderAngle30(400.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetBottomRightBeyondTopBorderAngle30(400.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetBottomRightBeyondTopBorderAngle30 = 86.6;
-    double fHeightSetBottomRightBeyondTopBorderAngle30 = 136.6;
-    QPointF ptCenterSetBottomRightBeyondTopBorderAngle30(319.2, bYAxisTopDown ? 203.4 : 396.7);
+    double fWidthSetBottomRightBeyondTopBorderAngle30 = 86.602540;
+    double fHeightSetBottomRightBeyondTopBorderAngle30 = 136.602540;
+    QPointF ptCenterSetBottomRightBeyondTopBorderAngle30(319.198730, bYAxisTopDown ? 203.349365 : fYAxisMaxVal - 203.349365);
     QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle30(281.7, bYAxisTopDown ? 131.7 : 468.3);
+    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle30(281.698730, bYAxisTopDown ? 131.698730 : fYAxisMaxVal - 131.698730);
     QPointF ptBottomRightSetBottomRightBeyondTopBorderAngle30 = ptSetBottomRightBeyondTopBorderAngle30;
-    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle30(356.7, bYAxisTopDown ? 275.0 : 325.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle30(260.0, bYAxisTopDown ? 169.2 : 430.8);
-    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle30(340.9, bYAxisTopDown ? 165.9 : 434.2);
-    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle30(378.4, bYAxisTopDown ? 237.499 : 362.5);
-    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle30(297.5, bYAxisTopDown ? 240.9 : 359.2);
+    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle30(356.698730, bYAxisTopDown ? 275.000000 : fYAxisMaxVal - 275.000000);
+    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle30    = QLineF(ptTopLeftSetBottomRightBeyondTopBorderAngle30, ptTopRightSetBottomRightBeyondTopBorderAngle30).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle30  = QLineF(ptTopRightSetBottomRightBeyondTopBorderAngle30, ptBottomRightSetBottomRightBeyondTopBorderAngle30).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle30 = QLineF(ptBottomRightSetBottomRightBeyondTopBorderAngle30, ptBottomLeftSetBottomRightBeyondTopBorderAngle30).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle30   = QLineF(ptBottomLeftSetBottomRightBeyondTopBorderAngle30, ptTopLeftSetBottomRightBeyondTopBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
@@ -6667,6 +6806,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle30);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6684,19 +6824,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondLeftBorder)
     -----------------------------------*/
-    QPointF ptSetBottomRightBeyondLeftBorderAngle30(100.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetBottomRightBeyondLeftBorderAngle30(100.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetBottomRightBeyondLeftBorderAngle30 = 63.4;
-    double fHeightSetBottomRightBeyondLeftBorderAngle30 = 123.2;
-    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle30(169.2, bYAxisTopDown ? 203.4 : 396.7);
+    double fWidthSetBottomRightBeyondLeftBorderAngle30 = 63.397460;
+    double fHeightSetBottomRightBeyondLeftBorderAngle30 = 123.205081;
+    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle30(169.198730, bYAxisTopDown ? 203.349365 : fYAxisMaxVal - 203.349365);
     QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle30(206.7, bYAxisTopDown ? 261.6 : 338.4);
+    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle30(206.698730, bYAxisTopDown ? 261.602540 : fYAxisMaxVal - 261.602540);
     QPointF ptBottomRightSetBottomRightBeyondLeftBorderAngle30 = ptSetBottomRightBeyondLeftBorderAngle30;
-    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle30(131.7, bYAxisTopDown ? 145.1 : 454.9);
-    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle30(222.5, bYAxisTopDown ? 234.2 : 365.9);
-    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle30(153.4, bYAxisTopDown ? 230.8 : 369.2);
-    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle30(115.9, bYAxisTopDown ? 172.5 : 427.5);
-    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle30(185.0, bYAxisTopDown ? 175.9 : 424.1);
+    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle30(131.698730, bYAxisTopDown ? 145.096189 : fYAxisMaxVal - 145.096189);
+    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle30    = QLineF(ptTopLeftSetBottomRightBeyondLeftBorderAngle30, ptTopRightSetBottomRightBeyondLeftBorderAngle30).center();
+    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle30  = QLineF(ptTopRightSetBottomRightBeyondLeftBorderAngle30, ptBottomRightSetBottomRightBeyondLeftBorderAngle30).center();
+    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle30 = QLineF(ptBottomRightSetBottomRightBeyondLeftBorderAngle30, ptBottomLeftSetBottomRightBeyondLeftBorderAngle30).center();
+    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle30   = QLineF(ptBottomLeftSetBottomRightBeyondLeftBorderAngle30, ptTopLeftSetBottomRightBeyondLeftBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
@@ -6711,6 +6851,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle30);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6728,19 +6869,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopLeft)
     ---------------------------------*/
-    QPointF ptSetBottomRightBeyondTopLeftAngle30 = QPointF(200.0, bYAxisTopDown ? 100.0 : 500.0);
+    QPointF ptSetBottomRightBeyondTopLeftAngle30 = QPointF(200.0, bYAxisTopDown ? 100.0 : fYAxisMaxVal - 100.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetBottomRightBeyondTopLeftAngle30 = 86.6;
-    double fHeightSetBottomRightBeyondTopLeftAngle30 = 73.2;
-    QPointF ptCenterSetBottomRightBeyondTopLeftAngle30(219.2, bYAxisTopDown ? 153.4 : 446.7);
+    double fWidthSetBottomRightBeyondTopLeftAngle30 = 86.602540;
+    double fHeightSetBottomRightBeyondTopLeftAngle30 = 73.205081;
+    QPointF ptCenterSetBottomRightBeyondTopLeftAngle30(219.198730, bYAxisTopDown ? 153.349365 : fYAxisMaxVal - 153.349365);
     QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle30(163.4, bYAxisTopDown ? 163.4 : 436.6);
+    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle30(163.397460, bYAxisTopDown ? 163.397460 : fYAxisMaxVal - 163.397460);
     QPointF ptBottomRightSetBottomRightBeyondTopLeftAngle30 = ptSetBottomRightBeyondTopLeftAngle30;
-    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle30(275.0, bYAxisTopDown ? 143.3 : 456.7);
-    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle30(200.9, bYAxisTopDown ? 185.0 : 415.0);
-    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle30(181.7, bYAxisTopDown ? 131.7 : 468.3);
-    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle30(237.5, bYAxisTopDown ? 121.7 : 478.4);
-    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle30(256.7, bYAxisTopDown ? 175.0 : 425.0);
+    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle30(275.000000, bYAxisTopDown ? 143.301270 : fYAxisMaxVal - 143.301270);
+    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle30    = QLineF(ptTopLeftSetBottomRightBeyondTopLeftAngle30, ptTopRightSetBottomRightBeyondTopLeftAngle30).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle30  = QLineF(ptTopRightSetBottomRightBeyondTopLeftAngle30, ptBottomRightSetBottomRightBeyondTopLeftAngle30).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle30 = QLineF(ptBottomRightSetBottomRightBeyondTopLeftAngle30, ptBottomLeftSetBottomRightBeyondTopLeftAngle30).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle30   = QLineF(ptBottomLeftSetBottomRightBeyondTopLeftAngle30, ptTopLeftSetBottomRightBeyondTopLeftAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
@@ -6755,6 +6896,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle30);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6772,18 +6914,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeforeTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeforeTopRightAngle30 = QPointF(250.0, bYAxisTopDown ? 400.0 : 200.0);
-    double fWidthSetBottomLeftBeforeTopRightAngle30 = 93.3;
-    double fHeightSetBottomLeftBeforeTopRightAngle30 = 161.6;
-    QPointF ptCenterSetBottomLeftBeforeTopRightAngle30(330.8, bYAxisTopDown ? 353.4 : 246.7);
-    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle30(330.8, bYAxisTopDown ? 260.0 : 340.0);
+    QPointF ptSetBottomLeftBeforeTopRightAngle30 = QPointF(250.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    double fWidthSetBottomLeftBeforeTopRightAngle30 = 93.301270;
+    double fHeightSetBottomLeftBeforeTopRightAngle30 = 161.602540;
+    QPointF ptCenterSetBottomLeftBeforeTopRightAngle30(330.801270, bYAxisTopDown ? 353.349365 : fYAxisMaxVal - 353.349365);
+    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle30(330.801270, bYAxisTopDown ? 260.048095 : fYAxisMaxVal - 260.048095);
     QPointF ptTopRightSetBottomLeftBeforeTopRightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle30(330.8, bYAxisTopDown ? 446.7 : 153.4);
+    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle30(330.801270, bYAxisTopDown ? 446.650635 : fYAxisMaxVal - 446.650635);
     QPointF ptBottomLeftSetBottomLeftBeforeTopRightAngle30 = ptSetBottomLeftBeforeTopRightAngle30;
-    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle30(371.2, bYAxisTopDown ? 283.4 : 316.6);
-    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle30(371.2, bYAxisTopDown ? 376.7 : 223.3);
-    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle30(290.4, bYAxisTopDown ? 423.3 : 176.7);
-    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle30(290.4, bYAxisTopDown ? 330.0 : 270.0);
+    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle30    = QLineF(ptTopLeftSetBottomLeftBeforeTopRightAngle30, ptTopRightSetBottomLeftBeforeTopRightAngle30).center();
+    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle30  = QLineF(ptTopRightSetBottomLeftBeforeTopRightAngle30, ptBottomRightSetBottomLeftBeforeTopRightAngle30).center();
+    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle30 = QLineF(ptBottomRightSetBottomLeftBeforeTopRightAngle30, ptBottomLeftSetBottomLeftBeforeTopRightAngle30).center();
+    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle30   = QLineF(ptBottomLeftSetBottomLeftBeforeTopRightAngle30, ptTopLeftSetBottomLeftBeforeTopRightAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
@@ -6798,6 +6940,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle30);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6815,19 +6958,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopBorder)
     ---------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopBorderAngle30(350.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetBottomLeftBeyondTopBorderAngle30(350.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetBottomLeftBeyondTopBorderAngle30 = 61.6;
-    double fHeightSetBottomLeftBeyondTopBorderAngle30 = 106.7;
-    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle30(380.8, bYAxisTopDown ? 253.4 : 346.7);
-    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle30(442.4, bYAxisTopDown ? 253.4 : 346.7);
+    double fWidthSetBottomLeftBeyondTopBorderAngle30 = 61.602540;
+    double fHeightSetBottomLeftBeyondTopBorderAngle30 = 106.698730;
+    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle30(380.801270, bYAxisTopDown ? 253.349365 : fYAxisMaxVal - 253.349365);
+    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle30(442.403811, bYAxisTopDown ? 253.349365 : fYAxisMaxVal - 253.349365);
     QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle30(319.2, bYAxisTopDown ? 253.4 : 346.7);
+    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle30(319.198730, bYAxisTopDown ? 253.349365 : fYAxisMaxVal - 253.349365);
     QPointF ptBottomLeftSetBottomLeftBeyondTopBorderAngle30 = ptSetBottomLeftBeyondTopBorderAngle30;
-    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle30(427.0, bYAxisTopDown ? 280.0 : 320.0);
-    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle30(365.4, bYAxisTopDown ? 280.0 : 320.0);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle30(334.6, bYAxisTopDown ? 226.7 : 373.3);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle30(396.2, bYAxisTopDown ? 226.7 : 373.3);
+    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle30    = QLineF(ptTopLeftSetBottomLeftBeyondTopBorderAngle30, ptTopRightSetBottomLeftBeyondTopBorderAngle30).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle30  = QLineF(ptTopRightSetBottomLeftBeyondTopBorderAngle30, ptBottomRightSetBottomLeftBeyondTopBorderAngle30).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle30 = QLineF(ptBottomRightSetBottomLeftBeyondTopBorderAngle30, ptBottomLeftSetBottomLeftBeyondTopBorderAngle30).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle30   = QLineF(ptBottomLeftSetBottomLeftBeyondTopBorderAngle30, ptTopLeftSetBottomLeftBeyondTopBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
@@ -6842,6 +6985,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle30);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6859,19 +7003,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondRightBorder)
     -----------------------------------*/
-    QPointF ptSetBottomLeftBeyondRightBorderAngle30(450.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptSetBottomLeftBeyondRightBorderAngle30(450.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetBottomLeftBeyondRightBorderAngle30 = 61.6;
-    double fHeightSetBottomLeftBeyondRightBorderAngle30 = 79.9;
-    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle30(430.8, bYAxisTopDown ? 353.4 : 246.7);
-    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle30(380.8, bYAxisTopDown ? 360.0 : 240.0);
+    double fWidthSetBottomLeftBeyondRightBorderAngle30 = 61.602540;
+    double fHeightSetBottomLeftBeyondRightBorderAngle30 = 79.903811;
+    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle30(430.801270, bYAxisTopDown ? 353.349365 : fYAxisMaxVal - 353.349365);
+    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle30(380.801270, bYAxisTopDown ? 360.048095 : fYAxisMaxVal - 360.048095);
     QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle30(480.8, bYAxisTopDown ? 346.7 : 253.4);
+    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle30(480.801270, bYAxisTopDown ? 346.650635 : fYAxisMaxVal - 346.650635);
     QPointF ptBottomLeftSetBottomLeftBeyondRightBorderAngle30 = ptSetBottomLeftBeyondRightBorderAngle30;
-    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle30(396.2, bYAxisTopDown ? 333.4 : 266.6);
-    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle30(446.2, bYAxisTopDown ? 326.7 : 273.3);
-    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle30(465.4, bYAxisTopDown ? 373.3 : 226.7);
-    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle30(415.4, bYAxisTopDown ? 380.0 : 220.0);
+    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle30    = QLineF(ptTopLeftSetBottomLeftBeyondRightBorderAngle30, ptTopRightSetBottomLeftBeyondRightBorderAngle30).center();
+    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle30  = QLineF(ptTopRightSetBottomLeftBeyondRightBorderAngle30, ptBottomRightSetBottomLeftBeyondRightBorderAngle30).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle30 = QLineF(ptBottomRightSetBottomLeftBeyondRightBorderAngle30, ptBottomLeftSetBottomLeftBeyondRightBorderAngle30).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle30   = QLineF(ptBottomLeftSetBottomLeftBeyondRightBorderAngle30, ptTopLeftSetBottomLeftBeyondRightBorderAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
@@ -6886,6 +7030,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle30);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6903,19 +7048,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopRightAngle30 = QPointF(550.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptSetBottomLeftBeyondTopRightAngle30 = QPointF(550.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetBottomLeftBeyondTopRightAngle30 = 116.5;
-    double fHeightSetBottomLeftBeyondTopRightAngle30 = 75.0;
-    QPointF ptCenterSetBottomLeftBeyondTopRightAngle30(480.8, bYAxisTopDown ? 303.4 : 296.7);
-    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle30(512.5, bYAxisTopDown ? 365.0 : 235.0);
+    double fWidthSetBottomLeftBeyondTopRightAngle30 = 116.506351;
+    double fHeightSetBottomLeftBeyondTopRightAngle30 = 75.000000;
+    QPointF ptCenterSetBottomLeftBeyondTopRightAngle30(480.801270, bYAxisTopDown ? 303.349365 : fYAxisMaxVal - 303.349365);
+    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle30(512.500000, bYAxisTopDown ? 364.951905 : fYAxisMaxVal - 364.951905);
     QPointF ptTopRightSetBottomLeftBeyondTopRightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle30(449.1, bYAxisTopDown ? 241.7 : 358.3);
+    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle30(449.102540, bYAxisTopDown ? 241.746825 : fYAxisMaxVal - 241.746825);
     QPointF ptBottomLeftSetBottomLeftBeyondTopRightAngle30 = ptSetBottomLeftBeyondTopRightAngle30;
-    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle30(462.1, bYAxisTopDown ? 335.8 : 264.2);
-    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle30(430.4, bYAxisTopDown ? 274.2 : 325.8);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle30(499.6, bYAxisTopDown ? 270.9 : 329.1);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle30(531.3, bYAxisTopDown ? 332.499 : 267.5);
+    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle30    = QLineF(ptTopLeftSetBottomLeftBeyondTopRightAngle30, ptTopRightSetBottomLeftBeyondTopRightAngle30).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle30  = QLineF(ptTopRightSetBottomLeftBeyondTopRightAngle30, ptBottomRightSetBottomLeftBeyondTopRightAngle30).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle30 = QLineF(ptBottomRightSetBottomLeftBeyondTopRightAngle30, ptBottomLeftSetBottomLeftBeyondTopRightAngle30).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle30   = QLineF(ptBottomLeftSetBottomLeftBeyondTopRightAngle30, ptTopLeftSetBottomLeftBeyondTopRightAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
@@ -6930,6 +7075,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle30);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle30, iDigits), 'f', iDigits) + " " + strUnit);
@@ -6983,17 +7129,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     double fWidthSetAngle120 = fWidthSetAngle0;
     double fHeightSetAngle120 = fHeightSetAngle0;
     QPointF ptCenterSetAngle120 = ptCenterSetAngle0;
-    QPointF ptTopLeftSetAngle120(393.3, bYAxisTopDown ? 238.4 : 361.6);
-    QPointF ptTopRightSetAngle120(293.3, bYAxisTopDown ? 411.6 : 188.4);
-    QPointF ptBottomRightSetAngle120(206.7, bYAxisTopDown ? 361.6 : 238.4);
-    QPointF ptBottomLeftSetAngle120(306.7, bYAxisTopDown ? 188.4 : 411.6);
-    QPointF ptTopCenterSetAngle120 = QLineF(ptTopRightSetAngle120, ptTopLeftSetAngle120).center();
-    QPointF ptRightCenterSetAngle120 = QLineF(ptTopRightSetAngle120, ptBottomRightSetAngle120).center();
+    QPointF ptTopLeftSetAngle120(393.301270, bYAxisTopDown ? 238.397460 : fYAxisMaxVal - 238.397460);
+    QPointF ptTopRightSetAngle120(293.301270, bYAxisTopDown ? 411.602540 : fYAxisMaxVal - 411.602540);
+    QPointF ptBottomRightSetAngle120(206.698730, bYAxisTopDown ? 361.602540 : fYAxisMaxVal - 361.602540);
+    QPointF ptBottomLeftSetAngle120(306.698730, bYAxisTopDown ? 188.397460 : fYAxisMaxVal - 188.397460);
+    QPointF ptTopCenterSetAngle120    = QLineF(ptTopRightSetAngle120, ptTopLeftSetAngle120).center();
+    QPointF ptRightCenterSetAngle120  = QLineF(ptTopRightSetAngle120, ptBottomRightSetAngle120).center();
     QPointF ptBottomCenterSetAngle120 = QLineF(ptBottomRightSetAngle120, ptBottomLeftSetAngle120).center();
-    QPointF ptLeftCenterSetAngle120 = QLineF(ptTopLeftSetAngle120, ptBottomLeftSetAngle120).center();
+    QPointF ptLeftCenterSetAngle120   = QLineF(ptTopLeftSetAngle120, ptBottomLeftSetAngle120).center();
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7012,7 +7159,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setCenter(400, 400)
     ----------------------
     */
-    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     fdx = ptCenter.x() - ptCenterSetAngle120.x();
     fdy = ptCenter.y() - ptCenterSetAngle120.y();
     double fWidthSetCenterAngle120 = fWidthSetAngle120;
@@ -7022,10 +7169,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetCenterAngle120(ptTopRightSetAngle120.x() + fdx, ptTopRightSetAngle120.y() + fdy);
     QPointF ptBottomRightSetCenterAngle120(ptBottomRightSetAngle120.x() + fdx, ptBottomRightSetAngle120.y() + fdy);
     QPointF ptBottomLeftSetCenterAngle120(ptBottomLeftSetAngle120.x() + fdx, ptBottomLeftSetAngle120.y() + fdy);
-    QPointF ptTopCenterSetCenterAngle120 = QLineF(ptTopRightSetCenterAngle120, ptTopLeftSetCenterAngle120).center();
-    QPointF ptRightCenterSetCenterAngle120 = QLineF(ptTopRightSetCenterAngle120, ptBottomRightSetCenterAngle120).center();
+    QPointF ptTopCenterSetCenterAngle120    = QLineF(ptTopRightSetCenterAngle120, ptTopLeftSetCenterAngle120).center();
+    QPointF ptRightCenterSetCenterAngle120  = QLineF(ptTopRightSetCenterAngle120, ptBottomRightSetCenterAngle120).center();
     QPointF ptBottomCenterSetCenterAngle120 = QLineF(ptBottomRightSetCenterAngle120, ptBottomLeftSetCenterAngle120).center();
-    QPointF ptLeftCenterSetCenterAngle120 = QLineF(ptTopLeftSetCenterAngle120, ptBottomLeftSetCenterAngle120).center();
+    QPointF ptLeftCenterSetCenterAngle120   = QLineF(ptTopLeftSetCenterAngle120, ptBottomLeftSetCenterAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
@@ -7040,6 +7187,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7060,15 +7208,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle120 = size300x200.width();
     double fHeightSetSizeAngle120 = size300x200.height();
-    QPointF ptCenterSetSizeAngle120 = bYAxisTopDown ? QPointF(231.7, 318.3) : QPointF(318.3, 231.7);
+    QPointF ptCenterSetSizeAngle120 = bYAxisTopDown ? QPointF(231.698730, 318.301270) : QPointF(318.301270, 231.698730);
     QPointF ptTopLeftSetSizeAngle120 = bYAxisTopDown ? ptTopLeftSetAngle120 : QPointF(479.9, 311.6);
-    QPointF ptTopRightSetSizeAngle120 = bYAxisTopDown ? QPointF(243.3, 498.2) : QPointF(329.9, 51.8);
-    QPointF ptBottomRightSetSizeAngle120 = bYAxisTopDown ? QPointF(70.1, 398.2) : QPointF(156.7, 151.8);
-    QPointF ptBottomLeftSetSizeAngle120 = bYAxisTopDown ? QPointF(220.1, 138.4) : ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetSizeAngle120 = QLineF(ptTopRightSetSizeAngle120, ptTopLeftSetSizeAngle120).center();
-    QPointF ptRightCenterSetSizeAngle120 = QLineF(ptTopRightSetSizeAngle120, ptBottomRightSetSizeAngle120).center();
+    QPointF ptTopRightSetSizeAngle120 = bYAxisTopDown ? QPointF(243.301270, 498.205081) : QPointF(329.9, 51.8);
+    QPointF ptBottomRightSetSizeAngle120 = bYAxisTopDown ? QPointF(70.096189, 398.205081) : QPointF(156.7, 151.8);
+    QPointF ptBottomLeftSetSizeAngle120 = bYAxisTopDown ? QPointF(220.096189, 138.397460) : ptBottomLeftSetAngle120;
+    QPointF ptTopCenterSetSizeAngle120    = QLineF(ptTopRightSetSizeAngle120, ptTopLeftSetSizeAngle120).center();
+    QPointF ptRightCenterSetSizeAngle120  = QLineF(ptTopRightSetSizeAngle120, ptBottomRightSetSizeAngle120).center();
     QPointF ptBottomCenterSetSizeAngle120 = QLineF(ptBottomRightSetSizeAngle120, ptBottomLeftSetSizeAngle120).center();
-    QPointF ptLeftCenterSetSizeAngle120 = QLineF(ptTopLeftSetSizeAngle120, ptBottomLeftSetSizeAngle120).center();
+    QPointF ptLeftCenterSetSizeAngle120   = QLineF(ptTopLeftSetSizeAngle120, ptBottomLeftSetSizeAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
@@ -7083,6 +7231,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7103,15 +7252,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetWidthAngle120 = physValWidth300.getVal();
     double fHeightSetWidthAngle120 = fHeightSetAngle120;
-    QPointF ptCenterSetWidthAngle120(275.0, bYAxisTopDown ? 343.3 : 256.7);
+    QPointF ptCenterSetWidthAngle120(275.000000, bYAxisTopDown ? 343.301270 : fYAxisMaxVal - 343.301270);
     QPointF ptTopLeftSetWidthAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetWidthAngle120(243.3, bYAxisTopDown ? 498.2 : 101.8);
-    QPointF ptBottomRightSetWidthAngle120(156.7, bYAxisTopDown ? 448.2 : 151.8);
+    QPointF ptTopRightSetWidthAngle120(243.301270, bYAxisTopDown ? 498.205081 : fYAxisMaxVal - 498.205081);
+    QPointF ptBottomRightSetWidthAngle120(156.698730, bYAxisTopDown ? 448.205081 : fYAxisMaxVal - 448.205081);
     QPointF ptBottomLeftSetWidthAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetWidthAngle120 = QLineF(ptTopRightSetWidthAngle120, ptTopLeftSetWidthAngle120).center();
-    QPointF ptRightCenterSetWidthAngle120 = QLineF(ptTopRightSetWidthAngle120, ptBottomRightSetWidthAngle120).center();
+    QPointF ptTopCenterSetWidthAngle120    = QLineF(ptTopRightSetWidthAngle120, ptTopLeftSetWidthAngle120).center();
+    QPointF ptRightCenterSetWidthAngle120  = QLineF(ptTopRightSetWidthAngle120, ptBottomRightSetWidthAngle120).center();
     QPointF ptBottomCenterSetWidthAngle120 = QLineF(ptBottomRightSetWidthAngle120, ptBottomLeftSetWidthAngle120).center();
-    QPointF ptLeftCenterSetWidthAngle120 = ptLeftCenterSetAngle120;
+    QPointF ptLeftCenterSetWidthAngle120   = ptLeftCenterSetAngle120;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
@@ -7126,6 +7275,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7155,10 +7305,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle120 = ptTopRightSetAngle120;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle120 = ptBottomRightSetAngle120;
     QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle120 = ptBottomCenterSetAngle120;
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120(318.3, bYAxisTopDown ? 368.3 : 231.7);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120 = ptRightCenterSetAngle120;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120(231.7, bYAxisTopDown ? 318.3 : 281.7);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle120, ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle120).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120  = QLineF(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle120, ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle120).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle120, ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle120).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle120, ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
@@ -7173,6 +7323,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7194,19 +7345,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
     // The resulting center point, when resizing the rectangle by moving the left edge to a new width of 100.0, is the
     // same as setting the width to 300.0 by moving the right edge of the rectangle. But only in this special case.
-    ptMoved = QPointF(200.0, bYAxisTopDown ? 440.0 : 160.0);
+    ptMoved = QPointF(200.0, bYAxisTopDown ? 440.0 : fYAxisMaxVal - 440.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle120 = 71.2;
+    double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle120 = 71.243557;
     double fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle120 = fHeightSetAngle120;
-    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120(232.2, bYAxisTopDown ? 417.499 : 182.5);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120(171.1, bYAxisTopDown ? 423.3 : 176.7);
+    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120(232.189111, bYAxisTopDown ? 417.451905 : fYAxisMaxVal - 417.451905);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120(171.076952, bYAxisTopDown ? 423.301270 : fYAxisMaxVal - 423.301270);
     QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle120 = ptBottomRightSetAngle120;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle120 = ptTopRightSetAngle120;
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120(257.7, bYAxisTopDown ? 473.3 : 126.7);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120(188.9, bYAxisTopDown ? 392.499 : 207.5);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120 = ptRightCenterSetAngle120;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120(275.499, bYAxisTopDown ? 442.499 : 157.5);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120(214.4, bYAxisTopDown ? 448.3 : 151.7);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120(257.679492, bYAxisTopDown ? 473.301270 : fYAxisMaxVal - 473.301270);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120, ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle120).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120  = QLineF(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle120, ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle120).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle120, ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120, ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
@@ -7221,6 +7372,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7243,15 +7395,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptTopCenterSetAngle120;
     double fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle120 = fWidthSetAngle120 / 2.0;
     double fHeightSetWidthMoveRightCenterBeforeLeftBorderAngle120 = fHeightSetAngle120;
-    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120(325.0, bYAxisTopDown ? 256.7 : 343.3);
+    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120(324.999841, bYAxisTopDown ? 256.699005 : fYAxisMaxVal - 256.699005);
     QPointF ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle120 = ptTopLeftSetAngle120;
     QPointF ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle120 = ptTopCenterSetAngle120;
     QPointF ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle120 = ptBottomCenterSetAngle120;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120(368.3, bYAxisTopDown ? 281.7 : 318.3);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120(281.7, bYAxisTopDown ? 231.7 : 368.3);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120 = ptLeftCenterSetAngle120;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120    = QLineF(ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle120, ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle120).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120  = QLineF(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle120, ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle120).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120 = QLineF(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle120, ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle120).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle120, ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
@@ -7266,6 +7418,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7284,19 +7437,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setWidthByMovingRightCenter(BeyondLeftBorder)
     ------------------------------------------------
     */
-    ptMoved = QPointF(420.0, bYAxisTopDown ? 120.0 : 480.0);
+    ptMoved = QPointF(420.0, bYAxisTopDown ? 120.0 : fYAxisMaxVal - 120.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle120 = 115.9;
+    double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle120 = 115.884573;
     double fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle120 = fHeightSetAngle120;
-    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120(379.0, bYAxisTopDown ? 163.2 : 436.8);
+    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120(378.971143, bYAxisTopDown ? 163.217968 : fYAxisMaxVal - 163.217968);
     QPointF ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle120(364.6, bYAxisTopDown ? 88.0 : 512.0);
-    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle120(451.2, bYAxisTopDown ? 138.0 : 462.0);
+    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle120(364.641016, bYAxisTopDown ? 88.038476 : fYAxisMaxVal - 88.038476);
+    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle120(451.243557, bYAxisTopDown ? 138.038476 : fYAxisMaxVal - 138.038476);
     QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120(335.7, bYAxisTopDown ? 138.2 : 461.8);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120(407.9, bYAxisTopDown ? 113.0 : 487.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120(422.3, bYAxisTopDown ? 188.2 : 411.8);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120 = ptLeftCenterSetAngle120;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120    = QLineF(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle120, ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle120).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120  = QLineF(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle120, ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle120).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120 = QLineF(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle120, ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle120).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle120, ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
@@ -7311,6 +7464,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7334,12 +7488,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptCenterSetHeightAngle120 = bYAxisTopDown ? ptBottomCenterSetAngle120 : ptTopCenterSetAngle120;
     QPointF ptTopLeftSetHeightAngle120 = bYAxisTopDown ? ptTopLeftSetAngle120 : QPointF(479.9, 311.6);
     QPointF ptTopRightSetHeightAngle120 = bYAxisTopDown ? ptTopRightSetAngle120 : QPointF(379.9, 138.4);
-    QPointF ptBottomRightSetHeightAngle120 = bYAxisTopDown ? QPointF(120.1, 311.6) : ptBottomRightSetAngle120;
-    QPointF ptBottomLeftSetHeightAngle120 = bYAxisTopDown ? QPointF(220.1, 138.4) : ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetHeightAngle120 = QLineF(ptTopLeftSetHeightAngle120, ptTopRightSetHeightAngle120).center();
-    QPointF ptRightCenterSetHeightAngle120 = QLineF(ptTopRightSetHeightAngle120, ptBottomRightSetHeightAngle120).center();
+    QPointF ptBottomRightSetHeightAngle120 = bYAxisTopDown ? QPointF(120.096189, 311.602540) : ptBottomRightSetAngle120;
+    QPointF ptBottomLeftSetHeightAngle120 = bYAxisTopDown ? QPointF(220.096189, 138.397460) : ptBottomLeftSetAngle120;
+    QPointF ptTopCenterSetHeightAngle120    = QLineF(ptTopLeftSetHeightAngle120, ptTopRightSetHeightAngle120).center();
+    QPointF ptRightCenterSetHeightAngle120  = QLineF(ptTopRightSetHeightAngle120, ptBottomRightSetHeightAngle120).center();
     QPointF ptBottomCenterSetHeightAngle120 = QLineF(ptBottomRightSetHeightAngle120, ptBottomLeftSetHeightAngle120).center();
-    QPointF ptLeftCenterSetHeightAngle120 = QLineF(ptTopLeftSetHeightAngle120, ptBottomLeftSetHeightAngle120).center();
+    QPointF ptLeftCenterSetHeightAngle120   = QLineF(ptTopLeftSetHeightAngle120, ptBottomLeftSetHeightAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
@@ -7354,6 +7508,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7375,15 +7530,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle120;
     double fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle120 = fWidthSetAngle120;
     double fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle120 = fHeightSetAngle120 / 2.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120(278.3, bYAxisTopDown ? 287.499 : 312.5);
+    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120(278.348815, bYAxisTopDown ? 287.499682 : fYAxisMaxVal - 287.499682);
     QPointF ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle120 = ptLeftCenterSetAngle120;
     QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle120 = ptRightCenterSetAngle120;
     QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle120 = ptBottomRightSetAngle120;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120(228.3, bYAxisTopDown ? 374.1 : 225.9);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120 = ptBottomCenterSetAngle120;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120(328.3, bYAxisTopDown ? 200.9 : 399.1);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120    = QLineF(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle120, ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle120).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120  = QLineF(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle120, ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle120).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120 = QLineF(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle120, ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle120).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle120, ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
@@ -7398,6 +7553,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7416,19 +7572,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setHeightByMovingTopCenter(BeyondBottomBorder)
     -------------------------------------------------
     */
-    ptMoved = QPointF(200.0, bYAxisTopDown ? 220.0 : 380.0);
+    ptMoved = QPointF(200.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
     physValAngleCorrected.setVal(300.0);
     double fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle120 = fWidthSetAngle120;
-    double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle120 = 76.6;
-    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120(223.5, bYAxisTopDown ? 255.9 : 344.2);
-    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120(140.4, bYAxisTopDown ? 323.3 : 276.7);
-    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle120(240.4, bYAxisTopDown ? 150.1 : 449.9);
+    double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle120 = 76.602540;
+    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120(223.528857, bYAxisTopDown ? 255.849365 : fYAxisMaxVal - 255.849365);
+    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120(140.358984, bYAxisTopDown ? 323.301270 : fYAxisMaxVal - 323.301270);
+    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle120(240.358984, bYAxisTopDown ? 150.096189 : fYAxisMaxVal - 150.096189);
     QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle120 = ptBottomLeftSetAngle120;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120 = ptBottomRightSetAngle120;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120(190.4, bYAxisTopDown ? 236.7 : 363.3);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120(273.5, bYAxisTopDown ? 169.2 : 430.8);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120 = ptBottomCenterSetAngle120;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120(173.5, bYAxisTopDown ? 342.499 : 257.5);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120    = QLineF(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120, ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle120).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120  = QLineF(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle120, ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle120).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120 = QLineF(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle120, ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120, ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
@@ -7443,6 +7599,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7464,15 +7621,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle120;
     double fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle120 = fWidthSetHeightAngle120;
     double fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle120 = fHeightSetAngle120 / 2.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120(321.7, bYAxisTopDown ? 312.499 : 287.5);
+    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120(321.650085, bYAxisTopDown ? 312.499682 : fYAxisMaxVal - 312.499682);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle120 = ptTopLeftSetAngle120;
     QPointF ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle120 = ptTopRightSetAngle120;
     QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle120 = ptRightCenterSetAngle120;
     QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle120 = ptLeftCenterSetAngle120;
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120 = ptTopCenterSetAngle120;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120(271.7, bYAxisTopDown ? 399.1 : 200.9);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120(371.7, bYAxisTopDown ? 225.9 : 374.1);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle120, ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle120).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120  = QLineF(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle120, ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle120).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle120, ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle120).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle120, ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
@@ -7487,6 +7644,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7505,19 +7663,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setHeightByMovingBottomCenter(BeyondTopBorder)
     -------------------------------------------------
     */
-    ptMoved = QPointF(420.0, bYAxisTopDown ? 380.0 : 220.0);
+    ptMoved = QPointF(420.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
     physValAngleCorrected.setVal(300.0);
     double fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle120 = fWidthSetHeightAngle120;
-    double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle120 = 93.9;
-    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120(384.0, bYAxisTopDown ? 348.499 : 251.5);
+    double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle120 = 93.923048;
+    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120(383.971143, bYAxisTopDown ? 348.480762 : fYAxisMaxVal - 348.480762);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120 = ptTopRightSetAngle120;
     QPointF ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle120 = ptTopLeftSetAngle120;
-    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle120(474.6, bYAxisTopDown ? 285.4 : 314.6);
-    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120(374.6, bYAxisTopDown ? 458.6 : 141.4);
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120 = ptTopCenterSetAngle120;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120(434.0, bYAxisTopDown ? 261.9 : 338.1);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120(424.6, bYAxisTopDown ? 372.0 : 228.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120(334.0, bYAxisTopDown ? 435.1 : 164.9);
+    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle120(474.641016, bYAxisTopDown ? 285.358984 : fYAxisMaxVal - 285.358984);
+    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120(374.641016, bYAxisTopDown ? 458.564065 : fYAxisMaxVal - 458.564065);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120, ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle120).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120  = QLineF(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle120, ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle120).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle120, ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120, ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
@@ -7532,6 +7690,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7550,18 +7709,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setTopLeft(BeforeBottomRight)
     --------------------------------
     */
-    QPointF ptSetTopLeftBeforeBottomRightAngle120 = QPointF(440.0, bYAxisTopDown ? 320.0 : 280.0);
-    double fWidthSetTopLeftBeforeBottomRightAngle120 = 152.7;
-    double fHeightSetTopLeftBeforeBottomRightAngle120 = 181.2;
-    QPointF ptCenterSetTopLeftBeforeBottomRightAngle120(323.4, bYAxisTopDown ? 340.8 : 259.2);
+    QPointF ptSetTopLeftBeforeBottomRightAngle120 = QPointF(440.0, bYAxisTopDown ? 320.0 : fYAxisMaxVal - 320.0);
+    double fWidthSetTopLeftBeforeBottomRightAngle120 = 152.679492;
+    double fHeightSetTopLeftBeforeBottomRightAngle120 = 181.243557;
+    QPointF ptCenterSetTopLeftBeforeBottomRightAngle120(323.349365, bYAxisTopDown ? 340.801270 : fYAxisMaxVal - 340.801270);
     QPointF ptTopLeftSetTopLeftBeforeBottomRightAngle120 = ptSetTopLeftBeforeBottomRightAngle120;
-    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle120(363.7, bYAxisTopDown ? 452.2 : 147.8);
+    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle120(363.660254, bYAxisTopDown ? 452.224319 : fYAxisMaxVal - 452.224319);
     QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle120 = ptBottomRightSetAngle120;
-    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle120(283.0, bYAxisTopDown ? 229.4 : 370.6);
-    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle120(401.8, bYAxisTopDown ? 386.1 : 213.9);
-    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle120(285.2, bYAxisTopDown ? 406.9 : 193.1);
-    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle120(244.9, bYAxisTopDown ? 295.499 : 304.5);
-    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle120(361.5, bYAxisTopDown ? 274.7 : 325.3);
+    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle120(283.038476, bYAxisTopDown ? 229.378222 : fYAxisMaxVal - 229.378222);
+    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle120    = QLineF(ptTopLeftSetTopLeftBeforeBottomRightAngle120, ptTopRightSetTopLeftBeforeBottomRightAngle120).center();
+    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle120  = QLineF(ptTopRightSetTopLeftBeforeBottomRightAngle120, ptBottomRightSetTopLeftBeforeBottomRightAngle120).center();
+    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle120 = QLineF(ptBottomRightSetTopLeftBeforeBottomRightAngle120, ptBottomLeftSetTopLeftBeforeBottomRightAngle120).center();
+    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle120   = QLineF(ptBottomLeftSetTopLeftBeforeBottomRightAngle120, ptTopLeftSetTopLeftBeforeBottomRightAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
@@ -7576,6 +7735,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle120);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7593,19 +7753,20 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondRightBorder)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondRightBorderAngle120(200.0, bYAxisTopDown ? 420.0 : 180.0);
+    //iDigits = 6;
+    QPointF ptSetTopLeftBeyondRightBorderAngle120(200.0, bYAxisTopDown ? 420.0 : fYAxisMaxVal - 420.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetTopLeftBeyondRightBorderAngle120 = 23.4;
-    double fHeightSetTopLeftBeyondRightBorderAngle120 = 53.9;
-    QPointF ptCenterSetTopLeftBeyondRightBorderAngle120(203.4, bYAxisTopDown ? 390.8 : 209.2);
+    double fWidthSetTopLeftBeyondRightBorderAngle120 = 23.397460;
+    double fHeightSetTopLeftBeyondRightBorderAngle120 = 53.923048;
+    QPointF ptCenterSetTopLeftBeyondRightBorderAngle120(203.349365, bYAxisTopDown ? 390.801270 : fYAxisMaxVal - 390.801270);
     QPointF ptTopLeftSetTopLeftBeyondRightBorderAngle120 = ptSetTopLeftBeyondRightBorderAngle120;
-    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle120(179.7, bYAxisTopDown ? 408.3 : 191.7);
+    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle120(179.737206, bYAxisTopDown ? 408.301270 : fYAxisMaxVal - 408.301270);
     QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle120 = ptBottomRightSetAngle120;
-    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle120(227.0, bYAxisTopDown ? 373.3 : 226.7);
-    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle120(189.9, bYAxisTopDown ? 414.2 : 185.9);
-    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle120(193.2, bYAxisTopDown ? 385.0 : 215.0);
-    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle120(216.8, bYAxisTopDown ? 367.499 : 232.5);
-    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle120(213.499, bYAxisTopDown ? 396.7 : 203.4);
+    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle120(226.961524, bYAxisTopDown ? 373.301270 : fYAxisMaxVal - 373.301270);
+    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle120    = QLineF(ptTopLeftSetTopLeftBeyondRightBorderAngle120, ptTopRightSetTopLeftBeyondRightBorderAngle120).center();
+    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle120  = QLineF(ptTopRightSetTopLeftBeyondRightBorderAngle120, ptBottomRightSetTopLeftBeyondRightBorderAngle120).center();
+    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle120 = QLineF(ptBottomRightSetTopLeftBeyondRightBorderAngle120, ptBottomLeftSetTopLeftBeyondRightBorderAngle120).center();
+    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle120   = QLineF(ptBottomLeftSetTopLeftBeyondRightBorderAngle120, ptTopLeftSetTopLeftBeyondRightBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
@@ -7620,6 +7781,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle120);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7637,19 +7799,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomBorder)
     ---------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomBorderAngle120(220.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetTopLeftBeyondBottomBorderAngle120(220.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetTopLeftBeyondBottomBorderAngle120 = 69.3;
-    double fHeightSetTopLeftBeyondBottomBorderAngle120 = 146.6;
-    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle120(213.4, bYAxisTopDown ? 280.8 : 319.2);
+    double fWidthSetTopLeftBeyondBottomBorderAngle120 = 69.282032;
+    double fHeightSetTopLeftBeyondBottomBorderAngle120 = 146.602540;
+    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle120(213.349365, bYAxisTopDown ? 280.801270 : fYAxisMaxVal - 280.801270);
     QPointF ptTopLeftSetTopLeftBeyondBottomBorderAngle120 = ptSetTopLeftBeyondBottomBorderAngle120;
-    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle120(280.0, bYAxisTopDown ? 234.6 : 365.4);
+    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle120(280.000000, bYAxisTopDown ? 234.641016 : fYAxisMaxVal - 234.641016);
     QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle120 = ptBottomRightSetAngle120;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle120(146.7, bYAxisTopDown ? 327.0 : 273.0);
-    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle120(250.0, bYAxisTopDown ? 217.3 : 382.7);
-    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle120(243.4, bYAxisTopDown ? 298.1 : 301.9);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle120(176.7, bYAxisTopDown ? 344.3 : 255.7);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle120(183.4, bYAxisTopDown ? 263.499 : 336.5);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle120(146.698730, bYAxisTopDown ? 326.961524 : fYAxisMaxVal - 326.961524);
+    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle120    = QLineF(ptTopLeftSetTopLeftBeyondBottomBorderAngle120, ptTopRightSetTopLeftBeyondBottomBorderAngle120).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle120  = QLineF(ptTopRightSetTopLeftBeyondBottomBorderAngle120, ptBottomRightSetTopLeftBeyondBottomBorderAngle120).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle120 = QLineF(ptBottomRightSetTopLeftBeyondBottomBorderAngle120, ptBottomLeftSetTopLeftBeyondBottomBorderAngle120).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle120   = QLineF(ptBottomLeftSetTopLeftBeyondBottomBorderAngle120, ptTopLeftSetTopLeftBeyondBottomBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
@@ -7664,6 +7826,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle120);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7681,19 +7844,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomRight)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomRightAngle120 = QPointF(80.0, bYAxisTopDown ? 360.0 : 240.0);
+    QPointF ptSetTopLeftBeyondBottomRightAngle120 = QPointF(80.0, bYAxisTopDown ? 360.0 : fYAxisMaxVal - 360.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetTopLeftBeyondBottomRightAngle120 = 62.0;
-    double fHeightSetTopLeftBeyondBottomRightAngle120 = 110.5;
-    QPointF ptCenterSetTopLeftBeyondBottomRightAngle120(143.4, bYAxisTopDown ? 360.8 : 239.2);
+    double fWidthSetTopLeftBeyondBottomRightAngle120 = 61.961524;
+    double fHeightSetTopLeftBeyondBottomRightAngle120 = 110.525589;
+    QPointF ptCenterSetTopLeftBeyondBottomRightAngle120(143.349365, bYAxisTopDown ? 360.801270 : fYAxisMaxVal - 360.801270);
     QPointF ptTopLeftSetTopLeftBeyondBottomRightAngle120 = ptSetTopLeftBeyondBottomRightAngle120;
-    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle120(111.0, bYAxisTopDown ? 306.3 : 293.7);
+    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle120(110.980762, bYAxisTopDown ? 306.339746 : fYAxisMaxVal - 306.339746);
     QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle120 = ptBottomRightSetAngle120;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle120(175.7, bYAxisTopDown ? 415.3 : 184.7);
-    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle120(95.499, bYAxisTopDown ? 333.2 : 266.8);
-    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle120(158.8, bYAxisTopDown ? 334.0 : 266.0);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle120(191.2, bYAxisTopDown ? 388.4 : 211.6);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle120(127.9, bYAxisTopDown ? 387.6 : 212.4);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle120(175.717968, bYAxisTopDown ? 415.262794 : fYAxisMaxVal - 415.262794);
+    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle120    = QLineF(ptTopLeftSetTopLeftBeyondBottomRightAngle120, ptTopRightSetTopLeftBeyondBottomRightAngle120).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle120  = QLineF(ptTopRightSetTopLeftBeyondBottomRightAngle120, ptBottomRightSetTopLeftBeyondBottomRightAngle120).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle120 = QLineF(ptBottomRightSetTopLeftBeyondBottomRightAngle120, ptBottomLeftSetTopLeftBeyondBottomRightAngle120).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle120   = QLineF(ptBottomLeftSetTopLeftBeyondBottomRightAngle120, ptTopLeftSetTopLeftBeyondBottomRightAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
@@ -7708,6 +7871,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle120);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7725,18 +7889,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeforeBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeforeBottomLeftAngle120 = QPointF(380.0, bYAxisTopDown ? 380.0 : 220.0);
-    double fWidthSetTopRightBeforeBottomLeftAngle120 = 129.3;
-    double fHeightSetTopRightBeforeBottomLeftAngle120 = 159.3;
-    QPointF ptCenterSetTopRightBeforeBottomLeftAngle120(343.4, bYAxisTopDown ? 284.2 : 315.8);
-    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle120(444.6, bYAxisTopDown ? 268.0 : 332.0);
+    QPointF ptSetTopRightBeforeBottomLeftAngle120 = QPointF(380.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
+    double fWidthSetTopRightBeforeBottomLeftAngle120 = 129.282032;
+    double fHeightSetTopRightBeforeBottomLeftAngle120 = 159.282032;
+    QPointF ptCenterSetTopRightBeforeBottomLeftAngle120(343.349365, bYAxisTopDown ? 284.198730 : fYAxisMaxVal - 284.198730);
+    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle120(444.641016, bYAxisTopDown ? 268.038476 : fYAxisMaxVal - 268.038476);
     QPointF ptTopRightSetTopRightBeforeBottomLeftAngle120 = ptSetTopRightBeforeBottomLeftAngle120;
-    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle120(242.1, bYAxisTopDown ? 300.4 : 299.6);
+    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle120(242.057714, bYAxisTopDown ? 300.358984 : fYAxisMaxVal - 300.358984);
     QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle120(412.3, bYAxisTopDown ? 324.0 : 276.0);
-    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle120(311.0, bYAxisTopDown ? 340.2 : 259.8);
-    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle120(274.4, bYAxisTopDown ? 244.4 : 355.6);
-    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle120(375.7, bYAxisTopDown ? 228.2 : 371.8);
+    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle120    = QLineF(ptTopLeftSetTopRightBeforeBottomLeftAngle120, ptTopRightSetTopRightBeforeBottomLeftAngle120).center();
+    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle120  = QLineF(ptTopRightSetTopRightBeforeBottomLeftAngle120, ptBottomRightSetTopRightBeforeBottomLeftAngle120).center();
+    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle120 = QLineF(ptBottomRightSetTopRightBeforeBottomLeftAngle120, ptBottomLeftSetTopRightBeforeBottomLeftAngle120).center();
+    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle120   = QLineF(ptBottomLeftSetTopRightBeforeBottomLeftAngle120, ptTopLeftSetTopRightBeforeBottomLeftAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
@@ -7751,6 +7915,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle120);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7768,19 +7933,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondLeftBorder)
     ---------------------------------*/
-    QPointF ptSetTopRightBeyondLeftBorderAngle120(380.0, bYAxisTopDown ? 140.0 : 460.0);
+    QPointF ptSetTopRightBeyondLeftBorderAngle120(380.0, bYAxisTopDown ? 140.0 : fYAxisMaxVal - 140.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetTopRightBeyondLeftBorderAngle120 = 39.3;
-    double fHeightSetTopRightBeyondLeftBorderAngle120 = 78.6;
-    QPointF ptCenterSetTopRightBeyondLeftBorderAngle120(343.4, bYAxisTopDown ? 164.2 : 435.8);
-    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle120(346.0, bYAxisTopDown ? 120.4 : 479.6);
+    double fWidthSetTopRightBeyondLeftBorderAngle120 = 39.282032;
+    double fHeightSetTopRightBeyondLeftBorderAngle120 = 78.564065;
+    QPointF ptCenterSetTopRightBeyondLeftBorderAngle120(343.349365, bYAxisTopDown ? 164.198730 : fYAxisMaxVal - 164.198730);
+    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle120(345.980762, bYAxisTopDown ? 120.358984 : fYAxisMaxVal - 120.358984);
     QPointF ptTopRightSetTopRightBeyondLeftBorderAngle120 = ptSetTopRightBeyondLeftBorderAngle120;
-    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle120(340.7, bYAxisTopDown ? 208.0 : 392.0);
+    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle120(340.717968, bYAxisTopDown ? 208.038476 : fYAxisMaxVal - 208.038476);
     QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle120(363.0, bYAxisTopDown ? 130.2 : 469.8);
-    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle120(360.4, bYAxisTopDown ? 174.0 : 426.0);
-    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle120(323.7, bYAxisTopDown ? 198.2 : 401.8);
-    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle120(326.3, bYAxisTopDown ? 154.4 : 445.6);
+    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle120    = QLineF(ptTopLeftSetTopRightBeyondLeftBorderAngle120, ptTopRightSetTopRightBeyondLeftBorderAngle120).center();
+    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle120  = QLineF(ptTopRightSetTopRightBeyondLeftBorderAngle120, ptBottomRightSetTopRightBeyondLeftBorderAngle120).center();
+    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle120 = QLineF(ptBottomRightSetTopRightBeyondLeftBorderAngle120, ptBottomLeftSetTopRightBeyondLeftBorderAngle120).center();
+    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle120   = QLineF(ptBottomLeftSetTopRightBeyondLeftBorderAngle120, ptTopLeftSetTopRightBeyondLeftBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
@@ -7795,6 +7960,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle120);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7812,19 +7978,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomBorder)
     ----------------------------------*/
-    QPointF ptSetTopRightBeyondBottomBorderAngle120(200.0, bYAxisTopDown ? 220.0 : 380.0);
+    QPointF ptSetTopRightBeyondBottomBorderAngle120(200.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetTopRightBeyondBottomBorderAngle120 = 76.6;
-    double fHeightSetTopRightBeyondBottomBorderAngle120 = 80.7;
-    QPointF ptCenterSetTopRightBeyondBottomBorderAngle120(253.4, bYAxisTopDown ? 204.2 : 395.8);
-    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle120(266.3, bYAxisTopDown ? 258.3 : 341.7);
+    double fWidthSetTopRightBeyondBottomBorderAngle120 = 76.602540;
+    double fHeightSetTopRightBeyondBottomBorderAngle120 = 80.717968;
+    QPointF ptCenterSetTopRightBeyondBottomBorderAngle120(253.349365, bYAxisTopDown ? 204.198730 : fYAxisMaxVal - 204.198730);
+    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle120(266.339746, bYAxisTopDown ? 258.301270 : fYAxisMaxVal - 258.301270);
     QPointF ptTopRightSetTopRightBeyondBottomBorderAngle120 = ptSetTopRightBeyondBottomBorderAngle120;
-    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle120(240.4, bYAxisTopDown ? 150.1 : 449.9);
+    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle120(240.358984, bYAxisTopDown ? 150.096189 : fYAxisMaxVal - 150.096189);
     QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle120(233.2, bYAxisTopDown ? 239.2 : 360.9);
-    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle120(220.2, bYAxisTopDown ? 185.0 : 415.0);
-    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle120(273.5, bYAxisTopDown ? 169.2 : 430.8);
-    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle120(286.5, bYAxisTopDown ? 223.4 : 376.7);
+    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle120    = QLineF(ptTopLeftSetTopRightBeyondBottomBorderAngle120, ptTopRightSetTopRightBeyondBottomBorderAngle120).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle120  = QLineF(ptTopRightSetTopRightBeyondBottomBorderAngle120, ptBottomRightSetTopRightBeyondBottomBorderAngle120).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle120 = QLineF(ptBottomRightSetTopRightBeyondBottomBorderAngle120, ptBottomLeftSetTopRightBeyondBottomBorderAngle120).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle120   = QLineF(ptBottomLeftSetTopRightBeyondBottomBorderAngle120, ptTopLeftSetTopRightBeyondBottomBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
@@ -7839,6 +8005,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle120);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7856,19 +8023,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeyondBottomLeftAngle120 = QPointF(280.0, bYAxisTopDown ? 80.0 : 520.0);
+    QPointF ptSetTopRightBeyondBottomLeftAngle120 = QPointF(280.0, bYAxisTopDown ? 80.0 : fYAxisMaxVal - 80.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetTopRightBeyondBottomLeftAngle120 = 80.5;
-    double fHeightSetTopRightBeyondBottomLeftAngle120 = 77.3;
-    QPointF ptCenterSetTopRightBeyondBottomLeftAngle120(293.4, bYAxisTopDown ? 134.2 : 465.8);
-    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle120(239.7, bYAxisTopDown ? 149.7 : 450.3);
+    double fWidthSetTopRightBeyondBottomLeftAngle120 = 80.525589;
+    double fHeightSetTopRightBeyondBottomLeftAngle120 = 77.320508;
+    QPointF ptCenterSetTopRightBeyondBottomLeftAngle120(293.349365, bYAxisTopDown ? 134.198730 : fYAxisMaxVal - 134.198730);
+    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle120(239.737206, bYAxisTopDown ? 149.737206 : fYAxisMaxVal - 149.737206);
     QPointF ptTopRightSetTopRightBeyondBottomLeftAngle120 = ptSetTopRightBeyondBottomLeftAngle120;
-    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle120(347.0, bYAxisTopDown ? 118.7 : 481.3);
+    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle120(346.961524, bYAxisTopDown ? 118.660254 : fYAxisMaxVal - 118.660254);
     QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle120 = ptBottomLeftSetAngle120;
-    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle120(259.9, bYAxisTopDown ? 114.9 : 485.1);
-    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle120(313.499, bYAxisTopDown ? 99.3 : 500.7);
-    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle120(326.8, bYAxisTopDown ? 153.5 : 446.5);
-    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle120(273.2, bYAxisTopDown ? 169.1 : 430.9);
+    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle120    = QLineF(ptTopLeftSetTopRightBeyondBottomLeftAngle120, ptTopRightSetTopRightBeyondBottomLeftAngle120).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle120  = QLineF(ptTopRightSetTopRightBeyondBottomLeftAngle120, ptBottomRightSetTopRightBeyondBottomLeftAngle120).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle120 = QLineF(ptBottomRightSetTopRightBeyondBottomLeftAngle120, ptBottomLeftSetTopRightBeyondBottomLeftAngle120).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle120   = QLineF(ptBottomLeftSetTopRightBeyondBottomLeftAngle120, ptTopLeftSetTopRightBeyondBottomLeftAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
@@ -7883,6 +8050,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle120);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7900,18 +8068,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeforeTopLeft)
     --------------------------------*/
-    QPointF ptSetSetBottomRightBeforeTopLeftAngle120 = QPointF(240.0, bYAxisTopDown ? 220.0 : 380.0);
-    double fWidthSetBottomRightBeforeTopLeftAngle120 = 60.7;
-    double fHeightSetBottomRightBeforeTopLeftAngle120 = 142.0;
-    QPointF ptCenterSetBottomRightBeforeTopLeftAngle120 (316.7, bYAxisTopDown ? 229.2 : 370.8);
+    QPointF ptSetSetBottomRightBeforeTopLeftAngle120 = QPointF(240.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
+    double fWidthSetBottomRightBeforeTopLeftAngle120 = 60.717968;
+    double fHeightSetBottomRightBeforeTopLeftAngle120 = 141.961524;
+    QPointF ptCenterSetBottomRightBeforeTopLeftAngle120 (316.650635, bYAxisTopDown ? 229.198730 : fYAxisMaxVal - 229.198730);
     QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle120(362.9, bYAxisTopDown ? 291.0 : 309.0);
+    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle120(362.942286, bYAxisTopDown ? 290.980762 : fYAxisMaxVal - 290.980762);
     QPointF ptBottomRightSetBottomRightBeforeTopLeftAngle120 = ptSetSetBottomRightBeforeTopLeftAngle120;
-    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle120(270.4, bYAxisTopDown ? 167.4 : 432.6);
-    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle120(378.1, bYAxisTopDown ? 264.7 : 335.3);
-    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle120(301.499, bYAxisTopDown ? 255.499 : 344.5);
-    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle120(255.2, bYAxisTopDown ? 193.7 : 406.3);
-    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle120(331.8, bYAxisTopDown ? 202.9 : 397.1);
+    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle120(270.358984, bYAxisTopDown ? 167.416698 : fYAxisMaxVal - 167.416698);
+    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle120    = QLineF(ptTopLeftSetBottomRightBeforeTopLeftAngle120, ptTopRightSetBottomRightBeforeTopLeftAngle120).center();
+    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle120  = QLineF(ptTopRightSetBottomRightBeforeTopLeftAngle120, ptBottomRightSetBottomRightBeforeTopLeftAngle120).center();
+    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle120 = QLineF(ptBottomRightSetBottomRightBeforeTopLeftAngle120, ptBottomLeftSetBottomRightBeforeTopLeftAngle120).center();
+    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle120   = QLineF(ptBottomLeftSetBottomRightBeforeTopLeftAngle120, ptTopLeftSetBottomRightBeforeTopLeftAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
@@ -7926,6 +8094,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle120);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7943,19 +8112,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopBorder)
     ----------------------------------*/
-    QPointF ptSetBottomRightBeyondTopBorderAngle120(420.0, bYAxisTopDown ? 380.0 : 220.0);
+    QPointF ptSetBottomRightBeyondTopBorderAngle120(420.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetBottomRightBeyondTopBorderAngle120 = 93.9;
-    double fHeightSetBottomRightBeyondTopBorderAngle120 = 109.3;
-    QPointF ptCenterSetBottomRightBeyondTopBorderAngle120(406.7, bYAxisTopDown ? 309.2 : 290.8);
+    double fWidthSetBottomRightBeyondTopBorderAngle120 = 93.923048;
+    double fHeightSetBottomRightBeyondTopBorderAngle120 = 109.282032;
+    QPointF ptCenterSetBottomRightBeyondTopBorderAngle120(406.650635, bYAxisTopDown ? 309.198730 : fYAxisMaxVal - 309.198730);
     QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle120(474.6, bYAxisTopDown ? 285.4 : 314.6);
+    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle120(474.641016, bYAxisTopDown ? 285.358984 : fYAxisMaxVal - 285.358984);
     QPointF ptBottomRightSetBottomRightBeyondTopBorderAngle120 = ptSetBottomRightBeyondTopBorderAngle120;
-    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle120(338.7, bYAxisTopDown ? 333.0 : 267.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle120(434.0, bYAxisTopDown ? 261.9 : 338.1);
-    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle120(447.3, bYAxisTopDown ? 332.7 : 267.3);
-    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle120(379.3, bYAxisTopDown ? 356.5 : 243.5);
-    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle120(366.0, bYAxisTopDown ? 285.7 : 314.3);
+    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle120(338.660254, bYAxisTopDown ? 333.038476 : fYAxisMaxVal - 333.038476);
+    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle120    = QLineF(ptTopLeftSetBottomRightBeyondTopBorderAngle120, ptTopRightSetBottomRightBeyondTopBorderAngle120).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle120  = QLineF(ptTopRightSetBottomRightBeyondTopBorderAngle120, ptBottomRightSetBottomRightBeyondTopBorderAngle120).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle120 = QLineF(ptBottomRightSetBottomRightBeyondTopBorderAngle120, ptBottomLeftSetBottomRightBeyondTopBorderAngle120).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle120   = QLineF(ptBottomLeftSetBottomRightBeyondTopBorderAngle120, ptTopLeftSetBottomRightBeyondTopBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
@@ -7970,6 +8139,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle120);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -7987,19 +8157,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondLeftBorder)
     -----------------------------------*/
-    QPointF ptSetBottomRightBeyondLeftBorderAngle120(380.0, bYAxisTopDown ? 160.0 : 440.0);
+    QPointF ptSetBottomRightBeyondLeftBorderAngle120(380.0, bYAxisTopDown ? 160.0 : fYAxisMaxVal - 160.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetBottomRightBeyondLeftBorderAngle120 = 50.7;
-    double fHeightSetBottomRightBeyondLeftBorderAngle120 = 61.2;
-    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle120(386.7, bYAxisTopDown ? 199.2 : 400.8);
+    double fWidthSetBottomRightBeyondLeftBorderAngle120 = 50.717968;
+    double fHeightSetBottomRightBeyondLeftBorderAngle120 = 61.243557;
+    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle120(386.650635, bYAxisTopDown ? 199.198730 : fYAxisMaxVal - 199.198730);
     QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle120(349.4, bYAxisTopDown ? 213.0 : 387.0);
+    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle120(349.378222, bYAxisTopDown ? 213.038476 : fYAxisMaxVal - 213.038476);
     QPointF ptBottomRightSetBottomRightBeyondLeftBorderAngle120 = ptSetBottomRightBeyondLeftBorderAngle120;
-    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle120(423.9, bYAxisTopDown ? 185.4 : 414.6);
-    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle120(371.3, bYAxisTopDown ? 225.7 : 374.3);
-    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle120(364.7, bYAxisTopDown ? 186.5 : 413.5);
-    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle120(402.0, bYAxisTopDown ? 172.7 : 427.3);
-    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle120(408.6, bYAxisTopDown ? 211.9 : 388.1);
+    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle120(423.923048, bYAxisTopDown ? 185.358984 : fYAxisMaxVal - 185.358984);
+    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle120    = QLineF(ptTopLeftSetBottomRightBeyondLeftBorderAngle120, ptTopRightSetBottomRightBeyondLeftBorderAngle120).center();
+    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle120  = QLineF(ptTopRightSetBottomRightBeyondLeftBorderAngle120, ptBottomRightSetBottomRightBeyondLeftBorderAngle120).center();
+    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle120 = QLineF(ptBottomRightSetBottomRightBeyondLeftBorderAngle120, ptBottomLeftSetBottomRightBeyondLeftBorderAngle120).center();
+    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle120   = QLineF(ptBottomLeftSetBottomRightBeyondLeftBorderAngle120, ptTopLeftSetBottomRightBeyondLeftBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
@@ -8014,6 +8184,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle120);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8031,19 +8202,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopLeft)
     ---------------------------------*/
-    QPointF ptSetBottomRightBeyondTopLeftAngle120 = QPointF(500.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetBottomRightBeyondTopLeftAngle120 = QPointF(500.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetBottomRightBeyondTopLeftAngle120 = 86.6;
-    double fHeightSetBottomRightBeyondTopLeftAngle120 = 73.2;
-    QPointF ptCenterSetBottomRightBeyondTopLeftAngle120(446.7, bYAxisTopDown ? 219.2 : 380.8);
+    double fWidthSetBottomRightBeyondTopLeftAngle120 = 86.602540;
+    double fHeightSetBottomRightBeyondTopLeftAngle120 = 73.205081;
+    QPointF ptCenterSetBottomRightBeyondTopLeftAngle120(446.650635, bYAxisTopDown ? 219.198730 : fYAxisMaxVal - 219.198730);
     QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle120 = ptTopLeftSetAngle120;
-    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle120(436.6, bYAxisTopDown ? 163.4 : 436.6);
+    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle120(436.602540, bYAxisTopDown ? 163.397460 : fYAxisMaxVal - 163.397460);
     QPointF ptBottomRightSetBottomRightBeyondTopLeftAngle120 = ptSetBottomRightBeyondTopLeftAngle120;
-    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle120(456.7, bYAxisTopDown ? 275.0 : 325.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle120(415.0, bYAxisTopDown ? 200.9 : 399.1);
-    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle120(468.3, bYAxisTopDown ? 181.7 : 418.3);
-    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle120(478.4, bYAxisTopDown ? 237.5 : 362.5);
-    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle120(425.0, bYAxisTopDown ? 256.7 : 343.3);
+    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle120(456.698730, bYAxisTopDown ? 275.000000 : fYAxisMaxVal - 275.000000);
+    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle120    = QLineF(ptTopLeftSetBottomRightBeyondTopLeftAngle120, ptTopRightSetBottomRightBeyondTopLeftAngle120).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle120  = QLineF(ptTopRightSetBottomRightBeyondTopLeftAngle120, ptBottomRightSetBottomRightBeyondTopLeftAngle120).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle120 = QLineF(ptBottomRightSetBottomRightBeyondTopLeftAngle120, ptBottomLeftSetBottomRightBeyondTopLeftAngle120).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle120   = QLineF(ptBottomLeftSetBottomRightBeyondTopLeftAngle120, ptTopLeftSetBottomRightBeyondTopLeftAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
@@ -8058,6 +8229,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle120);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8075,18 +8247,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeforeTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeforeTopRightAngle120 = QPointF(240.0, bYAxisTopDown ? 220.0 : 380.0);
-    double fWidthSetBottomLeftBeforeTopRightAngle120 = 139.3;
-    double fHeightSetBottomLeftBeforeTopRightAngle120 = 142.0;
-    QPointF ptCenterSetBottomLeftBeforeTopRightAngle120(266.7, bYAxisTopDown ? 315.8 : 284.2);
-    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle120(362.9, bYAxisTopDown ? 291.0 : 309.0);
+    QPointF ptSetBottomLeftBeforeTopRightAngle120 = QPointF(240.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
+    double fWidthSetBottomLeftBeforeTopRightAngle120 = 139.282032;
+    double fHeightSetBottomLeftBeforeTopRightAngle120 = 141.961524;
+    QPointF ptCenterSetBottomLeftBeforeTopRightAngle120(266.650635, bYAxisTopDown ? 315.801270 : fYAxisMaxVal - 315.801270);
+    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle120(362.942286, bYAxisTopDown ? 290.980762 : fYAxisMaxVal - 290.980762);
     QPointF ptTopRightSetBottomLeftBeforeTopRightAngle120 = ptTopRightSetAngle120;
-    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle120(170.4, bYAxisTopDown ? 340.6 : 259.4);
+    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle120(170.358984, bYAxisTopDown ? 340.621778 : fYAxisMaxVal - 340.621778);
     QPointF ptBottomLeftSetBottomLeftBeforeTopRightAngle120 = ptSetBottomLeftBeforeTopRightAngle120;
-    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle120(328.1, bYAxisTopDown ? 351.3 : 248.7);
-    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle120(231.8, bYAxisTopDown ? 376.1 : 223.9);
-    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle120(205.2, bYAxisTopDown ? 280.3 : 319.7);
-    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle120(301.499, bYAxisTopDown ? 255.499 : 344.5);
+    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle120    = QLineF(ptTopLeftSetBottomLeftBeforeTopRightAngle120, ptTopRightSetBottomLeftBeforeTopRightAngle120).center();
+    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle120  = QLineF(ptTopRightSetBottomLeftBeforeTopRightAngle120, ptBottomRightSetBottomLeftBeforeTopRightAngle120).center();
+    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle120 = QLineF(ptBottomRightSetBottomLeftBeforeTopRightAngle120, ptBottomLeftSetBottomLeftBeforeTopRightAngle120).center();
+    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle120   = QLineF(ptBottomLeftSetBottomLeftBeforeTopRightAngle120, ptTopLeftSetBottomLeftBeforeTopRightAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
@@ -8101,6 +8273,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle120);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8118,19 +8291,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopBorder)
     ---------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopBorderAngle120(380.0, bYAxisTopDown ? 380.0 : 220.0);
+    QPointF ptSetBottomLeftBeyondTopBorderAngle120(380.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetBottomLeftBeyondTopBorderAngle120 = 59.3;
-    double fHeightSetBottomLeftBeyondTopBorderAngle120 = 70.7;
-    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle120(336.7, bYAxisTopDown ? 395.8 : 204.2);
-    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle120(344.6, bYAxisTopDown ? 441.2 : 158.8);
+    double fWidthSetBottomLeftBeyondTopBorderAngle120 = 59.282032;
+    double fHeightSetBottomLeftBeyondTopBorderAngle120 = 70.717968;
+    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle120(336.650635, bYAxisTopDown ? 395.801270 : fYAxisMaxVal - 395.801270);
+    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle120(344.641016, bYAxisTopDown ? 441.243557 : fYAxisMaxVal - 441.243557);
     QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle120 = ptTopRightSetAngle120;
-    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle120(328.7, bYAxisTopDown ? 350.4 : 249.6);
+    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle120(328.660254, bYAxisTopDown ? 350.358984 : fYAxisMaxVal - 350.358984);
     QPointF ptBottomLeftSetBottomLeftBeyondTopBorderAngle120 = ptSetBottomLeftBeyondTopBorderAngle120;
-    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle120(319.0, bYAxisTopDown ? 426.4 : 173.6);
-    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle120(311.0, bYAxisTopDown ? 381.0 : 219.0);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle120(354.3, bYAxisTopDown ? 365.2 : 234.8);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle120(362.3, bYAxisTopDown ? 410.6 : 189.4);
+    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle120    = QLineF(ptTopLeftSetBottomLeftBeyondTopBorderAngle120, ptTopRightSetBottomLeftBeyondTopBorderAngle120).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle120  = QLineF(ptTopRightSetBottomLeftBeyondTopBorderAngle120, ptBottomRightSetBottomLeftBeyondTopBorderAngle120).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle120 = QLineF(ptBottomRightSetBottomLeftBeyondTopBorderAngle120, ptBottomLeftSetBottomLeftBeyondTopBorderAngle120).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle120   = QLineF(ptBottomLeftSetBottomLeftBeyondTopBorderAngle120, ptTopLeftSetBottomLeftBeyondTopBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
@@ -8145,6 +8318,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle120);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8162,19 +8336,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondRightBorder)
     -----------------------------------*/
-    QPointF ptSetBottomLeftBeyondRightBorderAngle120(200.0, bYAxisTopDown ? 440.0 : 160.0);
+    QPointF ptSetBottomLeftBeyondRightBorderAngle120(200.0, bYAxisTopDown ? 440.0 : fYAxisMaxVal - 440.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetBottomLeftBeyondRightBorderAngle120 = 66.6;
-    double fHeightSetBottomLeftBeyondRightBorderAngle120 = 71.2;
-    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle120(246.7, bYAxisTopDown ? 425.8 : 174.2);
-    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle120(235.6, bYAxisTopDown ? 378.3 : 221.7);
+    double fWidthSetBottomLeftBeyondRightBorderAngle120 = 66.602540;
+    double fHeightSetBottomLeftBeyondRightBorderAngle120 = 71.243557;
+    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle120(246.650635, bYAxisTopDown ? 425.801270 : fYAxisMaxVal - 425.801270);
+    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle120(235.621778, bYAxisTopDown ? 378.301270 : fYAxisMaxVal - 378.301270);
     QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle120 = ptTopRightSetAngle120;
-    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle120(257.7, bYAxisTopDown ? 473.3 : 126.7);
+    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle120(257.679492, bYAxisTopDown ? 473.301270 : fYAxisMaxVal - 473.301270);
     QPointF ptBottomLeftSetBottomLeftBeyondRightBorderAngle120 = ptSetBottomLeftBeyondRightBorderAngle120;
-    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle120(264.499, bYAxisTopDown ? 395.0 : 205.0);
-    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle120(275.499, bYAxisTopDown ? 442.499 : 157.5);
-    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle120(228.8, bYAxisTopDown ? 456.7 : 143.4);
-    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle120(217.8, bYAxisTopDown ? 409.2 : 190.9);
+    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle120    = QLineF(ptTopLeftSetBottomLeftBeyondRightBorderAngle120, ptTopRightSetBottomLeftBeyondRightBorderAngle120).center();
+    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle120  = QLineF(ptTopRightSetBottomLeftBeyondRightBorderAngle120, ptBottomRightSetBottomLeftBeyondRightBorderAngle120).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle120 = QLineF(ptBottomRightSetBottomLeftBeyondRightBorderAngle120, ptBottomLeftSetBottomLeftBeyondRightBorderAngle120).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle120   = QLineF(ptBottomLeftSetBottomLeftBeyondRightBorderAngle120, ptTopLeftSetBottomLeftBeyondRightBorderAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
@@ -8189,6 +8363,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle120);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8206,19 +8381,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopRightAngle120 = QPointF(320.0, bYAxisTopDown ? 520.0 : 80.0);
+    QPointF ptSetBottomLeftBeyondTopRightAngle120 = QPointF(320.0, bYAxisTopDown ? 520.0 : fYAxisMaxVal - 520.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetBottomLeftBeyondTopRightAngle120 = 80.5;
-    double fHeightSetBottomLeftBeyondTopRightAngle120 = 77.3;
-    QPointF ptCenterSetBottomLeftBeyondTopRightAngle120(306.7, bYAxisTopDown ? 465.8 : 134.2);
-    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle120(253.0, bYAxisTopDown ? 481.3 : 118.7);
+    double fWidthSetBottomLeftBeyondTopRightAngle120 = 80.525589;
+    double fHeightSetBottomLeftBeyondTopRightAngle120 = 77.320508;
+    QPointF ptCenterSetBottomLeftBeyondTopRightAngle120(306.650635, bYAxisTopDown ? 465.801270 : fYAxisMaxVal - 465.801270);
+    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle120(253.038476, bYAxisTopDown ? 481.339746 : fYAxisMaxVal - 481.339746);
     QPointF ptTopRightSetBottomLeftBeyondTopRightAngle120 = ptTopRightSetAngle120;
-    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle120(360.3, bYAxisTopDown ? 450.3 : 149.7);
+    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle120(360.262794, bYAxisTopDown ? 450.262794 : fYAxisMaxVal - 450.262794);
     QPointF ptBottomLeftSetBottomLeftBeyondTopRightAngle120 = ptSetBottomLeftBeyondTopRightAngle120;
-    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle120(273.2, bYAxisTopDown ? 446.499 : 153.5);
-    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle120(326.8, bYAxisTopDown ? 430.9 : 169.1);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle120(340.1, bYAxisTopDown ? 485.1 : 114.9);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle120(286.5, bYAxisTopDown ? 500.7 : 99.3);
+    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle120    = QLineF(ptTopLeftSetBottomLeftBeyondTopRightAngle120, ptTopRightSetBottomLeftBeyondTopRightAngle120).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle120  = QLineF(ptTopRightSetBottomLeftBeyondTopRightAngle120, ptBottomRightSetBottomLeftBeyondTopRightAngle120).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle120 = QLineF(ptBottomRightSetBottomLeftBeyondTopRightAngle120, ptBottomLeftSetBottomLeftBeyondTopRightAngle120).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle120   = QLineF(ptBottomLeftSetBottomLeftBeyondTopRightAngle120, ptTopLeftSetBottomLeftBeyondTopRightAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
@@ -8233,6 +8408,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle120);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle120, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle120, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8286,17 +8462,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     double fWidthSetAngle210 = fWidthSetAngle0;
     double fHeightSetAngle210 = fHeightSetAngle0;
     QPointF ptCenterSetAngle210 = ptCenterSetAngle0;
-    QPointF ptTopLeftSetAngle210(361.6, bYAxisTopDown ? 393.3 : 206.7);
-    QPointF ptTopRightSetAngle210(188.4, bYAxisTopDown ? 293.3 : 306.7);
-    QPointF ptBottomRightSetAngle210(238.4, bYAxisTopDown ? 206.7 : 393.3);
-    QPointF ptBottomLeftSetAngle210(411.6, bYAxisTopDown ? 306.7 : 293.3);
-    QPointF ptTopCenterSetAngle210 = QLineF(ptTopRightSetAngle210, ptTopLeftSetAngle210).center();
-    QPointF ptRightCenterSetAngle210 = QLineF(ptTopRightSetAngle210, ptBottomRightSetAngle210).center();
+    QPointF ptTopLeftSetAngle210(361.602540, bYAxisTopDown ? 393.301270 : fYAxisMaxVal - 393.301270);
+    QPointF ptTopRightSetAngle210(188.397460, bYAxisTopDown ? 293.301270 : fYAxisMaxVal - 293.301270);
+    QPointF ptBottomRightSetAngle210(238.397460, bYAxisTopDown ? 206.698730 : fYAxisMaxVal - 206.698730);
+    QPointF ptBottomLeftSetAngle210(411.602540, bYAxisTopDown ? 306.698730 : fYAxisMaxVal - 306.698730);
+    QPointF ptTopCenterSetAngle210    = QLineF(ptTopRightSetAngle210, ptTopLeftSetAngle210).center();
+    QPointF ptRightCenterSetAngle210  = QLineF(ptTopRightSetAngle210, ptBottomRightSetAngle210).center();
     QPointF ptBottomCenterSetAngle210 = QLineF(ptBottomRightSetAngle210, ptBottomLeftSetAngle210).center();
-    QPointF ptLeftCenterSetAngle210 = QLineF(ptTopLeftSetAngle210, ptBottomLeftSetAngle210).center();
+    QPointF ptLeftCenterSetAngle210   = QLineF(ptTopLeftSetAngle210, ptBottomLeftSetAngle210).center();
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8315,7 +8492,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setCenter(400, 400)
     ----------------------
     */
-    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     fdx = ptCenter.x() - ptCenterSetAngle210.x();
     fdy = ptCenter.y() - ptCenterSetAngle210.y();
     double fWidthSetCenterAngle210 = fWidthSetAngle210;
@@ -8325,10 +8502,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetCenterAngle210(ptTopRightSetAngle210.x() + fdx, ptTopRightSetAngle210.y() + fdy);
     QPointF ptBottomRightSetCenterAngle210(ptBottomRightSetAngle210.x() + fdx, ptBottomRightSetAngle210.y() + fdy);
     QPointF ptBottomLeftSetCenterAngle210(ptBottomLeftSetAngle210.x() + fdx, ptBottomLeftSetAngle210.y() + fdy);
-    QPointF ptTopCenterSetCenterAngle210 = QLineF(ptTopRightSetCenterAngle210, ptTopLeftSetCenterAngle210).center();
-    QPointF ptRightCenterSetCenterAngle210 = QLineF(ptTopRightSetCenterAngle210, ptBottomRightSetCenterAngle210).center();
+    QPointF ptTopCenterSetCenterAngle210    = QLineF(ptTopRightSetCenterAngle210, ptTopLeftSetCenterAngle210).center();
+    QPointF ptRightCenterSetCenterAngle210  = QLineF(ptTopRightSetCenterAngle210, ptBottomRightSetCenterAngle210).center();
     QPointF ptBottomCenterSetCenterAngle210 = QLineF(ptBottomRightSetCenterAngle210, ptBottomLeftSetCenterAngle210).center();
-    QPointF ptLeftCenterSetCenterAngle210 = QLineF(ptTopLeftSetCenterAngle210, ptBottomLeftSetCenterAngle210).center();
+    QPointF ptLeftCenterSetCenterAngle210   = QLineF(ptTopLeftSetCenterAngle210, ptBottomLeftSetCenterAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
@@ -8343,6 +8520,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8363,15 +8541,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle210 = size300x200.width();
     double fHeightSetSizeAngle210 = size300x200.height();
-    QPointF ptCenterSetSizeAngle210 = bYAxisTopDown ? QPointF(281.7, 231.7) : QPointF(231.7, 281.7);
+    QPointF ptCenterSetSizeAngle210 = bYAxisTopDown ? QPointF(281.698730, 231.698730) : QPointF(231.698730, 281.698730);
     QPointF ptTopLeftSetSizeAngle210 = bYAxisTopDown ? ptTopLeftSetAngle210 : QPointF(311.6, 120.1);
-    QPointF ptTopRightSetSizeAngle210 = bYAxisTopDown ? QPointF(101.8, 243.3) : QPointF(51.8, 270.1);
-    QPointF ptBottomRightSetSizeAngle210 = bYAxisTopDown ? QPointF(201.8, 70.1) : QPointF(151.8, 443.3);
-    QPointF ptBottomLeftSetSizeAngle210 = bYAxisTopDown ? QPointF(461.6, 220.1) : ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetSizeAngle210 = QLineF(ptTopRightSetSizeAngle210, ptTopLeftSetSizeAngle210).center();
-    QPointF ptRightCenterSetSizeAngle210 = QLineF(ptTopRightSetSizeAngle210, ptBottomRightSetSizeAngle210).center();
+    QPointF ptTopRightSetSizeAngle210 = bYAxisTopDown ? QPointF(101.794919, 243.301270) : QPointF(51.8, 270.1);
+    QPointF ptBottomRightSetSizeAngle210 = bYAxisTopDown ? QPointF(201.794919, 70.096189) : QPointF(151.8, 443.3);
+    QPointF ptBottomLeftSetSizeAngle210 = bYAxisTopDown ? QPointF(461.602540, 220.096189) : ptBottomLeftSetAngle210;
+    QPointF ptTopCenterSetSizeAngle210    = QLineF(ptTopRightSetSizeAngle210, ptTopLeftSetSizeAngle210).center();
+    QPointF ptRightCenterSetSizeAngle210  = QLineF(ptTopRightSetSizeAngle210, ptBottomRightSetSizeAngle210).center();
     QPointF ptBottomCenterSetSizeAngle210 = QLineF(ptBottomRightSetSizeAngle210, ptBottomLeftSetSizeAngle210).center();
-    QPointF ptLeftCenterSetSizeAngle210 = QLineF(ptTopLeftSetSizeAngle210, ptBottomLeftSetSizeAngle210).center();
+    QPointF ptLeftCenterSetSizeAngle210   = QLineF(ptTopLeftSetSizeAngle210, ptBottomLeftSetSizeAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
@@ -8386,6 +8564,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8406,15 +8585,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetWidthAngle210 = physValWidth300.getVal();
     double fHeightSetWidthAngle210 = fHeightSetAngle210;
-    QPointF ptCenterSetWidthAngle210(256.7, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptCenterSetWidthAngle210(256.698730, bYAxisTopDown ? 275.000000 : fYAxisMaxVal - 275.000000);
     QPointF ptTopLeftSetWidthAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetWidthAngle210(101.8, bYAxisTopDown ? 243.3 : 356.7);
-    QPointF ptBottomRightSetWidthAngle210(151.8, bYAxisTopDown ? 156.7 : 443.3);
+    QPointF ptTopRightSetWidthAngle210(101.794919, bYAxisTopDown ? 243.301270 : fYAxisMaxVal - 243.301270);
+    QPointF ptBottomRightSetWidthAngle210(151.794919, bYAxisTopDown ? 156.698730 : fYAxisMaxVal - 156.698730);
     QPointF ptBottomLeftSetWidthAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetWidthAngle210 = QLineF(ptTopRightSetWidthAngle210, ptTopLeftSetWidthAngle210).center();
-    QPointF ptRightCenterSetWidthAngle210 = QLineF(ptTopRightSetWidthAngle210, ptBottomRightSetWidthAngle210).center();
+    QPointF ptTopCenterSetWidthAngle210    = QLineF(ptTopRightSetWidthAngle210, ptTopLeftSetWidthAngle210).center();
+    QPointF ptRightCenterSetWidthAngle210  = QLineF(ptTopRightSetWidthAngle210, ptBottomRightSetWidthAngle210).center();
     QPointF ptBottomCenterSetWidthAngle210 = QLineF(ptBottomRightSetWidthAngle210, ptBottomLeftSetWidthAngle210).center();
-    QPointF ptLeftCenterSetWidthAngle210 = ptLeftCenterSetAngle210;
+    QPointF ptLeftCenterSetWidthAngle210   = ptLeftCenterSetAngle210;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
@@ -8429,6 +8608,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8458,10 +8638,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle210 = ptTopRightSetAngle210;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle210 = ptBottomRightSetAngle210;
     QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle210 = ptBottomCenterSetAngle210;
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210(231.7, bYAxisTopDown ? 318.3 : 281.7);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210 = ptRightCenterSetAngle210;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210(281.7, bYAxisTopDown ? 231.7 : 368.3);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle210, ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle210).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210  = QLineF(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle210, ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle210).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle210, ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle210).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle210, ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
@@ -8476,6 +8656,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8497,19 +8678,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
     // The resulting center point, when resizing the rectangle by moving the left edge to a new width of 100.0, is the
     // same as setting the width to 300.0 by moving the right edge of the rectangle. But only in this special case.
-    ptMoved = QPointF(140.0, bYAxisTopDown ? 200.0 : 400.0);
+    ptMoved = QPointF(140.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle210 = 88.6;
+    double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle210 = 88.564065;
     double fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle210 = fHeightSetAngle210;
-    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210(175.0, bYAxisTopDown ? 227.9 : 372.1);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210(161.7, bYAxisTopDown ? 162.4 : 437.6);
+    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210(175.048095, bYAxisTopDown ? 227.858984 : fYAxisMaxVal - 227.858984);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210(161.698730, bYAxisTopDown ? 162.416698 : fYAxisMaxVal - 162.416698);
     QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle210 = ptBottomRightSetAngle210;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle210 = ptTopRightSetAngle210;
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210(111.7, bYAxisTopDown ? 249.0 : 351.0);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210(200.0, bYAxisTopDown ? 184.6 : 415.4);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210 = ptRightCenterSetAngle210;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210(150.0, bYAxisTopDown ? 271.2 : 328.8);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210(136.7, bYAxisTopDown ? 205.7 : 394.3);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210(111.698730, bYAxisTopDown ? 249.019238 : fYAxisMaxVal - 249.019238);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210, ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle210).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210  = QLineF(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle210, ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle210).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle210, ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210, ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
@@ -8524,6 +8705,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8546,15 +8728,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptTopCenterSetAngle210;
     double fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle210 = fWidthSetAngle210 / 2.0;
     double fHeightSetWidthMoveRightCenterBeforeLeftBorderAngle210 = fHeightSetAngle210;
-    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210(343.3, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210(343.300995, bYAxisTopDown ? 324.999841 : fYAxisMaxVal - 324.999841);
     QPointF ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle210 = ptTopLeftSetAngle210;
     QPointF ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle210 = ptTopCenterSetAngle210;
     QPointF ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle210 = ptBottomCenterSetAngle210;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210(318.3, bYAxisTopDown ? 368.3 : 231.7);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210(368.3, bYAxisTopDown ? 281.7 : 318.3);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210 = ptLeftCenterSetAngle210;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210    = QLineF(ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle210, ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle210).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210  = QLineF(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle210, ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle210).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210 = QLineF(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle210, ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle210).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle210, ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
@@ -8569,6 +8751,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8587,19 +8770,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setWidthByMovingRightCenter(BeyondLeftBorder)
     ------------------------------------------------
     */
-    ptMoved = QPointF(480.0, bYAxisTopDown ? 360.0 : 240.0);
+    ptMoved = QPointF(480.0, bYAxisTopDown ? 360.0 : fYAxisMaxVal - 360.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle210 = 85.9;
+    double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle210 = 85.884573;
     double fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle210 = fHeightSetAngle210;
-    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210(423.8, bYAxisTopDown ? 371.49 : 228.5);
+    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210(423.791651, bYAxisTopDown ? 371.471143 : fYAxisMaxVal - 371.471143);
     QPointF ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle210(486.0, bYAxisTopDown ? 349.6 : 250.4);
-    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle210(436.0, bYAxisTopDown ? 436.2 : 163.8);
+    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle210(485.980762, bYAxisTopDown ? 349.641016 : fYAxisMaxVal - 349.641016);
+    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle210(435.980762, bYAxisTopDown ? 436.243557 : fYAxisMaxVal - 436.243557);
     QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210(448.8, bYAxisTopDown ? 328.2 : 271.8);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210(461.0, bYAxisTopDown ? 392.9 : 207.1);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210(398.8, bYAxisTopDown ? 414.8 : 185.2);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210 = ptLeftCenterSetAngle210;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210    = QLineF(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle210, ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle210).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210  = QLineF(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle210, ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle210).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210 = QLineF(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle210, ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle210).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle210, ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
@@ -8614,6 +8797,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8637,12 +8821,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptCenterSetHeightAngle210 = bYAxisTopDown ? ptBottomCenterSetAngle210 : ptTopCenterSetAngle210;
     QPointF ptTopLeftSetHeightAngle210 = bYAxisTopDown ? ptTopLeftSetAngle210 : QPointF(311.6, 120.1);
     QPointF ptTopRightSetHeightAngle210 = bYAxisTopDown ? ptTopRightSetAngle210 : QPointF(138.4, 220.1);
-    QPointF ptBottomRightSetHeightAngle210 = bYAxisTopDown ? QPointF(288.4, 120.1) : ptBottomRightSetAngle210;
-    QPointF ptBottomLeftSetHeightAngle210 = bYAxisTopDown ? QPointF(461.6, 220.1) : ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetHeightAngle210 = QLineF(ptTopLeftSetHeightAngle210, ptTopRightSetHeightAngle210).center();
-    QPointF ptRightCenterSetHeightAngle210 = QLineF(ptTopRightSetHeightAngle210, ptBottomRightSetHeightAngle210).center();
+    QPointF ptBottomRightSetHeightAngle210 = bYAxisTopDown ? QPointF(288.397460, 120.096189) : ptBottomRightSetAngle210;
+    QPointF ptBottomLeftSetHeightAngle210 = bYAxisTopDown ? QPointF(461.602540, 220.096189) : ptBottomLeftSetAngle210;
+    QPointF ptTopCenterSetHeightAngle210    = QLineF(ptTopLeftSetHeightAngle210, ptTopRightSetHeightAngle210).center();
+    QPointF ptRightCenterSetHeightAngle210  = QLineF(ptTopRightSetHeightAngle210, ptBottomRightSetHeightAngle210).center();
     QPointF ptBottomCenterSetHeightAngle210 = QLineF(ptBottomRightSetHeightAngle210, ptBottomLeftSetHeightAngle210).center();
-    QPointF ptLeftCenterSetHeightAngle210 = QLineF(ptTopLeftSetHeightAngle210, ptBottomLeftSetHeightAngle210).center();
+    QPointF ptLeftCenterSetHeightAngle210   = QLineF(ptTopLeftSetHeightAngle210, ptBottomLeftSetHeightAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
@@ -8657,6 +8841,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8678,15 +8863,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle210;
     double fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle210 = fWidthSetAngle210;
     double fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle210 = fHeightSetAngle210 / 2.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210(312.5, bYAxisTopDown ? 278.3 : 321.7);
+    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210(312.500318, bYAxisTopDown ? 278.348815 : fYAxisMaxVal - 278.348815);
     QPointF ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle210 = ptLeftCenterSetAngle210;
     QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle210 = ptRightCenterSetAngle210;
     QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle210 = ptBottomRightSetAngle210;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210(225.9, bYAxisTopDown ? 228.3 : 371.7);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210 = ptBottomCenterSetAngle210;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210(399.1, bYAxisTopDown ? 328.3 : 271.7);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210    = QLineF(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle210, ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle210).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210  = QLineF(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle210, ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle210).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210 = QLineF(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle210, ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle210).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle210, ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
@@ -8701,6 +8886,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8719,19 +8905,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setHeightByMovingTopCenter(BeyondBottomBorder)
     -------------------------------------------------
     */
-    ptMoved = QPointF(400.0, bYAxisTopDown ? 200.0 : 400.0);
+    ptMoved = QPointF(400.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(30.0);
     double fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle210 = fWidthSetAngle210;
     double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle210 = 86.6;
-    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210(346.7, bYAxisTopDown ? 219.2 : 380.8);
-    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210(281.7, bYAxisTopDown ? 131.7 : 468.3);
-    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle210(454.9, bYAxisTopDown ? 231.7 : 368.3);
+    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210(346.650635, bYAxisTopDown ? 219.198730 : fYAxisMaxVal - 219.198730);
+    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210(281.698730, bYAxisTopDown ? 131.698730 : fYAxisMaxVal - 131.698730);
+    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle210(454.903811, bYAxisTopDown ? 231.698730 : fYAxisMaxVal - 231.698730);
     QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle210 = ptBottomLeftSetAngle210;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210 = ptBottomRightSetAngle210;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210(368.3, bYAxisTopDown ? 181.7 : 418.3);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210(433.3, bYAxisTopDown ? 269.2 : 330.8);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210 = ptBottomCenterSetAngle210;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210(260.0, bYAxisTopDown ? 169.2 : 430.8);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210    = QLineF(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210, ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle210).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210  = QLineF(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle210, ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle210).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210 = QLineF(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle210, ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210, ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
@@ -8746,6 +8932,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8767,15 +8954,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle210;
     double fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle210 = fWidthSetHeightAngle210;
     double fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle210 = fHeightSetAngle210 / 2.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210(287.5, bYAxisTopDown ? 321.7 : 278.4);
+    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210(287.500318, bYAxisTopDown ? 321.650085 : fYAxisMaxVal - 321.650085);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle210 = ptTopLeftSetAngle210;
     QPointF ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle210 = ptTopRightSetAngle210;
     QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle210 = ptRightCenterSetAngle210;
     QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle210 = ptLeftCenterSetAngle210;
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210 = ptTopCenterSetAngle210;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210(200.9, bYAxisTopDown ? 271.7 : 328.4);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210(374.1, bYAxisTopDown ? 371.7 : 228.4);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle210, ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle210).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210  = QLineF(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle210, ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle210).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle210, ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle210).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle210, ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
@@ -8790,6 +8977,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8808,19 +8996,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setHeightByMovingBottomCenter(BeyondTopBorder)
     -------------------------------------------------
     */
-    ptMoved = QPointF(240.0, bYAxisTopDown ? 420.0 : 180.0);
+    ptMoved = QPointF(240.0, bYAxisTopDown ? 420.0 : fYAxisMaxVal - 420.0);
     physValAngleCorrected.setVal(30.0);
     double fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle210 = fWidthSetHeightAngle210;
-    double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle210 = 83.9;
-    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210(254.0, bYAxisTopDown ? 379.6 : 220.4);
+    double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle210 = 83.923048;
+    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210(254.019238, bYAxisTopDown ? 379.641016 : fYAxisMaxVal - 379.641016);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210 = ptTopRightSetAngle210;
     QPointF ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle210 = ptTopLeftSetAngle210;
-    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle210(319.6, bYAxisTopDown ? 466.0 : 134.0);
-    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210(146.4, bYAxisTopDown ? 366.0 : 234.0);
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210 = ptTopCenterSetAngle210;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210(340.6, bYAxisTopDown ? 429.6 : 170.4);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210(233.0, bYAxisTopDown ? 416.0 : 184.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210(167.4, bYAxisTopDown ? 329.6 : 270.4);
+    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle210(319.641016, bYAxisTopDown ? 465.980762 : fYAxisMaxVal - 465.980762);
+    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210(146.435935, bYAxisTopDown ? 365.980762 : fYAxisMaxVal - 365.980762);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210, ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle210).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210  = QLineF(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle210, ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle210).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle210, ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210, ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
@@ -8835,6 +9023,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8853,18 +9042,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setTopLeft(BeforeBottomRight)
     --------------------------------
     */
-    QPointF ptSetTopLeftBeforeBottomRightAngle210 = QPointF(340.0, bYAxisTopDown ? 340.0 : 260.0);
-    double fWidthSetTopLeftBeforeBottomRightAngle210 = 154.6;
-    double fHeightSetTopLeftBeforeBottomRightAngle210 = 64.6;
-    QPointF ptCenterSetTopLeftBeforeBottomRightAngle210(289.2, bYAxisTopDown ? 273.4 : 326.7);
+    QPointF ptSetTopLeftBeforeBottomRightAngle210 = QPointF(340.0, bYAxisTopDown ? 340.0 : fYAxisMaxVal - 340.0);
+    double fWidthSetTopLeftBeforeBottomRightAngle210 = 154.641016;
+    double fHeightSetTopLeftBeforeBottomRightAngle210 = 64.641016;
+    QPointF ptCenterSetTopLeftBeforeBottomRightAngle210(289.198730, bYAxisTopDown ? 273.349365 : fYAxisMaxVal - 273.349365);
     QPointF ptTopLeftSetTopLeftBeforeBottomRightAngle210 = ptSetTopLeftBeforeBottomRightAngle210;
-    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle210(206.1, bYAxisTopDown ? 262.7 : 337.3);
+    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle210(206.076952, bYAxisTopDown ? 262.679492 : fYAxisMaxVal - 262.679492);
     QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle210 = ptBottomRightSetAngle210;
-    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle210(372.3, bYAxisTopDown ? 284.0 : 316.0);
-    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle210(273.0, bYAxisTopDown ? 301.3 : 298.7);
-    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle210(222.2, bYAxisTopDown ? 234.7 : 365.3);
-    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle210(305.4, bYAxisTopDown ? 245.4 : 354.6);
-    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle210(356.2, bYAxisTopDown ? 312.0 : 288.0);
+    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle210(372.320508, bYAxisTopDown ? 284.019238 : fYAxisMaxVal - 284.019238);
+    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle210    = QLineF(ptTopLeftSetTopLeftBeforeBottomRightAngle210, ptTopRightSetTopLeftBeforeBottomRightAngle210).center();
+    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle210  = QLineF(ptTopRightSetTopLeftBeforeBottomRightAngle210, ptBottomRightSetTopLeftBeforeBottomRightAngle210).center();
+    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle210 = QLineF(ptBottomRightSetTopLeftBeforeBottomRightAngle210, ptBottomLeftSetTopLeftBeforeBottomRightAngle210).center();
+    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle210   = QLineF(ptBottomLeftSetTopLeftBeforeBottomRightAngle210, ptTopLeftSetTopLeftBeforeBottomRightAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
@@ -8879,6 +9068,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle210);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8896,19 +9086,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondRightBorder)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondRightBorderAngle210(160.0, bYAxisTopDown ? 180.0 : 420.0);
+    QPointF ptSetTopLeftBeyondRightBorderAngle210(160.0, bYAxisTopDown ? 180.0 : fYAxisMaxVal - 180.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetTopLeftBeyondRightBorderAngle210 = 16.1;
-    double fHeightSetTopLeftBeyondRightBorderAngle210 = 81.2;
-    QPointF ptCenterSetTopLeftBeyondRightBorderAngle210(199.2, bYAxisTopDown ? 193.4 : 406.7);
+    double fWidthSetTopLeftBeyondRightBorderAngle210 = 16.076952;
+    double fHeightSetTopLeftBeyondRightBorderAngle210 = 81.243557;
+    QPointF ptCenterSetTopLeftBeyondRightBorderAngle210(199.198730, bYAxisTopDown ? 193.349365 : fYAxisMaxVal - 193.349365);
     QPointF ptTopLeftSetTopLeftBeyondRightBorderAngle210 = ptSetTopLeftBeyondRightBorderAngle210;
-    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle210(168.0, bYAxisTopDown ? 166.1 : 433.9);
+    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle210(168.038476, bYAxisTopDown ? 166.076952 : fYAxisMaxVal - 166.076952);
     QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle210 = ptBottomRightSetAngle210;
-    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle210(230.4, bYAxisTopDown ? 220.6 : 379.4);
-    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle210(164.0, bYAxisTopDown ? 173.0 : 427.0);
-    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle210(203.2, bYAxisTopDown ? 186.4 : 413.6);
-    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle210(234.4, bYAxisTopDown ? 213.7 : 386.3);
-    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle210(195.2, bYAxisTopDown ? 200.3 : 399.7);
+    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle210(230.358984, bYAxisTopDown ? 220.621778 : fYAxisMaxVal - 220.621778);
+    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle210    = QLineF(ptTopLeftSetTopLeftBeyondRightBorderAngle210, ptTopRightSetTopLeftBeyondRightBorderAngle210).center();
+    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle210  = QLineF(ptTopRightSetTopLeftBeyondRightBorderAngle210, ptBottomRightSetTopLeftBeyondRightBorderAngle210).center();
+    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle210 = QLineF(ptBottomRightSetTopLeftBeyondRightBorderAngle210, ptBottomLeftSetTopLeftBeyondRightBorderAngle210).center();
+    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle210   = QLineF(ptBottomLeftSetTopLeftBeyondRightBorderAngle210, ptTopLeftSetTopLeftBeyondRightBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
@@ -8923,6 +9113,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle210);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8940,19 +9131,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomBorder)
     ---------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomBorderAngle210(420.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetTopLeftBeyondBottomBorderAngle210(420.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetTopLeftBeyondBottomBorderAngle210 = 96.6;
-    double fHeightSetTopLeftBeyondBottomBorderAngle210 = 153.9;
-    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle210(329.2, bYAxisTopDown ? 203.4 : 396.7);
+    double fWidthSetTopLeftBeyondBottomBorderAngle210 = 96.602540;
+    double fHeightSetTopLeftBeyondBottomBorderAngle210 = 153.923048;
+    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle210(329.198730, bYAxisTopDown ? 203.349365 : fYAxisMaxVal - 203.349365);
     QPointF ptTopLeftSetTopLeftBeyondBottomBorderAngle210 = ptSetTopLeftBeyondBottomBorderAngle210;
-    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle210(371.7, bYAxisTopDown ? 283.7 : 316.3);
+    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle210(371.698730, bYAxisTopDown ? 283.660254 : fYAxisMaxVal - 283.660254);
     QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle210 = ptBottomRightSetAngle210;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle210(286.7, bYAxisTopDown ? 123.0 : 477.0);
-    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle210(395.9, bYAxisTopDown ? 241.8 : 358.2);
-    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle210(305.0, bYAxisTopDown ? 245.2 : 354.8);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle210(262.5, bYAxisTopDown ? 164.9 : 435.1);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle210(353.4, bYAxisTopDown ? 161.5 : 438.5);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle210(286.698730, bYAxisTopDown ? 123.038476 : fYAxisMaxVal - 123.038476);
+    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle210    = QLineF(ptTopLeftSetTopLeftBeyondBottomBorderAngle210, ptTopRightSetTopLeftBeyondBottomBorderAngle210).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle210  = QLineF(ptTopRightSetTopLeftBeyondBottomBorderAngle210, ptBottomRightSetTopLeftBeyondBottomBorderAngle210).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle210 = QLineF(ptBottomRightSetTopLeftBeyondBottomBorderAngle210, ptBottomLeftSetTopLeftBeyondBottomBorderAngle210).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle210   = QLineF(ptBottomLeftSetTopLeftBeyondBottomBorderAngle210, ptTopLeftSetTopLeftBeyondBottomBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
@@ -8967,6 +9158,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle210);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -8984,19 +9176,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomRight)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomRightAngle210 = QPointF(220.0, bYAxisTopDown ? 60.0 : 540.0);
+    QPointF ptSetTopLeftBeyondBottomRightAngle210 = QPointF(220.0, bYAxisTopDown ? 60.0 : fYAxisMaxVal - 60.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetTopLeftBeyondBottomRightAngle210 = 89.3;
-    double fHeightSetTopLeftBeyondBottomRightAngle210 = 117.8;
-    QPointF ptCenterSetTopLeftBeyondBottomRightAngle210(229.2, bYAxisTopDown ? 133.4 : 466.7);
+    double fWidthSetTopLeftBeyondBottomRightAngle210 = 89.282032;
+    double fHeightSetTopLeftBeyondBottomRightAngle210 = 117.846097;
+    QPointF ptCenterSetTopLeftBeyondBottomRightAngle210(229.198730, bYAxisTopDown ? 133.349365 : fYAxisMaxVal - 133.349365);
     QPointF ptTopLeftSetTopLeftBeyondBottomRightAngle210 = ptSetTopLeftBeyondBottomRightAngle210;
-    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle210(297.3, bYAxisTopDown ? 104.6 : 495.4);
+    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle210(297.320508, bYAxisTopDown ? 104.641016 : fYAxisMaxVal - 104.641016);
     QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle210 = ptBottomRightSetAngle210;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle210(161.1, bYAxisTopDown ? 162.1 : 437.9);
-    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle210(258.7, bYAxisTopDown ? 82.3 : 517.7);
-    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle210(267.9, bYAxisTopDown ? 155.7 : 444.3);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle210(199.7, bYAxisTopDown ? 184.4 : 415.6);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle210(190.5, bYAxisTopDown ? 111.0 : 489.0);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle210(161.076952, bYAxisTopDown ? 162.057714 : fYAxisMaxVal - 162.057714);
+    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle210    = QLineF(ptTopLeftSetTopLeftBeyondBottomRightAngle210, ptTopRightSetTopLeftBeyondBottomRightAngle210).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle210  = QLineF(ptTopRightSetTopLeftBeyondBottomRightAngle210, ptBottomRightSetTopLeftBeyondBottomRightAngle210).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle210 = QLineF(ptBottomRightSetTopLeftBeyondBottomRightAngle210, ptBottomLeftSetTopLeftBeyondBottomRightAngle210).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle210   = QLineF(ptBottomLeftSetTopLeftBeyondBottomRightAngle210, ptTopLeftSetTopLeftBeyondBottomRightAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
@@ -9011,6 +9203,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle210);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9028,18 +9221,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeforeBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeforeBottomLeftAngle210 = QPointF(240.0, bYAxisTopDown ? 280.0 : 320.0);
-    double fWidthSetTopRightBeforeBottomLeftAngle210 = 162.0;
-    double fHeightSetTopRightBeforeBottomLeftAngle210 = 62.7;
-    QPointF ptCenterSetTopRightBeforeBottomLeftAngle210(325.8, bYAxisTopDown ? 293.4 : 306.7);
-    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle210(380.3, bYAxisTopDown ? 361.0 : 239.0);
+    QPointF ptSetTopRightBeforeBottomLeftAngle210 = QPointF(240.0, bYAxisTopDown ? 280.0 : fYAxisMaxVal - 280.0);
+    double fWidthSetTopRightBeforeBottomLeftAngle210 = 161.961524;
+    double fHeightSetTopRightBeforeBottomLeftAngle210 = 62.679492;
+    QPointF ptCenterSetTopRightBeforeBottomLeftAngle210(325.801270, bYAxisTopDown ? 293.349365 : fYAxisMaxVal - 293.349365);
+    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle210(380.262794, bYAxisTopDown ? 360.980762 : fYAxisMaxVal - 360.980762);
     QPointF ptTopRightSetTopRightBeforeBottomLeftAngle210 = ptSetTopRightBeforeBottomLeftAngle210;
-    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle210(271.3, bYAxisTopDown ? 225.7 : 374.3);
+    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle210(271.339746, bYAxisTopDown ? 225.717968 : fYAxisMaxVal - 225.717968);
     QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle210(310.1, bYAxisTopDown ? 320.49 : 279.5);
-    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle210(255.7, bYAxisTopDown ? 252.9 : 347.1);
-    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle210(341.49, bYAxisTopDown ? 266.2 : 333.8);
-    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle210(395.9, bYAxisTopDown ? 333.8 : 266.2);
+    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle210    = QLineF(ptTopLeftSetTopRightBeforeBottomLeftAngle210, ptTopRightSetTopRightBeforeBottomLeftAngle210).center();
+    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle210  = QLineF(ptTopRightSetTopRightBeforeBottomLeftAngle210, ptBottomRightSetTopRightBeforeBottomLeftAngle210).center();
+    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle210 = QLineF(ptBottomRightSetTopRightBeforeBottomLeftAngle210, ptBottomLeftSetTopRightBeforeBottomLeftAngle210).center();
+    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle210   = QLineF(ptBottomLeftSetTopRightBeforeBottomLeftAngle210, ptTopLeftSetTopRightBeforeBottomLeftAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
@@ -9054,6 +9247,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle210);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9071,19 +9265,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondLeftBorder)
     ---------------------------------*/
-    QPointF ptSetTopRightBeyondLeftBorderAngle210(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptSetTopRightBeyondLeftBorderAngle210(400.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetTopRightBeyondLeftBorderAngle210 = 86.6;
-    double fHeightSetTopRightBeyondLeftBorderAngle210 = 36.6;
-    QPointF ptCenterSetTopRightBeyondLeftBorderAngle210(405.8, bYAxisTopDown ? 353.4 : 246.7);
-    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle210(443.3, bYAxisTopDown ? 325.0 : 275.0);
+    double fWidthSetTopRightBeyondLeftBorderAngle210 = 86.602540;
+    double fHeightSetTopRightBeyondLeftBorderAngle210 = 36.602540;
+    QPointF ptCenterSetTopRightBeyondLeftBorderAngle210(405.801270, bYAxisTopDown ? 353.349365 : fYAxisMaxVal - 353.349365);
+    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle210(443.301270, bYAxisTopDown ? 325.000000 : fYAxisMaxVal - 325.000000);
     QPointF ptTopRightSetTopRightBeyondLeftBorderAngle210 = ptSetTopRightBeyondLeftBorderAngle210;
-    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle210(368.3, bYAxisTopDown ? 381.7 : 218.3);
+    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle210(368.301270, bYAxisTopDown ? 381.698730 : fYAxisMaxVal - 381.698730);
     QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle210(421.7, bYAxisTopDown ? 362.5 : 237.5);
-    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle210(384.2, bYAxisTopDown ? 390.9 : 209.2);
-    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle210(390.0, bYAxisTopDown ? 344.2 : 255.8);
-    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle210(427.49, bYAxisTopDown ? 315.9 : 284.2);
+    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle210    = QLineF(ptTopLeftSetTopRightBeyondLeftBorderAngle210, ptTopRightSetTopRightBeyondLeftBorderAngle210).center();
+    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle210  = QLineF(ptTopRightSetTopRightBeyondLeftBorderAngle210, ptBottomRightSetTopRightBeyondLeftBorderAngle210).center();
+    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle210 = QLineF(ptBottomRightSetTopRightBeyondLeftBorderAngle210, ptBottomLeftSetTopRightBeyondLeftBorderAngle210).center();
+    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle210   = QLineF(ptBottomLeftSetTopRightBeyondLeftBorderAngle210, ptTopLeftSetTopRightBeyondLeftBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
@@ -9098,6 +9292,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle210);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9115,19 +9310,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomBorder)
     ----------------------------------*/
-    QPointF ptSetTopRightBeyondBottomBorderAngle210(380.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptSetTopRightBeyondBottomBorderAngle210(380.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetTopRightBeyondBottomBorderAngle210 = 76.6;
-    double fHeightSetTopRightBeyondBottomBorderAngle210 = 80.7;
-    QPointF ptCenterSetTopRightBeyondBottomBorderAngle210(395.8, bYAxisTopDown ? 253.4 : 346.7);
-    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle210(341.7, bYAxisTopDown ? 266.3 : 333.7);
+    double fWidthSetTopRightBeyondBottomBorderAngle210 = 76.602540;
+    double fHeightSetTopRightBeyondBottomBorderAngle210 = 80.717968;
+    QPointF ptCenterSetTopRightBeyondBottomBorderAngle210(395.801270, bYAxisTopDown ? 253.349365 : fYAxisMaxVal - 253.349365);
+    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle210(341.698730, bYAxisTopDown ? 266.339746 : fYAxisMaxVal - 266.339746);
     QPointF ptTopRightSetTopRightBeyondBottomBorderAngle210 = ptSetTopRightBeyondBottomBorderAngle210;
-    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle210(449.9, bYAxisTopDown ? 240.4 : 359.6);
+    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle210(449.903811, bYAxisTopDown ? 240.358984 : fYAxisMaxVal - 240.358984);
     QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle210(360.9, bYAxisTopDown ? 233.2 : 366.8);
-    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle210(415.0, bYAxisTopDown ? 220.2 : 379.8);
-    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle210(430.8, bYAxisTopDown ? 273.5 : 326.5);
-    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle210(376.7, bYAxisTopDown ? 286.5 : 313.5);
+    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle210    = QLineF(ptTopLeftSetTopRightBeyondBottomBorderAngle210, ptTopRightSetTopRightBeyondBottomBorderAngle210).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle210  = QLineF(ptTopRightSetTopRightBeyondBottomBorderAngle210, ptBottomRightSetTopRightBeyondBottomBorderAngle210).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle210 = QLineF(ptBottomRightSetTopRightBeyondBottomBorderAngle210, ptBottomLeftSetTopRightBeyondBottomBorderAngle210).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle210   = QLineF(ptBottomLeftSetTopRightBeyondBottomBorderAngle210, ptTopLeftSetTopRightBeyondBottomBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
@@ -9142,6 +9337,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle210);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9159,19 +9355,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeyondBottomLeftAngle210 = QPointF(540.0, bYAxisTopDown ? 280.0 : 320.0);
+    QPointF ptSetTopRightBeyondBottomLeftAngle210 = QPointF(540.0, bYAxisTopDown ? 280.0 : fYAxisMaxVal - 280.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetTopRightBeyondBottomLeftAngle210 = 97.8;
-    double fHeightSetTopRightBeyondBottomLeftAngle210 = 87.3;
-    QPointF ptCenterSetTopRightBeyondBottomLeftAngle210(475.8, bYAxisTopDown ? 293.4 : 306.7);
-    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle210(455.3, bYAxisTopDown ? 231.1 : 368.9);
+    double fWidthSetTopRightBeyondBottomLeftAngle210 = 97.846097;
+    double fHeightSetTopRightBeyondBottomLeftAngle210 = 87.320508;
+    QPointF ptCenterSetTopRightBeyondBottomLeftAngle210(475.801270, bYAxisTopDown ? 293.349365 : fYAxisMaxVal - 293.349365);
+    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle210(455.262794, bYAxisTopDown ? 231.076952 : fYAxisMaxVal - 231.076952);
     QPointF ptTopRightSetTopRightBeyondBottomLeftAngle210 = ptSetTopRightBeyondBottomLeftAngle210;
-    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle210(496.3, bYAxisTopDown ? 355.6 : 244.4);
+    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle210(496.339746, bYAxisTopDown ? 355.621778 : fYAxisMaxVal - 355.621778);
     QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle210 = ptBottomLeftSetAngle210;
-    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle210(497.6, bYAxisTopDown ? 255.5 : 344.5);
-    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle210(518.2, bYAxisTopDown ? 317.8 : 282.2);
-    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle210(454.0, bYAxisTopDown ? 331.2 : 268.8);
-    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle210(433.4, bYAxisTopDown ? 268.9 : 331.1);
+    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle210    = QLineF(ptTopLeftSetTopRightBeyondBottomLeftAngle210, ptTopRightSetTopRightBeyondBottomLeftAngle210).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle210  = QLineF(ptTopRightSetTopRightBeyondBottomLeftAngle210, ptBottomRightSetTopRightBeyondBottomLeftAngle210).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle210 = QLineF(ptBottomRightSetTopRightBeyondBottomLeftAngle210, ptBottomLeftSetTopRightBeyondBottomLeftAngle210).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle210   = QLineF(ptBottomLeftSetTopRightBeyondBottomLeftAngle210, ptTopLeftSetTopRightBeyondBottomLeftAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
@@ -9186,6 +9382,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle210);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9203,18 +9400,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeforeTopLeft)
     --------------------------------*/
-    QPointF ptSetSetBottomRightBeforeTopLeftAngle210 = QPointF(340.0, bYAxisTopDown ? 280.0 : 320.0);
-    double fWidthSetBottomRightBeforeTopLeftAngle210 = 75.4;
-    double fHeightSetBottomRightBeforeTopLeftAngle210 = 87.3;
-    QPointF ptCenterSetBottomRightBeforeTopLeftAngle210(350.8, bYAxisTopDown ? 336.7 : 263.4);
+    QPointF ptSetSetBottomRightBeforeTopLeftAngle210 = QPointF(340.0, bYAxisTopDown ? 280.0 : fYAxisMaxVal - 280.0);
+    double fWidthSetBottomRightBeforeTopLeftAngle210 = 75.358984;
+    double fHeightSetBottomRightBeforeTopLeftAngle210 = 87.320508;
+    QPointF ptCenterSetBottomRightBeforeTopLeftAngle210(350.801270, bYAxisTopDown ? 336.650635 : fYAxisMaxVal - 336.650635);
     QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle210(296.3, bYAxisTopDown ? 355.6 : 244.4);
+    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle210(296.339746, bYAxisTopDown ? 355.621778 : fYAxisMaxVal - 355.621778);
     QPointF ptBottomRightSetBottomRightBeforeTopLeftAngle210 = ptSetSetBottomRightBeforeTopLeftAngle210;
-    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle210(405.3, bYAxisTopDown ? 317.7 : 282.3);
-    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle210(329.0, bYAxisTopDown ? 374.49 : 225.5);
-    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle210(318.2, bYAxisTopDown ? 317.8 : 282.2);
-    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle210(372.6, bYAxisTopDown ? 298.8 : 301.2);
-    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle210(383.4, bYAxisTopDown ? 355.49 : 244.5);
+    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle210(405.262794, bYAxisTopDown ? 317.679492 : fYAxisMaxVal - 317.679492);
+    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle210    = QLineF(ptTopLeftSetBottomRightBeforeTopLeftAngle210, ptTopRightSetBottomRightBeforeTopLeftAngle210).center();
+    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle210  = QLineF(ptTopRightSetBottomRightBeforeTopLeftAngle210, ptBottomRightSetBottomRightBeforeTopLeftAngle210).center();
+    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle210 = QLineF(ptBottomRightSetBottomRightBeforeTopLeftAngle210, ptBottomLeftSetBottomRightBeforeTopLeftAngle210).center();
+    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle210   = QLineF(ptBottomLeftSetBottomRightBeforeTopLeftAngle210, ptTopLeftSetBottomRightBeforeTopLeftAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
@@ -9229,6 +9426,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle210);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9246,19 +9444,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopBorder)
     ----------------------------------*/
-    QPointF ptSetBottomRightBeyondTopBorderAngle210(240.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptSetBottomRightBeyondTopBorderAngle210(240.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetBottomRightBeyondTopBorderAngle210 = 66.6;
-    double fHeightSetBottomRightBeyondTopBorderAngle210 = 102.0;
-    QPointF ptCenterSetBottomRightBeyondTopBorderAngle210(300.8, bYAxisTopDown ? 396.7 : 203.4);
+    double fWidthSetBottomRightBeyondTopBorderAngle210 = 66.602540;
+    double fHeightSetBottomRightBeyondTopBorderAngle210 = 101.961524;
+    QPointF ptCenterSetBottomRightBeyondTopBorderAngle210(300.801270, bYAxisTopDown ? 396.650635 : fYAxisMaxVal - 396.650635);
     QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle210(328.3, bYAxisTopDown ? 451.0 : 149.0);
+    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle210(328.301270, bYAxisTopDown ? 450.980762 : fYAxisMaxVal - 450.980762);
     QPointF ptBottomRightSetBottomRightBeyondTopBorderAngle210 = ptSetBottomRightBeyondTopBorderAngle210;
-    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle210(273.3, bYAxisTopDown ? 342.3 : 257.7);
-    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle210(345.0, bYAxisTopDown ? 422.1 : 177.9);
-    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle210(284.2, bYAxisTopDown ? 425.49 : 174.5);
-    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle210(256.7, bYAxisTopDown ? 371.2 : 228.8);
-    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle210(317.49, bYAxisTopDown ? 367.8 : 232.2);
+    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle210(273.301270, bYAxisTopDown ? 342.320508 : fYAxisMaxVal - 342.320508);
+    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle210    = QLineF(ptTopLeftSetBottomRightBeyondTopBorderAngle210, ptTopRightSetBottomRightBeyondTopBorderAngle210).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle210  = QLineF(ptTopRightSetBottomRightBeyondTopBorderAngle210, ptBottomRightSetBottomRightBeyondTopBorderAngle210).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle210 = QLineF(ptBottomRightSetBottomRightBeyondTopBorderAngle210, ptBottomLeftSetBottomRightBeyondTopBorderAngle210).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle210   = QLineF(ptBottomLeftSetBottomRightBeyondTopBorderAngle210, ptTopLeftSetBottomRightBeyondTopBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
@@ -9273,6 +9471,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle210);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9290,19 +9489,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondLeftBorder)
     -----------------------------------*/
-    QPointF ptSetBottomRightBeyondLeftBorderAngle210(500.0, bYAxisTopDown ? 360.0 : 240.0);
+    QPointF ptSetBottomRightBeyondLeftBorderAngle210(500.0, bYAxisTopDown ? 360.0 : fYAxisMaxVal - 360.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetBottomRightBeyondLeftBorderAngle210 = 98.0;
-    double fHeightSetBottomRightBeyondLeftBorderAngle210 = 103.2;
-    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle210(430.8, bYAxisTopDown ? 376.7 : 223.4);
+    double fWidthSetBottomRightBeyondLeftBorderAngle210 = 98.038476;
+    double fHeightSetBottomRightBeyondLeftBorderAngle210 = 103.205081;
+    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle210(430.801270, bYAxisTopDown ? 376.650635 : fYAxisMaxVal - 376.650635);
     QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle210(410.6, bYAxisTopDown ? 308.4 : 291.6);
+    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle210(410.621778, bYAxisTopDown ? 308.397460 : fYAxisMaxVal - 308.397460);
     QPointF ptBottomRightSetBottomRightBeyondLeftBorderAngle210 = ptSetBottomRightBeyondLeftBorderAngle210;
-    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle210(451.0, bYAxisTopDown ? 444.9 : 155.1);
-    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle210(386.1, bYAxisTopDown ? 350.9 : 249.2);
-    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle210(455.3, bYAxisTopDown ? 334.2 : 265.8);
-    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle210(475.49, bYAxisTopDown ? 402.49 : 197.5);
-    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle210(406.3, bYAxisTopDown ? 419.1 : 180.9);
+    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle210(450.980762, bYAxisTopDown ? 444.903811 : fYAxisMaxVal - 444.903811);
+    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle210    = QLineF(ptTopLeftSetBottomRightBeyondLeftBorderAngle210, ptTopRightSetBottomRightBeyondLeftBorderAngle210).center();
+    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle210  = QLineF(ptTopRightSetBottomRightBeyondLeftBorderAngle210, ptBottomRightSetBottomRightBeyondLeftBorderAngle210).center();
+    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle210 = QLineF(ptBottomRightSetBottomRightBeyondLeftBorderAngle210, ptBottomLeftSetBottomRightBeyondLeftBorderAngle210).center();
+    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle210   = QLineF(ptBottomLeftSetBottomRightBeyondLeftBorderAngle210, ptTopLeftSetBottomRightBeyondLeftBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
@@ -9317,6 +9516,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle210);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9334,19 +9534,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopLeft)
     ---------------------------------*/
-    QPointF ptSetBottomRightBeyondTopLeftAngle210 = QPointF(400.0, bYAxisTopDown ? 520.0 : 80.0);
+    QPointF ptSetBottomRightBeyondTopLeftAngle210 = QPointF(400.0, bYAxisTopDown ? 520.0 : fYAxisMaxVal - 520.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetBottomRightBeyondTopLeftAngle210 = 96.6;
-    double fHeightSetBottomRightBeyondTopLeftAngle210 = 90.5;
-    QPointF ptCenterSetBottomRightBeyondTopLeftAngle210(380.8, bYAxisTopDown ? 456.7 : 143.4);
+    double fWidthSetBottomRightBeyondTopLeftAngle210 = 96.602540;
+    double fHeightSetBottomRightBeyondTopLeftAngle210 = 90.525589;
+    QPointF ptCenterSetBottomRightBeyondTopLeftAngle210(380.801270, bYAxisTopDown ? 456.650635 : fYAxisMaxVal - 456.650635);
     QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle210 = ptTopLeftSetAngle210;
-    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle210(445.3, bYAxisTopDown ? 441.6 : 158.4);
+    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle210(445.262794, bYAxisTopDown ? 441.602540 : fYAxisMaxVal - 441.602540);
     QPointF ptBottomRightSetBottomRightBeyondTopLeftAngle210 = ptSetBottomRightBeyondTopLeftAngle210;
-    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle210(316.3, bYAxisTopDown ? 471.7 : 128.3);
-    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle210(403.4, bYAxisTopDown ? 417.49 : 182.5);
-    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle210(422.6, bYAxisTopDown ? 480.8 : 119.2);
-    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle210(358.2, bYAxisTopDown ? 495.9 : 104.2);
-    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle210(339.0, bYAxisTopDown ? 432.5 : 167.5);
+    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle210(316.339746, bYAxisTopDown ? 471.698730 : fYAxisMaxVal - 471.698730);
+    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle210    = QLineF(ptTopLeftSetBottomRightBeyondTopLeftAngle210, ptTopRightSetBottomRightBeyondTopLeftAngle210).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle210  = QLineF(ptTopRightSetBottomRightBeyondTopLeftAngle210, ptBottomRightSetBottomRightBeyondTopLeftAngle210).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle210 = QLineF(ptBottomRightSetBottomRightBeyondTopLeftAngle210, ptBottomLeftSetBottomRightBeyondTopLeftAngle210).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle210   = QLineF(ptBottomLeftSetBottomRightBeyondTopLeftAngle210, ptTopLeftSetBottomRightBeyondTopLeftAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
@@ -9361,6 +9561,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle210);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9378,18 +9579,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeforeTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeforeTopRightAngle210 = QPointF(320.0, bYAxisTopDown ? 320.0 : 280.0);
-    double fWidthSetBottomLeftBeforeTopRightAngle210 = 127.3;
-    double fHeightSetBottomLeftBeforeTopRightAngle210 = 42.7;
-    QPointF ptCenterSetBottomLeftBeforeTopRightAngle210(254.2, bYAxisTopDown ? 306.7 : 293.4);
-    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle210(298.7, bYAxisTopDown ? 357.0 : 243.0);
+    QPointF ptSetBottomLeftBeforeTopRightAngle210 = QPointF(320.0, bYAxisTopDown ? 320.0 : fYAxisMaxVal - 320.0);
+    double fWidthSetBottomLeftBeforeTopRightAngle210 = 127.320508;
+    double fHeightSetBottomLeftBeforeTopRightAngle210 = 42.679492;
+    QPointF ptCenterSetBottomLeftBeforeTopRightAngle210(254.198730, bYAxisTopDown ? 306.650635 : fYAxisMaxVal - 306.650635);
+    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle210(298.660254, bYAxisTopDown ? 356.961524 : fYAxisMaxVal - 356.961524);
     QPointF ptTopRightSetBottomLeftBeforeTopRightAngle210 = ptTopRightSetAngle210;
-    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle210(209.7, bYAxisTopDown ? 256.3 : 343.7);
+    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle210(209.737206, bYAxisTopDown ? 256.339746 : fYAxisMaxVal - 256.339746);
     QPointF ptBottomLeftSetBottomLeftBeforeTopRightAngle210 = ptSetBottomLeftBeforeTopRightAngle210;
-    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle210(243.5, bYAxisTopDown ? 325.1 : 274.9);
-    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle210(199.1, bYAxisTopDown ? 274.8 : 325.2);
-    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle210(264.9, bYAxisTopDown ? 288.2 : 311.8);
-    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle210(309.3, bYAxisTopDown ? 338.49 : 261.5);
+    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle210    = QLineF(ptTopLeftSetBottomLeftBeforeTopRightAngle210, ptTopRightSetBottomLeftBeforeTopRightAngle210).center();
+    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle210  = QLineF(ptTopRightSetBottomLeftBeforeTopRightAngle210, ptBottomRightSetBottomLeftBeforeTopRightAngle210).center();
+    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle210 = QLineF(ptBottomRightSetBottomLeftBeforeTopRightAngle210, ptBottomLeftSetBottomLeftBeforeTopRightAngle210).center();
+    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle210   = QLineF(ptBottomLeftSetBottomLeftBeforeTopRightAngle210, ptTopLeftSetBottomLeftBeforeTopRightAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
@@ -9404,6 +9605,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle210);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9421,19 +9623,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopBorder)
     ---------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopBorderAngle210(260.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptSetBottomLeftBeyondTopBorderAngle210(260.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     physValAngleCorrected.setVal(300.0);
-    double fWidthSetBottomLeftBeyondTopBorderAngle210 = 56.6;
-    double fHeightSetBottomLeftBeyondTopBorderAngle210 = 115.4;
-    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle210(224.2, bYAxisTopDown ? 346.7 : 253.4);
-    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle210(160.1, bYAxisTopDown ? 342.3 : 257.7);
+    double fWidthSetBottomLeftBeyondTopBorderAngle210 = 56.602540;
+    double fHeightSetBottomLeftBeyondTopBorderAngle210 = 115.358984;
+    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle210(224.198730, bYAxisTopDown ? 346.650635 : fYAxisMaxVal - 346.650635);
+    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle210(160.096189, bYAxisTopDown ? 342.320508 : fYAxisMaxVal - 342.320508);
     QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle210 = ptTopRightSetAngle210;
-    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle210(288.3, bYAxisTopDown ? 351.0 : 249.0);
+    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle210(288.301270, bYAxisTopDown ? 350.980762 : fYAxisMaxVal - 350.980762);
     QPointF ptBottomLeftSetBottomLeftBeyondTopBorderAngle210 = ptSetBottomLeftBeyondTopBorderAngle210;
-    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle210(174.2, bYAxisTopDown ? 317.8 : 282.2);
-    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle210(238.4, bYAxisTopDown ? 322.1 : 277.9);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle210(274.2, bYAxisTopDown ? 375.49 : 224.5);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle210(210.0, bYAxisTopDown ? 371.2 : 228.8);
+    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle210    = QLineF(ptTopLeftSetBottomLeftBeyondTopBorderAngle210, ptTopRightSetBottomLeftBeyondTopBorderAngle210).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle210  = QLineF(ptTopRightSetBottomLeftBeyondTopBorderAngle210, ptBottomRightSetBottomLeftBeyondTopBorderAngle210).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle210 = QLineF(ptBottomRightSetBottomLeftBeyondTopBorderAngle210, ptBottomLeftSetBottomLeftBeyondTopBorderAngle210).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle210   = QLineF(ptBottomLeftSetBottomLeftBeyondTopBorderAngle210, ptTopLeftSetBottomLeftBeyondTopBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
@@ -9448,6 +9650,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle210);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9465,19 +9668,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondRightBorder)
     -----------------------------------*/
-    QPointF ptSetBottomLeftBeyondRightBorderAngle210(160.0, bYAxisTopDown ? 180.0 : 420.0);
+    QPointF ptSetBottomLeftBeyondRightBorderAngle210(160.0, bYAxisTopDown ? 180.0 : fYAxisMaxVal - 180.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetBottomLeftBeyondRightBorderAngle210 = 83.9;
-    double fHeightSetBottomLeftBeyondRightBorderAngle210 = 81.2;
-    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle210(174.2, bYAxisTopDown ? 236.7 : 363.4);
-    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle210(230.4, bYAxisTopDown ? 220.6 : 379.4);
+    double fWidthSetBottomLeftBeyondRightBorderAngle210 = 83.923048;
+    double fHeightSetBottomLeftBeyondRightBorderAngle210 = 81.243557;
+    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle210(174.198730, bYAxisTopDown ? 236.650635 : fYAxisMaxVal - 236.650635);
+    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle210(230.358984, bYAxisTopDown ? 220.621778 : fYAxisMaxVal - 220.621778);
     QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle210 = ptTopRightSetAngle210;
-    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle210(118.0, bYAxisTopDown ? 252.7 : 347.3);
+    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle210(118.038476, bYAxisTopDown ? 252.679492 : fYAxisMaxVal - 252.679492);
     QPointF ptBottomLeftSetBottomLeftBeyondRightBorderAngle210 = ptSetBottomLeftBeyondRightBorderAngle210;
-    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle210(209.4, bYAxisTopDown ? 257.0 : 343.0);
-    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle210(153.2, bYAxisTopDown ? 273.0 : 327.0);
-    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle210(139.0, bYAxisTopDown ? 216.3 : 383.7);
-    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle210(195.2, bYAxisTopDown ? 200.3 : 399.7);
+    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle210    = QLineF(ptTopLeftSetBottomLeftBeyondRightBorderAngle210, ptTopRightSetBottomLeftBeyondRightBorderAngle210).center();
+    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle210  = QLineF(ptTopRightSetBottomLeftBeyondRightBorderAngle210, ptBottomRightSetBottomLeftBeyondRightBorderAngle210).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle210 = QLineF(ptBottomRightSetBottomLeftBeyondRightBorderAngle210, ptBottomLeftSetBottomLeftBeyondRightBorderAngle210).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle210   = QLineF(ptBottomLeftSetBottomLeftBeyondRightBorderAngle210, ptTopLeftSetBottomLeftBeyondRightBorderAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
@@ -9492,6 +9695,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle210);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9509,19 +9713,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopRightAngle210 = QPointF(60.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptSetBottomLeftBeyondTopRightAngle210 = QPointF(60.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetBottomLeftBeyondTopRightAngle210 = 107.8;
-    double fHeightSetBottomLeftBeyondTopRightAngle210 = 70.0;
-    QPointF ptCenterSetBottomLeftBeyondTopRightAngle210(124.2, bYAxisTopDown ? 296.7 : 303.4);
-    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle210(95.0, bYAxisTopDown ? 239.4 : 360.6);
+    double fWidthSetBottomLeftBeyondTopRightAngle210 = 107.846097;
+    double fHeightSetBottomLeftBeyondTopRightAngle210 = 70.000000;
+    QPointF ptCenterSetBottomLeftBeyondTopRightAngle210(124.198730, bYAxisTopDown ? 296.650635 : fYAxisMaxVal - 296.650635);
+    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle210(95.000000, bYAxisTopDown ? 239.378222 : fYAxisMaxVal - 239.378222);
     QPointF ptTopRightSetBottomLeftBeyondTopRightAngle210 = ptTopRightSetAngle210;
-    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle210(153.4, bYAxisTopDown ? 353.9 : 246.1);
+    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle210(153.397460, bYAxisTopDown ? 353.923048 : fYAxisMaxVal - 353.923048);
     QPointF ptBottomLeftSetBottomLeftBeyondTopRightAngle210 = ptSetBottomLeftBeyondTopRightAngle210;
-    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle210(141.7, bYAxisTopDown ? 266.3 : 333.7);
-    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle210(170.9, bYAxisTopDown ? 323.6 : 276.4);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle210(106.7, bYAxisTopDown ? 327.0 : 273.0);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle210(77.5, bYAxisTopDown ? 269.7 : 330.3);
+    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle210    = QLineF(ptTopLeftSetBottomLeftBeyondTopRightAngle210, ptTopRightSetBottomLeftBeyondTopRightAngle210).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle210  = QLineF(ptTopRightSetBottomLeftBeyondTopRightAngle210, ptBottomRightSetBottomLeftBeyondTopRightAngle210).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle210 = QLineF(ptBottomRightSetBottomLeftBeyondTopRightAngle210, ptBottomLeftSetBottomLeftBeyondTopRightAngle210).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle210   = QLineF(ptBottomLeftSetBottomLeftBeyondTopRightAngle210, ptTopLeftSetBottomLeftBeyondTopRightAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
@@ -9536,6 +9740,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle210);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle210, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle210, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9589,17 +9794,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     double fWidthSetAngle300 = fWidthSetAngle0;
     double fHeightSetAngle300 = fHeightSetAngle0;
     QPointF ptCenterSetAngle300 = ptCenterSetAngle0;
-    QPointF ptTopLeftSetAngle300(206.7, bYAxisTopDown ? 361.6 : 238.4);
-    QPointF ptTopRightSetAngle300(306.7, bYAxisTopDown ? 188.4 : 411.6);
-    QPointF ptBottomRightSetAngle300(393.3, bYAxisTopDown ? 238.4 : 361.6);
-    QPointF ptBottomLeftSetAngle300(293.3, bYAxisTopDown ? 411.6 : 188.4);
-    QPointF ptTopCenterSetAngle300 = QLineF(ptTopRightSetAngle300, ptTopLeftSetAngle300).center();
-    QPointF ptRightCenterSetAngle300 = QLineF(ptTopRightSetAngle300, ptBottomRightSetAngle300).center();
+    QPointF ptTopLeftSetAngle300(206.698730, bYAxisTopDown ? 361.602540 : fYAxisMaxVal - 361.602540);
+    QPointF ptTopRightSetAngle300(306.698730, bYAxisTopDown ? 188.397460 : fYAxisMaxVal - 188.397460);
+    QPointF ptBottomRightSetAngle300(393.301270, bYAxisTopDown ? 238.397460 : fYAxisMaxVal - 238.397460);
+    QPointF ptBottomLeftSetAngle300(293.301270, bYAxisTopDown ? 411.602540 : fYAxisMaxVal - 411.602540);
+    QPointF ptTopCenterSetAngle300    = QLineF(ptTopRightSetAngle300, ptTopLeftSetAngle300).center();
+    QPointF ptRightCenterSetAngle300  = QLineF(ptTopRightSetAngle300, ptBottomRightSetAngle300).center();
     QPointF ptBottomCenterSetAngle300 = QLineF(ptBottomRightSetAngle300, ptBottomLeftSetAngle300).center();
-    QPointF ptLeftCenterSetAngle300 = QLineF(ptTopLeftSetAngle300, ptBottomLeftSetAngle300).center();
+    QPointF ptLeftCenterSetAngle300   = QLineF(ptTopLeftSetAngle300, ptBottomLeftSetAngle300).center();
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9618,7 +9824,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setCenter(400, 400)
     ----------------------
     */
-    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    ptCenter = QPointF(400.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     fdx = ptCenter.x() - ptCenterSetAngle300.x();
     fdy = ptCenter.y() - ptCenterSetAngle300.y();
     double fWidthSetCenterAngle300 = fWidthSetAngle300;
@@ -9628,10 +9834,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetCenterAngle300(ptTopRightSetAngle300.x() + fdx, ptTopRightSetAngle300.y() + fdy);
     QPointF ptBottomRightSetCenterAngle300(ptBottomRightSetAngle300.x() + fdx, ptBottomRightSetAngle300.y() + fdy);
     QPointF ptBottomLeftSetCenterAngle300(ptBottomLeftSetAngle300.x() + fdx, ptBottomLeftSetAngle300.y() + fdy);
-    QPointF ptTopCenterSetCenterAngle300 = QLineF(ptTopRightSetCenterAngle300, ptTopLeftSetCenterAngle300).center();
-    QPointF ptRightCenterSetCenterAngle300 = QLineF(ptTopRightSetCenterAngle300, ptBottomRightSetCenterAngle300).center();
+    QPointF ptTopCenterSetCenterAngle300    = QLineF(ptTopRightSetCenterAngle300, ptTopLeftSetCenterAngle300).center();
+    QPointF ptRightCenterSetCenterAngle300  = QLineF(ptTopRightSetCenterAngle300, ptBottomRightSetCenterAngle300).center();
     QPointF ptBottomCenterSetCenterAngle300 = QLineF(ptBottomRightSetCenterAngle300, ptBottomLeftSetCenterAngle300).center();
-    QPointF ptLeftCenterSetCenterAngle300 = QLineF(ptTopLeftSetCenterAngle300, ptBottomLeftSetCenterAngle300).center();
+    QPointF ptLeftCenterSetCenterAngle300   = QLineF(ptTopLeftSetCenterAngle300, ptBottomLeftSetCenterAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
@@ -9646,6 +9852,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setCenter", ptCenter);
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9666,15 +9873,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetSizeAngle300 = size300x200.width();
     double fHeightSetSizeAngle300 = size300x200.height();
-    QPointF ptCenterSetSizeAngle300 = bYAxisTopDown ? QPointF(368.3, 281.7) : QPointF(281.7, 368.3);
+    QPointF ptCenterSetSizeAngle300 = bYAxisTopDown ? QPointF(368.301270, 281.698730) : QPointF(281.698730, 368.301270);
     QPointF ptTopLeftSetSizeAngle300 = bYAxisTopDown ? ptTopLeftSetAngle300 : QPointF(120.1, 288.4);
-    QPointF ptTopRightSetSizeAngle300 = bYAxisTopDown ? QPointF(356.7, 101.8) : QPointF(270.1, 548.2);
-    QPointF ptBottomRightSetSizeAngle300 = bYAxisTopDown ? QPointF(529.9, 201.8) : QPointF(443.3, 448.2);
-    QPointF ptBottomLeftSetSizeAngle300 = bYAxisTopDown ? QPointF(379.9, 461.6) : ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetSizeAngle300 = QLineF(ptTopRightSetSizeAngle300, ptTopLeftSetSizeAngle300).center();
-    QPointF ptRightCenterSetSizeAngle300 = QLineF(ptTopRightSetSizeAngle300, ptBottomRightSetSizeAngle300).center();
+    QPointF ptTopRightSetSizeAngle300 = bYAxisTopDown ? QPointF(356.698730, 101.794919) : QPointF(270.1, 548.2);
+    QPointF ptBottomRightSetSizeAngle300 = bYAxisTopDown ? QPointF(529.903811, 201.794919) : QPointF(443.3, 448.2);
+    QPointF ptBottomLeftSetSizeAngle300 = bYAxisTopDown ? QPointF(379.903811, 461.602540) : ptBottomLeftSetAngle300;
+    QPointF ptTopCenterSetSizeAngle300    = QLineF(ptTopRightSetSizeAngle300, ptTopLeftSetSizeAngle300).center();
+    QPointF ptRightCenterSetSizeAngle300  = QLineF(ptTopRightSetSizeAngle300, ptBottomRightSetSizeAngle300).center();
     QPointF ptBottomCenterSetSizeAngle300 = QLineF(ptBottomRightSetSizeAngle300, ptBottomLeftSetSizeAngle300).center();
-    QPointF ptLeftCenterSetSizeAngle300 = QLineF(ptTopLeftSetSizeAngle300, ptBottomLeftSetSizeAngle300).center();
+    QPointF ptLeftCenterSetSizeAngle300   = QLineF(ptTopLeftSetSizeAngle300, ptBottomLeftSetSizeAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
@@ -9689,6 +9896,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setSize", size300x200);
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9709,15 +9917,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     */
     double fWidthSetWidthAngle300 = physValWidth300.getVal();
     double fHeightSetWidthAngle300 = fHeightSetAngle300;
-    QPointF ptCenterSetWidthAngle300(325.0, bYAxisTopDown ? 256.7 : 343.3);
+    QPointF ptCenterSetWidthAngle300(325.000000, bYAxisTopDown ? 256.698730 : fYAxisMaxVal - 256.698730);
     QPointF ptTopLeftSetWidthAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetWidthAngle300(356.7, bYAxisTopDown ? 101.8 : 498.2);
-    QPointF ptBottomRightSetWidthAngle300(443.3, bYAxisTopDown ? 151.8 : 448.2);
+    QPointF ptTopRightSetWidthAngle300(356.698730, bYAxisTopDown ? 101.794919 : fYAxisMaxVal - 101.794919);
+    QPointF ptBottomRightSetWidthAngle300(443.301270, bYAxisTopDown ? 151.794919 : fYAxisMaxVal - 151.794919);
     QPointF ptBottomLeftSetWidthAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetWidthAngle300 = QLineF(ptTopRightSetWidthAngle300, ptTopLeftSetWidthAngle300).center();
-    QPointF ptRightCenterSetWidthAngle300 = QLineF(ptTopRightSetWidthAngle300, ptBottomRightSetWidthAngle300).center();
+    QPointF ptTopCenterSetWidthAngle300    = QLineF(ptTopRightSetWidthAngle300, ptTopLeftSetWidthAngle300).center();
+    QPointF ptRightCenterSetWidthAngle300  = QLineF(ptTopRightSetWidthAngle300, ptBottomRightSetWidthAngle300).center();
     QPointF ptBottomCenterSetWidthAngle300 = QLineF(ptBottomRightSetWidthAngle300, ptBottomLeftSetWidthAngle300).center();
-    QPointF ptLeftCenterSetWidthAngle300 = ptLeftCenterSetAngle300;
+    QPointF ptLeftCenterSetWidthAngle300   = ptLeftCenterSetAngle300;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
@@ -9732,6 +9940,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9761,10 +9970,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle300 = ptTopRightSetAngle300;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle300 = ptBottomRightSetAngle300;
     QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle300 = ptBottomCenterSetAngle300;
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300(281.7, bYAxisTopDown ? 231.7 : 368.3);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300 = ptRightCenterSetAngle300;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300(368.3, bYAxisTopDown ? 281.7 : 318.3);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle300, ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle300).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300  = QLineF(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle300, ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle300).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle300, ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle300).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle300, ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
@@ -9779,6 +9988,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9800,19 +10010,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
     // The resulting center point, when resizing the rectangle by moving the left edge to a new width of 100.0, is the
     // same as setting the width to 300.0 by moving the right edge of the rectangle. But only in this special case.
-    ptMoved = QPointF(440.0, bYAxisTopDown ? 140.0 : 460.0);
+    ptMoved = QPointF(440.0, bYAxisTopDown ? 140.0 : fYAxisMaxVal - 140.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle300 = 108.6;
+    double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle300 = 108.564065;
     double fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle300 = fHeightSetAngle300;
-    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300(377.1, bYAxisTopDown ? 166.4 : 433.6);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300(447.6, bYAxisTopDown ? 144.4 : 455.6);
+    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300(377.141016, bYAxisTopDown ? 166.387841 : fYAxisMaxVal - 166.387841);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300(447.583302, bYAxisTopDown ? 144.378222 : fYAxisMaxVal - 144.378222);
     QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle300 = ptBottomRightSetAngle300;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle300 = ptTopRightSetAngle300;
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300(361.0, bYAxisTopDown ? 94.4 : 505.6);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300(420.4, bYAxisTopDown ? 191.4 : 408.6);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300 = ptRightCenterSetAngle300;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300(333.8, bYAxisTopDown ? 141.4 : 458.6);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300(404.3, bYAxisTopDown ? 119.4 : 480.6);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300(360.980762, bYAxisTopDown ? 94.378222 : fYAxisMaxVal - 94.378222);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300    = QLineF(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300, ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle300).center();
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300  = QLineF(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle300, ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle300).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300 = QLineF(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle300, ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300).center();
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300   = QLineF(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300, ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
@@ -9827,6 +10037,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9849,15 +10060,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptTopCenterSetAngle300;
     double fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle300 = fWidthSetAngle300 / 2.0;
     double fHeightSetWidthMoveRightCenterBeforeLeftBorderAngle300 = fHeightSetAngle300;
-    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300(275.0, bYAxisTopDown ? 343.3 : 256.7);
+    QPointF ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300(275.000159, bYAxisTopDown ? 343.300995 : fYAxisMaxVal - 343.300995);
     QPointF ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle300 = ptTopLeftSetAngle300;
     QPointF ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle300 = ptTopCenterSetAngle300;
     QPointF ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle300 = ptBottomCenterSetAngle300;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300(231.7, bYAxisTopDown ? 318.3 : 281.7);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300(318.3, bYAxisTopDown ? 368.3 : 231.7);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300 = ptLeftCenterSetAngle300;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300    = QLineF(ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle300, ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle300).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300  = QLineF(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle300, ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle300).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300 = QLineF(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle300, ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle300).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle300, ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
@@ -9872,6 +10083,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9890,19 +10102,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setWidthByMovingRightCenter(BeyondLeftBorder)
     ------------------------------------------------
     */
-    ptMoved = QPointF(240.0, bYAxisTopDown ? 480.0 : 120.0);
+    ptMoved = QPointF(240.0, bYAxisTopDown ? 480.0 : fYAxisMaxVal - 480.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle300 = 85.9;
+    double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle300 = 85.884573;
     double fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle300 = fHeightSetAngle300;
-    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300(228.5, bYAxisTopDown ? 423.8 : 176.2);
+    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300(228.528857, bYAxisTopDown ? 423.791651 : fYAxisMaxVal - 423.791651);
     QPointF ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle300(250.4, bYAxisTopDown ? 486.0 : 114.0);
-    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle300(163.8, bYAxisTopDown ? 436.0 : 164.0);
+    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle300(250.358984, bYAxisTopDown ? 485.980762 : fYAxisMaxVal - 485.980762);
+    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle300(163.756443, bYAxisTopDown ? 435.980762 : fYAxisMaxVal - 435.980762);
     QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300(271.8, bYAxisTopDown ? 448.8 : 151.2);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300(207.1, bYAxisTopDown ? 461.0 : 139.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300(185.2, bYAxisTopDown ? 398.8 : 201.2);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300 = ptLeftCenterSetAngle300;
+    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300    = QLineF(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle300, ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle300).center();
+    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300  = QLineF(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle300, ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle300).center();
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300 = QLineF(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle300, ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle300).center();
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300   = QLineF(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle300, ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
@@ -9917,6 +10129,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9940,12 +10153,12 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     QPointF ptCenterSetHeightAngle300 = bYAxisTopDown ? ptBottomCenterSetAngle300 : ptTopCenterSetAngle300;
     QPointF ptTopLeftSetHeightAngle300 = bYAxisTopDown ? ptTopLeftSetAngle300 : QPointF(120.1, 288.4);
     QPointF ptTopRightSetHeightAngle300 = bYAxisTopDown ? ptTopRightSetAngle300 : QPointF(220.1, 461.6);
-    QPointF ptBottomRightSetHeightAngle300 = bYAxisTopDown ? QPointF(479.9, 288.4) : ptBottomRightSetAngle300;
-    QPointF ptBottomLeftSetHeightAngle300 = bYAxisTopDown ? QPointF(379.9, 461.6) : ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetHeightAngle300 = QLineF(ptTopLeftSetHeightAngle300, ptTopRightSetHeightAngle300).center();
-    QPointF ptRightCenterSetHeightAngle300 = QLineF(ptTopRightSetHeightAngle300, ptBottomRightSetHeightAngle300).center();
+    QPointF ptBottomRightSetHeightAngle300 = bYAxisTopDown ? QPointF(479.903811, 288.397460) : ptBottomRightSetAngle300;
+    QPointF ptBottomLeftSetHeightAngle300 = bYAxisTopDown ? QPointF(379.903811, 461.602540) : ptBottomLeftSetAngle300;
+    QPointF ptTopCenterSetHeightAngle300    = QLineF(ptTopLeftSetHeightAngle300, ptTopRightSetHeightAngle300).center();
+    QPointF ptRightCenterSetHeightAngle300  = QLineF(ptTopRightSetHeightAngle300, ptBottomRightSetHeightAngle300).center();
     QPointF ptBottomCenterSetHeightAngle300 = QLineF(ptBottomRightSetHeightAngle300, ptBottomLeftSetHeightAngle300).center();
-    QPointF ptLeftCenterSetHeightAngle300 = QLineF(ptTopLeftSetHeightAngle300, ptBottomLeftSetHeightAngle300).center();
+    QPointF ptLeftCenterSetHeightAngle300   = QLineF(ptTopLeftSetHeightAngle300, ptBottomLeftSetHeightAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
@@ -9960,6 +10173,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -9981,15 +10195,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle300;
     double fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle300 = fWidthSetAngle300;
     double fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle300 = fHeightSetAngle300 / 2.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300(321.7, bYAxisTopDown ? 312.5 : 287.5);
+    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300(321.651185, bYAxisTopDown ? 312.500318 : fYAxisMaxVal - 312.500318);
     QPointF ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle300 = ptLeftCenterSetAngle300;
     QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle300 = ptRightCenterSetAngle300;
     QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle300 = ptBottomRightSetAngle300;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300(371.7, bYAxisTopDown ? 225.9 : 374.1);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300 = ptBottomCenterSetAngle300;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300(271.7, bYAxisTopDown ? 399.1 : 200.9);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300    = QLineF(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle300, ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle300).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300  = QLineF(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle300, ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle300).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300 = QLineF(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle300, ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle300).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle300, ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
@@ -10004,6 +10218,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10022,19 +10237,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setHeightByMovingTopCenter(BeyondBottomBorder)
     -------------------------------------------------
     */
-    ptMoved = QPointF(460.0, bYAxisTopDown ? 360.0 : 240.0);
+    ptMoved = QPointF(460.0, bYAxisTopDown ? 360.0 : fYAxisMaxVal - 360.0);
     physValAngleCorrected.setVal(120.0);
     double fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle300 = fWidthSetAngle300;
-    double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle300 = 118.6;
-    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300(394.6, bYAxisTopDown ? 354.6 : 245.4);
-    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300(496.0, bYAxisTopDown ? 297.7 : 302.3);
-    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle300(396.0, bYAxisTopDown ? 470.9 : 129.1);
+    double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle300 = 118.564065;
+    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300(394.641016, bYAxisTopDown ? 354.641016 : fYAxisMaxVal - 354.641016);
+    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300(495.980762, bYAxisTopDown ? 297.679492 : fYAxisMaxVal - 297.679492);
+    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle300(395.980762, bYAxisTopDown ? 470.884573 : fYAxisMaxVal - 470.884573);
     QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle300 = ptBottomLeftSetAngle300;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300 = ptBottomRightSetAngle300;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300(446.0, bYAxisTopDown ? 384.3 : 215.7);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300(344.6, bYAxisTopDown ? 441.2 : 158.8);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300 = ptBottomCenterSetAngle300;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300(444.6, bYAxisTopDown ? 268.0 : 332.0);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300    = QLineF(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300, ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle300).center();
+    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300  = QLineF(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle300, ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle300).center();
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300 = QLineF(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle300, ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300   = QLineF(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300, ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
@@ -10049,6 +10264,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10070,15 +10286,15 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ptMoved = ptRightCenterSetAngle300;
     double fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle300 = fWidthSetHeightAngle300;
     double fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle300 = fHeightSetAngle300 / 2.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300(278.4, bYAxisTopDown ? 287.5 : 312.5);
+    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300(278.349915, bYAxisTopDown ? 287.500318 : fYAxisMaxVal - 287.500318);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle300 = ptTopLeftSetAngle300;
     QPointF ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle300 = ptTopRightSetAngle300;
     QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle300 = ptRightCenterSetAngle300;
     QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle300 = ptLeftCenterSetAngle300;
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300 = ptTopCenterSetAngle300;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300(328.4, bYAxisTopDown ? 200.9 : 399.1);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300(300.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300(228.4, bYAxisTopDown ? 374.1 : 225.9);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle300, ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle300).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300  = QLineF(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle300, ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle300).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle300, ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle300).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle300, ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
@@ -10093,6 +10309,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10111,19 +10328,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setHeightByMovingBottomCenter(BeyondTopBorder)
     -------------------------------------------------
     */
-    ptMoved = QPointF(220.0, bYAxisTopDown ? 220.0 : 380.0);
+    ptMoved = QPointF(220.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
     physValAngleCorrected.setVal(120.0);
     double fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle300 = fWidthSetHeightAngle300;
-    double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle300 = 59.3;
-    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300(231.0, bYAxisTopDown ? 260.2 : 339.8);
+    double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle300 = 59.282032;
+    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300(231.028857, bYAxisTopDown ? 260.179492 : fYAxisMaxVal - 260.179492);
     QPointF ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300 = ptTopRightSetAngle300;
     QPointF ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle300 = ptTopLeftSetAngle300;
-    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle300(155.4, bYAxisTopDown ? 332.0 : 268.0);
-    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300(255.4, bYAxisTopDown ? 158.8 : 441.2);
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300 = ptTopCenterSetAngle300;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300(181.0, bYAxisTopDown ? 346.8 : 253.2);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300(205.4, bYAxisTopDown ? 245.4 : 354.6);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300(281.0, bYAxisTopDown ? 173.6 : 426.4);
+    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle300(155.358984, bYAxisTopDown ? 331.961524 : fYAxisMaxVal - 331.961524);
+    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300(255.358984, bYAxisTopDown ? 158.756443 : fYAxisMaxVal - 158.756443);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300    = QLineF(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300, ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle300).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300  = QLineF(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle300, ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle300).center();
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300 = QLineF(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle300, ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300).center();
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300   = QLineF(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300, ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
@@ -10138,6 +10355,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10156,18 +10374,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setTopLeft(BeforeBottomRight)
     --------------------------------
     */
-    QPointF ptSetTopLeftBeforeBottomRightAngle300 = QPointF(280.0, bYAxisTopDown ? 280.0 : 320.0);
-    double fWidthSetTopLeftBeforeBottomRightAngle300 = 92.7;
-    double fHeightSetTopLeftBeforeBottomRightAngle300 = 77.3;
-    QPointF ptCenterSetTopLeftBeforeBottomRightAngle300(336.7, bYAxisTopDown ? 259.2 : 340.8);
+    QPointF ptSetTopLeftBeforeBottomRightAngle300 = QPointF(280.0, bYAxisTopDown ? 280.0 : fYAxisMaxVal - 280.0);
+    double fWidthSetTopLeftBeforeBottomRightAngle300 = 92.679492;
+    double fHeightSetTopLeftBeforeBottomRightAngle300 = 77.320508;
+    QPointF ptCenterSetTopLeftBeforeBottomRightAngle300(336.650635, bYAxisTopDown ? 259.198730 : fYAxisMaxVal - 259.198730);
     QPointF ptTopLeftSetTopLeftBeforeBottomRightAngle300 = ptSetTopLeftBeforeBottomRightAngle300;
-    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle300(326.3, bYAxisTopDown ? 199.7 : 400.3);
+    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle300(326.339746, bYAxisTopDown ? 199.737206 : fYAxisMaxVal - 199.737206);
     QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle300 = ptBottomRightSetAngle300;
-    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle300(347.0, bYAxisTopDown ? 318.7 : 281.3);
-    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle300(303.2, bYAxisTopDown ? 239.9 : 360.1);
-    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle300(359.8, bYAxisTopDown ? 219.1 : 380.9);
-    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle300(370.1, bYAxisTopDown ? 278.5 : 321.5);
-    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle300(313.49, bYAxisTopDown ? 299.3 : 300.7);
+    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle300(346.961524, bYAxisTopDown ? 318.660254 : fYAxisMaxVal - 318.660254);
+    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle300    = QLineF(ptTopLeftSetTopLeftBeforeBottomRightAngle300, ptTopRightSetTopLeftBeforeBottomRightAngle300).center();
+    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle300  = QLineF(ptTopRightSetTopLeftBeforeBottomRightAngle300, ptBottomRightSetTopLeftBeforeBottomRightAngle300).center();
+    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle300 = QLineF(ptBottomRightSetTopLeftBeforeBottomRightAngle300, ptBottomLeftSetTopLeftBeforeBottomRightAngle300).center();
+    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle300   = QLineF(ptBottomLeftSetTopLeftBeforeBottomRightAngle300, ptTopLeftSetTopLeftBeforeBottomRightAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
@@ -10182,6 +10400,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle300);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10199,19 +10418,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondRightBorder)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondRightBorderAngle300(380.0, bYAxisTopDown ? 140.0 : 460.0);
+    QPointF ptSetTopLeftBeyondRightBorderAngle300(380.0, bYAxisTopDown ? 140.0 : fYAxisMaxVal - 140.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetTopLeftBeyondRightBorderAngle300 = 60.7;
-    double fHeightSetTopLeftBeyondRightBorderAngle300 = 78.6;
-    QPointF ptCenterSetTopLeftBeyondRightBorderAngle300(386.7, bYAxisTopDown ? 189.2 : 410.8);
+    double fWidthSetTopLeftBeyondRightBorderAngle300 = 60.717968;
+    double fHeightSetTopLeftBeyondRightBorderAngle300 = 78.564065;
+    QPointF ptCenterSetTopLeftBeyondRightBorderAngle300(386.650635, bYAxisTopDown ? 189.198730 : fYAxisMaxVal - 189.198730);
     QPointF ptTopLeftSetTopLeftBeyondRightBorderAngle300 = ptSetTopLeftBeyondRightBorderAngle300;
-    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle300(432.6, bYAxisTopDown ? 170.4 : 429.6);
+    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle300(432.583302, bYAxisTopDown ? 170.358984 : fYAxisMaxVal - 170.358984);
     QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle300 = ptBottomRightSetAngle300;
-    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle300(340.7, bYAxisTopDown ? 208.0 : 392.0);
-    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle300(406.3, bYAxisTopDown ? 155.2 : 444.8);
-    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle300(412.9, bYAxisTopDown ? 204.4 : 395.6);
-    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle300(367.0, bYAxisTopDown ? 223.2 : 376.8);
-    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle300(360.4, bYAxisTopDown ? 174.0 : 426.0);
+    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle300(340.717968, bYAxisTopDown ? 208.038476 : fYAxisMaxVal - 208.038476);
+    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle300    = QLineF(ptTopLeftSetTopLeftBeyondRightBorderAngle300, ptTopRightSetTopLeftBeyondRightBorderAngle300).center();
+    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle300  = QLineF(ptTopRightSetTopLeftBeyondRightBorderAngle300, ptBottomRightSetTopLeftBeyondRightBorderAngle300).center();
+    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle300 = QLineF(ptBottomRightSetTopLeftBeyondRightBorderAngle300, ptBottomLeftSetTopLeftBeyondRightBorderAngle300).center();
+    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle300   = QLineF(ptBottomLeftSetTopLeftBeyondRightBorderAngle300, ptTopLeftSetTopLeftBeyondRightBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
@@ -10226,6 +10445,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle300);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10243,19 +10463,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomBorder)
     ---------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomBorderAngle300(420.0, bYAxisTopDown ? 320.0 : 280.0);
+    QPointF ptSetTopLeftBeyondBottomBorderAngle300(420.0, bYAxisTopDown ? 320.0 : fYAxisMaxVal - 320.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetTopLeftBeyondBottomBorderAngle300 = 63.9;
-    double fHeightSetTopLeftBeyondBottomBorderAngle300 = 57.3;
-    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle300(406.7, bYAxisTopDown ? 279.2 : 320.8);
+    double fWidthSetTopLeftBeyondBottomBorderAngle300 = 63.923048;
+    double fHeightSetTopLeftBeyondBottomBorderAngle300 = 57.320508;
+    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle300(406.650635, bYAxisTopDown ? 279.198730 : fYAxisMaxVal - 279.198730);
     QPointF ptTopLeftSetTopLeftBeyondBottomBorderAngle300 = ptSetTopLeftBeyondBottomBorderAngle300;
-    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle300(364.6, bYAxisTopDown ? 288.0 : 312.0);
+    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle300(364.641016, bYAxisTopDown ? 288.038476 : fYAxisMaxVal - 288.038476);
     QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle300 = ptBottomRightSetAngle300;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle300(448.7, bYAxisTopDown ? 270.4 : 329.6);
-    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle300(392.3, bYAxisTopDown ? 304.0 : 296.0);
-    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle300(379.0, bYAxisTopDown ? 263.2 : 336.8);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle300(421.0, bYAxisTopDown ? 254.4 : 345.6);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle300(434.3, bYAxisTopDown ? 295.2 : 304.8);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle300(448.660254, bYAxisTopDown ? 270.358984 : fYAxisMaxVal - 270.358984);
+    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle300    = QLineF(ptTopLeftSetTopLeftBeyondBottomBorderAngle300, ptTopRightSetTopLeftBeyondBottomBorderAngle300).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle300  = QLineF(ptTopRightSetTopLeftBeyondBottomBorderAngle300, ptBottomRightSetTopLeftBeyondBottomBorderAngle300).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle300 = QLineF(ptBottomRightSetTopLeftBeyondBottomBorderAngle300, ptBottomLeftSetTopLeftBeyondBottomBorderAngle300).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle300   = QLineF(ptBottomLeftSetTopLeftBeyondBottomBorderAngle300, ptTopLeftSetTopLeftBeyondBottomBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
@@ -10270,6 +10490,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle300);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10287,19 +10508,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopLeft(BeyondBottomRight)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomRightAngle300 = QPointF(480.0, bYAxisTopDown ? 180.0 : 420.0);
+    QPointF ptSetTopLeftBeyondBottomRightAngle300 = QPointF(480.0, bYAxisTopDown ? 180.0 : fYAxisMaxVal - 180.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetTopLeftBeyondBottomRightAngle300 = 93.9;
-    double fHeightSetTopLeftBeyondBottomRightAngle300 = 45.9;
-    QPointF ptCenterSetTopLeftBeyondBottomRightAngle300(436.7, bYAxisTopDown ? 209.2 : 390.8);
+    double fWidthSetTopLeftBeyondBottomRightAngle300 = 93.923048;
+    double fHeightSetTopLeftBeyondBottomRightAngle300 = 45.884573;
+    QPointF ptCenterSetTopLeftBeyondBottomRightAngle300(436.650635, bYAxisTopDown ? 209.198730 : fYAxisMaxVal - 209.198730);
     QPointF ptTopLeftSetTopLeftBeyondBottomRightAngle300 = ptSetTopLeftBeyondBottomRightAngle300;
-    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle300(433.0, bYAxisTopDown ? 261.3 : 338.7);
+    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle300(433.038476, bYAxisTopDown ? 261.339746 : fYAxisMaxVal - 261.339746);
     QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle300 = ptBottomRightSetAngle300;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle300(440.3, bYAxisTopDown ? 157.1 : 442.9);
-    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle300(456.5, bYAxisTopDown ? 220.7 : 379.3);
-    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle300(413.2, bYAxisTopDown ? 249.9 : 350.1);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle300(416.8, bYAxisTopDown ? 197.7 : 402.3);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle300(460.1, bYAxisTopDown ? 168.5 : 431.5);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle300(440.262794, bYAxisTopDown ? 157.057714 : fYAxisMaxVal - 157.057714);
+    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle300    = QLineF(ptTopLeftSetTopLeftBeyondBottomRightAngle300, ptTopRightSetTopLeftBeyondBottomRightAngle300).center();
+    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle300  = QLineF(ptTopRightSetTopLeftBeyondBottomRightAngle300, ptBottomRightSetTopLeftBeyondBottomRightAngle300).center();
+    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle300 = QLineF(ptBottomRightSetTopLeftBeyondBottomRightAngle300, ptBottomLeftSetTopLeftBeyondBottomRightAngle300).center();
+    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle300   = QLineF(ptBottomLeftSetTopLeftBeyondBottomRightAngle300, ptTopLeftSetTopLeftBeyondBottomRightAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
@@ -10314,6 +10535,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle300);
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10331,18 +10553,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeforeBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeforeBottomLeftAngle300 = QPointF(280.0, bYAxisTopDown ? 220.0 : 380.0);
-    double fWidthSetTopRightBeforeBottomLeftAngle300 = 159.3;
-    double fHeightSetTopRightBeforeBottomLeftAngle300 = 107.3;
-    QPointF ptCenterSetTopRightBeforeBottomLeftAngle300(286.7, bYAxisTopDown ? 315.8 : 284.2);
-    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle300(200.4, bYAxisTopDown ? 357.9 : 242.1);
+    QPointF ptSetTopRightBeforeBottomLeftAngle300 = QPointF(280.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
+    double fWidthSetTopRightBeforeBottomLeftAngle300 = 159.282032;
+    double fHeightSetTopRightBeforeBottomLeftAngle300 = 107.320508;
+    QPointF ptCenterSetTopRightBeforeBottomLeftAngle300(286.650635, bYAxisTopDown ? 315.801270 : fYAxisMaxVal - 315.801270);
+    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle300(200.358984, bYAxisTopDown ? 357.942286 : fYAxisMaxVal - 357.942286);
     QPointF ptTopRightSetTopRightBeforeBottomLeftAngle300 = ptSetTopRightBeforeBottomLeftAngle300;
-    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle300(372.9, bYAxisTopDown ? 273.7 : 326.3);
+    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle300(372.942286, bYAxisTopDown ? 273.660254 : fYAxisMaxVal - 273.660254);
     QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle300(240.2, bYAxisTopDown ? 289.0 : 311.0);
-    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle300(326.49, bYAxisTopDown ? 246.8 : 353.2);
-    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle300(333.1, bYAxisTopDown ? 342.6 : 257.4);
-    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle300(246.8, bYAxisTopDown ? 384.8 : 215.2);
+    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle300    = QLineF(ptTopLeftSetTopRightBeforeBottomLeftAngle300, ptTopRightSetTopRightBeforeBottomLeftAngle300).center();
+    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle300  = QLineF(ptTopRightSetTopRightBeforeBottomLeftAngle300, ptBottomRightSetTopRightBeforeBottomLeftAngle300).center();
+    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle300 = QLineF(ptBottomRightSetTopRightBeforeBottomLeftAngle300, ptBottomLeftSetTopRightBeforeBottomLeftAngle300).center();
+    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle300   = QLineF(ptBottomLeftSetTopRightBeforeBottomLeftAngle300, ptTopLeftSetTopRightBeforeBottomLeftAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
@@ -10357,6 +10579,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle300);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10374,19 +10597,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondLeftBorder)
     ---------------------------------*/
-    QPointF ptSetTopRightBeyondLeftBorderAngle300(140.0, bYAxisTopDown ? 380.0 : 220.0);
+    QPointF ptSetTopRightBeyondLeftBorderAngle300(140.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetTopRightBeyondLeftBorderAngle300 = 148.6;
-    double fHeightSetTopRightBeyondLeftBorderAngle300 = 49.3;
-    QPointF ptCenterSetTopRightBeyondLeftBorderAngle300(216.7, bYAxisTopDown ? 395.8 : 204.2);
-    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle300(268.7, bYAxisTopDown ? 454.3 : 145.7);
+    double fWidthSetTopRightBeyondLeftBorderAngle300 = 148.564065;
+    double fHeightSetTopRightBeyondLeftBorderAngle300 = 49.282032;
+    QPointF ptCenterSetTopRightBeyondLeftBorderAngle300(216.650635, bYAxisTopDown ? 395.801270 : fYAxisMaxVal - 395.801270);
+    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle300(268.660254, bYAxisTopDown ? 454.282032 : fYAxisMaxVal - 454.282032);
     QPointF ptTopRightSetTopRightBeyondLeftBorderAngle300 = ptSetTopRightBeyondLeftBorderAngle300;
-    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle300(164.6, bYAxisTopDown ? 337.3 : 262.7);
+    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle300(164.641016, bYAxisTopDown ? 337.320508 : fYAxisMaxVal - 337.320508);
     QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle300(204.3, bYAxisTopDown ? 417.1 : 182.9);
-    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle300(152.3, bYAxisTopDown ? 358.7 : 241.3);
-    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle300(229.0, bYAxisTopDown ? 374.49 : 225.5);
-    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle300(281.0, bYAxisTopDown ? 432.9 : 167.1);
+    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle300    = QLineF(ptTopLeftSetTopRightBeyondLeftBorderAngle300, ptTopRightSetTopRightBeyondLeftBorderAngle300).center();
+    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle300  = QLineF(ptTopRightSetTopRightBeyondLeftBorderAngle300, ptBottomRightSetTopRightBeyondLeftBorderAngle300).center();
+    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle300 = QLineF(ptBottomRightSetTopRightBeyondLeftBorderAngle300, ptBottomLeftSetTopRightBeyondLeftBorderAngle300).center();
+    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle300   = QLineF(ptBottomLeftSetTopRightBeyondLeftBorderAngle300, ptTopLeftSetTopRightBeyondLeftBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
@@ -10401,6 +10624,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle300);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10418,19 +10642,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomBorder)
     ----------------------------------*/
-    QPointF ptSetTopRightBeyondBottomBorderAngle300(380.0, bYAxisTopDown ? 320.0 : 280.0);
+    QPointF ptSetTopRightBeyondBottomBorderAngle300(380.0, bYAxisTopDown ? 320.0 : fYAxisMaxVal - 320.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetTopRightBeyondBottomBorderAngle300 = 29.3;
-    double fHeightSetTopRightBeyondBottomBorderAngle300 = 122.7;
-    QPointF ptCenterSetTopRightBeyondBottomBorderAngle300(336.7, bYAxisTopDown ? 365.8 : 234.2);
-    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle300(354.6, bYAxisTopDown ? 305.4 : 294.6);
+    double fWidthSetTopRightBeyondBottomBorderAngle300 = 29.282032;
+    double fHeightSetTopRightBeyondBottomBorderAngle300 = 122.679492;
+    QPointF ptCenterSetTopRightBeyondBottomBorderAngle300(336.650635, bYAxisTopDown ? 365.801270 : fYAxisMaxVal - 365.801270);
+    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle300(354.641016, bYAxisTopDown ? 305.358984 : fYAxisMaxVal - 305.358984);
     QPointF ptTopRightSetTopRightBeyondBottomBorderAngle300 = ptSetTopRightBeyondBottomBorderAngle300;
-    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle300(318.7, bYAxisTopDown ? 426.2 : 173.8);
+    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle300(318.660254, bYAxisTopDown ? 426.243557 : fYAxisMaxVal - 426.243557);
     QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle300(367.3, bYAxisTopDown ? 312.7 : 287.3);
-    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle300(349.3, bYAxisTopDown ? 373.1 : 226.9);
-    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle300(306.0, bYAxisTopDown ? 418.9 : 181.1);
-    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle300(324.0, bYAxisTopDown ? 358.49 : 241.5);
+    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle300    = QLineF(ptTopLeftSetTopRightBeyondBottomBorderAngle300, ptTopRightSetTopRightBeyondBottomBorderAngle300).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle300  = QLineF(ptTopRightSetTopRightBeyondBottomBorderAngle300, ptBottomRightSetTopRightBeyondBottomBorderAngle300).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle300 = QLineF(ptBottomRightSetTopRightBeyondBottomBorderAngle300, ptBottomLeftSetTopRightBeyondBottomBorderAngle300).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle300   = QLineF(ptBottomLeftSetTopRightBeyondBottomBorderAngle300, ptTopLeftSetTopRightBeyondBottomBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
@@ -10445,6 +10669,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle300);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10462,19 +10687,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setTopRight(BeyondBottomLeft)
     --------------------------------*/
-    QPointF ptSetTopRightBeyondBottomLeftAngle300 = QPointF(340.0, bYAxisTopDown ? 500.0 : 100.0);
+    QPointF ptSetTopRightBeyondBottomLeftAngle300 = QPointF(340.0, bYAxisTopDown ? 500.0 : fYAxisMaxVal - 500.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetTopRightBeyondBottomLeftAngle300 = 53.2;
-    double fHeightSetTopRightBeyondBottomLeftAngle300 = 84.6;
-    QPointF ptCenterSetTopRightBeyondBottomLeftAngle300(316.7, bYAxisTopDown ? 455.8 : 144.2);
-    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle300(366.6, bYAxisTopDown ? 453.9 : 146.1);
+    double fWidthSetTopRightBeyondBottomLeftAngle300 = 53.205081;
+    double fHeightSetTopRightBeyondBottomLeftAngle300 = 84.641016;
+    QPointF ptCenterSetTopRightBeyondBottomLeftAngle300(316.650635, bYAxisTopDown ? 455.801270 : fYAxisMaxVal - 455.801270);
+    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle300(366.602540, bYAxisTopDown ? 453.923048 : fYAxisMaxVal - 453.923048);
     QPointF ptTopRightSetTopRightBeyondBottomLeftAngle300 = ptSetTopRightBeyondBottomLeftAngle300;
-    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle300(266.7, bYAxisTopDown ? 457.7 : 142.3);
+    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle300(266.698730, bYAxisTopDown ? 457.679492 : fYAxisMaxVal - 457.679492);
     QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle300 = ptBottomLeftSetAngle300;
-    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle300(353.3, bYAxisTopDown ? 477.0 : 123.0);
-    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle300(303.4, bYAxisTopDown ? 478.8 : 121.2);
-    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle300(280.0, bYAxisTopDown ? 434.6 : 165.4);
-    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle300(330.0, bYAxisTopDown ? 432.8 : 167.2);
+    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle300    = QLineF(ptTopLeftSetTopRightBeyondBottomLeftAngle300, ptTopRightSetTopRightBeyondBottomLeftAngle300).center();
+    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle300  = QLineF(ptTopRightSetTopRightBeyondBottomLeftAngle300, ptBottomRightSetTopRightBeyondBottomLeftAngle300).center();
+    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle300 = QLineF(ptBottomRightSetTopRightBeyondBottomLeftAngle300, ptBottomLeftSetTopRightBeyondBottomLeftAngle300).center();
+    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle300   = QLineF(ptBottomLeftSetTopRightBeyondBottomLeftAngle300, ptTopLeftSetTopRightBeyondBottomLeftAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
@@ -10489,6 +10714,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle300);
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10506,18 +10732,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeforeTopLeft)
     --------------------------------*/
-    QPointF ptSetSetBottomRightBeforeTopLeftAngle300 = QPointF(380.0, bYAxisTopDown ? 280.0 : 320.0);
-    double fWidthSetBottomRightBeforeTopLeftAngle300 = 157.3;
-    double fHeightSetBottomRightBeforeTopLeftAngle300 = 109.3;
-    QPointF ptCenterSetBottomRightBeforeTopLeftAngle300(293.4, bYAxisTopDown ? 320.8 : 279.2);
+    QPointF ptSetSetBottomRightBeforeTopLeftAngle300 = QPointF(380.0, bYAxisTopDown ? 280.0 : fYAxisMaxVal - 280.0);
+    double fWidthSetBottomRightBeforeTopLeftAngle300 = 157.320508;
+    double fHeightSetBottomRightBeforeTopLeftAngle300 = 109.282032;
+    QPointF ptCenterSetBottomRightBeforeTopLeftAngle300(293.349365, bYAxisTopDown ? 320.801270 : fYAxisMaxVal - 320.801270);
     QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle300(285.4, bYAxisTopDown ? 225.4 : 374.6);
+    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle300(285.358984, bYAxisTopDown ? 225.358984 : fYAxisMaxVal - 225.358984);
     QPointF ptBottomRightSetBottomRightBeforeTopLeftAngle300 = ptSetSetBottomRightBeforeTopLeftAngle300;
-    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle300(301.3, bYAxisTopDown ? 416.2 : 183.8);
-    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle300(246.0, bYAxisTopDown ? 293.49 : 306.5);
-    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle300(332.7, bYAxisTopDown ? 252.7 : 347.3);
-    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle300(340.7, bYAxisTopDown ? 348.1 : 251.9);
-    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle300(254.0, bYAxisTopDown ? 388.9 : 211.1);
+    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle300(301.339746, bYAxisTopDown ? 416.243557 : fYAxisMaxVal - 416.243557);
+    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle300    = QLineF(ptTopLeftSetBottomRightBeforeTopLeftAngle300, ptTopRightSetBottomRightBeforeTopLeftAngle300).center();
+    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle300  = QLineF(ptTopRightSetBottomRightBeforeTopLeftAngle300, ptBottomRightSetBottomRightBeforeTopLeftAngle300).center();
+    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle300 = QLineF(ptBottomRightSetBottomRightBeforeTopLeftAngle300, ptBottomLeftSetBottomRightBeforeTopLeftAngle300).center();
+    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle300   = QLineF(ptBottomLeftSetBottomRightBeforeTopLeftAngle300, ptTopLeftSetBottomRightBeforeTopLeftAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
@@ -10532,6 +10758,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle300);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10549,19 +10776,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopBorder)
     ----------------------------------*/
-    QPointF ptSetBottomRightBeyondTopBorderAngle300(220.0, bYAxisTopDown ? 280.0 : 320.0);
+    QPointF ptSetBottomRightBeyondTopBorderAngle300(220.0, bYAxisTopDown ? 280.0 : fYAxisMaxVal - 280.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetBottomRightBeyondTopBorderAngle300 = 29.3;
-    double fHeightSetBottomRightBeyondTopBorderAngle300 = 77.3;
-    QPointF ptCenterSetBottomRightBeyondTopBorderAngle300(213.4, bYAxisTopDown ? 320.8 : 279.2);
+    double fWidthSetBottomRightBeyondTopBorderAngle300 = 29.282032;
+    double fHeightSetBottomRightBeyondTopBorderAngle300 = 77.320508;
+    QPointF ptCenterSetBottomRightBeyondTopBorderAngle300(213.349365, bYAxisTopDown ? 320.801270 : fYAxisMaxVal - 320.801270);
     QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle300(181.3, bYAxisTopDown ? 347.0 : 253.0);
+    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle300(181.339746, bYAxisTopDown ? 346.961524 : fYAxisMaxVal - 346.961524);
     QPointF ptBottomRightSetBottomRightBeyondTopBorderAngle300 = ptSetBottomRightBeyondTopBorderAngle300;
-    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle300(245.4, bYAxisTopDown ? 294.6 : 305.4);
-    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle300(194.0, bYAxisTopDown ? 354.3 : 245.7);
-    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle300(200.7, bYAxisTopDown ? 313.49 : 286.5);
-    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle300(232.7, bYAxisTopDown ? 287.3 : 312.7);
-    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle300(226.0, bYAxisTopDown ? 328.1 : 271.9);
+    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle300(245.358984, bYAxisTopDown ? 294.641016 : fYAxisMaxVal - 294.641016);
+    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle300    = QLineF(ptTopLeftSetBottomRightBeyondTopBorderAngle300, ptTopRightSetBottomRightBeyondTopBorderAngle300).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle300  = QLineF(ptTopRightSetBottomRightBeyondTopBorderAngle300, ptBottomRightSetBottomRightBeyondTopBorderAngle300).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle300 = QLineF(ptBottomRightSetBottomRightBeyondTopBorderAngle300, ptBottomLeftSetBottomRightBeyondTopBorderAngle300).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle300   = QLineF(ptBottomLeftSetBottomRightBeyondTopBorderAngle300, ptTopLeftSetBottomRightBeyondTopBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
@@ -10576,6 +10803,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle300);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10593,19 +10821,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondLeftBorder)
     -----------------------------------*/
-    QPointF ptSetBottomRightBeyondLeftBorderAngle300(200.0, bYAxisTopDown ? 420.0 : 180.0);
+    QPointF ptSetBottomRightBeyondLeftBorderAngle300(200.0, bYAxisTopDown ? 420.0 : fYAxisMaxVal - 420.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetBottomRightBeyondLeftBorderAngle300 = 23.4;
-    double fHeightSetBottomRightBeyondLeftBorderAngle300 = 53.9;
-    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle300(203.4, bYAxisTopDown ? 390.8 : 209.2);
+    double fWidthSetBottomRightBeyondLeftBorderAngle300 = 23.397460;
+    double fHeightSetBottomRightBeyondLeftBorderAngle300 = 53.923048;
+    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle300(203.349365, bYAxisTopDown ? 390.801270 : fYAxisMaxVal - 390.801270);
     QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle300(227.0, bYAxisTopDown ? 373.3 : 226.7);
+    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle300(226.961524, bYAxisTopDown ? 373.301270 : fYAxisMaxVal - 373.301270);
     QPointF ptBottomRightSetBottomRightBeyondLeftBorderAngle300 = ptSetBottomRightBeyondLeftBorderAngle300;
-    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle300(179.7, bYAxisTopDown ? 408.3 : 191.7);
-    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle300(216.8, bYAxisTopDown ? 367.49 : 232.5);
-    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle300(213.49, bYAxisTopDown ? 396.7 : 203.4);
-    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle300(189.9, bYAxisTopDown ? 414.2 : 185.9);
-    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle300(193.2, bYAxisTopDown ? 385.0 : 215.0);
+    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle300(179.737206, bYAxisTopDown ? 408.301270 : fYAxisMaxVal - 408.301270);
+    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle300    = QLineF(ptTopLeftSetBottomRightBeyondLeftBorderAngle300, ptTopRightSetBottomRightBeyondLeftBorderAngle300).center();
+    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle300  = QLineF(ptTopRightSetBottomRightBeyondLeftBorderAngle300, ptBottomRightSetBottomRightBeyondLeftBorderAngle300).center();
+    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle300 = QLineF(ptBottomRightSetBottomRightBeyondLeftBorderAngle300, ptBottomLeftSetBottomRightBeyondLeftBorderAngle300).center();
+    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle300   = QLineF(ptBottomLeftSetBottomRightBeyondLeftBorderAngle300, ptTopLeftSetBottomRightBeyondLeftBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
@@ -10620,6 +10848,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle300);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10637,19 +10866,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomRight(BeyondTopLeft)
     ---------------------------------*/
-    QPointF ptSetBottomRightBeyondTopLeftAngle300 = QPointF(100.0, bYAxisTopDown ? 360.0 : 240.0);
+    QPointF ptSetBottomRightBeyondTopLeftAngle300 = QPointF(100.0, bYAxisTopDown ? 360.0 : fYAxisMaxVal - 360.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetBottomRightBeyondTopLeftAngle300 = 52.0;
-    double fHeightSetBottomRightBeyondTopLeftAngle300 = 93.2;
-    QPointF ptCenterSetBottomRightBeyondTopLeftAngle300(153.4, bYAxisTopDown ? 360.8 : 239.2);
+    double fWidthSetBottomRightBeyondTopLeftAngle300 = 51.961524;
+    double fHeightSetBottomRightBeyondTopLeftAngle300 = 93.205081;
+    QPointF ptCenterSetBottomRightBeyondTopLeftAngle300(153.349365, bYAxisTopDown ? 360.801270 : fYAxisMaxVal - 360.801270);
     QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle300 = ptTopLeftSetAngle300;
-    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle300(180.7, bYAxisTopDown ? 406.6 : 193.4);
+    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle300(180.717968, bYAxisTopDown ? 406.602540 : fYAxisMaxVal - 406.602540);
     QPointF ptBottomRightSetBottomRightBeyondTopLeftAngle300 = ptSetBottomRightBeyondTopLeftAngle300;
-    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle300(126.0, bYAxisTopDown ? 315.0 : 285.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle300(193.7, bYAxisTopDown ? 384.1 : 215.9);
-    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle300(140.4, bYAxisTopDown ? 383.3 : 216.7);
-    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle300(113.0, bYAxisTopDown ? 337.5 : 262.5);
-    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle300(166.3, bYAxisTopDown ? 338.3 : 261.7);
+    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle300(125.980762, bYAxisTopDown ? 315.000000 : fYAxisMaxVal - 315.000000);
+    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle300    = QLineF(ptTopLeftSetBottomRightBeyondTopLeftAngle300, ptTopRightSetBottomRightBeyondTopLeftAngle300).center();
+    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle300  = QLineF(ptTopRightSetBottomRightBeyondTopLeftAngle300, ptBottomRightSetBottomRightBeyondTopLeftAngle300).center();
+    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle300 = QLineF(ptBottomRightSetBottomRightBeyondTopLeftAngle300, ptBottomLeftSetBottomRightBeyondTopLeftAngle300).center();
+    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle300   = QLineF(ptBottomLeftSetBottomRightBeyondTopLeftAngle300, ptTopLeftSetBottomRightBeyondTopLeftAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
@@ -10664,6 +10893,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle300);
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10681,18 +10911,18 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeforeTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeforeTopRightAngle300 = QPointF(340.0, bYAxisTopDown ? 380.0 : 220.0);
-    double fWidthSetBottomLeftBeforeTopRightAngle300 = 149.3;
-    double fHeightSetBottomLeftBeforeTopRightAngle300 = 124.6;
-    QPointF ptCenterSetBottomLeftBeforeTopRightAngle300(323.4, bYAxisTopDown ? 284.2 : 315.8);
-    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle300(232.1, bYAxisTopDown ? 317.7 : 282.3);
+    QPointF ptSetBottomLeftBeforeTopRightAngle300 = QPointF(340.0, bYAxisTopDown ? 380.0 : fYAxisMaxVal - 380.0);
+    double fWidthSetBottomLeftBeforeTopRightAngle300 = 149.282032;
+    double fHeightSetBottomLeftBeforeTopRightAngle300 = 124.641016;
+    QPointF ptCenterSetBottomLeftBeforeTopRightAngle300(323.349365, bYAxisTopDown ? 284.198730 : fYAxisMaxVal - 284.198730);
+    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle300(232.057714, bYAxisTopDown ? 317.679492 : fYAxisMaxVal - 317.679492);
     QPointF ptTopRightSetBottomLeftBeforeTopRightAngle300 = ptTopRightSetAngle300;
-    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle300(414.6, bYAxisTopDown ? 250.7 : 349.3);
+    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle300(414.641016, bYAxisTopDown ? 250.717968 : fYAxisMaxVal - 250.717968);
     QPointF ptBottomLeftSetBottomLeftBeforeTopRightAngle300 = ptSetBottomLeftBeforeTopRightAngle300;
-    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle300(269.4, bYAxisTopDown ? 253.0 : 347.0);
-    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle300(360.7, bYAxisTopDown ? 219.6 : 380.4);
-    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle300(377.3, bYAxisTopDown ? 315.4 : 284.6);
-    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle300(286.0, bYAxisTopDown ? 348.8 : 251.2);
+    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle300    = QLineF(ptTopLeftSetBottomLeftBeforeTopRightAngle300, ptTopRightSetBottomLeftBeforeTopRightAngle300).center();
+    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle300  = QLineF(ptTopRightSetBottomLeftBeforeTopRightAngle300, ptBottomRightSetBottomLeftBeforeTopRightAngle300).center();
+    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle300 = QLineF(ptBottomRightSetBottomLeftBeforeTopRightAngle300, ptBottomLeftSetBottomLeftBeforeTopRightAngle300).center();
+    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle300   = QLineF(ptBottomLeftSetBottomLeftBeforeTopRightAngle300, ptTopLeftSetBottomLeftBeforeTopRightAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
@@ -10707,6 +10937,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle300);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10724,19 +10955,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopBorder)
     ---------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopBorderAngle300(200.0, bYAxisTopDown ? 240.0 : 360.0);
+    QPointF ptSetBottomLeftBeyondTopBorderAngle300(200.0, bYAxisTopDown ? 240.0 : fYAxisMaxVal - 240.0);
     physValAngleCorrected.setVal(30.0);
-    double fWidthSetBottomLeftBeyondTopBorderAngle300 = 66.6;
-    double fHeightSetBottomLeftBeyondTopBorderAngle300 = 98.0;
-    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle300(253.4, bYAxisTopDown ? 214.2 : 385.8);
-    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle300(249.0, bYAxisTopDown ? 155.1 : 444.9);
+    double fWidthSetBottomLeftBeyondTopBorderAngle300 = 66.602540;
+    double fHeightSetBottomLeftBeyondTopBorderAngle300 = 98.038476;
+    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle300(253.349365, bYAxisTopDown ? 214.198730 : fYAxisMaxVal - 214.198730);
+    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle300(249.019238, bYAxisTopDown ? 155.096189 : fYAxisMaxVal - 155.096189);
     QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle300 = ptTopRightSetAngle300;
-    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle300(257.7, bYAxisTopDown ? 273.3 : 326.7);
+    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle300(257.679492, bYAxisTopDown ? 273.301270 : fYAxisMaxVal - 273.301270);
     QPointF ptBottomLeftSetBottomLeftBeyondTopBorderAngle300 = ptSetBottomLeftBeyondTopBorderAngle300;
-    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle300(277.9, bYAxisTopDown ? 171.7 : 428.3);
-    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle300(282.2, bYAxisTopDown ? 230.9 : 369.2);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle300(228.8, bYAxisTopDown ? 256.7 : 343.4);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle300(224.5, bYAxisTopDown ? 197.5 : 402.5);
+    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle300    = QLineF(ptTopLeftSetBottomLeftBeyondTopBorderAngle300, ptTopRightSetBottomLeftBeyondTopBorderAngle300).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle300  = QLineF(ptTopRightSetBottomLeftBeyondTopBorderAngle300, ptBottomRightSetBottomLeftBeyondTopBorderAngle300).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle300 = QLineF(ptBottomRightSetBottomLeftBeyondTopBorderAngle300, ptBottomLeftSetBottomLeftBeyondTopBorderAngle300).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle300   = QLineF(ptBottomLeftSetBottomLeftBeyondTopBorderAngle300, ptTopLeftSetBottomLeftBeyondTopBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
@@ -10751,6 +10982,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle300);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10768,19 +11000,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondRightBorder)
     -----------------------------------*/
-    QPointF ptSetBottomLeftBeyondRightBorderAngle300(460.0, bYAxisTopDown ? 220.0 : 380.0);
+    QPointF ptSetBottomLeftBeyondRightBorderAngle300(460.0, bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
     physValAngleCorrected.setVal(210.0);
-    double fWidthSetBottomLeftBeyondRightBorderAngle300 = 148.6;
-    double fHeightSetBottomLeftBeyondRightBorderAngle300 = 49.3;
-    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle300(383.4, bYAxisTopDown ? 204.2 : 395.8);
-    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle300(435.4, bYAxisTopDown ? 262.7 : 337.3);
+    double fWidthSetBottomLeftBeyondRightBorderAngle300 = 148.564065;
+    double fHeightSetBottomLeftBeyondRightBorderAngle300 = 49.282032;
+    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle300(383.349365, bYAxisTopDown ? 204.198730 : fYAxisMaxVal - 204.198730);
+    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle300(435.358984, bYAxisTopDown ? 262.679492 : fYAxisMaxVal - 262.679492);
     QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle300 = ptTopRightSetAngle300;
-    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle300(331.3, bYAxisTopDown ? 145.7 : 454.3);
+    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle300(331.339746, bYAxisTopDown ? 145.717968 : fYAxisMaxVal - 145.717968);
     QPointF ptBottomLeftSetBottomLeftBeyondRightBorderAngle300 = ptSetBottomLeftBeyondRightBorderAngle300;
-    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle300(371.0, bYAxisTopDown ? 225.5 : 374.5);
-    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle300(319.0, bYAxisTopDown ? 167.1 : 432.9);
-    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle300(395.7, bYAxisTopDown ? 182.9 : 417.1);
-    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle300(447.7, bYAxisTopDown ? 241.3 : 358.7);
+    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle300    = QLineF(ptTopLeftSetBottomLeftBeyondRightBorderAngle300, ptTopRightSetBottomLeftBeyondRightBorderAngle300).center();
+    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle300  = QLineF(ptTopRightSetBottomLeftBeyondRightBorderAngle300, ptBottomRightSetBottomLeftBeyondRightBorderAngle300).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle300 = QLineF(ptBottomRightSetBottomLeftBeyondRightBorderAngle300, ptBottomLeftSetBottomLeftBeyondRightBorderAngle300).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle300   = QLineF(ptBottomLeftSetBottomLeftBeyondRightBorderAngle300, ptTopLeftSetBottomLeftBeyondRightBorderAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
@@ -10795,6 +11027,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle300);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10812,19 +11045,19 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
 
     /* setBottomLeft(BeyondTopRight)
     --------------------------------*/
-    QPointF ptSetBottomLeftBeyondTopRightAngle300 = QPointF(260.0, bYAxisTopDown ? 100.0 : 500.0);
+    QPointF ptSetBottomLeftBeyondTopRightAngle300 = QPointF(260.0, bYAxisTopDown ? 100.0 : fYAxisMaxVal - 100.0);
     physValAngleCorrected.setVal(120.0);
-    double fWidthSetBottomLeftBeyondTopRightAngle300 = 53.2;
-    double fHeightSetBottomLeftBeyondTopRightAngle300 = 84.6;
-    QPointF ptCenterSetBottomLeftBeyondTopRightAngle300(283.4, bYAxisTopDown ? 144.2 : 455.8);
-    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle300(333.3, bYAxisTopDown ? 142.3 : 457.7);
+    double fWidthSetBottomLeftBeyondTopRightAngle300 = 53.205081;
+    double fHeightSetBottomLeftBeyondTopRightAngle300 = 84.641016;
+    QPointF ptCenterSetBottomLeftBeyondTopRightAngle300(283.349365, bYAxisTopDown ? 144.198730 : fYAxisMaxVal - 144.198730);
+    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle300(333.301270, bYAxisTopDown ? 142.320508 : fYAxisMaxVal - 142.320508);
     QPointF ptTopRightSetBottomLeftBeyondTopRightAngle300 = ptTopRightSetAngle300;
-    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle300(233.4, bYAxisTopDown ? 146.1 : 453.9);
+    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle300(233.397460, bYAxisTopDown ? 146.076952 : fYAxisMaxVal - 146.076952);
     QPointF ptBottomLeftSetBottomLeftBeyondTopRightAngle300 = ptSetBottomLeftBeyondTopRightAngle300;
-    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle300(320.0, bYAxisTopDown ? 165.4 : 434.6);
-    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle300(270.0, bYAxisTopDown ? 167.2 : 432.8);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle300(246.7, bYAxisTopDown ? 123.0 : 477.0);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle300(296.7, bYAxisTopDown ? 121.2 : 478.8);
+    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle300    = QLineF(ptTopLeftSetBottomLeftBeyondTopRightAngle300, ptTopRightSetBottomLeftBeyondTopRightAngle300).center();
+    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle300  = QLineF(ptTopRightSetBottomLeftBeyondTopRightAngle300, ptBottomRightSetBottomLeftBeyondTopRightAngle300).center();
+    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle300 = QLineF(ptBottomRightSetBottomLeftBeyondTopRightAngle300, ptBottomLeftSetBottomLeftBeyondTopRightAngle300).center();
+    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle300   = QLineF(ptBottomLeftSetBottomLeftBeyondTopRightAngle300, ptTopLeftSetBottomLeftBeyondTopRightAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
@@ -10839,6 +11072,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle300);
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle300, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle300, iDigits), 'f', iDigits) + " " + strUnit);
@@ -10865,7 +11099,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
-#endif
+//#endif
 }
 
 //------------------------------------------------------------------------------
