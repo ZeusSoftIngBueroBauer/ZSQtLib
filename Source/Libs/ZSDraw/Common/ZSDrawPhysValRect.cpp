@@ -518,13 +518,13 @@ QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator, i
             + size().height().toString(EUnitFind::None, PhysValSubStr::Val);
     }
     else {
-        str = QString::number(center().x().getVal(), 'f', i_iPrecision)
+        str = QString::number(Math::round2Nearest(center().x().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(center().y().getVal(), 'f', i_iPrecision)
+            + QString::number(Math::round2Nearest(center().y().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(size().width().getVal(), 'f', i_iPrecision)
+            + QString::number(Math::round2Nearest(size().width().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(size().height().getVal(), 'f', i_iPrecision);
+            + QString::number(Math::round2Nearest(size().height().getVal(), i_iPrecision), 'f', i_iPrecision);
     }
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();

@@ -311,13 +311,13 @@ QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator, i
             + y2().toString(EUnitFind::None, PhysValSubStr::Val);
     }
     else {
-        str = QString::number(x1().getVal(), 'f', i_iPrecision)
+        str = QString::number(Math::round2Nearest(x1().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(y1().getVal(), 'f', i_iPrecision)
+            + QString::number(Math::round2Nearest(y1().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(x2().getVal(), 'f', i_iPrecision)
+            + QString::number(Math::round2Nearest(x2().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(y2().getVal(), 'f', i_iPrecision);
+            + QString::number(Math::round2Nearest(y2().getVal(), i_iPrecision), 'f', i_iPrecision);
     }
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();

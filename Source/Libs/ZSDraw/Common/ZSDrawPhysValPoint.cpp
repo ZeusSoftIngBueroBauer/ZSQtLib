@@ -28,6 +28,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysMath.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -343,9 +344,9 @@ QString CPhysValPoint::toString(bool i_bAddUnit, const QString& i_strSeparator, 
             + y().toString(EUnitFind::None, PhysValSubStr::Val);
     }
     else {
-        str = QString::number(x().getVal(), 'f', i_iPrecision)
+        str = QString::number(Math::round2Nearest(x().getVal(), i_iPrecision), 'f', i_iPrecision)
             + i_strSeparator
-            + QString::number(y().getVal(), 'f', i_iPrecision);
+            + QString::number(Math::round2Nearest(y().getVal(), i_iPrecision), 'f', i_iPrecision);
     }
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();
