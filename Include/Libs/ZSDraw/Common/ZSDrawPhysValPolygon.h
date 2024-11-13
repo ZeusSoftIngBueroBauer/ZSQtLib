@@ -27,8 +27,7 @@ may result in using the software modules.
 #ifndef ZSDraw_PhysValPolygon_h
 #define ZSDraw_PhysValPolygon_h
 
-#include "ZSDraw/Common/ZSDrawPhysValPolyline.h"
-#include "QtCore/qline.h"
+#include "ZSDraw/Common/ZSDrawPhysValRect.h"
 
 namespace ZS
 {
@@ -37,25 +36,33 @@ namespace Draw
 //******************************************************************************
 /*! @brief Represents a polygon on the drawing scene.
 
-    Corresponds to CPhysValPolyline but connects the last point of the polygon
-    with the first point of the polygon (closed polyline).
+    Corresponds to QPolygonF but providing a physical unit and a resolution.
+
+    When drawing the polygon, depending on the IsClosedPolygon flag, a line will be
+    drawn from the last point to the first point.
+
+    As the polygon’s bounding rectangle may be resized by mouse move events,
+    width and height of the bounding rectangle may become (at least temporarily) zero.
+    To handle several resize events correctly, the original polygon points,
+    the original size and the original center point of the bounding rectangle are
+    stored to calculate the current scale factor.
 
     Converting points from pixels to metric units is not supported.
     This conversion would have to be done by the parent group or scene to take
     the different Y-Scale-Axis orientation into account.
-    But the polyline does not know about groups.
+    But the polygon shape class does not know about groups.
 */
-class ZSDRAWDLL_API CPhysValPolygon : public CPhysValPolyline
+class ZSDRAWDLL_API CPhysValPolygon : public CPhysValShape
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValPolygon"; }
 public: // ctors
-    CPhysValPolygon(const CDrawingScene& i_drawingScene);
-    CPhysValPolygon(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon);
-    CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, bool i_bIsClosedPolygon = true);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, bool i_bIsClosedPolygon = true);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
 public: // copy ctor
     CPhysValPolygon(const CPhysValPolygon& i_physValPolygonOther);
 public: // dtor
@@ -65,7 +72,92 @@ public: // operators
 public: // must overridable operators of base class CPhysValShape
     CPhysValShape& operator = (const CPhysValShape& i_physValPolygonOther) override;
 public: // must overridables of base class CPhysValShape
+    bool operator == (const CPhysValShape& i_physValPolygonOther) const override;
+    bool operator != (const CPhysValShape& i_physValPolygonOther) const override;
+public: // must overridables of base class CPhysValShape
+    void invalidate() override;
+    bool isValid() const override;
+    bool isNull() const override;
     void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const override;
+public: // instance methods
+    CPhysValPoint center() const;
+    CPhysValSize size() const;
+    ZS::PhysVal::CPhysVal width() const;
+    ZS::PhysVal::CPhysVal height() const;
+    ZS::PhysVal::CPhysVal angle() const;
+    CPhysValPoint topLeft() const;
+    CPhysValPoint topRight() const;
+    CPhysValPoint bottomRight() const;
+    CPhysValPoint bottomLeft() const;
+    CPhysValPoint topCenter() const;
+    CPhysValPoint rightCenter() const;
+    CPhysValPoint bottomCenter() const;
+    CPhysValPoint leftCenter() const;
+public: // instance methods
+    void setCenter(const QPointF& i_pt);
+    void setCenter(const CPhysValPoint& i_physValPoint);
+    void setSize(const QSizeF& i_size);
+    void setSize(const CPhysValSize& i_physValSize);
+    void setWidth(double i_fWidth);
+    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    void setWidthByMovingLeftCenter(const QPointF& i_pt);
+    void setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint);
+    void setWidthByMovingRightCenter(const QPointF& i_pt);
+    void setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint);
+    void setHeight(double i_fHeight);
+    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    void setHeightByMovingTopCenter(const QPointF& i_pt);
+    void setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint);
+    void setHeightByMovingBottomCenter(const QPointF& i_pt);
+    void setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint);
+    void setAngle(double i_fAngle_degree);
+    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    void setTopLeft(const QPointF& i_pt);
+    void setTopLeft(const CPhysValPoint& i_physValPoint);
+    void setTopRight(const QPointF& i_pt);
+    void setTopRight(const CPhysValPoint& i_physValPoint);
+    void setBottomRight(const QPointF& i_pt);
+    void setBottomRight(const CPhysValPoint& i_physValPoint);
+    void setBottomLeft(const QPointF& i_pt);
+    void setBottomLeft(const CPhysValPoint& i_physValPoint);
+public: // instance methods
+    bool isClosedPolygon() const;
+    bool isEmpty() const;
+    int count() const;
+    CPhysValPoint at(int i_idx) const;
+    void replace(int i_idx, const CPhysValPoint& i_physValPoint);
+    void append(const CPhysValPoint& i_physValPoint);
+    void insert(int i_idx, const CPhysValPoint& i_physValPoint);
+    void remove(int i_idx, int i_iCount);
+    void removeAt(int i_idx);
+    void removeFirst();
+    void removeLast();
+    CPhysValPoint takeAt(int i_idx);
+    CPhysValPoint takeFirst();
+    CPhysValPoint takeLast();
+public: // instance methods (to convert the values into another unit)
+    QPolygonF toQPolygonF() const;
+    QPolygonF toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const;
+protected: // auxiliary instance methods
+    void updateModifiedPolygon();
+    void updateOriginalPolygon();
+protected: // instance members
+    /*!< true, if the polygon should be closed by drawing a line from the last point
+         to the first point. false otherwise. */
+    bool m_bIsClosedPolygon;
+    /*!< Rectangle around the polygon which may be rotated.
+         This is not the bounding rectangle. The bounding rectangle
+         of the polygon is not rotated. */
+    CPhysValRect m_physValRect;
+    /*!< Original center point of the polygons bounding rectangle before resizing events. */
+    QPointF m_ptCenterOrig;
+    /*!< Original size of the polygons bounding rectangle before resizing events. */
+    QSizeF m_sizeOrig;
+    /*!< Points of the original polygon stored in "m_unit" before resizing events. */
+    QPolygonF m_polygonOrig;
+    /*!< Points of the scaled polygon stored in "m_unit" after resizing events. */
+    QPolygonF m_polygonModified;
 
 }; // class CPhysValPolygon
 

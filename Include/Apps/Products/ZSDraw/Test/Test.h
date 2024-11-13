@@ -97,6 +97,7 @@ public: // type definition and constants
     // Polygons
     //---------
     const QString c_strGraphObjNameStar = "Star";
+    const QString c_strGraphObjNameTriangle = "Triangle";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -104,6 +105,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
     const QString c_strGraphObjNameCheckmark = "Checkmark";
     const QString c_strGraphObjNameSmallRect = "SmallRect";
+    const QString c_strGraphObjNamePolygons = "Polygons";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -132,7 +134,9 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolylineStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -142,6 +146,8 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -251,9 +257,14 @@ protected: // instance members
 
     // Polygons
     //----------
+    // Star
     QPointF m_ptPosPolygonStar;
     QPolygonF m_polygonStar;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonStar = nullptr;
+    // Triangle
+    QPointF m_ptPosPolygonTriangle;
+    QPolygonF m_polygonTriangle;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonTriangle = nullptr;
 
     // Groups
     //-------
@@ -277,6 +288,11 @@ protected: // instance members
     QSizeF m_sizeSmallRect;
     ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
+    // Polygons
+    QPointF m_ptPosPolygons;
+    QSizeF m_sizePolygons;
+    ZS::Draw::CPhysValRect* m_pPhysValRectPolygons = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAnglePolygons;
     // TopGroup
     QPointF m_ptPosTopGroup;
     QSizeF m_sizeTopGroup;

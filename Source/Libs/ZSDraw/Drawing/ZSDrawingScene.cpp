@@ -589,36 +589,36 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CDrawingScene::convert(const QPolygonF& i_polyline) const
+CPhysValPolygon CDrawingScene::convert(const QPolygonF& i_polygon) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValPolyline(*this, i_polyline, Units.Length.px), m_drawingSize.unit());
+    return convert(CPhysValPolygon(*this, i_polygon, Units.Length.px), m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CDrawingScene::convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValPolygon CDrawingScene::convert(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValPolyline(*this, i_polyline, Units.Length.px), i_unitDst);
+    return convert(CPhysValPolygon(*this, i_polygon, Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CDrawingScene::convert(const CPhysValPolyline& i_physValPolyline) const
+CPhysValPolygon CDrawingScene::convert(const CPhysValPolygon& i_physValPolygon) const
 //------------------------------------------------------------------------------
 {
-    return convert(i_physValPolyline, m_drawingSize.unit());
+    return convert(i_physValPolygon, m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CDrawingScene::convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValPolygon CDrawingScene::convert(const CPhysValPolygon& i_physValPolygon, const ZS::PhysVal::CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    CPhysValPolyline physValPolyline(*this, i_unitDst);
-    for (int idxPt = 0; idxPt < i_physValPolyline.count(); ++idxPt) {
-        CPhysValPoint physValPt = convert(i_physValPolyline.at(idxPt), i_unitDst);
-        physValPolyline.append(physValPt);
+    CPhysValPolygon physValPolygon(*this, i_unitDst);
+    for (int idxPt = 0; idxPt < i_physValPolygon.count(); ++idxPt) {
+        CPhysValPoint physValPt = convert(i_physValPolygon.at(idxPt), i_unitDst);
+        physValPolygon.append(physValPt);
     }
-    return physValPolyline;
+    return physValPolygon;
 }
 
 //------------------------------------------------------------------------------
@@ -2078,10 +2078,10 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! This method has to be called by graphical objects (polylines and connection lines)
+/*! This method has to be called by graphical objects (polygons and connection lines)
     if new shape points will be inserted at the beginning or appended at the end
-    of the polylines so that the drawing scene will further on dispatch mouse events
-    "directly" to the object "under construction". On extended polylines the object
+    of the polygons so that the drawing scene will further on dispatch mouse events
+    "directly" to the object "under construction". On extended polygons the object
     is not hit and the graphics scene does not dispatch the mouse event to the objects
     or their selection points (similar to newly creating objects).
 
@@ -2128,10 +2128,10 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //} // onGraphObjAddingShapePointsStarted
 
 //------------------------------------------------------------------------------
-/*! This method has to be called by graphical objects (polylines and connection lines)
+/*! This method has to be called by graphical objects (polygons and connection lines)
     if new shape points will be inserted at the beginning or appended at the end
-    of the polylines so that the drawing scene will further on dispatch mouse events
-    "directly" to the object "under construction". On extended polylines the object
+    of the polygons so that the drawing scene will further on dispatch mouse events
+    "directly" to the object "under construction". On extended polygons the object
     is not hit and the graphics scene does not dispatch the mouse event to the objects
     or their selection points (similar to newly creating objects).
 
@@ -3471,7 +3471,7 @@ public: // overridables of base class QGraphicsScene
     In edit mode:
 
     - If currently an object is "under construction" the mouse event will be
-      forwarded to the object under construction. Polylines for example will
+      forwarded to the object under construction. Polygons for example will
       add new shape points when receiving mouse press events.
     - If currently no object is "under construction" but an edit tool is
       selected (if a graph object factory has been set), a new graphical object
@@ -3677,7 +3677,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     If an object is selected the edit mode must have been set correspondingly on
     receiving the prior mouse press event.
 
-    If a polyline or polygon is under construction new line segments will be
+    If a polygon or polygon is under construction new line segments will be
     appended to the previously created line segment (free hand painting).
 
     If no drawing tool is activated and no object is under construction the
@@ -3772,14 +3772,14 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             }
             //if (bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor) {
             //    // Some items may completely overlap (encircle) other objects (a big rectangle may completely
-            //    // enclose a smaller rectangle or the bounding rectangle of a polyline may enclose other objects).
+            //    // enclose a smaller rectangle or the bounding rectangle of a polygon may enclose other objects).
             //    // In this case Qt's graphic scene does not dispatch the mouse events as hover events to the
             //    // enclosed objects if they are not "on top" (according to the scene's item list Z order) of the
             //    // enclosing items. If the outer object does not hide the inner object (fill style solid pattern)
             //    // this behavior is not what we want and what the user expects. E.g. if a rectangle with
             //    // "FillStyle = NoFill" would enclose another object the user would expect that the inner object
-            //    // can be selected by mouse clicks. And if you consider polylines which are never "filled" objects,
-            //    // the inner objects should always be selectable by mouse clicks. The polyline as the outer object
+            //    // can be selected by mouse clicks. And if you consider polygons which are never "filled" objects,
+            //    // the inner objects should always be selectable by mouse clicks. The polygon as the outer object
             //    // should only be selected if one of its line segments would be hit.
             //    QRectF rctToCheck(
             //        /* x      */ i_pEv->scenePos().x() - m_fHitTolerance_px,
@@ -4826,7 +4826,7 @@ protected: // auxiliary methods
 
     Some items may completely overlap (encircle) other objects. For example a big
     rectangle may completely enclose a smaller rectangle or the bounding rectangle
-    of a polyline may enclose other objects.
+    of a polygon may enclose other objects.
 
     In this case Qt's graphic scene does not dispatch the mouse events as hover events
     to the enclosed objects if they are not "on top" (according to the scene's item
@@ -4834,8 +4834,8 @@ protected: // auxiliary methods
     object (fill style solid pattern) this behavior is not desired and what the user
     would expect. E.g. if a rectangle with "FillStyle = NoFill" would enclose another
     object the user would expect that the inner object can be selected by mouse clicks.
-    And if you consider polylines which are never "filled" objects the inner objects
-    should always be selectable by mouse clicks. The polyline as the outer object
+    And if you consider polygons which are never "filled" objects the inner objects
+    should always be selectable by mouse clicks. The polygon as the outer object
     should only be selected if one of its line segments would be hit.
 */
 //void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv)

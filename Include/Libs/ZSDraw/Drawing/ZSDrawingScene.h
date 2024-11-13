@@ -30,7 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSDraw/Common/ZSDrawGridSettings.h"
 #include "ZSDraw/Common/ZSDrawingSize.h"
-#include "ZSDraw/Common/ZSDrawPhysValPolyline.h"
+#include "ZSDraw/Common/ZSDrawPhysValPolygon.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
@@ -121,10 +121,10 @@ public: // instance methods
     CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPolyline convert(const QPolygonF& i_polyline) const;
-    CPhysValPolyline convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPolyline convert(const CPhysValPolyline& i_physValPolyline) const;
-    CPhysValPolyline convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolygon convert(const QPolygonF& i_polygon) const;
+    CPhysValPolygon convert(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolygon convert(const CPhysValPolygon& i_physValPolygon) const;
+    CPhysValPolygon convert(const CPhysValPolygon& i_physValPolygon, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const QRectF& i_rect) const;
     CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const CPhysValRect& i_physValRect) const;

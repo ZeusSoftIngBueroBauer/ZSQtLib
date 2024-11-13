@@ -149,6 +149,7 @@ const QString c_strXmlElemNameGridSettings = "GridSettings";
 const QString c_strXmlElemNameDrawSettings = "DrawSettings";
 const QString c_strXmlElemNameGeometry = "Geometry";
 const QString c_strXmlElemNameShapePoints = "ShapePoints";
+const QString c_strXmlElemNameShapePointP = "P";
 const QString c_strXmlElemNameShapePointP1 = "P1";
 const QString c_strXmlElemNameShapePointP2 = "P2";
 const QString c_strXmlElemNameRectangle = "Rectangle";

@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
@@ -45,6 +46,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
+using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
@@ -65,13 +67,23 @@ CObjFactoryPolygon::CObjFactoryPolygon( const QPixmap& i_pxmToolIcon ) :
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ "" );
+}
 
 //------------------------------------------------------------------------------
 CObjFactoryPolygon::~CObjFactoryPolygon()
 //------------------------------------------------------------------------------
 {
-} // dtor
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "dtor",
+        /* strAddInfo   */ "" );
+}
 
 /*==============================================================================
 public: // interface methods
@@ -79,8 +91,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolygon::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -97,18 +108,11 @@ CGraphObj* CObjFactoryPolygon::createGraphObj(
     CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
 
-#if 0
-    QPointF   ptStart = i_ptItemPos;
-    QPointF   ptEnd( i_ptItemPos.x()+1, i_ptItemPos.y()+1 );
-    QPolygonF plg;
-    plg.append(ptStart);
-    plg.append(ptEnd);
-    pGraphObj->setPolygon(plg);
-#endif
-
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(pGraphObj->path());
+    }
     return pGraphObj;
-
-} // createGraphObj
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolygon::createGraphObj(
@@ -133,18 +137,15 @@ CGraphObj* CObjFactoryPolygon::createGraphObj(
     CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
 
-#if 0
-    QPointF   ptStart = i_ptItemPos;
-    QPointF   ptEnd( i_ptItemPos.x()+1, i_ptItemPos.y()+1 );
-    QPolygonF plg;
-    plg.append(ptStart);
-    plg.append(ptEnd);
-    pGraphObj->setPolygon(plg);
-#endif
+    QPolygonF polygon({i_physValPoint.toQPointF()});
+    CPhysValPolygon physValPolygon(*i_pDrawingScene, polygon, i_physValPoint.unit());
+    pGraphObj->setPolygon(physValPolygon);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(pGraphObj->path());
+    }
     return pGraphObj;
-
-} // createGraphObj
+}
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryPolygon::saveGraphObj(
@@ -157,91 +158,39 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
     }
 
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "GraphObj:" + i_pGraphObj->NameSpace();
-        strMthInArgs += "::" + i_pGraphObj->ClassName();
-        strMthInArgs += "::" + i_pGraphObj->name();
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObj->path();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    SErrResultInfo errResultInfo;
+    SErrResultInfo errResultInfo = CObjFactoryPolyline::saveGraphObj(i_pGraphObj, EGraphObjTypePolygon, i_xmlStreamWriter);
 
-    CGraphObjPolygon* pGraphObj = dynamic_cast<CGraphObjPolygon*>(i_pGraphObj);
-
-    if( pGraphObj == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjPolygon == nullptr" );
-    }
-
-    // Draw Attributes
-    //----------------
-
-    CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
-    drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
-
-    // Geometry
-    //-------------
-
-    QPolygonF plg = pGraphObj->polygon(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
-    QPointF   ptPos = pGraphObj->pos();
-    double    fRotAngle_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
-    QPointF   pt;
-    int       idxPt;
-
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement( "Pos", qPoint2Str(ptPos) );
-    i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
-
-    for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-    {
-        pt = plg[idxPt];
-        i_xmlStreamWriter.writeTextElement( "Pt" + QString::number(idxPt), qPoint2Str(pt) );
-    }
-    i_xmlStreamWriter.writeEndElement();
-
-    // Z-Value
-    //---------------
-
-    i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
-
-    // Labels
-    //----------------
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // saveGraphObj
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolygon::loadGraphObj(
-    CDrawingScene*    i_pDrawingScene,
-    CGraphObjGroup*   i_pGraphObjGroupParent,
-    const QString&    i_strObjName,
+    CDrawingScene* i_pDrawingScene,
+    CGraphObjGroup* i_pGraphObjGroupParent,
+    const QString& i_strObjName,
     QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
-    if( i_pDrawingScene == nullptr )
-    {
+    if (i_pDrawingScene == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
     }
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path())
-            + ", ObjName: " + i_strObjName;
+                     + ", ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -249,147 +198,8 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjPolygon* pGraphObj = nullptr;
-
-    QString       strElemName;
-    QString       strElemText;
-    bool          bConverted;
-    CDrawSettings drawSettings(EGraphObjTypePolygon);
-    QPolygonF     plg;
-    QPointF       ptPos;
-    bool          bPosValid = false;
-    double        fRotAngle_deg = 0.0;
-    double        fZValue = 0.0;
-
-    QList<SLabelDscr> arTextLabels;
-
-    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-    {
-        strElemName = i_xmlStreamReader.name().toString();
-
-        if( i_xmlStreamReader.isStartElement() )
-        {
-            if( strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings )
-            {
-                drawSettings.load(i_xmlStreamReader);
-            }
-
-            else if( strElemName == XmlStreamParser::c_strXmlElemNameGeometry )
-            {
-            }
-
-            else if( strElemName == "Pos" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                QPointF ptTmp = str2QPointF(strElemText, &bConverted);
-
-                if( bConverted )
-                {
-                    ptPos = ptTmp;
-                    bPosValid = true;
-                }
-
-            } // if( strElemName == "Pos" )
-
-            else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
-            {
-                QString strIdxPtTmp = strElemName.right(strElemName.size()-2);
-
-                int idxPtTmp = strIdxPtTmp.toInt(&bConverted);
-
-                if( bConverted && idxPtTmp < 10000 )
-                {
-                    strElemText = i_xmlStreamReader.readElementText();
-
-                    QPointF ptTmp = str2QPointF(strElemText,&bConverted);
-
-                    if( bConverted )
-                    {
-                        if( plg.size() < idxPtTmp+1 )
-                        {
-                            plg.resize(idxPtTmp+1);
-                        }
-                        plg[idxPtTmp] = ptTmp;
-                    }
-                }
-
-            } // if( strElemName == "Pt" )
-
-            else if( strElemName == "RotAngleDeg" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                double fValTmp = strElemText.toDouble(&bConverted);
-
-                if( bConverted )
-                {
-                    fRotAngle_deg = fValTmp;
-                }
-
-            } // if( strElemName == "RotAngleDeg" )
-
-            else if( strElemName == "ZValue" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                double fTmp = strElemText.toDouble(&bConverted);
-
-                if( bConverted )
-                {
-                    fZValue = fTmp;
-                }
-
-            } // if( strElemName == "ZValue" )
-
-            else if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
-            {
-                arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
-
-            } // if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
-
-        } // if( xmlStreamReader.isStartElement() )
-
-        else if( i_xmlStreamReader.isEndElement() )
-        {
-            if( strElemName == "GraphObj" )
-            {
-                break;
-            }
-
-        } // if( i_xmlStreamReader.isEndElement() )
-
-    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-
-    if( bPosValid && plg.size() > 1 )
-    {
-        pGraphObj = new CGraphObjPolygon(i_pDrawingScene, i_strObjName);
-        pGraphObj->setDrawSettings(drawSettings);
-
-        pGraphObj->setPolygon(plg);
-
-        i_pDrawingScene->addGraphObj(pGraphObj);
-
-        pGraphObj->setPos(ptPos);
-        //pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
-        pGraphObj->setStackingOrderValue(fZValue);
-
-        // Before calling "onGraphObjCreationFinished" the object must have been added
-        // to its parent group. Otherwise the drawing scene is not able to retrieve
-        // the unique object id and add the object to the hash.
-        if( i_pGraphObjGroupParent != nullptr )
-        {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-            //i_pGraphObjGroup->addGraphObj(pGraphObj);
-        }
-
-        //i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        pGraphObj->acceptCurrentAsOriginalCoors();
-#endif
-
-    } // if( bPosValid && plg.size() > 1 )
+    CGraphObj* pGraphObj = CObjFactoryPolyline::loadGraphObj(
+        i_pDrawingScene, i_pGraphObjGroupParent, i_strObjName, EGraphObjTypePolygon, i_xmlStreamReader);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());

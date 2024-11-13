@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObj_h
 
 #include "ZSSys/ZSSysIdxTreeEntry.h"
-#include "ZSDraw/Common/ZSDrawPhysValPolyline.h"
+#include "ZSDraw/Common/ZSDrawPhysValPolygon.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
 

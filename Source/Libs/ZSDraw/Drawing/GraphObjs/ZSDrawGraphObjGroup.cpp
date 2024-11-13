@@ -1759,38 +1759,38 @@ CPhysValLine CGraphObjGroup::convert(const CPhysValLine& i_physValLine, const CU
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CGraphObjGroup::convert(const QPolygonF& i_polyline) const
+CPhysValPolygon CGraphObjGroup::convert(const QPolygonF& i_polygon) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return convert(CPhysValPolyline(*m_pDrawingScene, i_polyline, Units.Length.px), drawingSize.unit());
+    return convert(CPhysValPolygon(*m_pDrawingScene, i_polygon, Units.Length.px), drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CGraphObjGroup::convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValPolygon CGraphObjGroup::convert(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValPolyline(*m_pDrawingScene, i_polyline, Units.Length.px), i_unitDst);
+    return convert(CPhysValPolygon(*m_pDrawingScene, i_polygon, Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CGraphObjGroup::convert(const CPhysValPolyline& i_physValPolyline) const
+CPhysValPolygon CGraphObjGroup::convert(const CPhysValPolygon& i_physValPolygon) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return convert(i_physValPolyline, drawingSize.unit());
+    return convert(i_physValPolygon, drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CGraphObjGroup::convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValPolygon CGraphObjGroup::convert(const CPhysValPolygon& i_physValPolygon, const ZS::PhysVal::CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    CPhysValPolyline physValPolyline(*m_pDrawingScene, i_unitDst);
-    for (int idxPt = 0; idxPt < i_physValPolyline.count(); ++idxPt) {
-        CPhysValPoint physValPt = convert(i_physValPolyline.at(idxPt), i_unitDst);
-        physValPolyline.append(physValPt);
+    CPhysValPolygon physValPolygon(*m_pDrawingScene, i_unitDst);
+    for (int idxPt = 0; idxPt < i_physValPolygon.count(); ++idxPt) {
+        CPhysValPoint physValPt = convert(i_physValPolygon.at(idxPt), i_unitDst);
+        physValPolygon.append(physValPt);
     }
-    return physValPolyline;
+    return physValPolygon;
 }
 
 //------------------------------------------------------------------------------
@@ -1954,6 +1954,54 @@ CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine, const
     lineF.setP2(pGraphicsItemThis->mapToScene(lineF.p2()));
     CPhysValLine physValLine = m_pDrawingScene->convert(lineF, i_unitDst);
     return physValLine;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical line, whose points are relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
+
+    @param [in] i_physValLine
+        Line to be mapped.
+
+    @return Line in scene coordinates in the unit of the drawing scene.
+*/
+CPhysValPolygon CGraphObjGroup::mapToScene(const CPhysValPolygon& i_physValPolygon) const
+//------------------------------------------------------------------------------
+{
+    return mapToScene(i_physValPolygon, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical line, whose points are relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
+
+    @param [in] i_physValLine
+        Line to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Line in scene coordinates in the desired unit.
+*/
+CPhysValPolygon CGraphObjGroup::mapToScene(const CPhysValPolygon& i_physValPolygon, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPolygonF polygon = convert(i_physValPolygon, Units.Length.px).toQPolygonF();
+    for (int idxPt = 0; idxPt < polygon.size(); ++idxPt) {
+        QPointF pt = mapFromTopLeftOfBoundingRect(polygon[idxPt]);
+        pt = pGraphicsItemThis->mapToScene(pt);
+        polygon[idxPt] = pt;
+    }
+    CPhysValPolygon physValPolygon = m_pDrawingScene->convert(polygon, i_unitDst);
+    return physValPolygon;
 }
 
 //------------------------------------------------------------------------------
@@ -3573,35 +3621,7 @@ protected: // overridable slots of base class CGraphObj
 //}
 
 //------------------------------------------------------------------------------
-/*! @brief The slot method is called if the parent item of the item changes
-           its geometry on the scene and emits the geometryOnSceneChanged signal.
-
-    When resizing a group all children of the group should be resized and positioned so
-    that they keep their relative positions and sizes within the group. If the item
-    was added to a new group the current rectangle of the parent group was stored as
-    the original group rectangle.
-
-    If the item is removed from a group (but not added to a new group) the original
-    parent group rectangle is invalidated.
-
-    The default implementation just calculates the current scale factors of the
-    parent group and emits the signal geometryOnSceneChanged.
-
-    Labels override this method to udpate their positions on the scene and to update
-    the geometry information of the items they are linked to but do not emit the
-    geometryOnSceneChanged signal again.
-
-    Other graphical objects must override this method to update their local graphics
-    item coordinates and to update their position in the parent group.
-
-    @note This method must return immediately if the parent group is about to
-          add another child (see flag m_iIgnoreParentGeometryChange).
-
-    @param [in] i_pGraphObjParent
-        Pointer to parent item whose geometry on the scene has been changed.
-    @param [in] i_bParentOfParentChanged
-        false (default), if the geometry of the parent has been changed directly.
-        true if the geometry has been changed because the parent got a new parent.
+/*! @brief Reimplements the method of base class CGraphObj.
 */
 void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
     CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
@@ -3669,12 +3689,12 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
                 // item in the parent. This has to be done "manually" afterwards.
 
                 // Move the object to the parent position.
-                // This has to be done after resizing the line which updates the local coordinates
-                // of the line with origin (0/0) at the lines center point.
+                // This has to be done after resizing the item which updates the local coordinates
+                // of the item with origin (0/0) at the center point.
                 // "setPos" will trigger an itemChange call which will update the position of the
                 // selection points and labels. To position the selection points and labels correctly
                 // the local coordinate system must be up-to-date.
-                // Also note that itemChange must not overwrite the current line value (refCountGuard).
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
                 // If the position is not changed, itemChange is not called with PositionHasChanged and
                 // the position of the arrow heads will not be updated. We got to do this here "manually".
                 if (ptPos != ptPosPrev) {
@@ -3695,6 +3715,8 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
 void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
 //------------------------------------------------------------------------------
 {
@@ -3806,7 +3828,7 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Overrides the pure virtual method of base class CGraphObj.
+/*! @brief Reimplements the method of base class CGraphObj.
 */
 void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
     CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
@@ -3857,7 +3879,7 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Overrides the pure virtual method of base class CGraphObj.
+/*! @brief Reimplements the method of base class CGraphObj.
 */
 void CGraphObjGroup::updateTransformedCoorsOnParentGeometryChanged()
 //------------------------------------------------------------------------------
@@ -3886,7 +3908,7 @@ void CGraphObjGroup::updateTransformedCoorsOnParentGeometryChanged()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Overrides the pure virtual method of base class CGraphObj.
+/*! @brief Reimplements the method of base class CGraphObj.
 */
 void CGraphObjGroup::updateTransformedCoorsOnItemPositionChanged()
 //------------------------------------------------------------------------------

@@ -780,7 +780,7 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
             CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pGraphObj);
             if( pGraphObjPolyline != nullptr )
             {
-                pGraphObjPolyline->setPolygon(m_plg);
+                //pGraphObjPolyline->setPolygon(m_plg);
             }
             else
             {

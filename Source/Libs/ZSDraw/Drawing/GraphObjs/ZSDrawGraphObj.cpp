@@ -6072,7 +6072,7 @@ SLabelDscr CGraphObj::getGeometryLabelDescriptor(const QString& i_strName) const
 bool CGraphObj::geometryLabelHasDefaultValues(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    if (!m_hshLabelDscrs.contains(i_strName)) {
+    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 

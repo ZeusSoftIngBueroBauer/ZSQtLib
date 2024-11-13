@@ -187,10 +187,10 @@ public: // instance methods
     CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPolyline convert(const QPolygonF& i_polyline) const;
-    CPhysValPolyline convert(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPolyline convert(const CPhysValPolyline& i_physValPolyline) const;
-    CPhysValPolyline convert(const CPhysValPolyline& i_physValPolyline, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolygon convert(const QPolygonF& i_polygon) const;
+    CPhysValPolygon convert(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolygon convert(const CPhysValPolygon& i_physValPolygon) const;
+    CPhysValPolygon convert(const CPhysValPolygon& i_physValPolygon, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const QRectF& i_rect) const;
     CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const CPhysValRect& i_physValRect) const;
@@ -200,6 +200,8 @@ public: // instance methods
     CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
     CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPolygon mapToScene(const CPhysValPolygon& i_physValPolygon) const;
+    CPhysValPolygon mapToScene(const CPhysValPolygon& i_physValPolygon, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
     ZS::PhysVal::CPhysVal mapRotationAngleToScene(const ZS::PhysVal::CPhysVal& i_physValAngle);

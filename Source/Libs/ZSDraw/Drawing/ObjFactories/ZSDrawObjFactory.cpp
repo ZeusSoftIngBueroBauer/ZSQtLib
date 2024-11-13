@@ -343,24 +343,14 @@ QString CObjFactory::getFilePath() const
 }
 
 /*==============================================================================
-protected: // overridables
+protected: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CObjFactory::saveGraphObjTextLabels(
-    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->keyInTree());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "saveGraphObjTextLabels",
-        /* strAddInfo   */ strMthInArgs );
-
     // The predefined labels should be at the beginning. And sorted by their names so that
     // the content of the file is always the same (hashes have an unpredicted order).
     QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
@@ -412,15 +402,9 @@ void CObjFactory::saveGraphObjTextLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<SLabelDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader) const
+QList<SLabelDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "loadGraphObjTextLabels",
-        /* strAddInfo   */ "" );
-
     QList<SLabelDscr> arLabelDscrs;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
@@ -485,19 +469,9 @@ QList<SLabelDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStr
 
 //------------------------------------------------------------------------------
 void CObjFactory::saveGraphObjGeometryLabels(
-    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->keyInTree());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "saveGraphObjGeometryLabels",
-        /* strAddInfo   */ strMthInArgs );
-
     QStringList strlstLabelNames = i_pGraphObj->getGeometryLabelNames();
     strlstLabelNames.sort();
     for (const QString& strName : strlstLabelNames) {
@@ -519,15 +493,9 @@ void CObjFactory::saveGraphObjGeometryLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<SLabelDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader) const
+QList<SLabelDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "loadGraphObjGeometryLabels",
-        /* strAddInfo   */ "" );
-
     QList<SLabelDscr> arLabelDscrs;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {

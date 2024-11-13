@@ -116,10 +116,10 @@ CGraphObjPolyline::CGraphObjPolyline(CDrawingScene* i_pDrawingScene, const QStri
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
         /* strObjName          */ i_strObjName.isEmpty() ? "Polyline" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
-    m_polylineOrig(),
-    m_physValPolylineOrig(*m_pDrawingScene),
-    m_physValPolylineScaled(*m_pDrawingScene),
-    m_physValPolylineScaledAndRotated(*m_pDrawingScene),
+    m_polygonOrig(),
+    m_physValPolygonOrig(*m_pDrawingScene),
+    m_physValPolygonScaled(*m_pDrawingScene),
+    m_physValPolygonScaledAndRotated(*m_pDrawingScene),
     m_plgLineStartArrowHead(),
     m_plgLineEndArrowHead()
 {
@@ -161,10 +161,10 @@ CGraphObjPolyline::CGraphObjPolyline(
         /* strType             */ ZS::Draw::graphObjType2Str(i_type),
         /* strObjName          */ i_strObjName),
     QGraphicsPolygonItem(),
-    m_polylineOrig(),
-    m_physValPolylineOrig(*m_pDrawingScene),
-    m_physValPolylineScaled(*m_pDrawingScene),
-    m_physValPolylineScaledAndRotated(*m_pDrawingScene),
+    m_polygonOrig(),
+    m_physValPolygonOrig(*m_pDrawingScene),
+    m_physValPolygonScaled(*m_pDrawingScene),
+    m_physValPolygonScaledAndRotated(*m_pDrawingScene),
     m_plgLineStartArrowHead(),
     m_plgLineEndArrowHead()
 {
@@ -245,7 +245,7 @@ CGraphObjPolyline::~CGraphObjPolyline()
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "dtor",
+        /* strMethod    */ "CGraphObjPolyline::dtor",
         /* strAddInfo   */ "" );
 
     emit_aboutToBeDestroyed();
@@ -281,7 +281,7 @@ CGraphObj* CGraphObjPolyline::clone()
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_pDrawingScene, m_strName);
-    pGraphObj->setPolyline(getPolyline(drawingSize.unit()));
+    pGraphObj->setPolygon(getPolygon(drawingSize.unit()));
     pGraphObj->setDrawSettings(m_drawSettings);
     return pGraphObj;
 }
@@ -361,37 +361,37 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjPolyline::setPolyline(const CPhysValPolyline& i_physValPolyline)
+void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "[" + QString::number(i_physValPolyline.count()) + "](" + i_physValPolyline.toString() + ")";
+        strMthInArgs = "[" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ")";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setPolyline",
+        /* strMethod    */ "setPolygon",
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
     QPointF ptPosPrev = pos();
 
-    // Depending on the Y scale orientation of the drawing scene the polyline coordinates
+    // Depending on the Y scale orientation of the drawing scene the polygon coordinates
     // have been passed either relative to the top left or bottom right corner of the
     // parent item's bounding rectangle.
     // The coordinates need to be transformed into the local coordinate system of the graphical
     // object whose origin point is the center of the objects bounding rectangle.
 
-    QPolygonF polyline;
-    QPointF ptPos = getItemPosAndLocalCoors(i_physValPolyline, polyline);
+    QPolygonF polygon;
+    QPointF ptPos = getItemPosAndLocalCoors(i_physValPolygon, polygon);
 
     bool bGeometryOnSceneChanged = false;
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
-    if (m_physValPolylineOrig.isNull() || polygon() != polyline || m_physValPolylineOrig != i_physValPolyline)
+    if (m_physValPolygonOrig.isNull() || this->polygon() != polygon || m_physValPolygonOrig != i_physValPolygon)
     {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
@@ -401,23 +401,23 @@ void CGraphObjPolyline::setPolyline(const CPhysValPolyline& i_physValPolyline)
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
             // Store physical coordinates.
-            CPhysValPolyline physValPolyline(i_physValPolyline);
-            physValPolyline.setAngle(0.0);
-            setPhysValPolylineOrig(i_physValPolyline);
-            setPhysValPolylineScaled(i_physValPolyline);
-            setPhysValPolylineScaledAndRotated(i_physValPolyline);
+            CPhysValPolygon physValPolygon(i_physValPolygon);
+            physValPolygon.setAngle(0.0);
+            setPhysValPolygonOrig(i_physValPolygon);
+            setPhysValPolygonScaled(i_physValPolygon);
+            setPhysValPolygonScaledAndRotated(i_physValPolygon);
 
-            // Set the polyline in local coordinate system.
+            // Set the polygon in local coordinate system.
             // Also note that itemChange must not overwrite the current values (refCountGuard).
-            setPolylineOrig(polyline);
-            QGraphicsPolygonItem_setPolygon(polyline);
+            setPolygonOrig(polygon);
+            QGraphicsPolygonItem_setPolygon(polygon);
 
             // Please note that GraphicsPolygonItem::setPolygon did not update the position of the
             // item in the parent. This has to be done "manually" afterwards.
 
             // Move the object to the parent position.
-            // This has to be done after resizing the polyline which updates the local coordinates
-            // of the polyline with origin (0/0) at the polylines center point.
+            // This has to be done after resizing the polygon which updates the local coordinates
+            // of the polygon with origin (0/0) at the polygons center point.
             // "setPos" will trigger an itemChange call which will update the position of the
             // selection points and labels. To position the selection points and labels correctly
             // the local coordinate system must be up-to-date.
@@ -443,12 +443,12 @@ void CGraphObjPolyline::setPolyline(const CPhysValPolyline& i_physValPolyline)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjPolyline::setPolyline(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unit)
+void CGraphObjPolyline::setPolygon(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "[" + QString::number(i_polyline.count()) + "](" + qPolygon2Str(i_polyline) + ") " + i_unit.symbol();
+        strMthInArgs = "[" + QString::number(i_polygon.count()) + "](" + qPolygon2Str(i_polygon) + ") " + i_unit.symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -457,25 +457,25 @@ void CGraphObjPolyline::setPolyline(const QPolygonF& i_polyline, const ZS::PhysV
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    setPolyline(CPhysValPolyline(*m_pDrawingScene, i_polyline, i_unit));
+    setPolygon(CPhysValPolygon(*m_pDrawingScene, i_polygon, i_unit));
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CGraphObjPolyline::getPolyline() const
+CPhysValPolygon CGraphObjPolyline::getPolygon() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(m_pDrawingScene->drawingSize().unit());
+    return getPolygon(m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValPolyline CGraphObjPolyline::getPolyline(const ZS::PhysVal::CUnit& i_unit) const
+CPhysValPolygon CGraphObjPolyline::getPolygon(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     if (parentGroup() != nullptr) {
-        return parentGroup()->convert(m_physValPolylineScaledAndRotated, i_unit);
+        return parentGroup()->convert(m_physValPolygonScaledAndRotated, i_unit);
     }
     else {
-        return m_pDrawingScene->convert(m_physValPolylineScaledAndRotated, i_unit);
+        return m_pDrawingScene->convert(m_physValPolygonScaledAndRotated, i_unit);
     }
 }
 
@@ -494,9 +494,9 @@ void CGraphObjPolyline::setCenter(const QPointF& i_pt)
         /* strMethod    */ "setCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setCenter(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setCenter(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -514,23 +514,23 @@ void CGraphObjPolyline::setCenter(const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "setCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setCenter(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setCenter(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getCenter() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().center();
+    return getPolygon().center();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getCenter(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).center();
+    return getPolygon(i_unit).center();
 }
 
 //------------------------------------------------------------------------------
@@ -548,9 +548,9 @@ void CGraphObjPolyline::setSize(const QSizeF& i_size)
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setSize(i_size);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setSize(i_size);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -568,23 +568,23 @@ void CGraphObjPolyline::setSize(const CPhysValSize& i_physValSize)
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setSize(i_physValSize);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setSize(i_physValSize);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysValSize CGraphObjPolyline::getSize() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().size();
+    return getPolygon().size();
 }
 
 //------------------------------------------------------------------------------
 CPhysValSize CGraphObjPolyline::getSize(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).size();
+    return getPolygon(i_unit).size();
 }
 
 //------------------------------------------------------------------------------
@@ -602,9 +602,9 @@ void CGraphObjPolyline::setWidth(double i_fWidth)
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setWidth(i_fWidth);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setWidth(i_fWidth);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -622,9 +622,9 @@ void CGraphObjPolyline::setWidth(const CPhysVal& i_physValWidth)
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setWidth(i_physValWidth);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setWidth(i_physValWidth);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -642,9 +642,9 @@ void CGraphObjPolyline::setWidthByMovingLeftCenter(const QPointF& i_pt)
         /* strMethod    */ "setWidthByMovingLeftCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setWidthByMovingLeftCenter(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setWidthByMovingLeftCenter(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -662,9 +662,9 @@ void CGraphObjPolyline::setWidthByMovingLeftCenter(const CPhysValPoint& i_physVa
         /* strMethod    */ "setWidthByMovingLeftCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setWidthByMovingLeftCenter(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setWidthByMovingLeftCenter(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -682,9 +682,9 @@ void CGraphObjPolyline::setWidthByMovingRightCenter(const QPointF& i_pt)
         /* strMethod    */ "setWidthByMovingRightCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setWidthByMovingRightCenter(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setWidthByMovingRightCenter(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -702,23 +702,23 @@ void CGraphObjPolyline::setWidthByMovingRightCenter(const CPhysValPoint& i_physV
         /* strMethod    */ "setWidthByMovingRightCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setWidthByMovingRightCenter(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setWidthByMovingRightCenter(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CGraphObjPolyline::getWidth() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().width();
+    return getPolygon().width();
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CGraphObjPolyline::getWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).width();
+    return getPolygon(i_unit).width();
 }
 
 //------------------------------------------------------------------------------
@@ -736,9 +736,9 @@ void CGraphObjPolyline::setHeight(double i_fHeight)
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setHeight(i_fHeight);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setHeight(i_fHeight);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -756,9 +756,9 @@ void CGraphObjPolyline::setHeight(const CPhysVal& i_physValHeight)
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setHeight(i_physValHeight);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setHeight(i_physValHeight);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -776,9 +776,9 @@ void CGraphObjPolyline::setHeightByMovingTopCenter(const QPointF& i_pt)
         /* strMethod    */ "setHeightByMovingTopCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setHeightByMovingTopCenter(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setHeightByMovingTopCenter(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -796,9 +796,9 @@ void CGraphObjPolyline::setHeightByMovingTopCenter(const CPhysValPoint& i_physVa
         /* strMethod    */ "setHeightByMovingTopCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setHeightByMovingTopCenter(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setHeightByMovingTopCenter(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -816,9 +816,9 @@ void CGraphObjPolyline::setHeightByMovingBottomCenter(const QPointF& i_pt)
         /* strMethod    */ "setHeightByMovingBottomCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setHeightByMovingBottomCenter(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setHeightByMovingBottomCenter(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -836,23 +836,23 @@ void CGraphObjPolyline::setHeightByMovingBottomCenter(const CPhysValPoint& i_phy
         /* strMethod    */ "setHeightByMovingBottomCenter",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setHeightByMovingBottomCenter(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setHeightByMovingBottomCenter(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CGraphObjPolyline::getHeight() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().height();
+    return getPolygon().height();
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CGraphObjPolyline::getHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).height();
+    return getPolygon(i_unit).height();
 }
 
 //------------------------------------------------------------------------------
@@ -870,9 +870,9 @@ void CGraphObjPolyline::setTopLeft(const QPointF& i_pt)
         /* strMethod    */ "setTopLeft",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setTopLeft(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setTopLeft(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -890,23 +890,23 @@ void CGraphObjPolyline::setTopLeft(const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "setTopLeft",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setTopLeft(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setTopLeft(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getTopLeft() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().topLeft();
+    return getPolygon().topLeft();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getTopLeft(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).topLeft();
+    return getPolygon(i_unit).topLeft();
 }
 
 //------------------------------------------------------------------------------
@@ -924,9 +924,9 @@ void CGraphObjPolyline::setTopRight(const QPointF& i_pt)
         /* strMethod    */ "setTopRight",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setTopRight(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setTopRight(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -944,23 +944,23 @@ void CGraphObjPolyline::setTopRight(const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "setTopRight",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setTopRight(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setTopRight(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getTopRight() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().topRight();
+    return getPolygon().topRight();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getTopRight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).topRight();
+    return getPolygon(i_unit).topRight();
 }
 
 //------------------------------------------------------------------------------
@@ -978,9 +978,9 @@ void CGraphObjPolyline::setBottomRight(const QPointF& i_pt)
         /* strMethod    */ "setBottomRight",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setBottomRight(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setBottomRight(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -998,23 +998,23 @@ void CGraphObjPolyline::setBottomRight(const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "setBottomRight",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setBottomRight(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setBottomRight(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getBottomRight() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().bottomRight();
+    return getPolygon().bottomRight();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getBottomRight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).bottomRight();
+    return getPolygon(i_unit).bottomRight();
 }
 
 //------------------------------------------------------------------------------
@@ -1032,9 +1032,9 @@ void CGraphObjPolyline::setBottomLeft(const QPointF& i_pt)
         /* strMethod    */ "setBottomLeft",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setBottomLeft(i_pt);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setBottomLeft(i_pt);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1052,23 +1052,23 @@ void CGraphObjPolyline::setBottomLeft(const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "setBottomLeft",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setBottomLeft(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setBottomLeft(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getBottomLeft() const
 //------------------------------------------------------------------------------
 {
-    return getPolyline().bottomLeft();
+    return getPolygon().bottomLeft();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::getBottomLeft(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getPolyline(i_unit).bottomLeft();
+    return getPolygon(i_unit).bottomLeft();
 }
 
 /*==============================================================================
@@ -1108,9 +1108,9 @@ void CGraphObjPolyline::setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValA
         /* strMethod    */ "setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.setAngle(i_physValAngle);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.setAngle(i_physValAngle);
+    setPolygon(physValPolygon);
 }
 
 /*==============================================================================
@@ -1121,21 +1121,21 @@ public: // instance methods
 bool CGraphObjPolyline::isEmpty() const
 //------------------------------------------------------------------------------
 {
-    return m_physValPolylineScaledAndRotated.isEmpty();
+    return m_physValPolygonScaledAndRotated.isEmpty();
 }
 
 //------------------------------------------------------------------------------
 int CGraphObjPolyline::count() const
 //------------------------------------------------------------------------------
 {
-    return m_physValPolylineScaledAndRotated.count();
+    return m_physValPolygonScaledAndRotated.count();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObjPolyline::at(int i_idx) const
 //------------------------------------------------------------------------------
 {
-    return m_physValPolylineScaledAndRotated.at(i_idx);
+    return m_physValPolygonScaledAndRotated.at(i_idx);
 }
 
 //------------------------------------------------------------------------------
@@ -1153,9 +1153,9 @@ void CGraphObjPolyline::replace(int i_idx, const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "replace",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.replace(i_idx, i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.replace(i_idx, i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1173,9 +1173,9 @@ void CGraphObjPolyline::append(const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "append",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.append(i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.append(i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1193,9 +1193,9 @@ void CGraphObjPolyline::insert(int i_idx, const CPhysValPoint& i_physValPoint)
         /* strMethod    */ "insert",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.insert(i_idx, i_physValPoint);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.insert(i_idx, i_physValPoint);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1213,9 +1213,9 @@ void CGraphObjPolyline::remove(int i_idx, int i_iCount)
         /* strMethod    */ "remove",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.remove(i_idx, i_iCount);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.remove(i_idx, i_iCount);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1233,9 +1233,9 @@ void CGraphObjPolyline::removeAt(int i_idx)
         /* strMethod    */ "removeAt",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.removeAt(i_idx);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.removeAt(i_idx);
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1249,9 +1249,9 @@ void CGraphObjPolyline::removeFirst()
         /* strMethod    */ "removeFirst",
         /* strAddInfo   */ "" );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.removeFirst();
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.removeFirst();
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1265,9 +1265,9 @@ void CGraphObjPolyline::removeLast()
         /* strMethod    */ "removeLast",
         /* strAddInfo   */ "" );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    physValPolyline.removeLast();
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    physValPolygon.removeLast();
+    setPolygon(physValPolygon);
 }
 
 //------------------------------------------------------------------------------
@@ -1285,9 +1285,9 @@ CPhysValPoint CGraphObjPolyline::takeAt(int i_idx)
         /* strMethod    */ "takeAt",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    CPhysValPoint physValPoint = physValPolyline.takeAt(i_idx);
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    CPhysValPoint physValPoint = physValPolygon.takeAt(i_idx);
+    setPolygon(physValPolygon);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(physValPoint.toString());
     }
@@ -1305,9 +1305,9 @@ CPhysValPoint CGraphObjPolyline::takeFirst()
         /* strMethod    */ "takeFirst",
         /* strAddInfo   */ "" );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    CPhysValPoint physValPoint = physValPolyline.takeFirst();
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    CPhysValPoint physValPoint = physValPolygon.takeFirst();
+    setPolygon(physValPolygon);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(physValPoint.toString());
     }
@@ -1325,9 +1325,9 @@ CPhysValPoint CGraphObjPolyline::takeLast()
         /* strMethod    */ "takeLast",
         /* strAddInfo   */ "" );
 
-    CPhysValPolyline physValPolyline = getPolyline();
-    CPhysValPoint physValPoint = physValPolyline.takeLast();
-    setPolyline(physValPolyline);
+    CPhysValPolygon physValPolygon = getPolygon();
+    CPhysValPoint physValPoint = physValPolygon.takeLast();
+    setPolygon(physValPolygon);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(physValPoint.toString());
     }
@@ -1359,8 +1359,8 @@ QRectF CGraphObjPolyline::getBoundingRect() const
         /* strAddInfo   */ "" );
 
     // Points in local coordinates.
-    QPolygonF polyline = polygon();
-    QRectF rctBounding = polyline.boundingRect();
+    QPolygonF polygon = this->polygon();
+    QRectF rctBounding = polygon.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -1536,6 +1536,135 @@ void CGraphObjPolyline::showSelectionPoints(TSelectionPointTypes i_selPts)
 }
 
 /*==============================================================================
+public: // overridables of base class CGraphObj (text labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the list of the possible anchor points for the given label name.
+
+    For the predefined labels "Name", "P1" and "P2" the following applies:
+
+    - The "Name" label may be anchored to the center point of the line.
+    - "P1" may be anchored to the start of the line (SelectionPoint = TopLeft).
+    - "P2" may be anchored to the end of the line (SelectionPoint = BottomRight).
+
+    User defined labels may be anchored to either Center, Start or End of the line.
+
+    Please note that the most common used selection points should be at the beginning
+    of the list so that combo boxes to select the selection point start with those.
+
+    @return List of possbile selection points.
+*/
+QList<SGraphObjSelectionPoint> CGraphObjPolyline::getPossibleLabelAnchorPoints(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
+    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
+    if (s_hshSelPtsPredefined.isEmpty()) {
+        QList<SGraphObjSelectionPoint> arSelPts;
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), ESelectionPoint::Center));
+        s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
+        arSelPts.clear();
+    }
+    if (s_hshSelPtsPredefined.contains(i_strName)) {
+        return s_hshSelPtsPredefined.value(i_strName);
+    }
+    return s_arSelPtsUserDefined;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjPolyline::labelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (isPredefinedLabelName(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        if (labelDscr.m_bLabelIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strLabelName) {
+            if (labelDscr.m_strText != m_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj (geometry labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjPolyline::geometryLabelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (m_strlstGeometryLabelNames.contains(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        if (labelDscr.m_bLabelIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (!labelDscr.m_strText.isEmpty()) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strGeometryLabelNameCenter) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
+/*==============================================================================
 public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -1627,8 +1756,8 @@ void CGraphObjPolyline::paint(
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
-    QPolygonF polyline = polygon();
-    if (polyline.size() < 2) {
+    QPolygonF polygon = this->polygon();
+    if (polygon.size() < 2) {
         return;
     }
 
@@ -1646,9 +1775,9 @@ void CGraphObjPolyline::paint(
         }
         pn.setStyle(Qt::SolidLine);
         QPainterPath outline;
-        outline.moveTo(polyline[0]);
-        for (int idxPt = 1; idxPt < polyline.size(); ++idxPt) {
-            outline.lineTo(polyline[idxPt]);
+        outline.moveTo(polygon[0]);
+        for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
+            outline.lineTo(polygon[idxPt]);
         }
         i_pPainter->strokePath(outline, pn);
         pn.setWidth(1 + m_drawSettings.getPenWidth());
@@ -1658,7 +1787,7 @@ void CGraphObjPolyline::paint(
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
     i_pPainter->setPen(pn);
     i_pPainter->setRenderHints(s_painterRenderHints);
-    i_pPainter->drawPolyline(polyline);
+    i_pPainter->drawPolyline(polygon);
 
     CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
     CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.getLineEndStyle(ELinePoint::End);
@@ -1704,7 +1833,7 @@ void CGraphObjPolyline::paint(
     }
 
     if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
-        if (!polyline.isEmpty()) {
+        if (!polygon.isEmpty()) {
             QRectF rctBounding = getBoundingRect();
             pn.setColor(Qt::blue);
             pn.setStyle(Qt::DotLine);
@@ -2529,7 +2658,7 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //            QPointF   pt;
 //            int       idxPt;
 //
-//            // The position of the polyline should become the top left corner of it's bounding rectangle.
+//            // The position of the polygon should become the top left corner of it's bounding rectangle.
 //            // On moving one shape point all other shape points should keep their scene position.
 //            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
 //            {
@@ -2625,7 +2754,7 @@ void CGraphObjPolyline::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //            QPointF pt;
 //            int     idxPt;
 //
-//            // The position of the polyline should become the top left corner of it's bounding rectangle.
+//            // The position of the polygon should become the top left corner of it's bounding rectangle.
 //            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
 //            {
 //                pt = plg[idxPt];
@@ -2809,6 +2938,263 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
 }
 
 /*==============================================================================
+protected: // overridable slots of base class CGraphObj
+==============================================================================*/
+
+////------------------------------------------------------------------------------
+//void CGraphObjPolyline::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_drawingSize.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "onDrawingSizeChanged",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_physValLineCurr.unit() != i_drawingSize.unit()) {
+//        m_bForceConversionToSceneCoors = true;
+//        setLine(m_pDrawingScene->convert(m_physValLineCurr, i_drawingSize.unit()));
+//        m_bForceConversionToSceneCoors = false;
+//        emit_geometryValuesUnitChanged();
+//    }
+//}
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
+void CGraphObjPolyline::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+//------------------------------------------------------------------------------
+{
+    if (m_iIgnoreParentGeometryChange > 0) {
+        return;
+    }
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    bool bGeometryOnSceneChanged = false;
+
+    {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
+
+        if (i_pGraphObjParent->isGroup()) {
+            CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+            if (i_bParentOfParentChanged) {
+                initParentTransform();
+                updateTransformedCoorsOnParentGeometryChanged();
+            }
+            CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
+            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+                setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
+            }
+            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+                setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
+            }
+
+            // The relative distance of the center point to the top left or bottom left corner
+            // of the parent's bounding rectangle should remain the same.
+            CPhysValPolygon physValPolygon = getPhysValPolygonScaled(m_physValPolygonOrig);
+            setPhysValPolygonScaled(physValPolygon);
+            physValPolygon.setAngle(m_physValRotationAngle);
+            setPhysValPolygonScaledAndRotated(physValPolygon);
+
+            QPointF ptPosPrev = pos();
+
+            QPolygonF polygon;
+            QPointF ptPos = getItemPosAndLocalCoors(physValPolygon, polygon);
+
+            // Prepare the item for a geometry change. This function must be called before
+            // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
+            QGraphicsItem_prepareGeometryChange();
+
+            {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+                CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+                // Set the polygon in local coordinate system.
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
+                QGraphicsPolygonItem_setPolygon(polygon);
+
+                // Please note that GraphicsPolygonItem::setPolygon did not update the position of the
+                // item in the parent. This has to be done "manually" afterwards.
+
+                // Move the object to the parent position.
+                // This has to be done after resizing the item which updates the local coordinates
+                // of the item with origin (0/0) at the center point.
+                // "setPos" will trigger an itemChange call which will update the position of the
+                // selection points and labels. To position the selection points and labels correctly
+                // the local coordinate system must be up-to-date.
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
+                // If the position is not changed, itemChange is not called with PositionHasChanged and
+                // the position of the arrow heads will not be updated. We got to do this here "manually".
+                if (ptPos != ptPosPrev) {
+                    QGraphicsItem_setPos(ptPos);
+                }
+                else {
+                    updateLineEndArrowHeadPolygons();
+                }
+            }
+            // If the geometry of the parent on the scene of this item changes, also the geometry
+            // on the scene of this item is changed.
+            bGeometryOnSceneChanged = true;
+        }
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+
+    // Emit signal after updated position info has been traced.
+    if (bGeometryOnSceneChanged) {
+        emit_geometryOnSceneChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
+void CGraphObjPolyline::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pSelectionPoint->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onSelectionPointGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
+    QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
+    QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
+    QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
+    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
+    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
+    if (parentGroup() != nullptr) {
+        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
+    }
+    else {
+        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+    }
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+
+    //if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+    //    if (selPt.m_idxPt == 0) {
+    //        setP1(physValParentSelPt);
+    //    }
+    //    else if (selPt.m_idxPt == 1) {
+    //        setP2(physValParentSelPt);
+    //    }
+    //}
+}
+
+/*==============================================================================
+protected: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
+*/
+void CGraphObjPolyline::updateTransformedCoorsOnParentChanged(
+    CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
+            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateTransformedCoorsOnParentChanged",
+        /* strAddInfo   */ strMthInArgs );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        setPolygonOrig(polygon());
+        CPhysValPolygon physValPolygon = getPhysValPolygonOrig(m_polygonOrig);
+        setPhysValPolygonOrig(physValPolygon);
+        physValPolygon = getPhysValPolygonScaled(m_physValPolygonOrig);
+        setPhysValPolygonScaled(physValPolygon);
+        setPhysValPolygonScaledAndRotated(physValPolygon);
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
+*/
+void CGraphObjPolyline::updateTransformedCoorsOnParentGeometryChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateTransformedCoorsOnParentGeometryChanged",
+        /* strAddInfo   */ "" );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        setPolygonOrig(polygon());
+        CPhysValPolygon physValPolygon = getPhysValPolygonOrig(m_polygonOrig);
+        setPhysValPolygonOrig(physValPolygon);
+        physValPolygon = getPhysValPolygonScaled(m_physValPolygonOrig);
+        setPhysValPolygonScaled(physValPolygon);
+        physValPolygon.setAngle(m_physValRotationAngle);
+        setPhysValPolygonScaledAndRotated(physValPolygon);
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
+*/
+void CGraphObjPolyline::updateTransformedCoorsOnItemPositionChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateTransformedCoorsOnItemPositionChanged",
+        /* strAddInfo   */ "" );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    // ItemChange is called but should not emit the geometryOnSceneChanged signal.
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        CPhysValPolygon physValPolygon = getPhysValPolygonOrig(m_polygonOrig);
+        setPhysValPolygonOrig(physValPolygon);
+        physValPolygon = getPhysValPolygonScaled(m_physValPolygonOrig);
+        setPhysValPolygonScaled(physValPolygon);
+        physValPolygon.setAngle(m_physValRotationAngle);
+        setPhysValPolygonScaledAndRotated(physValPolygon);
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged();
+}
+
+/*==============================================================================
 protected: // auxiliary instance methods
 ==============================================================================*/
 
@@ -2883,13 +3269,162 @@ void CGraphObjPolyline::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_l
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Calculates the scaled, not rotated polygon in pixels in item coordinates
+           relative to the origin (center point) of the orignal bounding rectangle.
+
+    The relative distance of the center point of the scaled polygon to the
+    origin (center point) of the parent's bounding rectangle remains the same.
+    The size is scaled to the scale factors of the parent group.
+
+    @param [in] i_polygonOrig
+        Unscaled polygon in the item's local coordinates system whose origin
+        is the center point of the item.
+    @return Scaled polygon.
+*/
+QPolygonF CGraphObjPolyline::getPolygonScaled(const QPolygonF& i_polygonOrig) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPolygon2Str(i_polygonOrig) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPolygonScaled",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rctBounding = i_polygonOrig.boundingRect();
+    QPointF ptCenter(m_fParentGroupScaleX * rctBounding.center().x(), m_fParentGroupScaleY * rctBounding.center().y());
+    QPolygonF polygonScaled;
+    for (int idxPt = 0; idxPt < i_polygonOrig.size(); ++idxPt) {
+        double fDX_px = m_fParentGroupScaleX * i_polygonOrig[idxPt].x();
+        double fDY_px = m_fParentGroupScaleY * i_polygonOrig[idxPt].y();
+        QPointF pt(ptCenter.x() - fDX_px/2.0, ptCenter.y() - fDY_px/2.0);
+        polygonScaled[idxPt] = pt;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qPolygon2Str(polygonScaled) + "}");
+    }
+    return polygonScaled;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the unscaled and not rotated physical polygon in the
+           current unit of the drawing scene relative to the top left or
+           bottom left corner of the parent's bounding rectangle.
+
+    @param [in] i_polygonOrig
+        Unscaled, not rotated polygon in the item's local coordinates system
+        whose origin is the center point of the item.
+    @return Physical polygon whose origin is either the top left or bottom
+            left corner of the parent's bounding rectangle.
+*/
+CPhysValPolygon CGraphObjPolyline::getPhysValPolygonOrig(const QPolygonF& i_polygonOrig) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPolygon2Str(i_polygonOrig) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValPolygonOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    CGraphObjPolyline* pVThis = const_cast<CGraphObjPolyline*>(this);
+    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    if (fRotationAngle_degree != 0.0) {
+        pVThis->QGraphicsItem_setRotation(0.0);
+    }
+    CPhysValPolygon physValPolygon(*m_pDrawingScene, i_polygonOrig);
+    if (parentGroup() != nullptr) {
+        for (int idxPt = 0; idxPt < i_polygonOrig.size(); ++idxPt) {
+            QPointF pt = pGraphicsItemThis->mapToParent(i_polygonOrig[idxPt]);
+            pt = parentGroup()->mapToTopLeftOfBoundingRect(pt);
+            CPhysValPoint physValPoint = parentGroup()->convert(pt);
+            physValPolygon.replace(idxPt, physValPoint);
+        }
+    }
+    else {
+        // Please note that "mapToScene" maps the local coordinates relative to the
+        // top left corner of the item's bounding rectangle and there is no need to
+        // call "mapToBoundingRectTopLeft" beforehand.
+        for (int idxPt = 0; idxPt < i_polygonOrig.size(); ++idxPt) {
+            QPointF pt = pGraphicsItemThis->mapToScene(i_polygonOrig[idxPt]);
+            CPhysValPoint physValPoint = m_pDrawingScene->convert(pt);
+            physValPolygon.replace(idxPt, physValPoint);
+        }
+    }
+    if (fRotationAngle_degree != 0.0) {
+        pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValPolygon.toString() + "} " + physValPolygon.unit().symbol());
+    }
+    return physValPolygon;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the scaled, not rotated physical polygon in the current
+           unit of the drawing scene relative to the top left or bottem left
+           corner of the parent's bounding rectangle.
+
+    The relative distance of the center point of the scaled polygon to the
+    top left or bottom left corner of the parent's bounding rectangle remains the same.
+    The size is scaled to the scale factors of the parent group.
+
+    @param [in] i_physValPolygonOrig
+        Unscaled polygon in the parent's, physical coordinates system whose origin
+        is the top left or bottom right corner of the parent's bounding rectangle.
+    @return Scaled polygon.
+*/
+CPhysValPolygon CGraphObjPolyline::getPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygonOrig) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPolygonOrig.toString() + "} " + i_physValPolygonOrig.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValPolygonScaled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValPoint physValPointCenter(*m_pDrawingScene);
+    QRectF rctBounding = i_physValPolygonOrig.toQPolygonF(m_pDrawingScene->drawingSize().unit()).boundingRect();
+    physValPointCenter.setX(m_fParentGroupScaleX * rctBounding.center().x());
+    physValPointCenter.setY(m_fParentGroupScaleY * rctBounding.center().y());
+    CPhysValPolygon physValPolygon(i_physValPolygonOrig);
+    for (int idxPt = 0; idxPt < i_physValPolygonOrig.count(); ++idxPt) {
+        double fDX = m_fParentGroupScaleX * i_physValPolygonOrig.at(idxPt).x().getVal();
+        double fDY = m_fParentGroupScaleY * i_physValPolygonOrig.at(idxPt).y().getVal();
+        CPhysValPoint physValPoint(*m_pDrawingScene);
+        physValPoint.setX(physValPointCenter.x().getVal() - fDX/2.0);
+        physValPoint.setY(physValPointCenter.y().getVal() - fDY/2.0);
+        physValPolygon.replace(idxPt, physValPoint);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValPolygon.toString() + "} " + physValPolygon.unit().symbol());
+    }
+    return physValPolygon;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Calculates the item position relative to the parent item or drawing scene
            as well as the item coordinates in local coordinates.
 
-    @param [in] i_physValPolyline
+    @param [in] i_physValPolygon
         Polyline in parent coordinates, depending on the Y scale orientation
         relative to the top left or bottom left corner of parent item's bounding
-        rectangle. If the item belongs to a parent group the passed polyline
+        rectangle. If the item belongs to a parent group the passed polygon
         must have been resized and the center must have been moved according to the
         parents scale factors.
     @param [out] o_rectF
@@ -2898,12 +3433,12 @@ void CGraphObjPolyline::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_l
         The rotatian angle of the passed rectangle.
 */
 QPointF CGraphObjPolyline::getItemPosAndLocalCoors(
-    const CPhysValPolyline& i_physValPolyline, QPolygonF& o_polyline) const
+    const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValPolyline.toString() + "} " + i_physValPolyline.unit().symbol();
+        strMthInArgs = "{" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2913,20 +3448,20 @@ QPointF CGraphObjPolyline::getItemPosAndLocalCoors(
         /* strAddInfo   */ strMthInArgs );
 
     // First determine the position of the item in the parent's (scene or group) coordinate system.
-    CPhysValPolyline physValPolylineTmp(i_physValPolyline);
+    CPhysValPolygon physValPolygonTmp(i_physValPolygon);
     if (parentGroup() != nullptr) {
-        physValPolylineTmp = parentGroup()->convert(physValPolylineTmp, Units.Length.px);
+        physValPolygonTmp = parentGroup()->convert(physValPolygonTmp, Units.Length.px);
     }
     else {
-        physValPolylineTmp = m_pDrawingScene->convert(physValPolylineTmp, Units.Length.px);
+        physValPolygonTmp = m_pDrawingScene->convert(physValPolygonTmp, Units.Length.px);
     }
-    o_polyline = physValPolylineTmp.toQPolygonF();
+    o_polygon = physValPolygonTmp.toQPolygonF();
 
     // Transform the parent coordinates into local coordinate system.
-    // The origin is the center point of the polyline's bounding rectangle.
-    QPointF ptPos = o_polyline.boundingRect().center(); // polyline here still in parent or scene coordinates
-    for (int idxPt = 0; idxPt < o_polyline.size(); ++idxPt) {
-        o_polyline[idxPt] = o_polyline[idxPt] - ptPos; // polyline points now in local coordinates
+    // The origin is the center point of the polygon's bounding rectangle.
+    QPointF ptPos = o_polygon.boundingRect().center(); // polygon here still in parent or scene coordinates
+    for (int idxPt = 0; idxPt < o_polygon.size(); ++idxPt) {
+        o_polygon[idxPt] = o_polygon[idxPt] - ptPos; // polygon points now in local coordinates
     }
 
     if (parentGroup() != nullptr) {
@@ -2934,7 +3469,7 @@ QPointF CGraphObjPolyline::getItemPosAndLocalCoors(
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "Polyline [" + QString::number(o_polyline.size()) + "](" + qPolygon2Str(o_polyline) + ")";
+        QString strMthOutArgs = "Polygon [" + QString::number(o_polygon.size()) + "](" + qPolygon2Str(o_polygon) + ")";
         mthTracer.setMethodOutArgs(strMthOutArgs);
         mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
     }
@@ -2952,10 +3487,10 @@ void CGraphObjPolyline::normalize()
         /* strMethod    */ "normalize",
         /* strAddInfo   */ "" );
 
-    QPolygonF plgOld = polygon();
-    QPolygonF plgNew = normalizePolygon( plgOld, m_pDrawingScene->getHitToleranceInPx() );
+    QPolygonF plgOld = getPolygon(m_pDrawingScene->drawingSize().unit()).toQPolygonF();
+    QPolygonF plgNew = normalizePolygon(plgOld, m_pDrawingScene->getHitToleranceInPx());
     if (plgOld.size() != plgNew.size()) {
-        setPolygon(plgNew);
+        setPolygon(plgNew, m_pDrawingScene->drawingSize().unit());
         hideSelectionPoints();
         if (isSelected()) {
             showSelectionPoints();
@@ -2968,52 +3503,52 @@ protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Set the original, untransformed (not scaled, not rotated) polyline
+/*! @brief Set the original, untransformed (not scaled, not rotated) polygon
            coordinates in local coordinates relative to the origin of the
-           polyline's bounding rectangle
+           polygon's bounding rectangle
 
-    @param [in] i_polyline
+    @param [in] i_polygon
         Coordinates in local coordinates to be set.
 
     @return Previous original coordinates.
 */
-QPolygonF CGraphObjPolyline::setPolylineOrig(const QPolygonF& i_polyline)
+QPolygonF CGraphObjPolyline::setPolygonOrig(const QPolygonF& i_polygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_polyline.size()) + "](" + qPolygon2Str(i_polyline) + ")";
+        strMthInArgs = "New [" + QString::number(i_polygon.size()) + "](" + qPolygon2Str(i_polygon) + ")";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setPolylineOrig",
+        /* strMethod    */ "setPolygonOrig",
         /* strAddInfo   */ strMthInArgs );
 
-    QPolygonF polylinePrev = m_polylineOrig;
-    m_polylineOrig = i_polyline;
+    QPolygonF polygonPrev = m_polygonOrig;
+    m_polygonOrig = i_polygon;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(polylinePrev.size()) + "](" + qPolygon2Str(polylinePrev) + ")");
+        mthTracer.setMethodReturn("Prev [" + QString::number(polygonPrev.size()) + "](" + qPolygon2Str(polygonPrev) + ")");
     }
-    return polylinePrev;
+    return polygonPrev;
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the scaled but not rotated coordinates in local coordinates
            relative to the origin of the item's bounding rectangle.
 
-    @param [in] i_polyline
+    @param [in] i_polygon
         Coordinates to be set.
 
     @return Previous coordinates.
 */
-QPolygonF CGraphObjPolyline::QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polyline)
+QPolygonF CGraphObjPolyline::QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_polyline.size()) + "](" + qPolygon2Str(i_polyline) + ")";
+        strMthInArgs = "New [" + QString::number(i_polygon.size()) + "](" + qPolygon2Str(i_polygon) + ")";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3022,12 +3557,12 @@ QPolygonF CGraphObjPolyline::QGraphicsPolygonItem_setPolygon(const QPolygonF& i_
         /* strMethod    */ "QGraphicsPolygonItem_setPolygon",
         /* strAddInfo   */ strMthInArgs );
 
-    QPolygonF polylinePrev = QGraphicsPolygonItem::polygon();
-    QGraphicsPolygonItem::setPolygon(i_polyline);
+    QPolygonF polygonPrev = QGraphicsPolygonItem::polygon();
+    QGraphicsPolygonItem::setPolygon(i_polygon);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(polylinePrev.size()) + "](" + qPolygon2Str(polylinePrev) + ")");
+        mthTracer.setMethodReturn("Prev [" + QString::number(polygonPrev.size()) + "](" + qPolygon2Str(polygonPrev) + ")");
     }
-    return polylinePrev;
+    return polygonPrev;
 }
 
 //------------------------------------------------------------------------------
@@ -3035,31 +3570,31 @@ QPolygonF CGraphObjPolyline::QGraphicsPolygonItem_setPolygon(const QPolygonF& i_
            coordinates with unit in parent coordinates relative to the top left
            or bottom left corner of the parent.
 
-    @param [in] i_physValPolyline
+    @param [in] i_physValPolygon
         Coordinates to be set.
 
     @return Previous original line coordinates.
 */
-CPhysValPolyline CGraphObjPolyline::setPhysValPolylineOrig(const CPhysValPolyline& i_physValPolyline)
+CPhysValPolygon CGraphObjPolyline::setPhysValPolygonOrig(const CPhysValPolygon& i_physValPolygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_physValPolyline.count()) + "](" + i_physValPolyline.toString() + ") " + i_physValPolyline.unit().symbol();
+        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ") " + i_physValPolygon.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setPhysValPolylineOrig",
+        /* strMethod    */ "setPhysValPolygonOrig",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolylinePrev = m_physValPolylineOrig;
-    m_physValPolylineOrig = i_physValPolyline;
+    CPhysValPolygon physValPolygonPrev = m_physValPolygonOrig;
+    m_physValPolygonOrig = i_physValPolygon;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolylinePrev.count()) + "](" + physValPolylinePrev.toString() + ") " + physValPolylinePrev.unit().symbol());
+        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ") " + physValPolygonPrev.unit().symbol());
     }
-    return physValPolylinePrev;
+    return physValPolygonPrev;
 }
 
 //------------------------------------------------------------------------------
@@ -3067,62 +3602,62 @@ CPhysValPolyline CGraphObjPolyline::setPhysValPolylineOrig(const CPhysValPolylin
            parent coordinates relative to the top left or bottom left corner of
            the parent.
 
-    @param [in] i_physValPolyline
+    @param [in] i_physValPolygon
         Line coordinates relative to the parent (or scene) to be set.
 
     @return Previous line coordinates.
 */
-CPhysValPolyline CGraphObjPolyline::setPhysValPolylineScaled(const CPhysValPolyline& i_physValPolyline)
+CPhysValPolygon CGraphObjPolyline::setPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_physValPolyline.count()) + "](" + i_physValPolyline.toString() + ") " + i_physValPolyline.unit().symbol();
+        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ") " + i_physValPolygon.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setPhysValPolylineScaled",
+        /* strMethod    */ "setPhysValPolygonScaled",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolylinePrev = m_physValPolylineScaled;
-    m_physValPolylineScaled = i_physValPolyline;
+    CPhysValPolygon physValPolygonPrev = m_physValPolygonScaled;
+    m_physValPolygonScaled = i_physValPolygon;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolylinePrev.count()) + "](" + physValPolylinePrev.toString() + ") " + physValPolylinePrev.unit().symbol());
+        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ") " + physValPolygonPrev.unit().symbol());
     }
-    return physValPolylinePrev;
+    return physValPolygonPrev;
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the scaled and rotated line coordinates with unit in parent
            coordinates relative to the top left or bottom left corner of the parent.
 
-    @param [in] i_physValPolyline
+    @param [in] i_physValPolygon
         Line coordinates relative to the parent (or scene) to be set.
 
     @return Previous line coordinates.
 */
-CPhysValPolyline CGraphObjPolyline::setPhysValPolylineScaledAndRotated(const CPhysValPolyline& i_physValPolyline)
+CPhysValPolygon CGraphObjPolyline::setPhysValPolygonScaledAndRotated(const CPhysValPolygon& i_physValPolygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_physValPolyline.count()) + "](" + i_physValPolyline.toString() + ") " + i_physValPolyline.unit().symbol();
+        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ") " + i_physValPolygon.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setPhysValPolylineScaledAndRotated",
+        /* strMethod    */ "setPhysValPolygonScaledAndRotated",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPolyline physValPolylinePrev = m_physValPolylineScaledAndRotated;
-    m_physValPolylineScaledAndRotated = i_physValPolyline;
+    CPhysValPolygon physValPolygonPrev = m_physValPolygonScaledAndRotated;
+    m_physValPolygonScaledAndRotated = i_physValPolygon;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolylinePrev.count()) + "](" + physValPolylinePrev.toString() + ") " + physValPolylinePrev.unit().symbol());
+        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ") " + physValPolygonPrev.unit().symbol());
     }
-    return physValPolylinePrev;
+    return physValPolygonPrev;
 }
 
 //------------------------------------------------------------------------------
@@ -3160,20 +3695,20 @@ void CGraphObjPolyline::traceThisPositionInfo(
     if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItem != nullptr) {
-            QPolygonF polyline = polygon();
+            QPolygonF polygon = this->polygon();
             QString strRuntimeInfo;
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValPolyline Orig [" + QString::number(m_physValPolylineOrig.count()) + "](" + m_physValPolylineOrig.toString() + ") " + m_physValPolylineOrig.unit().symbol()
-                + ", Scaled [" + QString::number(m_physValPolylineScaled.count()) + "](" + m_physValPolylineScaled.toString() + ") " + m_physValPolylineScaled.unit().symbol()
-                + ", ScaledRotated [" + QString::number(m_physValPolylineScaledAndRotated.count()) + "](" + m_physValPolylineScaledAndRotated.toString() + ") " + m_physValPolylineScaledAndRotated.unit().symbol();
+            strRuntimeInfo += "PhysValPolygon Orig [" + QString::number(m_physValPolygonOrig.count()) + "](" + m_physValPolygonOrig.toString() + ") " + m_physValPolygonOrig.unit().symbol()
+                + ", Scaled [" + QString::number(m_physValPolygonScaled.count()) + "](" + m_physValPolygonScaled.toString() + ") " + m_physValPolygonScaled.unit().symbol()
+                + ", ScaledRotated [" + QString::number(m_physValPolygonScaledAndRotated.count()) + "](" + m_physValPolygonScaledAndRotated.toString() + ") " + m_physValPolygonScaledAndRotated.unit().symbol();
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "ItemLine Orig [" + QString::number(m_polylineOrig.size()) + "](" + qPolygon2Str(m_polylineOrig) + ")"
-                + ", Scaled [" + QString::number(polygon().size()) + "](" + qPolygon2Str(polygon()) + ")";
+            strRuntimeInfo += "ItemLine Orig [" + QString::number(m_polygonOrig.size()) + "](" + qPolygon2Str(m_polygonOrig) + ")"
+                + ", Scaled [" + QString::number(polygon.size()) + "](" + qPolygon2Str(polygon) + ")";
             i_mthTracer.trace(strRuntimeInfo);
             CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
         }

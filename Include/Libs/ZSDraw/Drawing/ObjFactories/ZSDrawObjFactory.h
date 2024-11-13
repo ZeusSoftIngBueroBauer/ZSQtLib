@@ -133,11 +133,11 @@ public: // instance methods
 public: // overridables
     virtual bool hasInitialSize() const { return false; }
     virtual QSizeF getInitialSize() const { return QSizeF(); }
-protected: // overridables
-    virtual void saveGraphObjTextLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const;
-    virtual QList<SLabelDscr> loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReade) const;
-    virtual void saveGraphObjGeometryLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const;
-    virtual QList<SLabelDscr> loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader) const;
+protected: // class methods
+    static void saveGraphObjTextLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
+    static QList<SLabelDscr> loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReade);
+    static void saveGraphObjGeometryLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
+    static QList<SLabelDscr> loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader);
 protected: // class members
     static int s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;

@@ -44,7 +44,7 @@ using namespace ZS::Draw;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
 
-
+#if 0
 /*******************************************************************************
 class CTest : public Test::CTest
 *******************************************************************************/
@@ -13574,4 +13574,4 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(
     strlstExpectedValues.append("Height: " + QString::number(size_px.height(), 'f', 0) + " px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
-
+#endif

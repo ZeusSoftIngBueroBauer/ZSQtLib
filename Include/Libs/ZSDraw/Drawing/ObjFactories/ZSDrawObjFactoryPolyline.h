@@ -43,6 +43,17 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryPolyline"; }
+public: // class methods
+    static ZS::System::SErrResultInfo saveGraphObj(
+        CGraphObj* i_pGraphObj,
+        EGraphObjType i_graphObjType,
+        QXmlStreamWriter& i_xmlStreamWriter);
+    static CGraphObj* loadGraphObj(
+        CDrawingScene* i_pDrawingScene,
+        CGraphObjGroup* i_pGraphObjGroupParent,
+        const QString& i_strObjName,
+        EGraphObjType i_graphObjType,
+        QXmlStreamReader& i_xmlStreamReader);
 public: // ctors and dtor
     CObjFactoryPolyline( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryPolyline();

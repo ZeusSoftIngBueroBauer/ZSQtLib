@@ -2187,75 +2187,7 @@ protected: // overridable slots of base class CGraphObj
 //}
 
 //------------------------------------------------------------------------------
-void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pSelectionPoint->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onSelectionPointGeometryOnSceneChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
-    QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
-    QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
-    QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
-    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
-    if (parentGroup() != nullptr) {
-        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
-    }
-    else {
-        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
-    }
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
-
-    if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        if (selPt.m_idxPt == 0) {
-            setP1(physValParentSelPt);
-        }
-        else if (selPt.m_idxPt == 1) {
-            setP2(physValParentSelPt);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief The slot method is called if the parent item of the item changes
-           its geometry on the scene and emits the geometryOnSceneChanged signal.
-
-    When resizing a group all children of the group should be resized and positioned so
-    that they keep their relative positions and sizes within the group. If the item
-    was added to a new group the current rectangle of the parent group was stored as
-    the original group rectangle.
-
-    If the item is removed from a group (but not added to a new group) the original
-    parent group rectangle is invalidated.
-
-    The default implementation just calculates the current scale factors of the
-    parent group and emits the signal geometryOnSceneChanged.
-
-    Labels override this method to udpate their positions on the scene and to update
-    the geometry information of the items they are linked to but do not emit the
-    geometryOnSceneChanged signal again.
-
-    Other graphical objects must override this method to update their local graphics
-    item coordinates and to update their position in the parent group.
-
-    @note This method must return immediately if the parent group is about to
-          add another child (see flag m_iIgnoreParentGeometryChange).
-
-    @param [in] i_pGraphObjParent
-        Pointer to parent item whose geometry on the scene has been changed.
-    @param [in] i_bParentOfParentChanged
-        false (default), if the geometry of the parent has been changed directly.
-        true if the geometry has been changed because the parent got a new parent.
+/*! @brief Reimplements the method of base class CGraphObj.
 */
 void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
     CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
@@ -2314,19 +2246,19 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
                 CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
                 // Set the line in local coordinate system.
-                // Also note that itemChange must not overwrite the current line value (refCountGuard).
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
                 QGraphicsLineItem_setLine(lineF);
 
                 // Please note that GraphicsLineItem::setLine did not update the position of the
                 // item in the parent. This has to be done "manually" afterwards.
 
                 // Move the object to the parent position.
-                // This has to be done after resizing the line which updates the local coordinates
-                // of the line with origin (0/0) at the lines center point.
+                // This has to be done after resizing the item which updates the local coordinates
+                // of the item with origin (0/0) at the center point.
                 // "setPos" will trigger an itemChange call which will update the position of the
                 // selection points and labels. To position the selection points and labels correctly
                 // the local coordinate system must be up-to-date.
-                // Also note that itemChange must not overwrite the current line value (refCountGuard).
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
                 // If the position is not changed, itemChange is not called with PositionHasChanged and
                 // the position of the arrow heads will not be updated. We got to do this here "manually".
                 if (ptPos != ptPosPrev) {
@@ -2346,6 +2278,48 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
         emit_geometryOnSceneChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
+void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pSelectionPoint->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onSelectionPointGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
+    QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
+    QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
+    QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
+    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
+    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
+    if (parentGroup() != nullptr) {
+        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
+    }
+    else {
+        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+    }
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+
+    if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        if (selPt.m_idxPt == 0) {
+            setP1(physValParentSelPt);
+        }
+        else if (selPt.m_idxPt == 1) {
+            setP2(physValParentSelPt);
+        }
     }
 }
 

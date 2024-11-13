@@ -73,10 +73,10 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
-    void setPolyline(const CPhysValPolyline& i_physValPolyline);
-    void setPolyline(const QPolygonF& i_polyline, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValPolyline getPolyline() const;
-    CPhysValPolyline getPolyline(const ZS::PhysVal::CUnit& i_unit) const;
+    void setPolygon(const CPhysValPolygon& i_physValPolygon);
+    void setPolygon(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPolygon getPolygon() const;
+    CPhysValPolygon getPolygon(const ZS::PhysVal::CUnit& i_unit) const;
     void setCenter(const QPointF& i_pt);
     void setCenter(const CPhysValPoint& i_physValPoint);
     CPhysValPoint getCenter() const;
@@ -139,6 +139,11 @@ public: // must overridables of base class CGraphObj
     virtual QRectF getEffectiveBoundingRectOnScene() const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
+public: // overridables of base class CGraphObj (text labels)
+    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+public: // overridables of base class CGraphObj (geometry labels)
+    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
@@ -156,17 +161,28 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // overridable slots of base class CGraphObj
+    //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+public: // must overridables of base class CGraphObj
+    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
+    virtual void updateTransformedCoorsOnParentGeometryChanged() override;
+    virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
-    QPointF getItemPosAndLocalCoors(const CPhysValPolyline& i_physValPolyline, QPolygonF& o_polyline) const;
+    QPolygonF getPolygonScaled(const QPolygonF& i_polygonOrig) const;
+    CPhysValPolygon getPhysValPolygonOrig(const QPolygonF& i_polygonOrig) const;
+    CPhysValPolygon getPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygonOrig) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon) const;
     virtual void normalize(); // removes "unnecessary" points
 protected: // auxiliary instance methods (method tracing)
-    QPolygonF setPolylineOrig(const QPolygonF& i_polyline);
-    QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polyline);
-    CPhysValPolyline setPhysValPolylineOrig(const CPhysValPolyline& i_physValPolyline);
-    CPhysValPolyline setPhysValPolylineScaled(const CPhysValPolyline& i_physValPolyline);
-    CPhysValPolyline setPhysValPolylineScaledAndRotated(const CPhysValPolyline& i_physValPolyline);
+    QPolygonF setPolygonOrig(const QPolygonF& i_polygon);
+    QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon);
+    CPhysValPolygon setPhysValPolygonOrig(const CPhysValPolygon& i_physValPolygon);
+    CPhysValPolygon setPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygon);
+    CPhysValPolygon setPhysValPolygonScaledAndRotated(const CPhysValPolygon& i_physValPolygon);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(
@@ -183,10 +199,10 @@ protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< First and lasst point may differ from polygon() depending on line end base line types. */
-    QPolygonF m_polylineOrig;
-    CPhysValPolyline m_physValPolylineOrig;
-    CPhysValPolyline m_physValPolylineScaled;
-    CPhysValPolyline m_physValPolylineScaledAndRotated;
+    QPolygonF m_polygonOrig;
+    CPhysValPolygon m_physValPolygonOrig;
+    CPhysValPolygon m_physValPolygonScaled;
+    CPhysValPolygon m_physValPolygonScaledAndRotated;
     QPolygonF m_plgLineStartArrowHead;
     QPolygonF m_plgLineEndArrowHead;
     /*!< In item's coordinate system (original size before editing (resizing) the object by mouse events) */

@@ -159,7 +159,7 @@ CGraphObj* CGraphObjPolygon::clone()
     CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_pDrawingScene, m_strName);
     pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setPolygon( polygon() );
+    pGraphObj->setPolygon( getPolygon() );
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
