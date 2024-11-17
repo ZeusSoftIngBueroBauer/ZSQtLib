@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
@@ -267,12 +268,16 @@ CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPr
     }
     else {
         EGraphObjType eGraphObjType = str2GraphObjType(i_strGraphObjType);
-        if (eGraphObjType == EGraphObjTypeLine) {
+        if (eGraphObjType == EGraphObjTypeGroup) {
+            pWidget = new CWdgtGraphObjGroupProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeLine) {
             pWidget = new CWdgtGraphObjLineProperties(
                 m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
         }
-        else if (eGraphObjType == EGraphObjTypeGroup) {
-            pWidget = new CWdgtGraphObjGroupProperties(
+        else if (eGraphObjType == EGraphObjTypePolyline || eGraphObjType == EGraphObjTypePolygon) {
+            pWidget = new CWdgtGraphObjPolygonProperties(
                 m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
         }
         else {

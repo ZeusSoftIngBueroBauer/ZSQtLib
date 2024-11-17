@@ -1402,30 +1402,9 @@ QList<CModelGraphObjLabels::SLabelSettings> CModelGraphObjLabels::getLabelSettin
     QList<SLabelSettings> arLabelSettings;
     if (i_pGraphObj != nullptr) {
         QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
-        if (strlstLabelNames.size() > 0) {
-            // The predefined labels should be at the beginning of the table.
-            // Insert those first if the corresponding label has been added.
-            QStringList strlstPredefinedLabelNames = i_pGraphObj->getPredefinedLabelNames();
-            QSet<QString> strlstLabelNamesAdded;
-            for (const QString& strName : strlstPredefinedLabelNames) {
-                if (i_pGraphObj->isLabelAdded(strName)) {
-                    arLabelSettings.append(
-                        SLabelSettings::fromGraphObj(i_pGraphObj, strName, arLabelSettings.size()));
-                    strlstLabelNamesAdded.insert(strName);
-                }
-            }
-            // The user defined labels should follow the predefined labels.
-            // Add those after the predefined labels.
-            for (const QString& strName : strlstLabelNames) {
-                if (i_pGraphObj->isLabelAdded(strName)) {
-                    // If label has not already been added as a predefined label ...
-                    if (!strlstLabelNamesAdded.contains(strName)) {
-                        arLabelSettings.append(
-                            SLabelSettings::fromGraphObj(i_pGraphObj, strName, arLabelSettings.size()));
-                        strlstLabelNamesAdded.insert(strName);
-                    }
-                }
-            }
+        for (const QString& strLabelName : strlstLabelNames) {
+            arLabelSettings.append(
+                SLabelSettings::fromGraphObj(i_pGraphObj, strLabelName, arLabelSettings.size()));
         }
     }
     return arLabelSettings;

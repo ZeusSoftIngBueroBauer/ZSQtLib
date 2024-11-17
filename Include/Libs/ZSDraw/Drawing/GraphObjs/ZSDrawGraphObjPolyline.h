@@ -137,6 +137,14 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
     virtual QRectF getEffectiveBoundingRectOnScene() const override;
+public: // overridables of base class CGraphObj
+    virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
+public: // overridables of base class CGraphObj
+    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const override;
+public: // must overridables of base class CGraphObj
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
 public: // overridables of base class CGraphObj (text labels)
@@ -177,6 +185,9 @@ protected: // auxiliary instance methods
     CPhysValPolygon getPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygonOrig) const;
     QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon) const;
     virtual void normalize(); // removes "unnecessary" points
+protected: // auxiliary instance methods
+    int getNumberOfPredefinedPolygonPointLabelNames() const;
+    int getNumberOfPolygonPointGeometryLabelNames() const;
 protected: // auxiliary instance methods (method tracing)
     QPolygonF setPolygonOrig(const QPolygonF& i_polygon);
     QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon);

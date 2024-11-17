@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjPolylinePropertiesWdgt_h
-#define ZSDraw_DrawGraphObjPolylinePropertiesWdgt_h
+#ifndef ZSDraw_DrawGraphObjPolygonPropertiesWdgt_h
+#define ZSDraw_DrawGraphObjPolygonPropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -40,13 +40,13 @@ class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjLabelsProperties;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjPolylineProperties : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjPolygonProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtGraphObjPolylineProperties"; }
+    static QString ClassName() { return "CWdgtGraphObjPolygonProperties"; }
     enum class EWidget {
         Labels,
         Geometry,
@@ -54,12 +54,12 @@ public: // class methods
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
-    CWdgtGraphObjPolylineProperties(
+    CWdgtGraphObjPolygonProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strObjName,
         bool i_bAddApplyResetButtons,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjPolylineProperties();
+    virtual ~CWdgtGraphObjPolygonProperties();
 public: // instance methods
     void expand(EWidget i_widget, bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -78,10 +78,10 @@ protected: // instance members
     CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
 
-}; // class CWdgtGraphObjPolylineProperties
+}; // class CWdgtGraphObjPolygonProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjPolylinePropertiesWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjPolygonPropertiesWdgt_h

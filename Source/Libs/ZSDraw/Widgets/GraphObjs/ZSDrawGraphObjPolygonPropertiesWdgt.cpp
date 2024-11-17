@@ -24,11 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolylinePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSys/ZSSysAux.h"
@@ -57,7 +57,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjPolylineProperties : public CWdgtGraphObjPropertiesAbstract
+class CWdgtGraphObjPolygonProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -65,7 +65,7 @@ public: // type definitions and constants
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CWdgtGraphObjPolylineProperties::widgetName(EWidget i_widget)
+QString CWdgtGraphObjPolygonProperties::widgetName(EWidget i_widget)
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -86,7 +86,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjPolylineProperties::CWdgtGraphObjPolylineProperties(
+CWdgtGraphObjPolygonProperties::CWdgtGraphObjPolygonProperties(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strObjName,
     bool i_bAddApplyResetButtons,
@@ -114,18 +114,18 @@ CWdgtGraphObjPolylineProperties::CWdgtGraphObjPolylineProperties(
 
     m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Polygon", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
     QObject::connect(
         m_pWdgtLabels, &CWdgtGraphObjLabelsProperties::contentChanged,
-        this, &CWdgtGraphObjPolylineProperties::onWdgtLabelsContentChanged);
+        this, &CWdgtGraphObjPolygonProperties::onWdgtLabelsContentChanged);
 
     m_pWdgtGeometry = new CWdgtGraphObjLineGeometryProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", i_strObjName);
     m_pLyt->addWidget(m_pWdgtGeometry);
     QObject::connect(
         m_pWdgtGeometry, &CWdgtGraphObjLineGeometryProperties::contentChanged,
-        this, &CWdgtGraphObjPolylineProperties::onWdgtGeometryContentChanged);
+        this, &CWdgtGraphObjPolygonProperties::onWdgtGeometryContentChanged);
 
     m_pWdgtLineStyle = new CWdgtGraphObjLineStyleProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
@@ -133,7 +133,7 @@ CWdgtGraphObjPolylineProperties::CWdgtGraphObjPolylineProperties(
     m_pLyt->addWidget(m_pWdgtLineStyle);
     QObject::connect(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
-        this, &CWdgtGraphObjPolylineProperties::onWdgtLineStyleContentChanged);
+        this, &CWdgtGraphObjPolygonProperties::onWdgtLineStyleContentChanged);
 
     // <Buttons>
     //==========
@@ -148,7 +148,7 @@ CWdgtGraphObjPolylineProperties::CWdgtGraphObjPolylineProperties(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjPolylineProperties::~CWdgtGraphObjPolylineProperties()
+CWdgtGraphObjPolygonProperties::~CWdgtGraphObjPolygonProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -167,7 +167,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPolylineProperties::expand(EWidget i_widget, bool i_bExpand)
+void CWdgtGraphObjPolygonProperties::expand(EWidget i_widget, bool i_bExpand)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -196,7 +196,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjPolylineProperties::setKeyInTree(const QString& i_strKeyInTree)
+bool CWdgtGraphObjPolygonProperties::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -231,7 +231,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjPolylineProperties::hasErrors() const
+bool CWdgtGraphObjPolygonProperties::hasErrors() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -255,7 +255,7 @@ bool CWdgtGraphObjPolylineProperties::hasErrors() const
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjPolylineProperties::hasChanges() const
+bool CWdgtGraphObjPolygonProperties::hasChanges() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -287,7 +287,7 @@ bool CWdgtGraphObjPolylineProperties::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPolylineProperties::acceptChanges()
+void CWdgtGraphObjPolygonProperties::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -333,7 +333,7 @@ void CWdgtGraphObjPolylineProperties::acceptChanges()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPolylineProperties::rejectChanges()
+void CWdgtGraphObjPolygonProperties::rejectChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -364,7 +364,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPolylineProperties::onWdgtLabelsContentChanged()
+void CWdgtGraphObjPolygonProperties::onWdgtLabelsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -383,7 +383,7 @@ void CWdgtGraphObjPolylineProperties::onWdgtLabelsContentChanged()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPolylineProperties::onWdgtGeometryContentChanged()
+void CWdgtGraphObjPolygonProperties::onWdgtGeometryContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -402,7 +402,7 @@ void CWdgtGraphObjPolylineProperties::onWdgtGeometryContentChanged()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPolylineProperties::onWdgtLineStyleContentChanged()
+void CWdgtGraphObjPolygonProperties::onWdgtLineStyleContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(

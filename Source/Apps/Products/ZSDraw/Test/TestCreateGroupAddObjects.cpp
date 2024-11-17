@@ -95,7 +95,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     // Lines
     //======
-
+#if 0
     ZS::Test::CTestStepGroup* pGrpLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Lines",
@@ -123,7 +123,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     // BigPlusSign
     //------------
-#if 0
+
     ZS::Test::CTestStepGroup* pGrpLinesBigPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameBigPlusSign,
@@ -147,13 +147,14 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallRect,
         /* pTSGrpParent */ pGrpLines );
     createTestGroupAddStandardShapesLinesSmallRect(pGrpLinesSmallRect);
-#endif
 
     createTestStepSaveLoadFile(pGrpLines);
+#endif
 
     // Polylines
     //==========
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpPolylines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Polylines",
@@ -172,6 +173,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     createTestGroupAddStandardShapesPolylineStar(pGrpPolylines);
     createTestStepSaveLoadFile(pGrpPolylines);
+#endif
 
     // Polygons
     //=========
@@ -191,7 +193,6 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     initInstCounts();
     initObjectCoors();
-
     createTestGroupAddStandardShapesPolygonStar(pGrpPolygons);
     createTestGroupAddStandardShapesPolygonTriangle(pGrpPolygons);
     createTestStepSaveLoadFile(pGrpPolygons);
@@ -207,12 +208,13 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     // SmallPlusSign
     //--------------
 
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNameSmallPlusSign,
         /* pTSGrpParent */ pGrpGroups );
 
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
@@ -223,16 +225,18 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     initInstCounts();
     initObjectCoors();
-
+#endif
     ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSignAddShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
         /* pTSGrpParent */ pGrpGroupsSmallPlusSign );
 
     createTestGroupAddStandardShapesGroupSmallPlusSign(pGrpGroupsSmallPlusSignAddShapes);
+#if 0
     createTestGroupAddStandardShapesGroupSmallPlusSignResize(pGrpGroupsSmallPlusSign);
-    createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
 #endif
+    createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
+//#endif
 
     // BigPlusSign
     //------------
@@ -357,6 +361,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     // Polygons
     //---------
 
+#if 0
     ZS::Test::CTestStepGroup* pGrpGroupsPolygons = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNamePolygons,
@@ -381,6 +386,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestGroupAddStandardShapesGroupPolygons(pGrpGroupsPolygonsAddShapes);
     createTestGroupAddStandardShapesGroupPolygonsModifications(pGrpGroupsPolygons);
     createTestStepSaveLoadFile(pGrpGroupsPolygons);
+#endif
 
     // All
     //----

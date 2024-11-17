@@ -29,7 +29,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolylinePropertiesDlg.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesDlg.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
@@ -196,33 +196,7 @@ void CGraphObjPolyline::initInstance()
         /* strAddInfo   */ "" );
 
     m_strlstPredefinedLabelNames.append(c_strLabelName);
-
-    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
-        if (!m_hshpLabels.contains(strLabelName)) {
-            addLabel(strLabelName, strLabelName, ESelectionPoint::Center);
-        }
-    }
-
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
-
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
-    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
-        if (strLabelName == c_strGeometryLabelNameCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
-        }
-        else if (strLabelName == c_strGeometryLabelNameWidth) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameHeight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
-        }
-    }
+    addLabel(c_strLabelName, c_strLabelName, ESelectionPoint::Center);
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
@@ -306,9 +280,9 @@ void CGraphObjPolyline::onCreateAndExecDlgFormatGraphObjs()
         /* strAddInfo   */ "" );
 
     QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Line";
-    CDlgGraphObjPolylineProperties* pDlg = CDlgGraphObjPolylineProperties::GetInstance(this);
+    CDlgGraphObjPolygonProperties* pDlg = CDlgGraphObjPolygonProperties::GetInstance(this);
     if( pDlg == nullptr ) {
-        pDlg = CDlgGraphObjPolylineProperties::CreateInstance(strDlgTitle, this);
+        pDlg = CDlgGraphObjPolygonProperties::CreateInstance(strDlgTitle, this);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->setModal(false);
@@ -434,6 +408,40 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
         bGeometryOnSceneChanged = true;
+
+        // Update list of predefined label names.
+        int iNumberOfPredefinedPointLabelsPrev = getNumberOfPredefinedPolygonPointLabelNames();
+        if (iNumberOfPredefinedPointLabelsPrev < polygon.size()) {
+            for (int idxPt = iNumberOfPredefinedPointLabelsPrev; idxPt < polygon.size(); ++idxPt) {
+                const QString strLabelName = createPolygonPointLabelName(idxPt);
+                m_strlstPredefinedLabelNames.append(strLabelName);
+                addLabel(strLabelName, strLabelName, idxPt);
+            }
+        }
+        else if (iNumberOfPredefinedPointLabelsPrev > polygon.size()) {
+            for (int idxPt = polygon.size() - 1; idxPt >= iNumberOfPredefinedPointLabelsPrev; --idxPt) {
+                const QString strLabelName = createPolygonPointLabelName(idxPt);
+                // isPredefinedLabelName must return false when calling removeLabel
+                m_strlstPredefinedLabelNames.removeOne(strLabelName);
+                removeLabel(strLabelName);
+            }
+        }
+        int iNumberOfPointGeometryLabelsPrev = getNumberOfPolygonPointGeometryLabelNames();
+        if (iNumberOfPointGeometryLabelsPrev < polygon.size()) {
+            for (int idxPt = iNumberOfPointGeometryLabelsPrev; idxPt < polygon.size(); ++idxPt) {
+                const QString strLabelName = createPolygonPointLabelName(idxPt);
+                m_strlstGeometryLabelNames.append(strLabelName);
+                addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, idxPt);
+            }
+        }
+        else if (iNumberOfPointGeometryLabelsPrev > polygon.size()) {
+            for (int idxPt = polygon.size() - 1; idxPt >= iNumberOfPointGeometryLabelsPrev; --idxPt) {
+                const QString strLabelName = createPolygonPointLabelName(idxPt);
+                // isPredefinedLabelName must return false when calling removeLabel
+                m_strlstGeometryLabelNames.removeOne(strLabelName);
+                removeGeometryLabel(strLabelName);
+            }
+        }
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
     // Emit signal after updated position info has been traced.
@@ -1501,6 +1509,175 @@ public: // overridables of base class CGraphObj
 //} // isHit
 
 /*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the proposed cursor shape for the given point.
+
+    The cursor shape depends which shape point of the object has been hit.
+    If a selection point has been hit, the position and type of selection point
+    defines the cursor shape.
+
+    If no selection point is hit, the cursor shape is defined which position
+    of the line has been hit. If the start or end point of the line is hit
+    (and if there is no selection point over those end points), the cursor
+    shape is a cross cursor. On any other point of the line the proposed cursor
+    shape is a SizeAllCursor to indicate that the line may be moved when selecting
+    the line and moving the mouse.
+
+    @param i_pt [in] Point to be check in local coordinates.
+*/
+QCursor CGraphObjPolyline::getProposedCursor(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point {" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getProposedCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QCursor cursor = Qt::ArrowCursor;
+    if (m_bIsHit) {
+        cursor = Qt::SizeAllCursor;
+    }
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
+        if (pGraphObjSelPtHit != nullptr) {
+            cursor = pGraphObjSelPtHit->getProposedCursor(i_pt);
+        }
+        else {
+            SGraphObjHitInfo hitInfo;
+            if (isPolygonHit(polygon(), m_drawSettings.getFillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+                cursor = hitInfo.m_cursor;
+            }
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
+    }
+    return cursor;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjPolyline::getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValPos(*m_pDrawingScene);
+    CGraphObjPolyline* pVThis = const_cast<CGraphObjPolyline*>(this);
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryOnSceneChangedSignalBlockedCounter);
+    QPolygonF plg = polygon();
+    if (i_idxPt >= 0 && i_idxPt < plg.size()) {
+        QPointF ptPos = plg[i_idxPt];
+        // Before mapping to parent or scene, the rotation will be reset.
+        // Otherwise transformed coordinates will be returned.
+        // And itemChange is called but should not emit the geometryChangds signal ..
+        pVThis->QGraphicsItem_setRotation(0.0);
+        ptPos = pGraphicsItemThis->mapToParent(ptPos);
+        pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        if (parentGroup() != nullptr) {
+            ptPos = parentGroup()->mapToTopLeftOfBoundingRect(ptPos);
+            physValPos = parentGroup()->convert(ptPos, i_unit);
+        }
+        else {
+            physValPos = m_pDrawingScene->convert(ptPos, i_unit);
+        }
+    }
+    return physValPos;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns coordinates of selection point in scene coordinates.
+*/
+QPointF CGraphObjPolyline::getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const
+//------------------------------------------------------------------------------
+{
+    QPointF ptScenePos;
+    QPolygonF plg = polygon();
+    if (i_idxPt >= 0 && i_idxPt < plg.size()) {
+        QPointF ptPos = plg[i_idxPt];
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            ptScenePos = pGraphicsItem->mapToScene(ptPos);
+        }
+    }
+    return ptScenePos;
+}
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the polar coordinates in length and angle of the given point
+           to the selection point of the graphical object.
+
+    How the angle of anchor lines to selection points is interpreted depends on
+    the graphical object type and the selection point.
+
+    For more details see base implementation in CGraphObj.
+*/
+SPolarCoors CGraphObjPolyline::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPolygonF thisPolygon = polygon();
+    QLineF thisLineSceneCoors;
+    if (thisPolygon.size() >= 2) {
+        if (i_idxPt == (thisPolygon.size() - 1)) {
+            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisPolygon[i_idxPt]),
+                                        pGraphicsItemThis->mapToScene(thisPolygon[0]));
+        }
+        else {
+            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisPolygon[i_idxPt]),
+                                        pGraphicsItemThis->mapToScene(thisPolygon[i_idxPt+1]));
+        }
+    }
+    QPointF ptSelPtSceneCoors = thisLineSceneCoors.p1();
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
+    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the start point (P1)
+           at the given selection point in scene coordinates.
+
+    For more details see base implementation in CGraphObj.
+*/
+QLineF CGraphObjPolyline::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+    const SPolarCoors& i_polarCoors, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPolygonF plgSelPt = polygon();
+    QLineF lineSelPtSceneCoors;
+    if (plgSelPt.size() >= 2) {
+        if (i_idxPt == (plgSelPt.size() - 1)) {
+            lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(plgSelPt[i_idxPt]),
+                                         pGraphicsItemThis->mapToScene(plgSelPt[0]));
+        }
+        else {
+            lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(plgSelPt[i_idxPt]),
+                                         pGraphicsItemThis->mapToScene(plgSelPt[i_idxPt+1]));
+        }
+    }
+    return ZS::Draw::getLineFromPolar(
+        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
+}
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -1556,7 +1733,12 @@ QList<SGraphObjSelectionPoint> CGraphObjPolyline::getPossibleLabelAnchorPoints(c
 //------------------------------------------------------------------------------
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
-    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
+    if (s_arSelPtsUserDefined.isEmpty()) {
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), ESelectionPoint::Center));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), 0));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), 1));
+    }
+    QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
     if (s_hshSelPtsPredefined.isEmpty()) {
         QList<SGraphObjSelectionPoint> arSelPts;
         arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), ESelectionPoint::Center));
@@ -1761,7 +1943,7 @@ void CGraphObjPolyline::paint(
     i_pPainter->save();
 
     QPen pn = pen();
-    if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || m_bIsHighlighted || isSelected())) {
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
@@ -3503,6 +3685,36 @@ void CGraphObjPolyline::normalize()
             showSelectionPoints();
         }
     }
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CGraphObjPolyline::getNumberOfPredefinedPolygonPointLabelNames() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfLabels = 0;
+    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
+        if (isPolygonPointLabelName(strLabelName)) {
+            ++iNumberOfLabels;
+        }
+    }
+    return iNumberOfLabels;
+}
+
+//------------------------------------------------------------------------------
+int CGraphObjPolyline::getNumberOfPolygonPointGeometryLabelNames() const
+//------------------------------------------------------------------------------
+{
+    int iNumberOfLabels = 0;
+    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        if (isPolygonPointLabelName(strLabelName)) {
+            ++iNumberOfLabels;
+        }
+    }
+    return iNumberOfLabels;
 }
 
 /*==============================================================================

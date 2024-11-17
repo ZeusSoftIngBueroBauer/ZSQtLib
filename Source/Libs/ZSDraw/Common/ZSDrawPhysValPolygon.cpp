@@ -285,11 +285,11 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
         }
     }
     if (polygon_px.size() > 1) {
-        for (int idxPt = 0; idxPt < polygon_px.size()-1; ++idxPt) {
-            i_pPainter->drawLine(polygon_px[idxPt], polygon_px[idxPt+1]);
-        }
         if (m_bIsClosedPolygon) {
-            i_pPainter->drawLine(polygon_px[polygon_px.size()-1], polygon_px[0]);
+            i_pPainter->drawPolygon(polygon_px);
+        }
+        else {
+            i_pPainter->drawPolyline(polygon_px);
         }
     }
     for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {

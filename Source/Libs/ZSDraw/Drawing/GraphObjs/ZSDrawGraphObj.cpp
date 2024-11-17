@@ -62,6 +62,7 @@ public: // type definitions and constants
 ==============================================================================*/
 
 const QString CGraphObj::c_strLabelName = "Name";
+const QString CGraphObj::c_strGeometryLabelNameP = "P";
 const QString CGraphObj::c_strGeometryLabelNameP1 = "P1";
 const QString CGraphObj::c_strGeometryLabelNameP2 = "P2";
 const QString CGraphObj::c_strGeometryLabelNameTopLeft = "TL";
@@ -82,6 +83,33 @@ protected: // class members
 
 QColor CGraphObj::s_selectionColor = QColor::fromHsv(300, 30, 200);
 QColor CGraphObj::s_highlightColor = QColor::fromHsv(240, 30, 200);
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CGraphObj::createPolygonPointLabelName(int i_idxPt)
+//------------------------------------------------------------------------------
+{
+    return c_strGeometryLabelNameP + QString::number(i_idxPt+1);
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isPolygonPointLabelName(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    bool bIs = false;
+    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
+        QString strIndex = i_strLabelName.mid(1);
+        bool bIsValidIndex = false;
+        strIndex.toInt(&bIsValidIndex);
+        if (bIsValidIndex) {
+            bIs = true;
+        }
+    }
+    return bIs;
+}
 
 /*==============================================================================
 protected: // ctor
@@ -4305,7 +4333,8 @@ void CGraphObj::setIsHighlighted(bool i_bIsHighlighted)
         m_bIsHighlighted = i_bIsHighlighted;
         QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
         if (pGraphicsItemThis != nullptr) {
-            pGraphicsItemThis->update();
+            m_pDrawingScene->update();
+            pGraphicsItemThis->update(pGraphicsItemThis->boundingRect());
         }
         if (m_bIsHighlighted) {
             tracePositionInfo(mthTracer);
@@ -4597,8 +4626,8 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_se
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getBoundingRect();
-    QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, i_selPt);
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptPos = ZS::Draw::getSelectionPointCoors(rctBounding, i_selPt);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
         ptScenePos = pGraphicsItem->mapToScene(ptPos);
@@ -4641,6 +4670,43 @@ public: // overridables
     linked to the selection point are always at the same relative position
     no matter how the object will be rotated.
 
+    The default implementation calculates the polar coordinates for selection points
+    on the bounding rectangle of the item if the center point and all selection points
+    on the bounding rectangle are allowed.
+
+    @note This method is used to keep the relative position of labels to the
+          graphical object they are linked to if the linked object is resized,
+          rotated or moved.
+
+    Example:
+
+                       + Pt
+                      / Calculated Angle: 60°
+                     /           TC
+                 TL +------------x------------+ TR
+                    |                         |
+                    |         Center          |
+                 LC x            x            x RC
+                    |                         |
+                    |                         |
+                 BL +------------x------------+ BR
+                                 BC
+
+          For example if the item would be rotated by 90°:
+                                RC
+                      TR +-------x--------+ BR
+                         |                |
+                         |                |
+                         |                |
+                         |    Center      |
+                      TC x       x        x BC
+                         |                |
+                         |                |
+                Pt + 60° |                |
+                     \   |                |
+                      TL +-------x--------+ BL
+                                 LC
+
     @param [in] i_pt
         Point in scene coordinates to which the polar coordinates from the
         given selection point have to be returned.
@@ -4650,17 +4716,91 @@ public: // overridables
 SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
-#pragma message(__TODO__"pure virtual")
-    SPolarCoors polarCoors;
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    return polarCoors;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QRectF thisRect = getBoundingRect();
+    QPointF ptThisLineSceneCoorsP1;
+    QPointF ptThisLineSceneCoorsP2;
+    QPointF ptSelPtSceneCoors;
+    if (i_selPt == ESelectionPoint::TopLeft) {
+        ptThisLineSceneCoorsP1 = thisRect.topLeft();
+        ptThisLineSceneCoorsP2 = thisRect.topRight();
+        ptSelPtSceneCoors = thisRect.topLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopRight) {
+        ptThisLineSceneCoorsP1 = thisRect.topRight();
+        ptThisLineSceneCoorsP2 = thisRect.topLeft();
+        ptSelPtSceneCoors = thisRect.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        ptThisLineSceneCoorsP1 = thisRect.bottomRight();
+        ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
+        ptSelPtSceneCoors = thisRect.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        ptThisLineSceneCoorsP1 = thisRect.bottomLeft();
+        ptThisLineSceneCoorsP2 = thisRect.bottomRight();
+        ptSelPtSceneCoors = thisRect.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.top());
+        ptThisLineSceneCoorsP2 = thisRect.topRight();
+        ptSelPtSceneCoors = QPointF(thisRect.center().x(), thisRect.top());
+    }
+    else if (i_selPt == ESelectionPoint::RightCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.right(), thisRect.center().y());
+        ptThisLineSceneCoorsP2 = thisRect.bottomRight();
+        ptSelPtSceneCoors = QPointF(thisRect.right(), thisRect.center().y());
+    }
+    else if (i_selPt == ESelectionPoint::BottomCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.bottom());
+        ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
+        ptSelPtSceneCoors = QPointF(thisRect.center().x(), thisRect.bottom());
+    }
+    else if (i_selPt == ESelectionPoint::LeftCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.left(), thisRect.center().y());
+        ptThisLineSceneCoorsP2 = thisRect.topLeft();
+        ptSelPtSceneCoors = QPointF(thisRect.left(), thisRect.center().y());
+    }
+    else /*if (i_selPt == ESelectionPoint::Center)*/ {
+        ptThisLineSceneCoorsP1 = thisRect.center();
+        ptThisLineSceneCoorsP2 = QPointF(thisRect.right(), thisRect.center().y());
+        ptSelPtSceneCoors = thisRect.center();
+    }
+    ptThisLineSceneCoorsP1 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP1);
+    ptThisLineSceneCoorsP2 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP2);
+    ptSelPtSceneCoors = pGraphicsItemThis->mapToScene(ptSelPtSceneCoors);
+    QLineF thisLineSceneCoors(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2);
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
+    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the polar coordinates in length and angle of the given point
            to the selection point of the graphical object.
 
-    See above for more details.
+    How the angle of anchor lines to selection points is interpreted depends on
+    the graphical object type and the selection point.
+
+    Example: Horizontal Line
+
+           + Pt
+          /
+         / Calculated Angle: 60°
+        +------------x------------+
+        P1         Center         P2
+
+    @note This method is used to keep the relative position of labels to the
+          graphical object they are linked to if the linked object is resized,
+          rotated or moved.
+
+          For example if the line would be rotated by 180°:
+
+            P2         Center         P1
+            +------------x------------+
+                          Angle: 60° /
+                                    /
+                                Pt +
 */
 SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
 //------------------------------------------------------------------------------
@@ -4708,10 +4848,51 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
-#pragma message(__TODO__"pure virtual")
-    QLineF anchorLine;
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    return anchorLine;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QRectF thisRect = getBoundingRect();
+    QPointF ptSelPtLineP1;
+    QPointF ptSelPtLineP2;
+    if (i_selPt == ESelectionPoint::TopLeft) {
+        ptSelPtLineP1 = thisRect.topLeft();
+        ptSelPtLineP2 = thisRect.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::TopRight) {
+        ptSelPtLineP1 = thisRect.topRight();
+        ptSelPtLineP2 = thisRect.topLeft();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        ptSelPtLineP1 = thisRect.bottomRight();
+        ptSelPtLineP2 = thisRect.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        ptSelPtLineP1 = thisRect.bottomLeft();
+        ptSelPtLineP2 = thisRect.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::TopCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.center().x(), thisRect.top());
+        ptSelPtLineP2 = thisRect.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::RightCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.right(), thisRect.center().y());
+        ptSelPtLineP2 = thisRect.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.center().x(), thisRect.bottom());
+        ptSelPtLineP2 = thisRect.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::LeftCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.left(), thisRect.center().y());
+        ptSelPtLineP2 = thisRect.topLeft();
+    }
+    else /*if (i_selPt == ESelectionPoint::Center)*/ {
+        ptSelPtLineP1 = thisRect.center();
+        ptSelPtLineP2 = QPointF(thisRect.right(), thisRect.center().y());
+    }
+    ptSelPtLineP1 = pGraphicsItemThis->mapToScene(ptSelPtLineP1);
+    ptSelPtLineP2 = pGraphicsItemThis->mapToScene(ptSelPtLineP2);
+    QLineF lineSelPtSceneCoors(ptSelPtLineP1, ptSelPtLineP2);
+    return ZS::Draw::getLineFromPolar(
+        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
 }
 
 //------------------------------------------------------------------------------
@@ -5230,12 +5411,40 @@ QString CGraphObj::findUniqueLabelName(const QString& i_strPrefix) const
 //------------------------------------------------------------------------------
 /*! @brief Returns the list of all existing label names.
 
+    The returned list starts with the predefined labels.
+
     @return List of existing label names.
 */
 QStringList CGraphObj::getLabelNames() const
 //------------------------------------------------------------------------------
 {
-    return m_hshLabelDscrs.keys();
+    QStringList strlstLabelNames;
+    // The predefined labels should be at the beginning of the table.
+    QStringList strlstLabelNamesTmp = m_hshLabelDscrs.keys();
+    if (strlstLabelNamesTmp.size() > 0) {
+        // The predefined labels should be at the beginning of the table.
+        // Insert those first if the corresponding label has been added.
+        QStringList strlstPredefinedLabelNames = getPredefinedLabelNames();
+        QSet<QString> strlstLabelNamesAdded;
+        for (const QString& strLabelName : strlstPredefinedLabelNames) {
+            if (isLabelAdded(strLabelName)) {
+                strlstLabelNames.append(strLabelName);
+                strlstLabelNamesAdded.insert(strLabelName);
+            }
+        }
+        // The user defined labels should follow the predefined labels.
+        // Add those after the predefined labels.
+        for (const QString& strLabelName : strlstLabelNamesTmp) {
+            if (isLabelAdded(strLabelName)) {
+                // If label has not already been added as a predefined label ...
+                if (!strlstLabelNamesAdded.contains(strLabelName)) {
+                    strlstLabelNames.append(strLabelName);
+                    strlstLabelNamesAdded.insert(strLabelName);
+                }
+            }
+        }
+    }
+    return strlstLabelNames;
 }
 
 //------------------------------------------------------------------------------
@@ -5471,7 +5680,7 @@ bool CGraphObj::addLabel(
 //------------------------------------------------------------------------------
 /*! Removes the label with the given name.
 
-    The label is destryoed and also removed from the graphics scene and becomes invisible.
+    The label is destroyed and also removed from the graphics scene and becomes invisible.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
@@ -6386,6 +6595,174 @@ bool CGraphObj::isGeometryLabelAnchorLineVisible(const QString& i_strName) const
 }
 
 /*==============================================================================
+protected: // overridables (geometry labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a new geometry label with the given name linked to one or two
+           selection point at the bounding rectangle.
+
+    The label is not added to the graphics scene and remains invisible.
+    To add the label also to the graphics scene the label must be shown.
+
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_labelType
+        Range [EGraphObjTypeLabelGeometryPosition,
+               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
+               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
+               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
+        If not empty defines the text to be shown.
+    @param [in] i_selPt1
+        First selection point the label should use to indicate the geometry.
+    @param [in] i_selPt2
+        Second selection point the label should use to indicate the geometry.
+        For position label only one selection point is used and the second selection
+        point is set to invalid.
+
+    @return true, if the label has been created and added, false otherwise.
+*/
+bool CGraphObj::addGeometryLabel(
+    const QString& i_strName, EGraphObjType i_labelType,
+    ESelectionPoint i_selPt1, ESelectionPoint i_selPt2)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
+            + ", " + CEnumSelectionPoint(i_selPt1).toString()
+            + ", " + CEnumSelectionPoint(i_selPt2).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::addGeometryLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
+    if (bCanAdd) {
+        SLabelDscr labelDscr(i_labelType, i_strName);
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt1);
+        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_selPt2);
+        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
+        emit_geometryLabelAdded(i_strName);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanAdd);
+    }
+    return bCanAdd;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a new geometry label with the given name linked to one or two
+           shape points.
+
+    The label is not added to the graphics scene and remains invisible.
+    To add the label also to the graphics scene the label must be shown.
+
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_labelType
+        Range [EGraphObjTypeLabelGeometryPosition,
+               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
+               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
+               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
+        If not empty defines the text to be shown.
+    @param [in] i_idxPt1
+        First selection point the label should use to indicate the geometry.
+    @param [in] i_idxPt2
+        Second selection point the label should use to indicate the geometry.
+        For position label only one selection point is used and the second selection
+        point is set to invalid.
+
+    @return true, if the label has been created and added, false otherwise.
+*/
+bool CGraphObj::addGeometryLabel(
+    const QString& i_strName, EGraphObjType i_labelType,
+    int i_idxPt1, int i_idxPt2)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
+            + ", " + QString::number(i_idxPt1) + ", " + QString::number(i_idxPt2);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::addGeometryLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
+    if (bCanAdd) {
+        SLabelDscr labelDscr(i_labelType, i_strName);
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt1);
+        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_idxPt2);
+        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
+        emit_geometryLabelAdded(i_strName);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanAdd);
+    }
+    return bCanAdd;
+}
+
+//------------------------------------------------------------------------------
+/*! Removes the label with the given name.
+
+    The label is destroyed and also removed from the graphics scene and becomes invisible.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+*/
+bool CGraphObj::removeGeometryLabel(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::removeGeometryLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+    bool bCanRemove = true; //!isPredefinedLabelName(i_strName);
+    if (bCanRemove) {
+        m_hshGeometryLabelDscrs.remove(i_strName);
+        CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
+        if (pGraphObjLabel != nullptr) {
+            // "onGeometryLabelAboutToBeDestroyed" is called which removes the label from the hash.
+            QGraphicsItem* pGraphicsItemLabel = dynamic_cast<QGraphicsItem*>(pGraphObjLabel);
+            pGraphicsItemLabel->hide();
+            delete pGraphObjLabel;
+            pGraphObjLabel = nullptr;
+        }
+        emit_geometryLabelRemoved(i_strName);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanRemove);
+    }
+    return bCanRemove;
+}
+
+/*==============================================================================
 public: // instance methods (simulation methods)
 ==============================================================================*/
 
@@ -6694,125 +7071,6 @@ public: // instance methods (simulation methods)
 //    }
 //    m_arKeyReleaseEventFunctions.removeAt(idxFct);
 //}
-
-/*==============================================================================
-protected: // overridables (geometry labels)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a new geometry label with the given name linked to one or two
-           selection point at the bounding rectangle.
-
-    The label is not added to the graphics scene and remains invisible.
-    To add the label also to the graphics scene the label must be shown.
-
-    @param [in] i_strName
-        Name of the label. The name must be unique otherwise no label is created.
-    @param [in] i_labelType
-        Range [EGraphObjTypeLabelGeometryPosition,
-               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
-               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
-               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
-        If not empty defines the text to be shown.
-    @param [in] i_selPt1
-        First selection point the label should use to indicate the geometry.
-    @param [in] i_selPt2
-        Second selection point the label should use to indicate the geometry.
-        For position label only one selection point is used and the second selection
-        point is set to invalid.
-
-    @return true, if the label has been created and added, false otherwise.
-*/
-bool CGraphObj::addGeometryLabel(
-    const QString& i_strName, EGraphObjType i_labelType,
-    ESelectionPoint i_selPt1, ESelectionPoint i_selPt2)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
-            + ", " + CEnumSelectionPoint(i_selPt1).toString()
-            + ", " + CEnumSelectionPoint(i_selPt2).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::addGeometryLabel",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
-    if (bCanAdd) {
-        SLabelDscr labelDscr(i_labelType, i_strName);
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt1);
-        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_selPt2);
-        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bCanAdd);
-    }
-    return bCanAdd;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a new geometry label with the given name linked to one or two
-           shape points.
-
-    The label is not added to the graphics scene and remains invisible.
-    To add the label also to the graphics scene the label must be shown.
-
-    @param [in] i_strName
-        Name of the label. The name must be unique otherwise no label is created.
-    @param [in] i_labelType
-        Range [EGraphObjTypeLabelGeometryPosition,
-               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
-               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
-               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
-        If not empty defines the text to be shown.
-    @param [in] i_idxPt1
-        First selection point the label should use to indicate the geometry.
-    @param [in] i_idxPt2
-        Second selection point the label should use to indicate the geometry.
-        For position label only one selection point is used and the second selection
-        point is set to invalid.
-
-    @return true, if the label has been created and added, false otherwise.
-*/
-bool CGraphObj::addGeometryLabel(
-    const QString& i_strName, EGraphObjType i_labelType,
-    int i_idxPt1, int i_idxPt2)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
-            + ", " + QString::number(i_idxPt1) + ", " + QString::number(i_idxPt2);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::addGeometryLabel",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
-    if (bCanAdd) {
-        SLabelDscr labelDscr(i_labelType, i_strName);
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt1);
-        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_idxPt2);
-        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bCanAdd);
-    }
-    return bCanAdd;
-}
 
 /*==============================================================================
 protected slots: // overridables
@@ -7715,6 +7973,40 @@ void CGraphObj::emit_labelChanged(const QString& i_strName)
         /* strMethod    */ "CGraphObj::emit_labelChanged",
         /* strAddInfo   */ strMthInArgs );
     emit labelChanged(this, i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_geometryLabelAdded(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_geometryLabelAdded",
+        /* strAddInfo   */ strMthInArgs );
+    emit geometryLabelAdded(this, i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_geometryLabelRemoved(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_geometryLabelRemoved",
+        /* strAddInfo   */ strMthInArgs );
+    emit geometryLabelRemoved(this, i_strName);
 }
 
 //------------------------------------------------------------------------------

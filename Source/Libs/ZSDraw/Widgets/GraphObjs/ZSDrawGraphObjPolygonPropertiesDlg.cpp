@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolylinePropertiesDlg.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesDlg.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -49,7 +49,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CDlgGraphObjPolylineProperties : public ZS::System::GUI::CDialog
+class CDlgGraphObjPolygonProperties : public ZS::System::GUI::CDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -57,7 +57,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgGraphObjPolylineProperties* CDlgGraphObjPolylineProperties::CreateInstance(
+CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::CreateInstance(
     const QString&     i_strDlgTitle,
     CGraphObjPolyline* i_pGraphObjPolyline,
     QWidget*           i_pWdgtParent,
@@ -70,7 +70,7 @@ CDlgGraphObjPolylineProperties* CDlgGraphObjPolylineProperties::CreateInstance(
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
-    return new CDlgGraphObjPolylineProperties(
+    return new CDlgGraphObjPolygonProperties(
         /* strDlgTitle   */ i_strDlgTitle,
         /* pGraphObjLine */ i_pGraphObjPolyline,
         /* pWdgtParent   */ i_pWdgtParent,
@@ -78,10 +78,10 @@ CDlgGraphObjPolylineProperties* CDlgGraphObjPolylineProperties::CreateInstance(
 }
 
 //------------------------------------------------------------------------------
-CDlgGraphObjPolylineProperties* CDlgGraphObjPolylineProperties::GetInstance( CGraphObjPolyline* i_pGraphObjPolyline )
+CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::GetInstance( CGraphObjPolyline* i_pGraphObjPolyline )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgGraphObjPolylineProperties*>(
+    return dynamic_cast<CDlgGraphObjPolygonProperties*>(
         CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs", ClassName(), i_pGraphObjPolyline->keyInTree()));
 }
 
@@ -90,7 +90,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgGraphObjPolylineProperties::CDlgGraphObjPolylineProperties(
+CDlgGraphObjPolygonProperties::CDlgGraphObjPolygonProperties(
     const QString&     i_strDlgTitle,
     CGraphObjPolyline* i_pGraphObjPolyline,
     QWidget*           i_pWdgtParent,
@@ -106,7 +106,7 @@ CDlgGraphObjPolylineProperties::CDlgGraphObjPolylineProperties(
     m_pGraphObjPolyline(i_pGraphObjPolyline),
     m_pLyt(nullptr),
     m_pScrollArea(nullptr),
-    m_pWdgtPolylineSettings(nullptr),
+    m_pWdgtPolygonSettings(nullptr),
     // Buttons
     m_pLytLineBtns(nullptr),
     m_pBtnOk(nullptr),
@@ -128,7 +128,7 @@ CDlgGraphObjPolylineProperties::CDlgGraphObjPolylineProperties(
 
     QObject::connect(
         m_pGraphObjPolyline, &CGraphObj::destroyed,
-        this, &CDlgGraphObjPolylineProperties::onGraphObjDestroyed);
+        this, &CDlgGraphObjPolygonProperties::onGraphObjDestroyed);
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -142,12 +142,12 @@ CDlgGraphObjPolylineProperties::CDlgGraphObjPolylineProperties(
     m_pScrollArea->setWidgetResizable(true);
     m_pLyt->addWidget(m_pScrollArea, 1);
 
-    m_pWdgtPolylineSettings = new CWdgtGraphObjPolylineProperties(pDrawingScene, "DlgGraphObjPolylineProperties", false);
-    m_pWdgtPolylineSettings->setKeyInTree(m_pGraphObjPolyline->keyInTree());
-    m_pScrollArea->setWidget(m_pWdgtPolylineSettings);
+    m_pWdgtPolygonSettings = new CWdgtGraphObjPolygonProperties(pDrawingScene, "DlgGraphObjPolygonProperties", false);
+    m_pWdgtPolygonSettings->setKeyInTree(m_pGraphObjPolyline->keyInTree());
+    m_pScrollArea->setWidget(m_pWdgtPolygonSettings);
     QObject::connect(
-        m_pWdgtPolylineSettings, &CWdgtGraphObjPolylineProperties::contentChanged,
-        this, &CDlgGraphObjPolylineProperties::onWdgtPolylineSettingsContentChanged);
+        m_pWdgtPolygonSettings, &CWdgtGraphObjPolygonProperties::contentChanged,
+        this, &CDlgGraphObjPolygonProperties::onWdgtPolygonSettingsContentChanged);
 
     // Dialog buttons
     //================
@@ -163,27 +163,27 @@ CDlgGraphObjPolylineProperties::CDlgGraphObjPolylineProperties(
     m_pBtnOk->setDefault(true);
     QObject::connect(
         m_pBtnOk, &QPushButton::clicked,
-        this, &CDlgGraphObjPolylineProperties::onBtnOkClicked);
+        this, &CDlgGraphObjPolygonProperties::onBtnOkClicked);
 
     m_pBtnApply = new QPushButton("Accept");
     m_pBtnApply->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnApply);
     QObject::connect(
         m_pBtnApply, &QPushButton::clicked,
-        this, &CDlgGraphObjPolylineProperties::onBtnApplyClicked);
+        this, &CDlgGraphObjPolygonProperties::onBtnApplyClicked);
 
     m_pBtnReset = new QPushButton("Reset");
     m_pBtnReset->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnReset);
     QObject::connect(
         m_pBtnReset, &QPushButton::clicked,
-        this, &CDlgGraphObjPolylineProperties::onBtnResetClicked);
+        this, &CDlgGraphObjPolygonProperties::onBtnResetClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytLineBtns->addWidget(m_pBtnCancel);
     QObject::connect(
         m_pBtnCancel, &QPushButton::clicked,
-        this, &CDlgGraphObjPolylineProperties::onBtnCancelClicked);
+        this, &CDlgGraphObjPolygonProperties::onBtnCancelClicked);
 
     // Geometry of dialog
     //-------------------
@@ -194,7 +194,7 @@ CDlgGraphObjPolylineProperties::CDlgGraphObjPolylineProperties(
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgGraphObjPolylineProperties::~CDlgGraphObjPolylineProperties()
+CDlgGraphObjPolygonProperties::~CDlgGraphObjPolygonProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -207,7 +207,7 @@ CDlgGraphObjPolylineProperties::~CDlgGraphObjPolylineProperties()
     m_pGraphObjPolyline = nullptr;
     m_pLyt = nullptr;
     m_pScrollArea = nullptr;
-    m_pWdgtPolylineSettings = nullptr;
+    m_pWdgtPolygonSettings = nullptr;
     // Buttons
     m_pLytLineBtns = nullptr;
     m_pBtnOk = nullptr;
@@ -222,12 +222,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::setCurrentWidget(CWdgtGraphObjPolylineProperties::EWidget i_widget)
+void CDlgGraphObjPolygonProperties::setCurrentWidget(CWdgtGraphObjPolygonProperties::EWidget i_widget)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CWdgtGraphObjPolylineProperties::widgetName(i_widget);
+        strMthInArgs = CWdgtGraphObjPolygonProperties::widgetName(i_widget);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -236,7 +236,7 @@ void CDlgGraphObjPolylineProperties::setCurrentWidget(CWdgtGraphObjPolylinePrope
         /* strMethod    */ "setCurrentWidget",
         /* strAddInfo   */ strMthInArgs );
 
-    m_pWdgtPolylineSettings->expand(i_widget, true);
+    m_pWdgtPolygonSettings->expand(i_widget, true);
 }
 
 /*==============================================================================
@@ -244,7 +244,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::onBtnOkClicked(bool /*i_bChecked*/)
+void CDlgGraphObjPolygonProperties::onBtnOkClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -254,12 +254,12 @@ void CDlgGraphObjPolylineProperties::onBtnOkClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnOkClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtPolylineSettings->acceptChanges();
+    m_pWdgtPolygonSettings->acceptChanges();
     QDialog::accept();
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::onBtnApplyClicked(bool /*i_bChecked*/)
+void CDlgGraphObjPolygonProperties::onBtnApplyClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -269,17 +269,17 @@ void CDlgGraphObjPolylineProperties::onBtnApplyClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnApplyClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtPolylineSettings->acceptChanges();
+    m_pWdgtPolygonSettings->acceptChanges();
 
     // After accepting changes there should be no changes anymore.
     // Code just added for the sake of clarification.
-    bool bHasChanges = m_pWdgtPolylineSettings->hasChanges();
+    bool bHasChanges = m_pWdgtPolygonSettings->hasChanges();
     m_pBtnApply->setEnabled(bHasChanges);
     m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::onBtnResetClicked(bool /*i_bChecked*/)
+void CDlgGraphObjPolygonProperties::onBtnResetClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -289,17 +289,17 @@ void CDlgGraphObjPolylineProperties::onBtnResetClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnResetClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtPolylineSettings->rejectChanges();
+    m_pWdgtPolygonSettings->rejectChanges();
 
     // After rejecting changes there should be no changes anymore.
     // Code just added for the sake of clarification.
-    bool bHasChanges = m_pWdgtPolylineSettings->hasChanges();
+    bool bHasChanges = m_pWdgtPolygonSettings->hasChanges();
     m_pBtnApply->setEnabled(bHasChanges);
     m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::onBtnCancelClicked(bool /*i_bChecked*/)
+void CDlgGraphObjPolygonProperties::onBtnCancelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -309,7 +309,7 @@ void CDlgGraphObjPolylineProperties::onBtnCancelClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnCancelClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtPolylineSettings->rejectChanges();
+    m_pWdgtPolygonSettings->rejectChanges();
     QDialog::reject();
 }
 
@@ -318,23 +318,23 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::onWdgtPolylineSettingsContentChanged()
+void CDlgGraphObjPolygonProperties::onWdgtPolygonSettingsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strObjName,
-        /* strMethod    */ "onWdgtPolylineSettingsContentChanged",
+        /* strMethod    */ "onWdgtPolygonSettingsContentChanged",
         /* strAddInfo   */ "" );
 
-    bool bHasChanges = m_pWdgtPolylineSettings->hasChanges();
+    bool bHasChanges = m_pWdgtPolygonSettings->hasChanges();
     m_pBtnApply->setEnabled(bHasChanges);
     m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjPolylineProperties::onGraphObjDestroyed(QObject*)
+void CDlgGraphObjPolygonProperties::onGraphObjDestroyed(QObject*)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(

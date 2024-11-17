@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjPolylinePropertiesDlg_h
-#define ZSDraw_DrawGraphObjPolylinePropertiesDlg_h
+#ifndef ZSDraw_DrawGraphObjPolygonPropertiesDlg_h
+#define ZSDraw_DrawGraphObjPolygonPropertiesDlg_h
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolylinePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesWdgt.h"
 #include "ZSSysGUI/ZSSysDialog.h"
 
 class QPushButton;
@@ -42,7 +42,7 @@ namespace Draw
 class CDrawingView;
 
 //******************************************************************************
-class ZSDRAWDLL_API CDlgGraphObjPolylineProperties : public ZS::System::GUI::CDialog
+class ZSDRAWDLL_API CDlgGraphObjPolygonProperties : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
     Q_OBJECT
@@ -50,37 +50,37 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CDlgGraphObjPolylineProperties"; }
+    static QString ClassName() { return "CDlgGraphObjPolygonProperties"; }
 public: // class methods
-    static CDlgGraphObjPolylineProperties* CreateInstance(
+    static CDlgGraphObjPolygonProperties* CreateInstance(
         const QString&     i_strDlgTitle,
         CGraphObjPolyline* i_pGraphObjPolyline,
         QWidget*           i_pWdgtParent = nullptr,
         Qt::WindowFlags    i_wflags = Qt::WindowFlags());
-    static CDlgGraphObjPolylineProperties* GetInstance(CGraphObjPolyline* i_pGraphObjPolyline);
+    static CDlgGraphObjPolygonProperties* GetInstance(CGraphObjPolyline* i_pGraphObjPolyline);
 protected: // ctor
-    CDlgGraphObjPolylineProperties(
+    CDlgGraphObjPolygonProperties(
         const QString&     i_strDlgTitle,
         CGraphObjPolyline* i_pGraphObjPolyline,
         QWidget*           i_pWdgtParent = nullptr,
         Qt::WindowFlags    i_wFlags = Qt::WindowFlags());
 public: // dtor
-    virtual ~CDlgGraphObjPolylineProperties();
+    virtual ~CDlgGraphObjPolygonProperties();
 public: // instance methods
-    void setCurrentWidget(CWdgtGraphObjPolylineProperties::EWidget i_widget);
+    void setCurrentWidget(CWdgtGraphObjPolygonProperties::EWidget i_widget);
 protected slots: // instance methods
     void onBtnOkClicked(bool i_bChecked = false);
     void onBtnApplyClicked(bool i_bChecked = false);
     void onBtnResetClicked(bool i_bChecked = false);
     void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
-    void onWdgtPolylineSettingsContentChanged();
+    void onWdgtPolygonSettingsContentChanged();
     void onGraphObjDestroyed(QObject*);
 private: // instance members
     CGraphObjPolyline* m_pGraphObjPolyline;
     QVBoxLayout* m_pLyt;
     QScrollArea* m_pScrollArea;
-    CWdgtGraphObjPolylineProperties* m_pWdgtPolylineSettings;
+    CWdgtGraphObjPolygonProperties* m_pWdgtPolygonSettings;
     // Buttons
     QHBoxLayout* m_pLytLineBtns;
     QPushButton* m_pBtnOk;
@@ -88,10 +88,10 @@ private: // instance members
     QPushButton* m_pBtnReset;
     QPushButton* m_pBtnCancel;
 
-}; // class CDlgGraphObjPolylineProperties
+}; // class CDlgGraphObjPolygonProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjPolylinePropertiesDlg_h
+#endif // #ifndef ZSDraw_DrawGraphObjPolygonPropertiesDlg_h

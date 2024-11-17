@@ -96,7 +96,7 @@ SErrResultInfo CObjFactoryPolyline::saveGraphObj(
     for (int idxPt = 0; idxPt < physValPolygon.count(); ++idxPt) {
         QPointF pt = physValPolygon.at(idxPt).toQPointF();
         i_xmlStreamWriter.writeAttribute(
-            XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt), qPoint2Str(pt, ", ", 'f', iDecimals));
+            XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt+1), qPoint2Str(pt, ", ", 'f', iDecimals));
     }
     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAngle, physValAngle.toString());
     i_xmlStreamWriter.writeEndElement();
@@ -161,7 +161,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
                     int idxPt = 0;
-                    QString strShapePointAttr = XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt);
+                    QString strShapePointAttr = XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt+1);
                     while (xmlStreamAttrs.hasAttribute(strShapePointAttr)) {
                         strElemAttr = xmlStreamAttrs.value(strShapePointAttr).toString();
                         bool bConverted = false;
@@ -179,7 +179,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
                             break;
                         }
                         physValPolygon.append(physValPointTmp);
-                        strShapePointAttr = XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(++idxPt);
+                        strShapePointAttr = XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(++idxPt+1);
                     }
                     if (physValPolygon.isEmpty()) {
                         XmlStreamParser::raiseErrorAttributeNotDefined(

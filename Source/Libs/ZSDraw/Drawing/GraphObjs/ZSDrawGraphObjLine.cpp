@@ -1178,17 +1178,17 @@ public: // overridables of base class CGraphObj
 CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    CPhysValPoint physValPos(*m_pDrawingScene);
+    CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryOnSceneChangedSignalBlockedCounter);
     QPointF ptPos = QPointF(i_idxPt == 0 ? line().p1() : line().p2());
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
     // And itemChange is called but should not emit the geometryChangds signal ..
-    CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
-    CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryOnSceneChangedSignalBlockedCounter);
     pVThis->QGraphicsItem_setRotation(0.0);
     ptPos = pGraphicsItemThis->mapToParent(ptPos);
     pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
-    CPhysValPoint physValPos(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
         ptPos = parentGroup()->mapToTopLeftOfBoundingRect(ptPos);
         physValPos = parentGroup()->convert(ptPos, i_unit);
@@ -1309,17 +1309,15 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPo
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF thisLine = line();
     QLineF thisLineSceneCoors;
-    QPointF ptSelPtSceneCoors;
     if (i_idxPt == 0) {
         thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
                                     pGraphicsItemThis->mapToScene(thisLine.p2()));
-        ptSelPtSceneCoors = QPointF(pGraphicsItemThis->mapToScene(thisLine.p1()));
     }
     else {
         thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p2()),
                                     pGraphicsItemThis->mapToScene(thisLine.p1()));
-        ptSelPtSceneCoors = QPointF(pGraphicsItemThis->mapToScene(thisLine.p2()));
     }
+    QPointF ptSelPtSceneCoors = thisLineSceneCoors.p1();
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
     return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
@@ -1682,7 +1680,7 @@ void CGraphObjLine::paint(
 
     QPen pn = pen();
     QLineF lineF = line();
-    if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || m_bIsHighlighted || isSelected())) {
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());

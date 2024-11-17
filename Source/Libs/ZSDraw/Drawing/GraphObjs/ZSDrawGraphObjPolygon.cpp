@@ -393,88 +393,114 @@ void CGraphObjPolygon::paint(
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
+    QPolygonF polygon = this->polygon();
+    if (polygon.size() < 2) {
+        return;
+    }
+
     i_pPainter->save();
 
-    QPen   pn   = pen();
-    QBrush brsh = brush();
+    QPen pn = pen();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
+        if (isSelected()) {
+            pn.setColor(s_selectionColor);
+            pn.setWidth(3 + m_drawSettings.getPenWidth());
+        }
+        else {
+            pn.setColor(s_highlightColor);
+            pn.setWidth(3 + m_drawSettings.getPenWidth());
+        }
+        pn.setStyle(Qt::SolidLine);
+        QPainterPath outline;
+        outline.moveTo(polygon[0]);
+        for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
+            outline.lineTo(polygon[idxPt]);
+        }
+        outline.lineTo(polygon[0]);
+        i_pPainter->strokePath(outline, pn);
+        pn.setWidth(1 + m_drawSettings.getPenWidth());
+    }
+    pn.setColor(m_drawSettings.getPenColor());
+    pn.setWidth(m_drawSettings.getPenWidth());
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
+    i_pPainter->setPen(pn);
+    i_pPainter->setRenderHints(s_painterRenderHints);
+    i_pPainter->drawPolygon(polygon);
 
-    i_pPainter->setPen( pen() );
-    i_pPainter->setBrush( brush() );
+    CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+    CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.getLineEndStyle(ELinePoint::End);
+    if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal) {
+        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
+        pn.setWidth(1);
+        pn.setStyle(Qt::SolidLine);
+        i_pPainter->setPen(pn);
+        QBrush brsh(pn.color());
+        if (lineEndStyleLineStart != ELineEndStyle::Normal) {
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start)));
+            i_pPainter->setBrush(brsh);
+            if (baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine) {
+                i_pPainter->drawPolyline(m_plgLineStartArrowHead);
+            }
+            else {
+                if (m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
+                    i_pPainter->setBrush(Qt::white);
+                }
+                else {
+                    i_pPainter->setBrush(Qt::black);
+                }
+                i_pPainter->drawPolygon(m_plgLineStartArrowHead);
+            }
+        }
+        if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)) );
+            i_pPainter->setBrush(brsh);
+            if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
+                i_pPainter->drawPolyline(m_plgLineEndArrowHead);
+            }
+            else {
+                if (m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
+                    i_pPainter->setBrush(Qt::white);
+                }
+                else {
+                    i_pPainter->setBrush(Qt::black);
+                }
+                i_pPainter->drawPolygon(m_plgLineEndArrowHead);
+            }
+        }
+    }
 
-    QPolygonF plg = polygon();
-
-    i_pPainter->drawPolygon(plg);
-
-    if( m_pDrawingScene->getMode() == EMode::Edit && (/*m_bIsHit ||*/ isSelected()) )
-    {
-        if( plg.size() > 0 )
-        {
-            QRectF rctBounding = plg.boundingRect();
-
-            pn.setStyle(Qt::DotLine);
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
+        if (!polygon.isEmpty()) {
+            QRectF rctBounding = getBoundingRect();
             pn.setColor(Qt::blue);
+            pn.setStyle(Qt::DotLine);
             pn.setWidth(1);
-
             i_pPainter->setPen(pn);
             i_pPainter->setBrush(Qt::NoBrush);
-
             i_pPainter->drawRect(rctBounding);
-
-            if( isSelected() )
-            {
-                if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr )
-                {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-
-                    QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
-                    QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
-
-                    QPointF ptRctM = mapFromScene(ptRct);
-                    QPointF ptRotM = mapFromScene(ptRot);
-
-                    i_pPainter->drawLine( ptRctM, ptRotM );
-                }
-
-                if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr )
-                {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-
-                    QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
-                    QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
-
-                    QPointF ptRctM = mapFromScene(ptRct);
-                    QPointF ptRotM = mapFromScene(ptRot);
-
-                    i_pPainter->drawLine( ptRctM, ptRotM );
-                }
-            } // if( isSelected() )
-
-            //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-            //CGraphObjLabel* pGraphObjLabel;
-
-            //QPointF ptSelPt;
-            //QPointF ptLabelSelPt;
-
-            //while( itLabels.hasNext() )
-            //{
-            //    itLabels.next();
-            //    pGraphObjLabel = itLabels.value();
-
-            //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            //    {
-            //        ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
-
-            //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPointCoors(ESelectionPoint::Center);
-            //        ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
-
-            //        i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
-            //    }
-            //}
-        } // if( plg.size() > 0 )
-    } // if( m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()) )
-
+            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
+             && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
+                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
+                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
+                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
+                QPointF ptRctM = mapFromScene(ptRct);
+                QPointF ptRotM = mapFromScene(ptRot);
+                i_pPainter->drawLine(ptRctM, ptRotM);
+            }
+            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
+             && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
+                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
+                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
+                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
+                QPointF ptRctM = mapFromScene(ptRct);
+                QPointF ptRotM = mapFromScene(ptRot);
+                i_pPainter->drawLine( ptRctM, ptRotM );
+            }
+        }
+    }
     i_pPainter->restore();
 
 } // paint

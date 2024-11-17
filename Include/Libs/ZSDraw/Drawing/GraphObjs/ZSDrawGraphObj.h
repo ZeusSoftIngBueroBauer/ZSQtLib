@@ -365,6 +365,7 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 public: // type definitions and constants
     static const QString c_strLabelName;
 public: // type definitions and constants
+    static const QString c_strGeometryLabelNameP;
     static const QString c_strGeometryLabelNameP1;
     static const QString c_strGeometryLabelNameP2;
     static const QString c_strGeometryLabelNameTopLeft;
@@ -383,6 +384,9 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObj"; }
+public: // class methods
+    static QString createPolygonPointLabelName(int i_idxPt);
+    static bool isPolygonPointLabelName(const QString& i_strLabelName);
 protected: // ctor
     CGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -434,6 +438,10 @@ signals:
     void labelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
     /*!< This signal is emitted if a text label has been changed. */
     void labelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a new geometry label has been added. */
+    void geometryLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a geometry label has been removed. */
+    void geometryLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a geometry label has been changed. */
     void geometryLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
 protected: // instance methods (trace admin objects for method tracing)
@@ -654,6 +662,10 @@ public: // overridables (geometry labels)
     virtual void showGeometryLabelAnchorLine(const QString& i_strName);
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
+protected: // overridables (geometry labels)
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
+    virtual bool removeGeometryLabel(const QString& i_strName);
 public: // instance methods (simulation methods)
     //void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
@@ -667,9 +679,6 @@ public: // instance methods (simulation methods)
     //void removeKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void addKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void removeKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false);
@@ -706,6 +715,8 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelRemoved(const QString& i_strName);
     void emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_labelChanged(const QString& i_strName);
+    void emit_geometryLabelAdded(const QString& i_strName);
+    void emit_geometryLabelRemoved(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
     CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
     double setParentGroupScaleX(double i_fScaleX);
@@ -851,10 +862,12 @@ protected: // instance members
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
     /*!< List with predefined (reserved) label names.
          For all object types "Name" is reserved to indicate the name of the object.
-         The predefined label names (including "Name") got to be added in the constructors
+         The predefined label names (including "Name") may be added in the constructors
          of the derived classes. E.g. the "Line" adds the predefined label names "Name",
-         "P1" and "P2" in its constructor. If user defined labels got to be added the reserved
-         names may not be used. */
+         "P1" and "P2" in its constructor. Predefined label names may also be added
+         during runtime. E.g. when added or removing points to a polygon. For this label
+         names "P<IdxPt>" are predefined label names and may not be used as user defined label names.
+         If user defined labels got to be added the reserved names may not be used. */
     QStringList m_strlstPredefinedLabelNames;
     /*!< Hash with descriptors for labels which may be assigned to and indicated by the graphical object.
          For each label a unique name has to be assigned.
@@ -862,8 +875,8 @@ protected: // instance members
          the name of the object. The value of the "Name" label is not editable but is
          used to indicate the name of the object.
          Derived graphical object classes may further on reserve names. E.g. the Line object
-         uses "P1" and "P2" to address the line end points. The names for "P1" and "P2" is
-         editable but are defaulting to "P1" and "P2".
+         uses "P1" and "P2" to address the line end points. The names for "P<IdxPt>" are
+         editable but are defaulting to "P<IdxPt>".
          In addition to those predefined labels additional labels may be added by defining a
          unique name and assigning a text. Both the name and the text are stored in the Label object.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
@@ -872,10 +885,10 @@ protected: // instance members
     /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
          Created on demand from the label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
-    /*!< List with the geometry label names. Got to be initialised in the constructor of derived classes
+    /*!< List with the geometry label names. May be initialised in the constructor of derived classes
          in addition to the hash with geometry labels. Keeping the geometry label names also a string list
-         should verify that the returned value names are always in the same order as the order
-         in a hash is arbitrary. */
+         should verify that the returned value names are always in the same order (as the order
+         in a hash is arbitrary). For polygons the geometry label names may be added or removed during runtime. */
     QStringList m_strlstGeometryLabelNames;
     /*!< Hash with descriptors for geometry labels which may be indicated by the graphical object.
          The number of geometry labels depend on the object type.
