@@ -866,11 +866,19 @@ CPhysValRect CGraphObjGroup::getRect() const
         If set to Current (default), the scaled and rotated coordinates are returned.
         If set to Original, the unscaled and not rotated coordinates are returned.
         The Original coordinates are used by childs to calculate the parent's scale factor.
+
+    @return Physical rectangle (scaled and rotated) in parent or scene coordinates,
+            if the object has no parent group.
 */
 CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return convert(m_physValRectScaledAndRotated, i_unit);
+    if (parentGroup() != nullptr) {
+        return parentGroup()->convert(m_physValRectScaledAndRotated, i_unit);
+    }
+    else {
+        return m_pDrawingScene->convert(m_physValRectScaledAndRotated, i_unit);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -2116,26 +2124,8 @@ QRectF CGraphObjGroup::getBoundingRect() const
            on the drawing scene.
 
     To get the effective bounding rectangle the left most, the right most
-    as well as the top most and bottom most shape points of the transformed
-    (rotated and scaled) object are are taken into account.
-
-    If the object is rotated the effective bounding rectangle is not the
-    bounding rectangle (in item coordinates) mapped to the scene.
-    Before mapping the points to the scene the TopMost, BottomMost, LeftMost
-    and RightMost points of the rotated object have to be calculated and each
-    point has to be mapped to the scene.
-
-    E.g. rotated trapez on the scene:
-
-                             + TopMost
-                            / \
-                           /   \
-                          /     \
-                LeftMost +       + RightMost
-                          \     /
-                           \   /
-                            \ /
-                             + BottomMost
+    as well as the top most and bottom most rectangle points of the transformed
+    (rotated and scaled) rectangle are are taken into account.
 */
 QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
@@ -2147,25 +2137,7 @@ QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
         /* strAddInfo   */ "" );
 
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    CPhysValRect physValRect = getRect();
-    if (parentGroup() != nullptr) {
-        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
-        physValRect = parentGroup()->mapToScene(physValRect);
-    }
-    else {
-        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
-    }
-    CPhysValPoint physValPointTL = physValRect.topLeft();
-    CPhysValPoint physValPointTR = physValRect.topRight();
-    CPhysValPoint physValPointBR = physValRect.bottomRight();
-    CPhysValPoint physValPointBL = physValRect.bottomLeft();
-    QPointF ptTL = physValPointTL.toQPointF();
-    QPointF ptTR = physValPointTR.toQPointF();
-    QPointF ptBR = physValPointBR.toQPointF();
-    QPointF ptBL = physValPointBL.toQPointF();
-    QPolygonF plg({ptTL, ptTR, ptBR, ptBL});
-    QRectF rctBounding = plg.boundingRect();
+    QRectF rctBounding = CGraphObj::getEffectiveBoundingRectOnScene(getRect());
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }

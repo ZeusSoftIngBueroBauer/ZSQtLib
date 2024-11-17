@@ -1372,13 +1372,13 @@ QRectF CGraphObjPolyline::getBoundingRect() const
            on the drawing scene.
 
     To get the effective bounding rectangle the left most, the right most
-    as well as the top most and bottom most shape points of the transformed
-    (rotated and scaled) object are are taken into account.
+    as well as the top most and bottom most points of the transformed
+    (rotated and scaled) item are are taken into account.
 
-    If the object is rotated the effective bounding rectangle is not the
+    If the item is rotated the effective bounding rectangle is not the
     bounding rectangle (in item coordinates) mapped to the scene.
     Before mapping the points to the scene the TopMost, BottomMost, LeftMost
-    and RightMost points of the rotated object have to be calculated and each
+    and RightMost points of the rotated item have to be calculated and each
     point has to be mapped to the scene.
 
     E.g. rotated trapez on the scene:
@@ -1403,13 +1403,10 @@ QRectF CGraphObjPolyline::getEffectiveBoundingRectOnScene() const
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
         /* strAddInfo   */ "" );
 
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPolygonF plg({
-        pGraphicsItemThis->mapToScene(getTopLeft().toQPointF(Units.Length.px)),
-        pGraphicsItemThis->mapToScene(getTopRight().toQPointF(Units.Length.px)),
-        pGraphicsItemThis->mapToScene(getBottomRight().toQPointF(Units.Length.px)),
-        pGraphicsItemThis->mapToScene(getBottomLeft().toQPointF(Units.Length.px))});
-    QRectF rctBounding = plg.boundingRect();
+    const QGraphicsPolygonItem* pGraphicsItemThis = dynamic_cast<const QGraphicsPolygonItem*>(this);
+    QPolygonF polygon = pGraphicsItemThis->polygon();
+    polygon = pGraphicsItemThis->mapToScene(polygon);
+    QRectF rctBounding = polygon.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -2107,6 +2104,13 @@ void CGraphObjPolyline::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    // Forward the mouse event to the base implementation.
+    // This will select the item, creating selection points if not yet created.
+    QGraphicsPolygonItem::mousePressEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 //    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
 //    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 //
@@ -3398,17 +3402,20 @@ CPhysValPolygon CGraphObjPolyline::getPhysValPolygonScaled(const CPhysValPolygon
         /* strMethod    */ "getPhysValPolygonScaled",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValPoint physValPointCenter(*m_pDrawingScene);
-    QRectF rctBounding = i_physValPolygonOrig.toQPolygonF(m_pDrawingScene->drawingSize().unit()).boundingRect();
-    physValPointCenter.setX(m_fParentGroupScaleX * rctBounding.center().x());
-    physValPointCenter.setY(m_fParentGroupScaleY * rctBounding.center().y());
+    QPointF ptCenterOrig = i_physValPolygonOrig.center().toQPointF(m_pDrawingScene->drawingSize().unit());
+    QPointF ptCenterScaled = ptCenterOrig;
+    ptCenterScaled.setX(m_fParentGroupScaleX * ptCenterOrig.x());
+    ptCenterScaled.setY(m_fParentGroupScaleX * ptCenterOrig.y());
+
     CPhysValPolygon physValPolygon(i_physValPolygonOrig);
     for (int idxPt = 0; idxPt < i_physValPolygonOrig.count(); ++idxPt) {
-        double fDX = m_fParentGroupScaleX * i_physValPolygonOrig.at(idxPt).x().getVal();
-        double fDY = m_fParentGroupScaleY * i_physValPolygonOrig.at(idxPt).y().getVal();
+        double fDXOrig = ptCenterOrig.x() - i_physValPolygonOrig.at(idxPt).x().getVal();
+        double fDYOrig = ptCenterOrig.y() - i_physValPolygonOrig.at(idxPt).y().getVal();
+        double fDXScaled = m_fParentGroupScaleX * fDXOrig;
+        double fDYScaled = m_fParentGroupScaleY * fDYOrig;
         CPhysValPoint physValPoint(*m_pDrawingScene);
-        physValPoint.setX(physValPointCenter.x().getVal() - fDX/2.0);
-        physValPoint.setY(physValPointCenter.y().getVal() - fDY/2.0);
+        physValPoint.setX(ptCenterScaled.x() - fDXScaled);
+        physValPoint.setY(ptCenterScaled.y() - fDYScaled);
         physValPolygon.replace(idxPt, physValPoint);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

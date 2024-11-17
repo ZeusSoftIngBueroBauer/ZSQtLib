@@ -137,8 +137,8 @@ ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i
 //ZSDRAWDLL_API QString qRect2Str( const QPolygonF& i_plgRect, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
 ZSDRAWDLL_API QString qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator = ", " );
 ZSDRAWDLL_API QString qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator = ", ", char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QPolygon str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
-ZSDRAWDLL_API QPolygonF str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+//ZSDRAWDLL_API QPolygon str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+//ZSDRAWDLL_API QPolygonF str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
 
 
 namespace XmlStreamParser

@@ -206,8 +206,8 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_arpSelPtsPolygon.append(nullptr);
     m_arpSelPtsPolygon.append(nullptr);
 
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemSendsGeometryChanges
-            |QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
+            |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 
@@ -1104,7 +1104,8 @@ QRectF CGraphObjLine::getEffectiveBoundingRectOnScene() const
 
     QPolygonF plg({
         mapToScene(line().p1()),
-        mapToScene(line().p2())});
+        mapToScene(line().p2())
+    });
     QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");

@@ -2487,10 +2487,14 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt,
 QString ZS::Draw::qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
-        if (idxPt > 0) str += i_strSeparator;
-        str += qPoint2Str(i_polygon[idxPt]);
+    QString str = "[" + QString::number(i_polygon.size()) + "]";
+    if (!i_polygon.isEmpty()) {
+        str += "(";
+        for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
+            if (!str.endsWith("(")) str += i_strSeparator;
+            str += QString::number(idxPt) + ": {" + qPoint2Str(i_polygon[idxPt]) + "}";
+        }
+        str += ")";
     }
     return str;
 }
@@ -2499,55 +2503,59 @@ QString ZS::Draw::qPolygon2Str( const QPolygon& i_polygon, const QString& i_strS
 QString ZS::Draw::qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
-        if (idxPt > 0) str += i_strSeparator;
-        str += qPoint2Str(i_polygon[idxPt], i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
+    QString str = "[" + QString::number(i_polygon.size()) + "]";
+    if (!i_polygon.isEmpty()) {
+        str += "(";
+        for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
+            if (!str.endsWith("(")) str += i_strSeparator;
+            str += QString::number(idxPt) + ": {" + qPoint2Str(i_polygon[idxPt], i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest) + "}";
+        }
+        str += ")";
     }
     return str;
 }
 
-//------------------------------------------------------------------------------
-QPolygon ZS::Draw::str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
-//------------------------------------------------------------------------------
-{
-    bool bConverted = false;
-    QPolygon plg;
-    QStringList strlst = i_str.split(i_strSeparator);
-    for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
-        QString strPt = strlst[idxPt];
-        QPoint pt = str2QPoint(strPt, &bConverted, i_strSeparator);
-        if (!bConverted) {
-            break;
-        }
-        plg.append(pt);
-    }
-    if (o_pbConverted != nullptr) {
-        *o_pbConverted = bConverted;
-    }
-    return plg;
-}
+////------------------------------------------------------------------------------
+//QPolygon ZS::Draw::str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
+////------------------------------------------------------------------------------
+//{
+//    bool bConverted = false;
+//    QPolygon plg;
+//    QStringList strlst = i_str.split(i_strSeparator);
+//    for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
+//        QString strPt = strlst[idxPt];
+//        QPoint pt = str2QPoint(strPt, &bConverted, i_strSeparator);
+//        if (!bConverted) {
+//            break;
+//        }
+//        plg.append(pt);
+//    }
+//    if (o_pbConverted != nullptr) {
+//        *o_pbConverted = bConverted;
+//    }
+//    return plg;
+//}
 
-//------------------------------------------------------------------------------
-QPolygonF ZS::Draw::str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
-//------------------------------------------------------------------------------
-{
-    bool bConverted = false;
-    QPolygonF plg;
-    QStringList strlst = i_str.split(i_strSeparator);
-    for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
-        QString strPt = strlst[idxPt];
-        QPointF pt = str2QPointF(strPt, &bConverted, i_strSeparator);
-        if (!bConverted) {
-            break;
-        }
-        plg.append(pt);
-    }
-    if (o_pbConverted != nullptr) {
-        *o_pbConverted = bConverted;
-    }
-    return plg;
-}
+////------------------------------------------------------------------------------
+//QPolygonF ZS::Draw::str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
+////------------------------------------------------------------------------------
+//{
+//    bool bConverted = false;
+//    QPolygonF plg;
+//    QStringList strlst = i_str.split(i_strSeparator);
+//    for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
+//        QString strPt = strlst[idxPt];
+//        QPointF pt = str2QPointF(strPt, &bConverted, i_strSeparator);
+//        if (!bConverted) {
+//            break;
+//        }
+//        plg.append(pt);
+//    }
+//    if (o_pbConverted != nullptr) {
+//        *o_pbConverted = bConverted;
+//    }
+//    return plg;
+//}
 
 //==============================================================================
 namespace ZS { namespace Draw { namespace XmlStreamParser {

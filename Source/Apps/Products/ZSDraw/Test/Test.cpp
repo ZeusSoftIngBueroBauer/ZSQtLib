@@ -3223,10 +3223,12 @@ void CTest::initObjectCoors()
     m_ptPosPolygonStar = QPointF();
     m_polygonStar = QPolygonF();
     *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAnglePolygonStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosPolygonTriangle = QPointF();
     m_polygonTriangle = QPolygonF();
     *m_pPhysValPolygonTriangle = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAnglePolygonTriangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Groups
     //-------
@@ -3469,6 +3471,14 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
                     pGraphObjLine->line(), pGraphObjLine->getLine(), i_iPrecision);
             }
         }
+        else if (i_pGraphObj->isPolyline() || i_pGraphObj->isPolygon()) {
+            const CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<const CGraphObjPolyline*>(i_pGraphObj);
+            if (pGraphObjPolyline != nullptr) {
+                strlstResultValues = resultValuesForPolygon(
+                    i_pGraphObj->name(), pGraphicsItem->pos(),
+                    pGraphObjPolyline->polygon(), pGraphObjPolyline->getPolygon(), i_iPrecision);
+            }
+        }
         if (i_bAddLabelResultValues) {
             QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
             for (const QString& strLabelName : strlstLabelNames) {
@@ -3492,85 +3502,6 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
             }
         }
     }
-    return strlstResultValues;
-}
-
-//------------------------------------------------------------------------------
-QStringList CTest::resultValuesForLine(
-    const QString& strGraphObjName, const QPointF& i_pos,
-    const QLineF& i_line, const CPhysValLine& i_physValLine, int i_iPrecision) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding(i_line.p1(), i_line.p2());
-    QStringList strlst;
-    if (i_iPrecision < 0) {
-        strlst = QStringList({
-        strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
-        strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
-        strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
-        strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
-        strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
-        strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
-        strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
-        });
-    }
-    else {
-        strlst = QStringList({
-            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
-            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
-            strGraphObjName + ".line {" + qLine2Str(i_line, ", ", 'f', i_iPrecision) + "} px",
-            strGraphObjName + ".position {" + i_physValLine.center().toString(false, ", ", 1) + "} " + i_physValLine.unit().symbol(),
-            strGraphObjName + ".getLine {" + i_physValLine.toString(false, ", ", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
-            strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
-            strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
-        });
-    }
-    return strlst;
-}
-
-//------------------------------------------------------------------------------
-QStringList CTest::resultValuesForPolygon(
-    const QString& strGraphObjName, const QPointF& i_pos,
-    const CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
-//------------------------------------------------------------------------------
-{
-    QStringList strlst;
-    if (i_iPrecision < 0) {
-        //strlst = QStringList({
-        //strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
-        //strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
-        //strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
-        //strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
-        //strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
-        //strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
-        //strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
-        //});
-    }
-    else {
-        //strlst = QStringList({
-        //    strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
-        //    strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
-        //    strGraphObjName + ".line {" + qLine2Str(i_line, ", ", 'f', i_iPrecision) + "} px",
-        //    strGraphObjName + ".position {" + i_physValLine.center().toString(false, ", ", 1) + "} " + i_physValLine.unit().symbol(),
-        //    strGraphObjName + ".getLine {" + i_physValLine.toString(false, ", ", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
-        //    strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
-        //    strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
-        //});
-    }
-    return strlst;
-}
-
-//------------------------------------------------------------------------------
-QStringList CTest::resultValuesForLabel(
-    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const
-//------------------------------------------------------------------------------
-{
-    QStringList strlstResultValues;
-    if (!i_pos.isNull()) {
-        strlstResultValues = QStringList({
-            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
-    }
-    strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
     return strlstResultValues;
 }
 
@@ -3604,6 +3535,84 @@ QStringList CTest::resultValuesForGroup(
         });
     }
     return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForLine(
+    const QString& strGraphObjName, const QPointF& i_pos,
+    const QLineF& i_lineItemCoors, const CPhysValLine& i_physValLine, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding(i_lineItemCoors.p1(), i_lineItemCoors.p2());
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
+            strGraphObjName + ".line {" + qLine2Str(i_lineItemCoors) + "} px",
+            strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
+            strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".line {" + qLine2Str(i_lineItemCoors, ", ", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".position {" + i_physValLine.center().toString(false, ", ", 1) + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".getLine {" + i_physValLine.toString(false, ", ", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
+            strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
+        });
+    }
+    return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForPolygon(
+    const QString& strGraphObjName, const QPointF& i_pos,
+    const QPolygonF& i_polygonItemCoors, const CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding(i_polygonItemCoors.boundingRect());
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
+            strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors) + "} px",
+            strGraphObjName + ".position {" + i_physValPolygon.center().toString() + "} " + i_physValPolygon.unit().symbol(),
+            strGraphObjName + ".getPolygon {" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors, ", ", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".position {" + i_physValPolygon.center().toString(false, ", ", 1) + "} " + i_physValPolygon.unit().symbol(),
+            strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
+        });
+    }
+    return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForLabel(
+    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstResultValues;
+    if (!i_pos.isNull()) {
+        strlstResultValues = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
+    }
+    strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
+    return strlstResultValues;
 }
 
 //------------------------------------------------------------------------------

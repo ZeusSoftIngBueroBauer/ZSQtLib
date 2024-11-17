@@ -687,6 +687,8 @@ public: // overridables
     virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     virtual void updateTransformedCoorsOnParentGeometryChanged();
     virtual void updateTransformedCoorsOnItemPositionChanged();
+protected: // auxiliary instance methods
+    QRectF getEffectiveBoundingRectOnScene(const CPhysValRect& i_physValRectBounding) const;
 protected: // overridables
     //virtual void updateTransform();
     //virtual void updateToolTip();

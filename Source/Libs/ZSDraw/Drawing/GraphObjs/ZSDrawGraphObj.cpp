@@ -7350,6 +7350,65 @@ void CGraphObj::updateTransformedCoorsOnItemPositionChanged()
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }
 
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the effective (resulting) bounding rectangle of the given
+           physical rectangle (which may be rotated) on the drawing scene.
+
+    To get the effective bounding rectangle the left most, the right most
+    as well as the top most and bottom most points of the transformed
+    (rotated and scaled) physical rectangle are are taken into account.
+
+    @param [in] i_physValRectBounding
+        Scaled and rotated, physical rectangle given in parent or scene coordinates.
+
+    @return Bounding rectangle in scene coordinates.
+*/
+QRectF CGraphObj::getEffectiveBoundingRectOnScene(const CPhysValRect& i_physValRectBounding) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValRectBounding.toString() + "} " + i_physValRectBounding.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::getEffectiveBoundingRectOnScene",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = i_physValRectBounding;
+    if (parentGroup() != nullptr) {
+        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
+        physValRect = parentGroup()->mapToScene(physValRect);
+    }
+    else {
+        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
+    }
+    CPhysValPoint physValPointTL = physValRect.topLeft();
+    CPhysValPoint physValPointTR = physValRect.topRight();
+    CPhysValPoint physValPointBR = physValRect.bottomRight();
+    CPhysValPoint physValPointBL = physValRect.bottomLeft();
+    QPointF ptTL = physValPointTL.toQPointF();
+    QPointF ptTR = physValPointTR.toQPointF();
+    QPointF ptBR = physValPointBR.toQPointF();
+    QPointF ptBL = physValPointBL.toQPointF();
+    QPolygonF plg({ptTL, ptTR, ptBR, ptBL});
+    QRectF rctBounding = plg.boundingRect();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
+
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
+
 ////------------------------------------------------------------------------------
 //void CGraphObj::updateTransform()
 ////------------------------------------------------------------------------------
@@ -7446,7 +7505,7 @@ void CGraphObj::updateTransformedCoorsOnItemPositionChanged()
 //}
 
 /*==============================================================================
-protected: // auxiliary instance methods
+protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
