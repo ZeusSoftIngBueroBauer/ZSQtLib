@@ -157,13 +157,13 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
         if (!m_hshpLabels.contains(strLabelName)) {
             if (strLabelName == c_strGeometryLabelNameP1) {
-                addLabel(strLabelName, strLabelName, 0);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 0);
             }
             else if (strLabelName == c_strGeometryLabelNameP2) {
-                addLabel(strLabelName, strLabelName, 1);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 1);
             }
             else {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::Center);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
             }
         }
     }
@@ -1175,7 +1175,8 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
+CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(
+    ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValPoint physValPos(*m_pDrawingScene);
@@ -1202,7 +1203,8 @@ CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(int i_idxPt, const ZS::
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in scene coordinates.
 */
-QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_selPt ) const
+QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
@@ -1217,7 +1219,8 @@ QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors( ESelectionPoint 
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in scene coordinates.
 */
-QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const
+QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
+    ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
@@ -1262,7 +1265,8 @@ public: // must overridables of base class CGraphObj
                        /
                    Pt +
 */
-SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const
+SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
+    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -1303,7 +1307,8 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPo
                                     /
                                 Pt +
 */
-SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
+SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
+    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -1332,7 +1337,7 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPo
     For more details see base implementation in CGraphObj.
 */
 QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
+    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -1350,7 +1355,7 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     For more details see base implementation in CGraphObj.
 */
 QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, int i_idxPt) const
+    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -1388,7 +1393,7 @@ void CGraphObjLine::showSelectionPoints(TSelectionPointTypes i_selPts)
         /* strAddInfo   */ strMthInArgs );
 
     if (parentItem() == nullptr) {
-        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
+        if (i_selPts & c_uSelectionPointsPolygonPoints) {
             QLineF lineF = line();
             QPolygonF plg;
             plg.append(lineF.p1());
@@ -1423,20 +1428,26 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
     if (s_arSelPtsUserDefined.isEmpty()) {
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), ESelectionPoint::Center));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 0)); // P1, Start point of the line
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 1)); // P2, End point of the line
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::PolygonPoint, 0)); // P1, Start point of the line
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::PolygonPoint, 1)); // P2, End point of the line
     }
     static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
     if (s_hshSelPtsPredefined.isEmpty()) {
         QList<SGraphObjSelectionPoint> arSelPts;
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), ESelectionPoint::Center));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
         s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 0));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::PolygonPoint, 0));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameP1, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 1));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::PolygonPoint, 1));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameP2, arSelPts);
     }
     if (s_hshSelPtsPredefined.contains(i_strName)) {
@@ -1489,7 +1500,7 @@ bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != i_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
             else if (labelDscr.m_selPt1.m_idxPt != 0) {
@@ -1500,7 +1511,7 @@ bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != i_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
             if (labelDscr.m_selPt1.m_idxPt != 1) {
@@ -1548,7 +1559,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameP1) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
             else if (labelDscr.m_selPt1.m_idxPt != 0) {
@@ -1556,7 +1567,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             }
         }
         else if (i_strName == c_strGeometryLabelNameP2) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
             else if (labelDscr.m_selPt1.m_idxPt != 1) {
@@ -1572,13 +1583,13 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             }
         }
         else {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
             else if (labelDscr.m_selPt1.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt2.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+            else if (labelDscr.m_selPt2.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
             else if (labelDscr.m_selPt2.m_idxPt != 1) {
@@ -2312,7 +2323,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     }
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
-    if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+    if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         if (selPt.m_idxPt == 0) {
             setP1(physValParentSelPt);
         }

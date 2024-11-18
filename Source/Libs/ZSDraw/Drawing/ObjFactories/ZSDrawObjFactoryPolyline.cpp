@@ -233,19 +233,23 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
         for (const SLabelDscr& labelDscr : arTextLabels) {
             if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
+                    pGraphObj->addLabel(
+                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPtType, labelDscr.m_selPt1.m_selPt);
                 }
-                else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
+                else {
+                    pGraphObj->addLabel(
+                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPtType, labelDscr.m_selPt1.m_idxPt);
                 }
             }
             else {
                 pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
+                    pGraphObj->setLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt1.m_selPtType, labelDscr.m_selPt1.m_selPt);
                 }
-                else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
+                else {
+                    pGraphObj->setLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt1.m_selPtType, labelDscr.m_selPt1.m_idxPt);
                 }
             }
             pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(

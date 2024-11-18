@@ -676,8 +676,8 @@ void CGraphObjConnectionLine::showSelectionPoints(TSelectionPointTypes i_selPts)
         /* strAddInfo   */ strMthInArgs );
 
     if (parentItem() == nullptr) {
-        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
-            showSelectionPointsOfPolygon( polygon() );
+        if (i_selPts & c_uSelectionPointsPolygonPoints) {
+            showSelectionPointsOfPolygon(polygon());
         }
     }
 }

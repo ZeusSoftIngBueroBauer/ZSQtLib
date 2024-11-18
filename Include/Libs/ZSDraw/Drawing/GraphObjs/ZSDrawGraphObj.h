@@ -387,6 +387,7 @@ public: // class methods
 public: // class methods
     static QString createPolygonPointLabelName(int i_idxPt);
     static bool isPolygonPointLabelName(const QString& i_strLabelName);
+    static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 protected: // ctor
     CGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -600,17 +601,17 @@ public: // overridables
 public: // overridables
     CGraphObjSelectionPoint* getSelectionPointHit(const QPointF& i_pt) const;
 public: // overridables
-    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPoint i_selPt) const;
-    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const;
-    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt) const;
-    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const;
-    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPoint i_selPt) const;
-    virtual QPointF getPositionOfSelectionPointInSceneCoors(int i_idxPt) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, int i_idxPt) const;
 public: // must overridables
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const;
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const;
 protected: // must overridables
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) = 0;
 protected: // overridables
@@ -631,14 +632,14 @@ public: // overridables (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool labelHasDefaultValues(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
-    virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPoint i_selPt);
-    virtual bool addLabel(const QString& i_strName, const QString& i_strText, int i_idxPt);
+    virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt);
     virtual bool removeLabel(const QString& i_strName);
     virtual bool renameLabel(const QString& i_strName, const QString& i_strNameNew);
     virtual void setLabelText(const QString& i_strName, const QString& i_strText);
     virtual QString labelText(const QString& i_strName) const;
-    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
-    virtual void setLabelAnchorPoint(const QString& i_strName, int i_idxPt);
+    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
     virtual SGraphObjSelectionPoint labelAnchorPoint(const QString& i_strName) const;
     virtual void showLabel(const QString& i_strName);
     virtual void hideLabel(const QString& i_strName);

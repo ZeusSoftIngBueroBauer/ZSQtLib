@@ -111,6 +111,23 @@ bool CGraphObj::isPolygonPointLabelName(const QString& i_strLabelName)
     return bIs;
 }
 
+//------------------------------------------------------------------------------
+int CGraphObj::extractIndexFromPolygonPointLabelName(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    int idxPt = -1;
+    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
+        QString strIndex = i_strLabelName.mid(1);
+        bool bIsValidIndex = false;
+        int idxPtTmp = strIndex.toInt(&bIsValidIndex);
+        // The label name for the polygon point at index 0 is P1.
+        if (bIsValidIndex && idxPtTmp > 0) {
+            idxPt = idxPtTmp - 1;
+        }
+    }
+    return idxPt;
+}
+
 /*==============================================================================
 protected: // ctor
 ==============================================================================*/
@@ -4574,10 +4591,11 @@ public: // overridables
            in the unit of the drawing scene. If the item does not have a parent
            the returned position is in scence coordinates.
 */
-CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt) const
+CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
-    return getPositionOfSelectionPoint(i_selPt, m_pDrawingScene->drawingSize().unit());
+    return getPositionOfSelectionPoint(i_selPtType, i_selPt, m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
@@ -4585,7 +4603,8 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt) co
            in the given unit. If the item does not have a parent the returned
            position is in scence coordinates.
 */
-CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const
+CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -4605,14 +4624,16 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt, co
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObj::getPositionOfSelectionPoint(int i_idxPt) const
+CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
+    ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
-    return getPositionOfSelectionPoint(i_idxPt, m_pDrawingScene->drawingSize().unit());
+    return getPositionOfSelectionPoint(i_selPtType, i_idxPt, m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObj::getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
+CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
+    ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
@@ -4622,7 +4643,8 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(int i_idxPt, const ZS::Phys
 //------------------------------------------------------------------------------
 /*! @brief Returns the coordinates of the selection point in scene coordinates.
 */
-QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_selPt ) const
+QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
@@ -4642,7 +4664,8 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_se
     the corresponding coordinates of the polygon point.
     The default implementation returns the center of the bounding rectangle.
 */
-QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const
+QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
+    ESelectionPointType i_selPtType, int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
@@ -4713,7 +4736,8 @@ public: // overridables
     @param [in] i_selPt
         Selection point on the bounding rectangle.
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const
+SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
+    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -4802,7 +4826,8 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF
                                     /
                                 Pt +
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
+SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
+    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
@@ -4845,7 +4870,7 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF
                    P1     P2
 */
 QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
+    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -4902,7 +4927,7 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     See above for more details.
 */
 QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, int i_idxPt) const
+    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
@@ -4971,7 +4996,7 @@ void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
                 }
             }
         }
-        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
+        if (i_selPts & c_uSelectionPointsPolygonPoints) {
             if (m_arpSelPtsPolygon.size() > 0) {
                 for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
                     // Deleting child objects leads to itemChange and an updateToolTip call
@@ -5186,7 +5211,8 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
             if (bShowSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
                 if (pGraphObjSelPt == nullptr) {
-                    pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, SGraphObjSelectionPoint(this, selPt));
+                    pGraphObjSelPt = new CGraphObjSelectionPoint(
+                        m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, selPt));
                     m_arpSelPtsBoundingRect[idxSelPt] = pGraphObjSelPt;
 
                     // Please note that selection points should not belong as child to the graphics items
@@ -5320,7 +5346,8 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
         for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
             if (pGraphObjSelPt == nullptr) {
-                pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPt));
+                pGraphObjSelPt = new CGraphObjSelectionPoint(
+                    m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
 
                 // Please note that selection points should not belong as child to the graphics items
@@ -5524,7 +5551,8 @@ QList<SGraphObjSelectionPoint> CGraphObj::getPossibleLabelAnchorPoints(const QSt
 {
     static QList<SGraphObjSelectionPoint> s_arSelPts;
     if (s_arSelPts.isEmpty()) {
-        s_arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObj*>(this), ESelectionPoint::Center));
+        s_arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObj*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
     }
     static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
     if (s_hshSelPtsPredefined.isEmpty()) {
@@ -5584,18 +5612,24 @@ bool CGraphObj::isLabelAdded(const QString& i_strName) const
         Name of the label. The name must be unique otherwise no label is created.
     @param [in] i_strText (optional)
         If not empty defines the text to be shown.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [BoundingRectangle]
     @param [in] i_selPt
         Selection point the label should be anchored to.
 
     @return true, if the label has been created and added, false otherwise.
 */
 bool CGraphObj::addLabel(
-    const QString& i_strName, const QString& i_strText, ESelectionPoint i_selPt)
+    const QString& i_strName, const QString& i_strText,
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strText + ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = i_strName + ", " + i_strText +
+            ", " + CEnumSelectionPointType(i_selPtType).toString() +
+            ", " + CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5610,7 +5644,7 @@ bool CGraphObj::addLabel(
         if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
-        SLabelDscr labelDscr(EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_selPt));
+        SLabelDscr labelDscr(EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
         m_hshLabelDscrs.insert(i_strName, labelDscr);
         emit_labelAdded(i_strName);
         if (m_pTree != nullptr) {
@@ -5638,18 +5672,24 @@ bool CGraphObj::addLabel(
         Name of the label. The name must be unique otherwise no label is created.
     @param [in] i_strText (optional)
         If not empty defines the text to be shown.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [PolygonPoint, LineCenterPoint]
     @param [in] i_idxPt
         Selection point the label should be anchored to.
+        Defines either the index of a polygon (or line) point or the index
+        of the line segment of a polygon.
 
     @return true, if the label has been created and added, false otherwise.
 */
 bool CGraphObj::addLabel(
-    const QString& i_strName, const QString& i_strText, int i_idxPt)
+    const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strText + ", " + QString::number(i_idxPt);
+        strMthInArgs = i_strName + ", " + i_strText + + ", " +
+            CEnumSelectionPointType(i_selPtType).toString() + ", P" + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5664,7 +5704,9 @@ bool CGraphObj::addLabel(
         if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
-        SLabelDscr labelDscr(EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_idxPt));
+        SLabelDscr labelDscr(EGraphObjTypeLabel, i_strName);
+        labelDscr.m_strText = strText;
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
         m_hshLabelDscrs.insert(i_strName, labelDscr);
         emit_labelAdded(i_strName);
         if (m_pTree != nullptr) {
@@ -5843,15 +5885,21 @@ QString CGraphObj::labelText(const QString& i_strName) const
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [BoundingRectangle]
     @param [in] i_selPt
         Selection point the label should be anchored to.
 */
-void CGraphObj::setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt)
+void CGraphObj::setLabelAnchorPoint(
+    const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = i_strName +
+            ", " + CEnumSelectionPointType(i_selPtType).toString() +
+            ", " + CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5865,11 +5913,11 @@ void CGraphObj::setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_
     }
 
     SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
-    if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle || labelDscr.m_selPt1.m_selPt != i_selPt) {
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt);
+    if (labelDscr.m_selPt1.m_selPtType != i_selPtType || labelDscr.m_selPt1.m_selPt != i_selPt) {
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setSelectionPoint1(SGraphObjSelectionPoint(this, i_selPt));
+            pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -5883,15 +5931,21 @@ void CGraphObj::setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [PolygonPoint, LineCenterPoint]
     @param [in] i_idxPt
         Selection point the label should be anchored to.
 */
-void CGraphObj::setLabelAnchorPoint(const QString& i_strName, int i_idxPt)
+void CGraphObj::setLabelAnchorPoint(
+    const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + QString::number(i_idxPt);
+        strMthInArgs = i_strName +
+            ", " + CEnumSelectionPointType(i_selPtType).toString() +
+            ", " + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5905,11 +5959,12 @@ void CGraphObj::setLabelAnchorPoint(const QString& i_strName, int i_idxPt)
     }
 
     SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
-    if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint || labelDscr.m_selPt1.m_idxPt != i_idxPt) {
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt);
+    if (labelDscr.m_selPt1.m_selPtType != i_selPtType || labelDscr.m_selPt1.m_idxPt != i_idxPt) {
+        labelDscr.m_selPt1.m_selPtType = i_selPtType;
+        labelDscr.m_selPt1.m_idxPt = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setSelectionPoint1(SGraphObjSelectionPoint(this, i_idxPt));
+            pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6615,7 +6670,7 @@ protected: // overridables (geometry labels)
         If not empty defines the text to be shown.
     @param [in] i_selPt1
         First selection point the label should use to indicate the geometry.
-    @param [in] i_selPt2
+    @param [in] i_selPt2 (optional)
         Second selection point the label should use to indicate the geometry.
         For position label only one selection point is used and the second selection
         point is set to invalid.
@@ -6643,8 +6698,10 @@ bool CGraphObj::addGeometryLabel(
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         SLabelDscr labelDscr(i_labelType, i_strName);
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt1);
-        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_selPt2);
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt1);
+        if (i_selPt2 != ESelectionPoint::None) {
+            labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt2);
+        }
         m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
         emit_geometryLabelAdded(i_strName);
         if (m_pTree != nullptr) {
@@ -6674,9 +6731,9 @@ bool CGraphObj::addGeometryLabel(
         If not empty defines the text to be shown.
     @param [in] i_idxPt1
         First selection point the label should use to indicate the geometry.
-    @param [in] i_idxPt2
+    @param [in] i_idxPt2 (optional)
         Second selection point the label should use to indicate the geometry.
-        For position label only one selection point is used and the second selection
+        For position labels only one selection point is used and the second selection
         point is set to invalid.
 
     @return true, if the label has been created and added, false otherwise.
@@ -6689,7 +6746,7 @@ bool CGraphObj::addGeometryLabel(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
-            + ", " + QString::number(i_idxPt1) + ", " + QString::number(i_idxPt2);
+            + ", Pt1: " + QString::number(i_idxPt1) + ", Pt2: " + QString::number(i_idxPt2);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6701,8 +6758,10 @@ bool CGraphObj::addGeometryLabel(
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         SLabelDscr labelDscr(i_labelType, i_strName);
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt1);
-        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_idxPt2);
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt1);
+        if (i_idxPt2 >= 0) {
+            labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt2);
+        }
         m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
         emit_geometryLabelAdded(i_strName);
         if (m_pTree != nullptr) {

@@ -320,11 +320,11 @@ Enum ESelectionPointType
 template<> const QVector<SEnumEntry> CEnum<ESelectionPointType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(ESelectionPointType::Undefined),         "Undefined"         ),
-    /* 1 */ SEnumEntry( static_cast<int>(ESelectionPointType::BoundingRectangle), "BoundingRect"      ),
-    /* 2 */ SEnumEntry( static_cast<int>(ESelectionPointType::PolygonShapePoint), "PolygonShapePoint" )
+    /* 0 */ SEnumEntry(static_cast<int>(ESelectionPointType::Undefined), "Undefined"),
+    /* 1 */ SEnumEntry(static_cast<int>(ESelectionPointType::BoundingRectangle), "BoundingRect"),
+    /* 2 */ SEnumEntry(static_cast<int>(ESelectionPointType::PolygonPoint), "PolygonPoint"),
+    /* 3 */ SEnumEntry(static_cast<int>(ESelectionPointType::LineCenterPoint), "LineCenterPoint")
 };
-
 
 /*==============================================================================
 Enum ESelectionPoints
@@ -358,9 +358,13 @@ QString ZS::Draw::selectionPointTypes2Str( TSelectionPointTypes i_selPts )
                 str += "BoundingRectRotation";
             }
         }
-        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
+        if (i_selPts & c_uSelectionPointsPolygonPoints) {
             if (!str.isEmpty()) str += "|";
-            str += "PolygonShapePoints";
+            str += "PolygonPoints";
+        }
+        if (i_selPts & c_uSelectionPointsLineCenter) {
+            if (!str.isEmpty()) str += "|";
+            str += "LineCenter";
         }
     }
     return str;
@@ -377,21 +381,22 @@ static double s_fSelectionPointRotateDistance_px = 20.0;
 template<> const QVector<SEnumEntry> CEnum<ESelectionPoint>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /*  0 */ SEnumEntry( static_cast<int>(ESelectionPoint::None),         "None",         "-",   "None"          ),
-    /*  1 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopLeft),      "TopLeft",      "TL",  "Top Left"      ),
-    /*  2 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopRight),     "TopRight",     "TR",  "Top Right"     ),
-    /*  3 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomRight),  "BottomRight",  "BR",  "Bottom Right"  ),
-    /*  4 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomLeft),   "BottomLeft",   "BL",  "Bottom Left"   ),
-    /*  5 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopCenter),    "TopCenter",    "TC",  "Top Center"    ),
-    /*  6 */ SEnumEntry( static_cast<int>(ESelectionPoint::RightCenter),  "RightCenter",  "RC",  "Right Center"  ),
-    /*  7 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomCenter), "BottomCenter", "BC",  "Bottom Center" ),
-    /*  8 */ SEnumEntry( static_cast<int>(ESelectionPoint::LeftCenter),   "LeftCenter",   "LC",  "Left Center"   ),
-    /*  9 */ SEnumEntry( static_cast<int>(ESelectionPoint::Center),       "Center",       "C",   "Center"        ),
-    /* 10 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateTop),    "RotateTop",    "OT",  "Rotate Top"    ),
-    /* 11 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateBottom), "RotateBottom", "OB",  "Rotate Bottom" ),
-    /* 12 */ SEnumEntry( static_cast<int>(ESelectionPoint::PolygonPoint), "PolygonPoint", "PP",  "Polygon Point" ),
-    /* 13 */ SEnumEntry( static_cast<int>(ESelectionPoint::All),          "All",          "All", "All"           ),
-    /* 14 */ SEnumEntry( static_cast<int>(ESelectionPoint::Any),          "Any",          "Any", "Any"           )
+    /*  0 */ SEnumEntry( static_cast<int>(ESelectionPoint::None),            "None",            "-",   "None"              ),
+    /*  1 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopLeft),         "TopLeft",         "TL",  "Top Left"          ),
+    /*  2 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopRight),        "TopRight",        "TR",  "Top Right"         ),
+    /*  3 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomRight),     "BottomRight",     "BR",  "Bottom Right"      ),
+    /*  4 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomLeft),      "BottomLeft",      "BL",  "Bottom Left"       ),
+    /*  5 */ SEnumEntry( static_cast<int>(ESelectionPoint::TopCenter),       "TopCenter",       "TC",  "Top Center"        ),
+    /*  6 */ SEnumEntry( static_cast<int>(ESelectionPoint::RightCenter),     "RightCenter",     "RC",  "Right Center"      ),
+    /*  7 */ SEnumEntry( static_cast<int>(ESelectionPoint::BottomCenter),    "BottomCenter",    "BC",  "Bottom Center"     ),
+    /*  8 */ SEnumEntry( static_cast<int>(ESelectionPoint::LeftCenter),      "LeftCenter",      "LC",  "Left Center"       ),
+    /*  9 */ SEnumEntry( static_cast<int>(ESelectionPoint::Center),          "Center",          "C",   "Center"            ),
+    /* 10 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateTop),       "RotateTop",       "OT",  "Rotate Top"        ),
+    /* 11 */ SEnumEntry( static_cast<int>(ESelectionPoint::RotateBottom),    "RotateBottom",    "OB",  "Rotate Bottom"     ),
+    /* 12 */ SEnumEntry( static_cast<int>(ESelectionPoint::PolygonPoint),    "PolygonPoint",    "PP",  "Polygon Point"     ),
+    /* 13 */ SEnumEntry( static_cast<int>(ESelectionPoint::LineCenterPoint), "LineCenterPoint", "LCP", "Line Center Point" ),
+    /* 14 */ SEnumEntry( static_cast<int>(ESelectionPoint::All),             "All",             "All", "All"               ),
+    /* 15 */ SEnumEntry( static_cast<int>(ESelectionPoint::Any),             "Any",             "Any", "Any"               )
 };
 
 //------------------------------------------------------------------------------
@@ -414,79 +419,63 @@ QPointF ZS::Draw::getOppositeSelectionPoint( const QRectF& i_rct, ESelectionPoin
 {
     QPointF ptOpp = i_rct.center();
 
-    switch( i_selPt )
-    {
-        case ESelectionPoint::TopLeft:
-        {
+    switch (i_selPt) {
+        case ESelectionPoint::TopLeft: {
             ptOpp = i_rct.bottomRight();
             break;
         }
-        case ESelectionPoint::TopRight:
-        {
+        case ESelectionPoint::TopRight: {
             ptOpp = i_rct.bottomLeft();
             break;
         }
-        case ESelectionPoint::BottomRight:
-        {
+        case ESelectionPoint::BottomRight: {
             ptOpp = i_rct.topLeft();
             break;
         }
-        case ESelectionPoint::BottomLeft:
-        {
+        case ESelectionPoint::BottomLeft: {
             ptOpp = i_rct.topRight();
             break;
         }
-        case ESelectionPoint::TopCenter:
-        {
-            ptOpp = QPointF( i_rct.bottom(), i_rct.center().x() );
+        case ESelectionPoint::TopCenter: {
+            ptOpp = QPointF(i_rct.bottom(), i_rct.center().x());
             break;
         }
-        case ESelectionPoint::RightCenter:
-        {
-            ptOpp = QPointF( i_rct.left(), i_rct.center().y() );
+        case ESelectionPoint::RightCenter: {
+            ptOpp = QPointF(i_rct.left(), i_rct.center().y());
             break;
         }
-        case ESelectionPoint::BottomCenter:
-        {
-            ptOpp = QPointF( i_rct.top(), i_rct.center().x() );
+        case ESelectionPoint::BottomCenter: {
+            ptOpp = QPointF(i_rct.top(), i_rct.center().x());
             break;
         }
-        case ESelectionPoint::LeftCenter:
-        {
-            ptOpp = QPointF( i_rct.right(), i_rct.center().y() );
+        case ESelectionPoint::LeftCenter:  {
+            ptOpp = QPointF(i_rct.right(), i_rct.center().y());
             break;
         }
-        case ESelectionPoint::Center:
-        {
+        case ESelectionPoint::Center: {
             ptOpp = i_rct.center();
             break;
         }
-        case ESelectionPoint::RotateTop:
-        {
-            ptOpp = QPointF( i_rct.center().x(), i_rct.bottom()+s_fSelectionPointRotateDistance_px );
+        case ESelectionPoint::RotateTop: {
+            ptOpp = QPointF(i_rct.center().x(), i_rct.bottom() + s_fSelectionPointRotateDistance_px);
             break;
         }
-        case ESelectionPoint::RotateBottom:
-        {
-            ptOpp = QPointF( i_rct.center().x(), i_rct.top()-s_fSelectionPointRotateDistance_px );
+        case ESelectionPoint::RotateBottom: {
+            ptOpp = QPointF(i_rct.center().x(), i_rct.top() - s_fSelectionPointRotateDistance_px);
             break;
         }
-        default:
-        {
+        default: {
             break;
         }
-    } // switch( i_selPt )
-
+    }
     return ptOpp;
-
-} // getOppositeSelectionPoint
+}
 
 //------------------------------------------------------------------------------
 ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
-    static const ESelectionPoint s_arSelectionPointsOpposite[] =
-    {
+    static const ESelectionPoint s_arSelectionPointsOpposite[] = {
         /*  0: None         */ ESelectionPoint::None,
         /*  1: TopLeft      */ ESelectionPoint::BottomRight,
         /*  2: TopRight     */ ESelectionPoint::BottomLeft,
@@ -502,14 +491,11 @@ ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
     };
 
     ESelectionPoint selPtOpp = ESelectionPoint::None;
-
-    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arSelectionPointsOpposite) )
-    {
+    if (static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arSelectionPointsOpposite)) {
         selPtOpp = s_arSelectionPointsOpposite[static_cast<int>(i_selPt)];
     }
     return selPtOpp;
-
-} // getOppositeSelectionPoint
+}
 
 ////------------------------------------------------------------------------------
 //CEnumEditMode ZS::Draw::selectionPoint2EditMode( ESelectionPoint i_selPt )
@@ -532,14 +518,12 @@ ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
 //    };
 //
 //    EEditMode editMode = EEditMode::None;
-//
 //    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditModes) )
 //    {
 //        editMode = s_arEditModes[static_cast<int>(i_selPt)];
 //    }
 //    return editMode;
-//
-//} // selectionPoint2EditMode
+//}
 //
 ////------------------------------------------------------------------------------
 //CEnumEditResizeMode ZS::Draw::selectionPoint2EditResizeMode( ESelectionPoint i_selPt )
@@ -562,14 +546,12 @@ ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
 //    };
 //
 //    EEditResizeMode editResizeMode = EEditResizeMode::None;
-//
 //    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditResizeModes) )
 //    {
 //        editResizeMode = s_arEditResizeModes[static_cast<int>(i_selPt)];
 //    }
 //    return editResizeMode;
-//
-//} // selectionPoint2EditResizeMode
+//}
 
 //------------------------------------------------------------------------------
 QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRotationAngle_degree )
@@ -577,19 +559,20 @@ QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRota
 {
     static const QHash<int, Qt::CursorShape> s_hshCursorShapes =
     {
-        {static_cast<int>(ESelectionPoint::None),         Qt::ForbiddenCursor},
-        {static_cast<int>(ESelectionPoint::TopLeft),      Qt::SizeFDiagCursor}, /*  \  */
-        {static_cast<int>(ESelectionPoint::TopRight),     Qt::SizeBDiagCursor}, /*  /  */
-        {static_cast<int>(ESelectionPoint::BottomRight),  Qt::SizeFDiagCursor}, /*  \  */
-        {static_cast<int>(ESelectionPoint::BottomLeft),   Qt::SizeBDiagCursor}, /*  /  */
-        {static_cast<int>(ESelectionPoint::TopCenter),    Qt::SizeVerCursor},   /*  |  */
-        {static_cast<int>(ESelectionPoint::RightCenter),  Qt::SizeHorCursor},   /* <-> */
-        {static_cast<int>(ESelectionPoint::BottomCenter), Qt::SizeVerCursor},   /*  |  */
-        {static_cast<int>(ESelectionPoint::LeftCenter),   Qt::SizeHorCursor},   /* <-> */
-        {static_cast<int>(ESelectionPoint::Center),       Qt::SizeAllCursor},   /* <|> */
-        {static_cast<int>(ESelectionPoint::RotateTop),    Qt::BitmapCursor},    /*  o  */
-        {static_cast<int>(ESelectionPoint::RotateBottom), Qt::BitmapCursor},    /*  o  */
-        {static_cast<int>(ESelectionPoint::PolygonPoint), Qt::CrossCursor}      /*  X  */
+        {static_cast<int>(ESelectionPoint::None),            Qt::ForbiddenCursor},
+        {static_cast<int>(ESelectionPoint::TopLeft),         Qt::SizeFDiagCursor}, /*  \  */
+        {static_cast<int>(ESelectionPoint::TopRight),        Qt::SizeBDiagCursor}, /*  /  */
+        {static_cast<int>(ESelectionPoint::BottomRight),     Qt::SizeFDiagCursor}, /*  \  */
+        {static_cast<int>(ESelectionPoint::BottomLeft),      Qt::SizeBDiagCursor}, /*  /  */
+        {static_cast<int>(ESelectionPoint::TopCenter),       Qt::SizeVerCursor},   /*  |  */
+        {static_cast<int>(ESelectionPoint::RightCenter),     Qt::SizeHorCursor},   /* <-> */
+        {static_cast<int>(ESelectionPoint::BottomCenter),    Qt::SizeVerCursor},   /*  |  */
+        {static_cast<int>(ESelectionPoint::LeftCenter),      Qt::SizeHorCursor},   /* <-> */
+        {static_cast<int>(ESelectionPoint::Center),          Qt::SizeAllCursor},   /* <|> */
+        {static_cast<int>(ESelectionPoint::RotateTop),       Qt::BitmapCursor},    /*  o  */
+        {static_cast<int>(ESelectionPoint::RotateBottom),    Qt::BitmapCursor},    /*  o  */
+        {static_cast<int>(ESelectionPoint::PolygonPoint),    Qt::CrossCursor},     /*  X  */
+        {static_cast<int>(ESelectionPoint::LineCenterPoint), Qt::SizeAllCursor}    /* <|> */
     };
 
     QCursor cursor = Qt::ArrowCursor;
@@ -1132,49 +1115,78 @@ struct SGraphObjSelectionPoint
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the string into a selection point struct.
+
+    @param [in] i_str
+        String to be parsed. Following formats are possible:
+            "<SelectionPointType>, <BoundingRectSelectionPoint|IdxPt1>[, <IdxPt2>]"
+        For example:
+            "BoundingRect, TopLeft"
+            "PolygonPoint, 2"
+            "LineCenterPoint, 0" (Center point of line segment between points 0 and 1)
+    @param [out] o_pbOk (optional)
+        If != nullptr:
+            true, if the string contained a valid selection point description, false otherwise.
+*/
 SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
-    const QString& i_str, bool* i_pbOk)
+    const QString& i_str, bool* o_pbOk)
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
     SGraphObjSelectionPoint selPt;
     QStringList strlst = i_str.split(",");
     if (strlst.size() == 2) {
-        strlst[0]  = strlst[0].trimmed();
-        strlst[1]  = strlst[1].trimmed();
+        strlst[0] = strlst[0].trimmed();
+        strlst[1] = strlst[1].trimmed();
         CEnumSelectionPointType selPtType = CEnumSelectionPointType::fromString(strlst[0], &bOk);
         if (bOk) {
-            selPt.m_selPtType = selPtType.enumerator();
-            if (selPtType == ESelectionPointType::BoundingRectangle) {
+            if (selPtType == ESelectionPointType::BoundingRectangle && strlst.size() == 2) {
                 CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strlst[1], &bOk);
                 if (bOk) {
+                    selPt.m_selPtType = selPtType.enumerator();
                     selPt.m_selPt = selPtTmp.enumerator();
                 }
             }
             else {
-                int idxPt = strlst[1].toInt(&bOk);
-                if (bOk) {
-                    selPt.m_idxPt = idxPt;
+                QString strIdx = strlst[1];
+                if (strlst[1].startsWith("P") || strlst[1].startsWith("L")) {
+                    strIdx = strlst[1].mid(1);
+                }
+                int idxPt = strIdx.toInt(&bOk);
+                if (bOk && idxPt > 0) {
+                    selPt.m_selPtType = selPtType.enumerator();
+                    selPt.m_idxPt = idxPt - 1;
                 }
             }
         }
     }
-    if (i_pbOk != nullptr) {
-        *i_pbOk = bOk;
+    if (o_pbOk != nullptr) {
+        *o_pbOk = bOk;
     }
     return selPt;
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the string into a selection point struct and assignes the
+           passed graphical object to the selection point struct.
+
+    @param [in] i_pGraphObj
+        Pointer to graphical object for which the string was parsed.
+    @param [in] i_str
+        String to be parsed (see SGraphObjSelectionPoint::fromString method above).
+    @param [out] o_pbOk (optional)
+        If != nullptr:
+            true, if the string contained a valid selection point description, false otherwise.
+*/
 SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
-    CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk)
+    CGraphObj* i_pGraphObj, const QString& i_str, bool* o_pbOk)
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
     SGraphObjSelectionPoint selPt = fromString(i_str, &bOk);
     selPt.m_pGraphObj = i_pGraphObj;
-    if (i_pbOk != nullptr) {
-        *i_pbOk = bOk;
+    if (o_pbOk != nullptr) {
+        *o_pbOk = bOk;
     }
     return selPt;
 }
@@ -1183,6 +1195,8 @@ SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Default constructor creating an invalid selection point descriptor.
+*/
 SGraphObjSelectionPoint::SGraphObjSelectionPoint() :
 //------------------------------------------------------------------------------
     m_pGraphObj(nullptr),
@@ -1193,6 +1207,12 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint() :
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Default constructor creating an invalid selection point descriptor
+           assigning the given graphical object to the struct.
+
+    @param [in] i_pGraphObj
+        Pointer to graphical object to be assigned to the descriptor.
+*/
 SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj) :
 //------------------------------------------------------------------------------
     m_pGraphObj(i_pGraphObj),
@@ -1203,23 +1223,59 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj) :
 }
 
 //------------------------------------------------------------------------------
-SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPoint i_selPt) :
+/*! @brief Creates a descriptor for a selection point at the bounding rectangle
+           assigning the given graphical object to the struct.
+
+    @param [in] i_pGraphObj
+        Pointer to graphical object to be assigned to the descriptor.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [BoundingRectangle]
+    @param [in] i_selPt
+        Selection point at the bounding rectangle.
+        Range [TopLeft, .., RotateBottom]
+        PolygonPoint, LineCenterPoint as well as All and Any are not allowed.
+*/
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(
+    CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) :
 //------------------------------------------------------------------------------
     m_pGraphObj(i_pGraphObj),
-    m_selPtType(ESelectionPointType::BoundingRectangle),
+    m_selPtType(i_selPtType),
     m_selPt(i_selPt),
     m_idxPt(-1)
 {
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+    if (i_selPt < ESelectionPoint::TopLeft || i_selPt > ESelectionPoint::RotateBottom) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPoint(i_selPt).toString());
+    }
 }
 
 //------------------------------------------------------------------------------
-SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, int idxPt) :
+/*! @brief Creates a descriptor for a polygon point or a line center point
+           assigning the given graphical object to the struct.
+
+    @param [in] i_pGraphObj
+        Pointer to graphical object to be assigned to the descriptor.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [PolygonPoint, LineCenterPoint]
+    @param [in] i_idxPt
+        Index of the polygon (or line) point.
+        For i_selPtType = LineCenterPoint the end of the line segment is (i_idxPt + 1).
+*/
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(
+    CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt) :
 //------------------------------------------------------------------------------
     m_pGraphObj(i_pGraphObj),
-    m_selPtType(ESelectionPointType::PolygonShapePoint),
-    m_selPt(ESelectionPoint::PolygonPoint),
-    m_idxPt(idxPt)
+    m_selPtType(i_selPtType),
+    m_selPt(i_selPtType == ESelectionPointType::PolygonPoint ? ESelectionPoint::PolygonPoint : ESelectionPoint::LineCenterPoint),
+    m_idxPt(i_idxPt)
 {
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1286,8 +1342,12 @@ QString SGraphObjSelectionPoint::name() const
     }
     if (m_selPtType == ESelectionPointType::BoundingRectangle) {
         strName += CEnumSelectionPoint(m_selPt).toString();
+    } else if (m_selPtType == ESelectionPointType::PolygonPoint) {
+        strName += "P" + QString::number(m_idxPt+1);
+    } else if (m_selPtType == ESelectionPointType::LineCenterPoint) {
+        strName += "L" + QString::number(m_idxPt+1);
     } else {
-        strName += "ShapePoint" + QString::number(m_idxPt);
+        strName += "?";
     }
     return strName;
 }
@@ -1300,11 +1360,15 @@ QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObj) const
     if (i_bIncludeGraphObj && m_pGraphObj != nullptr) {
         str = m_pGraphObj->path() + ".";
     }
-    str += CEnumSelectionPointType(m_selPtType).toString();
+    str += CEnumSelectionPointType(m_selPtType).toString() + ", ";
     if (m_selPtType == ESelectionPointType::BoundingRectangle) {
-        str += "." + CEnumSelectionPoint(m_selPt).toString();
-    } else if (m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        str += "." + QString::number(m_idxPt);
+        str += CEnumSelectionPoint(m_selPt).toString();
+    } else if (m_selPtType == ESelectionPointType::PolygonPoint) {
+        str += "P" + QString::number(m_idxPt+1);
+    } else if (m_selPtType == ESelectionPointType::LineCenterPoint) {
+        str += "L" + QString::number(m_idxPt+1);
+    } else {
+        str += "?";
     }
     return str;
 }

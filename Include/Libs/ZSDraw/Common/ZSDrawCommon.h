@@ -382,9 +382,10 @@ namespace Draw {
 enum class ESelectionPointType
 //==============================================================================
 {
-    Undefined = 0,  /*!< The selection point is not defined (invalid). */
+    Undefined         = 0,  /*!< The selection point is not defined (invalid). */
     BoundingRectangle = 1,  /*!< The selection point is at the bounding rectangle. */
-    PolygonShapePoint = 2   /*!< The selection point is one of the points of a polygon. */
+    PolygonPoint      = 2,  /*!< The selection point is one of the points of a line or a polygon. */
+    LineCenterPoint   = 3   /*!< The selection point is at the center point of a line (also line segments of polygons). */
 };
 } }
 
@@ -409,8 +410,9 @@ const TSelectionPointTypes c_uSelectionPointsBoundingRectLineCenter = 0x02;  // 
 const TSelectionPointTypes c_uSelectionPointsBoundingRectCenter     = 0x04;
 const TSelectionPointTypes c_uSelectionPointsBoundingRectRotate     = 0x10;
 const TSelectionPointTypes c_uSelectionPointsBoundingRectAll        = 0x1f;
-const TSelectionPointTypes c_uSelectionPointsPolygonShapePoints     = 0x20;  // Lines, polylines, polygons and connection lines have additional selection points
-const TSelectionPointTypes c_uSelectionPointsAll                    = 0x3f;
+const TSelectionPointTypes c_uSelectionPointsPolygonPoints          = 0x20;
+const TSelectionPointTypes c_uSelectionPointsLineCenter             = 0x40;
+const TSelectionPointTypes c_uSelectionPointsAll                    = 0x7f;
 
 ZSDRAWDLL_API QString selectionPointTypes2Str( TSelectionPointTypes i_selPts );
 } }
@@ -422,8 +424,7 @@ namespace Draw {
 /*! Defines the different selection points which an object may provide for
     editing and moving an object.
 
-    Selection points are usually at the bounding rectangle or, in case of polygons,
-    may also be a specific point of a polygon.
+    Selection points may be at the bounding rectangle:
 
                           RotateTop
                               +
@@ -436,25 +437,37 @@ namespace Draw {
              BottomLeft   BottomCenter    BottomRight
                               +
                           RotateBottom
+
+    Selection points may also be specific points of a line or polygon (P1, P2, P3, P4)
+    or at the center point of lines and line segments (L1, L2, L3).
+
+       P1      L1     P2
+        +-------x-------+
+                         \
+                          x L2
+                           \
+           P4 +------x------+ P3
+                     L3
 */
 enum class ESelectionPoint
 //==============================================================================
 {
-    None          =  0, /*!< No selection point. */
-    TopLeft       =  1, /*!< Top left corner of a rectangle. */
-    TopRight      =  2, /*!< Top right corner of a rectangle. */
-    BottomRight   =  3, /*!< Bottom right corner of a rectangle. */
-    BottomLeft    =  4, /*!< Top right corner of a rectangle. */
-    TopCenter     =  5, /*!< Center point of the top line of a rectangle. */
-    RightCenter   =  6, /*!< Center point of the right line of a rectangle. */
-    BottomCenter  =  7, /*!< Center point of the bottom line of a rectangle. */
-    LeftCenter    =  8, /*!< Center point of the left line of a rectangle. */
-    Center        =  9, /*!< Center point of the rectangle. */
-    RotateTop     = 10, /*!< Rotation point above the rectangle. */
-    RotateBottom  = 11, /*!< Rotation point below the rectangle. */
-    PolygonPoint  = 12, /*!< A specific polygon point. */
-    All           = 13, /*!< To select all selection points at once. */
-    Any           = 14  /*!< To specify any selection point. */
+    None            =  0, /*!< No selection point. */
+    TopLeft         =  1, /*!< Top left corner of a rectangle. */
+    TopRight        =  2, /*!< Top right corner of a rectangle. */
+    BottomRight     =  3, /*!< Bottom right corner of a rectangle. */
+    BottomLeft      =  4, /*!< Top right corner of a rectangle. */
+    TopCenter       =  5, /*!< Center point of the top line of a rectangle. */
+    RightCenter     =  6, /*!< Center point of the right line of a rectangle. */
+    BottomCenter    =  7, /*!< Center point of the bottom line of a rectangle. */
+    LeftCenter      =  8, /*!< Center point of the left line of a rectangle. */
+    Center          =  9, /*!< Center point of the rectangle. */
+    RotateTop       = 10, /*!< Rotation point above the rectangle. */
+    RotateBottom    = 11, /*!< Rotation point below the rectangle. */
+    PolygonPoint    = 12, /*!< A specific polygon or line point. */
+    LineCenterPoint = 13, /*!< The center point of a specific polygon line segment (or line). */
+    All             = 14, /*!< To select all selection points at once. */
+    Any             = 15  /*!< To specify any selection point. */
 };
 } }
 
@@ -891,19 +904,22 @@ public: // struct members
 
 
 //******************************************************************************
-/*!
+/*! @brief Defines a selection point.
+
+    Selection points may be at the bounding rectangle, at shape points or in
+    the center of line segments of a polygon.
 */
 struct ZSDRAWDLL_API SGraphObjSelectionPoint
 //******************************************************************************
 {
 public: // struct methods
-    static SGraphObjSelectionPoint fromString(const QString& i_str, bool* i_pbOk = nullptr);
-    static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk = nullptr);
+    static SGraphObjSelectionPoint fromString(const QString& i_str, bool* o_pbOk = nullptr);
+    static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* o_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, int idxPt);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt);
     SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
 public: // operators
     SGraphObjSelectionPoint& operator = (const SGraphObjSelectionPoint& i_other);

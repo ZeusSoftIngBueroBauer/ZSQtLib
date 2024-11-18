@@ -160,14 +160,14 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj
-    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
-    virtual QPointF getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_selPt ) const override;
-    virtual QPointF getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const override;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const override;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, int i_idxPt) const override;
 public: // must overridables of base class CGraphObj
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const override;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const override;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)

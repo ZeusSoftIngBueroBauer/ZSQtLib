@@ -211,19 +211,19 @@ void CGraphObjGroup::initInstance()
     for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
         if (!m_hshpLabels.contains(strLabelName)) {
             if (strLabelName == c_strGeometryLabelNameTopLeft) {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::TopLeft);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft);
             }
             else if (strLabelName == c_strGeometryLabelNameTopRight) {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::TopRight);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight);
             }
             else if (strLabelName == c_strGeometryLabelNameBottomRight) {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::BottomRight);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight);
             }
             else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::BottomLeft);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft);
             }
             else {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::Center);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
             }
         }
     }
@@ -2275,36 +2275,54 @@ QList<SGraphObjSelectionPoint> CGraphObjGroup::getPossibleLabelAnchorPoints(cons
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
     if (s_arSelPtsUserDefined.isEmpty()) {
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::Center));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::LeftCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::RightCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopLeft));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopRight));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomRight));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomLeft));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft));
     }
     static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
     if (s_hshSelPtsPredefined.isEmpty()) {
         QList<SGraphObjSelectionPoint> arSelPts;
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::Center));
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopCenter));
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomCenter));
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::LeftCenter));
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::RightCenter));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
         s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopLeft));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopLeft, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopRight));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopRight, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomRight));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomRight, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomLeft));
+        arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObjGroup*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomLeft, arSelPts);
     }
     if (s_hshSelPtsPredefined.contains(i_strName)) {

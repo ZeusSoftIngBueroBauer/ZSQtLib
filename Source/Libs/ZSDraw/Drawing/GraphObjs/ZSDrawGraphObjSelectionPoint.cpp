@@ -246,7 +246,7 @@ void CGraphObjSelectionPoint::setShapePoint( int i_idxPt )
         /* strMethod    */ "setShapePoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_selPt.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+    if (m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
     m_selPt.m_idxPt = i_idxPt;
@@ -542,7 +542,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
         }
         cursor = selectionPoint2Cursor(m_selPt.m_selPt, fRotationAngle_degree);
     }
-    else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+    else if (m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         cursor = Qt::CrossCursor;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -769,7 +769,7 @@ void CGraphObjSelectionPoint::paint(
             //brsh.setStyle(Qt::SolidPattern);
             //brsh.setColor(Qt::blue);
         }
-        else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        else if (m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
             pn.setWidth(2);
             pn.setColor(Qt::magenta);
             brsh.setStyle(Qt::NoBrush);
@@ -1058,10 +1058,12 @@ void CGraphObjSelectionPoint::updatePosition()
 
     QPointF ptSelScenePosParent;
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_selPt.m_selPt);
+        ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_selPt.m_selPtType, m_selPt.m_selPt);
     }
-    else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_selPt.m_idxPt);
+    else {
+        ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_selPt.m_selPtType, m_selPt.m_idxPt);
     }
     setPos(ptSelScenePosParent);
 

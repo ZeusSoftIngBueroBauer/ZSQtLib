@@ -195,9 +195,6 @@ void CGraphObjPolyline::initInstance()
         /* strMethod    */ "CGraphObjPolyline::initInstance",
         /* strAddInfo   */ "" );
 
-    m_strlstPredefinedLabelNames.append(c_strLabelName);
-    addLabel(c_strLabelName, c_strLabelName, ESelectionPoint::Center);
-
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
@@ -409,13 +406,18 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
         // on the scene of this item is changed.
         bGeometryOnSceneChanged = true;
 
+        if (!m_strlstPredefinedLabelNames.contains(c_strLabelName)) {
+            m_strlstPredefinedLabelNames.append(c_strLabelName);
+            addLabel(c_strLabelName, c_strLabelName, ESelectionPointType::LineCenterPoint, 0);
+        }
+
         // Update list of predefined label names.
         int iNumberOfPredefinedPointLabelsPrev = getNumberOfPredefinedPolygonPointLabelNames();
         if (iNumberOfPredefinedPointLabelsPrev < polygon.size()) {
             for (int idxPt = iNumberOfPredefinedPointLabelsPrev; idxPt < polygon.size(); ++idxPt) {
                 const QString strLabelName = createPolygonPointLabelName(idxPt);
                 m_strlstPredefinedLabelNames.append(strLabelName);
-                addLabel(strLabelName, strLabelName, idxPt);
+                addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, idxPt);
             }
         }
         else if (iNumberOfPredefinedPointLabelsPrev > polygon.size()) {
@@ -1570,7 +1572,8 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjPolyline::getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
+CPhysValPoint CGraphObjPolyline::getPositionOfSelectionPoint(
+    ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValPoint physValPos(*m_pDrawingScene);
@@ -1600,7 +1603,8 @@ CPhysValPoint CGraphObjPolyline::getPositionOfSelectionPoint(int i_idxPt, const 
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in scene coordinates.
 */
-QPointF CGraphObjPolyline::getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const
+QPointF CGraphObjPolyline::getPositionOfSelectionPointInSceneCoors(
+    ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
@@ -1628,7 +1632,8 @@ public: // must overridables of base class CGraphObj
 
     For more details see base implementation in CGraphObj.
 */
-SPolarCoors CGraphObjPolyline::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
+SPolarCoors CGraphObjPolyline::getPolarCoorsToSelectionPointFromSceneCoors(
+    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -1657,7 +1662,7 @@ SPolarCoors CGraphObjPolyline::getPolarCoorsToSelectionPointFromSceneCoors(const
     For more details see base implementation in CGraphObj.
 */
 QLineF CGraphObjPolyline::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, int i_idxPt) const
+    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -1703,7 +1708,7 @@ void CGraphObjPolyline::showSelectionPoints(TSelectionPointTypes i_selPts)
         if (i_selPts & c_uSelectionPointsBoundingRectAll) {
             showSelectionPointsOfBoundingRect(getBoundingRect());
         }
-        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
+        if (i_selPts & c_uSelectionPointsPolygonPoints) {
             showSelectionPointsOfPolygon(polygon());
         }
     }
@@ -1732,23 +1737,21 @@ public: // overridables of base class CGraphObj (text labels)
 QList<SGraphObjSelectionPoint> CGraphObjPolyline::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
-    if (s_arSelPtsUserDefined.isEmpty()) {
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), ESelectionPoint::Center));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), 0));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), 1));
+    QList<SGraphObjSelectionPoint> arSelPts;
+    if (i_strName == c_strLabelName) {
+        for (int idxPt = 0; idxPt < polygon().size(); ++idxPt) {
+            arSelPts.append(SGraphObjSelectionPoint(
+                const_cast<CGraphObjPolyline*>(this), ESelectionPointType::LineCenterPoint, idxPt));
+        }
     }
-    QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
-    if (s_hshSelPtsPredefined.isEmpty()) {
-        QList<SGraphObjSelectionPoint> arSelPts;
-        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjPolyline*>(this), ESelectionPoint::Center));
-        s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
-        arSelPts.clear();
+    else if (isPolygonPointLabelName(i_strName)) {
+        int idxPt = extractIndexFromPolygonPointLabelName(i_strName);
+        if (idxPt >= 0 && idxPt < polygon().size()) {
+            arSelPts.append(SGraphObjSelectionPoint(
+                const_cast<CGraphObjPolyline*>(this), ESelectionPointType::PolygonPoint, idxPt));
+        }
     }
-    if (s_hshSelPtsPredefined.contains(i_strName)) {
-        return s_hshSelPtsPredefined.value(i_strName);
-    }
-    return s_arSelPtsUserDefined;
+    return arSelPts;
 }
 
 //------------------------------------------------------------------------------

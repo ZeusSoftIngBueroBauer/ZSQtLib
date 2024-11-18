@@ -161,10 +161,12 @@ void CGraphObjLabelGeometryPosition::updatePosition()
 
     CPhysValPoint physValPos(*m_pDrawingScene);
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValPos = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(m_labelDscr.m_selPt1.m_selPt);
+        physValPos = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(
+            m_labelDscr.m_selPt1.m_selPtType, m_labelDscr.m_selPt1.m_selPt);
     }
-    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValPos = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(m_labelDscr.m_selPt1.m_idxPt);
+    else {
+        physValPos = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(
+            m_labelDscr.m_selPt1.m_selPtType, m_labelDscr.m_selPt1.m_idxPt);
     }
     QString strText = physValPos.toString();
     // First set the text at the graphics item so that the bounding rectangle
