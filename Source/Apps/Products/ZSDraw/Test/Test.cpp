@@ -256,6 +256,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
+    createTestGroupAuxMethods(nullptr);
     createTestGroupDrawingSize(nullptr);
 
     // Pixels Drawings
@@ -504,6 +505,127 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAuxMethods",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstExpectedValues;
+
+    ZS::Test::CTestStepGroup* pGrpAuxMethods = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Auxiliary Math Methods",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    // getLineFromPolar
+    //-----------------
+
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " getLineFromPolar",
+        /* strOperation    */ "Draw::getLineFromPolar",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepGetLineFromPolar(ZS::Test::CTestStep*)) );
+    int iPrecision = 6;
+    strlstExpectedValues.clear();
+    pTestStep->addDataRow({
+        {"Length", "100.0 px"},
+        {"Angle", "45.0 " + QString(Math::c_chSymbolDegree)},
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 100.0), QPointF(170.710678, 170.710678)), ", ", 'f', iPrecision));
+    pTestStep->addDataRow({
+        {"Length", "100.0 px"},
+        {"Angle", "315.0 " + QString(Math::c_chSymbolDegree)},
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(100.0, 200.0))},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 100.0), QPointF(170.710678, 170.710678)), ", ", 'f', iPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // getPolarCoors
+    //--------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " getPolarCoors",
+        /* strOperation    */ "Draw::getPolarCoors",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepGetPolarCoors(ZS::Test::CTestStep*)) );
+    SPolarCoors polarCoors;
+    strlstExpectedValues.clear();
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"Point", QPointF(100.0, 50.0)}
+    });
+    polarCoors = SPolarCoors(50.0, 270.0);
+    strlstExpectedValues.append(polarCoors.toString(true, ", "));
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
+        {"Point", QPointF(200.0, 100.0)}
+    });
+    polarCoors = SPolarCoors(100.0, 315.0);
+    strlstExpectedValues.append(polarCoors.toString(true, ", "));
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
+        {"Point", QPointF(100.0, 200.0)}
+    });
+    polarCoors = SPolarCoors(100.0, 45.0);
+    strlstExpectedValues.append(polarCoors.toString(true, ", "));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // getPerpendicularLine
+    //---------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " getPerpendicularLine",
+        /* strOperation    */ "Draw::getPerpendicularLine",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepGetPerpendicularLine(ZS::Test::CTestStep*)) );
+    QLineF perpendicularLine;
+    strlstExpectedValues.clear();
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"Point", QPointF(100.0, 200.0)},
+        {"MinLength", 100.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 200.0), QPointF(100.0, 100.0)), ", ", 'f', iPrecision));
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"Point", QPointF(150.0, 200.0)},
+        {"MinLength", 100.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(150.0, 200.0), QPointF(150.0, 100.0)), ", ", 'f', iPrecision));
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
+        {"Point", QPointF(200.0, 100.0)},
+        {"MinLength", 100.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(200.0, 100.0), QPointF(129.289322, 170.710678)), ", ", 'f', iPrecision));
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
+        {"Point", QPointF(100.0, 200.0)},
+        {"MinLength", 100.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 200.0), QPointF(170.710678, 129.289322)), ", ", 'f', iPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
@@ -746,6 +868,98 @@ void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGrou
 /*==============================================================================
 protected slots:
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepGetLineFromPolar",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+
+    CPhysVal physValLength(Units.Length.px);
+    CPhysVal physValAngle(Units.Angle.Degree);
+    QLineF line;
+
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        physValLength = dataRow["Length"].toString();
+        physValAngle = dataRow["Angle"].toString();
+        line = dataRow["Line"].toLineF();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        double fLength_px = physValLength.getVal(Units.Length.px);
+        double fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
+        QLineF lineResult = ZS::Draw::getLineFromPolar(fLength_px, fAngle_degrees, line);
+        strlstResultValues.append(qLine2Str(lineResult, ", ", 'f', iPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepGetPolarCoors",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QLineF line = dataRow["Line"].toLineF();
+        QPointF pt = dataRow["Point"].toPointF();
+        SPolarCoors polarCoors = ZS::Draw::getPolarCoors(line, pt);
+        strlstResultValues.append(polarCoors.toString(true, ", "));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGetPerpendicularLine(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepGetPerpendicularLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QLineF line = dataRow["Line"].toLineF();
+        QPointF pt = dataRow["Point"].toPointF();
+        double fMinLength  = dataRow["MinLength"].toDouble();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        QLineF lineResult = ZS::Draw::getPerpendicularLine(line, pt, fMinLength);
+        strlstResultValues.append(qLine2Str(lineResult, ", ", 'f', iPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep)

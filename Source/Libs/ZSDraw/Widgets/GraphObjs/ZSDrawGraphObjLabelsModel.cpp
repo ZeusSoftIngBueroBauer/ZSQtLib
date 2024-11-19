@@ -801,9 +801,13 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                         if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
                             varData = CEnumSelectionPoint(labelSettings.m_selPt.m_selPt).toString();
                         }
-                        else {
+                        else if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
                             // Convert P0 to P1 and so on ...
                             varData = "P" + QString::number(labelSettings.m_selPt.m_idxPt + 1);
+                        }
+                        else if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
+                            // Convert L0 to L1 and so on ...
+                            varData = "L" + QString::number(labelSettings.m_selPt.m_idxPt + 1);
                         }
                     }
                     else if (i_iRole == Qt::AccessibleTextRole) {
@@ -819,9 +823,13 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                             if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
                                 arItems.append(SComboBoxItem(CEnumSelectionPoint(selPt.m_selPt).toString()));
                             }
-                            else {
+                            else if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
                                 // Convert P0 to P1 and so on ...
                                 arItems.append(SComboBoxItem("P" + QString::number(selPt.m_idxPt + 1)));
+                            }
+                            else if (selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
+                                // Convert L0 to L1 and so on ...
+                                arItems.append(SComboBoxItem("L" + QString::number(selPt.m_idxPt + 1)));
                             }
                         }
                         varData.setValue(arItems);

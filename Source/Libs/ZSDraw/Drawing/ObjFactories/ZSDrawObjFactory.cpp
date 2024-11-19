@@ -367,7 +367,7 @@ void CObjFactory::saveGraphObjTextLabels(
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
             SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString(true, ", "));
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
             if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
@@ -389,7 +389,7 @@ void CObjFactory::saveGraphObjTextLabels(
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
                 SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
-                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString(true, ", "));
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
                 if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
                     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
@@ -436,7 +436,7 @@ QList<SLabelDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStr
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
-                        SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, "/", &bConverted);
+                        SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
                         if (bConverted) {
                             labelDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
                         }

@@ -988,6 +988,32 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
     strlstExpectedValues.append(resultValuesForPolygon(
         c_strGraphObjNameStar, m_ptPosPolygonStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Show Labels
+    //------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameStar + ".showLabels",
+        /* strOperation    */ c_strGraphObjNameStar + ".showLabels()",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameStar},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameStar]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(340.0, 220.0)},
+        {"ExpectedText", c_strGraphObjNameStar}
+    });
+#if 0
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameStar},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameStar]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "3"},
+        {"setPos", QPointF(420.0, 290.0)},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "3"}
+    });
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1057,6 +1083,24 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangle(
     strlstExpectedValues.append(resultValuesForPolygon(
         c_strGraphObjNameTriangle, m_ptPosPolygonTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Show Labels
+    //------------
+#if 0
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTriangle + ".showLabels",
+        /* strOperation    */ c_strGraphObjNameTriangle + ".showLabels()",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameTriangle},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(280.0, 310.0)},
+        {"ExpectedText", c_strGraphObjNameTriangle}
+    });
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1445,7 +1489,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Tes
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".showLabel(Name)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".showLabel(" + CGraphObj::c_strLabelName + ")",
         /* strOperation    */ c_strGraphObjNameTopGroup + ".showLabel(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
@@ -1459,8 +1503,8 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Tes
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".showLabel(Name)",
-        /* strOperation    */ c_strGraphObjNameBigPlusSign + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameBigPlusSign + ".showLabels",
+        /* strOperation    */ c_strGraphObjNameBigPlusSign + ".showLabels()",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
@@ -1476,8 +1520,8 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Tes
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".showGeometryLabels(TopLeft, Angle)",
-        /* strOperation    */ c_strGraphObjNameTopGroup + ".showGeometryLabels(TopLeft, Angle)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTopGroup + ".showGeometryLabels",
+        /* strOperation    */ c_strGraphObjNameTopGroup + ".showGeometryLabels()",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({

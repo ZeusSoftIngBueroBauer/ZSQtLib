@@ -131,6 +131,7 @@ ZSDRAWDLL_API QPointF getSelectionPointCoors(const QLineF& i_lin, ESelectionPoin
 ZSDRAWDLL_API QPointF getSelectionPointCoors(const QRectF& i_rct, ESelectionPoint i_selPt);
 ZSDRAWDLL_API QPointF getSelectionPointCoors(const QLineF& i_lin, const QRectF& i_rct, ESelectionPoint* o_pSelPt = nullptr);
 ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line);
+ZSDRAWDLL_API SPolarCoors getPolarCoors(const QLineF& i_line, const QPointF& i_pt);
 ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px = 0.0);
 
 //ZSDRAWDLL_API QString qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );

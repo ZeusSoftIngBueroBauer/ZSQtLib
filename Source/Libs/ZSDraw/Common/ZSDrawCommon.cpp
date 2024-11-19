@@ -1620,15 +1620,17 @@ SPolarCoors SPolarCoors::fromString(const QString& i_str, const QString& i_strSe
     SPolarCoors polarCoors;
     QStringList strlst = i_str.split(i_strSeparator);
     if (strlst.size() == 2) {
-        strlst[0]  = strlst[0].trimmed();
-        strlst[1]  = strlst[1].trimmed();
+        strlst[0] = strlst[0].trimmed();
+        strlst[1] = strlst[1].trimmed();
         double fLength_px = strlst[0].toDouble(&bOk);
         if (!bOk) {
             CPhysVal physValLength(Units.Length.px);
             try {
-                physValLength.setVal(strlst[0]);
-                fLength_px = physValLength.getVal(Units.Length.px);
-                bOk = true;
+                PhysVal::TFormatResult formatResult = physValLength.setVal(strlst[0]);
+                if (formatResult == PhysVal::FormatResult::Ok) {
+                    fLength_px = physValLength.getVal(Units.Length.px);
+                    bOk = true;
+                }
             } catch (...) {
                 bOk = false;
             }
@@ -1638,9 +1640,11 @@ SPolarCoors SPolarCoors::fromString(const QString& i_str, const QString& i_strSe
             if (!bOk) {
                 CPhysVal physValAngle(Units.Angle.Degree);
                 try {
-                    physValAngle.setVal(strlst[0]);
-                    fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
-                    bOk = true;
+                    PhysVal::TFormatResult formatResult = physValAngle.setVal(strlst[1]);
+                    if (formatResult == PhysVal::FormatResult::Ok) {
+                        fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
+                        bOk = true;
+                    }
                 } catch (...) {
                     bOk = false;
                 }

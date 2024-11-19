@@ -2379,34 +2379,145 @@ QPointF ZS::Draw::getSelectionPointCoors(
 /*! @brief Returns a line with the given length and angle whose start point is at
            the start point of the passed line.
 
-    Example: Input: Horizontal Line, Any Length, Angle = -90° (or +270)
+    @param [in] i_fLength_px
+        Desired length of the resulting line.
+    @param [in] i_fAngle_degrees
+        Desired angle between the resulting line and the passed line.
+        The angle must be passed clockwise counted as used by the graphics item
+        coordinate system but also with 0.0 degrees at 3 o'clock.
+    @param [in] i_line
+        Line to which the resulting line should be calculated.
 
-                 P2 +
+    @note In contrast to the graphics item coordinate system QLineF counts the
+          angle counter clockwise with 0.0 degrees at 3 o'clock.
+
+          QLineF(P1, P2).angle()
+          ----------------------
+
+                            90°
+                            P2
+                            +
+                            |
+                            |P1
+            180° P2 +-------+-------+ P2 0.0°
+                            |
+                            |
+                            +
+                            P2
+                           270°
+
+          QGraphicsItem coordinate system
+          -------------------------------
+
+                           270°
+                            +
+                            |
+                            |
+               180° +-------+-------+ 0.0°
+                            |
+                            |
+                            +
+                            90°
+
+    @Examples
+    ---------
+
+    Input: Horizontal Line (angle = 0.0°), Any Length, Angle = -90° (or +270°)
+
+                P2' +
                     |
          Calculated |
          Line       | -90°
-                 P1 +----------Line-----------+
+                    +----------Line-----------+
                     P1                        P2
 
-    Example: Input: Vertical Line, Any Length, Angle = 30°
+    Input: Horizontal Line (angle = 0.0°), Any Length, Angle = 60°
 
-                 P1 + P1
+                    P1                        P2
+                    +----------Line-----------+
+                     \
+         Calculated   \   60°
+         Line          \
+                        \
+                         + P2'
+
+    Input: Vertical Line (angle = 270.0°), Any Length, Angle = 30°
+
+                    + P1
+                   /|
                   / |
       Calculated /  |
       Line      /30°|
                /    | Line
-           P2 +     |
+          P2' +     |
                     + P2
 */
 QLineF ZS::Draw::getLineFromPolar(
     double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line)
 //------------------------------------------------------------------------------
 {
-    double fAngle_degrees = i_line.angle() + i_fAngle_degrees;
+    double fLineAngle_degrees = i_line.angle();
+    double fPolarAngle_degrees = Math::toCounterClockWiseAngleDegree(i_fAngle_degrees);
+    double fAngle_degrees = fLineAngle_degrees + fPolarAngle_degrees;
     QLineF line = QLineF::fromPolar(i_fLength_px, fAngle_degrees);
     QPointF ptOffset = i_line.p1();
     line.translate(ptOffset);
     return line;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the length and angle of the line from the start point of
+           the given line to the given point.
+
+    @note The returned angle is clockwise counted whereas the angle of the given
+          line is counter clockwise counted.
+
+    @param [in] i_line
+        Line which is used to calculate the angle to the line starting at P1 of
+        this line to the given point.
+    @param [in] i_pt
+        End point to which the polar coordinates should be calculated.
+
+    @note see note at getLineFromPolar.
+
+    @Examples
+    ---------
+
+    Input:  Horizontal Line (angle = 0.0°), Pt (QLineF's angle counter clockwise)
+    Result: Length from P1 and Pt, 270° (Resulting angle is clockwise)
+
+                 Pt +
+                    |
+                    |
+                    +----------Line-----------+
+                    P1                        P2
+
+    Input:  Horizontal Line (angle = 0.0°), Pt (QLineF's angle counter clockwise)
+    Result: Length from P1 and Pt, 60° (Resulting angle is clockwise)
+
+                    P1                        P2
+                    +----------Line-----------+
+                     \
+                      \
+                       + Pt
+
+    Input:  Vertical Line (angle = 270.0°), Pt (QLineF's angle counter clockwise)
+    Result: Length from P1 and Pt, 30° (Resulting angle is clockwise)
+
+                    + P1
+                   /|
+                  / |
+                 /  | Line
+            P2' +   |
+                    + P2
+*/
+SPolarCoors ZS::Draw::getPolarCoors(const QLineF& i_line, const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QLineF lineToPt(i_line.p1(), i_pt);
+    double fAngle_degrees = i_line.angleTo(lineToPt);
+    double fPolarAngle_degrees = Math::toCounterClockWiseAngleDegree(fAngle_degrees);
+    return SPolarCoors(lineToPt.length(), fPolarAngle_degrees);
 }
 
 //------------------------------------------------------------------------------
@@ -2449,7 +2560,7 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt,
     // Return the line from the given point to the intersection point.
     QLineF perpendicularLine(i_pt, ptIntersection);
     if (i_fMinLength_px > 0.0 && perpendicularLine.length() < i_fMinLength_px) {
-        perpendicularLine = perpendicularLineTmp.translated(perpendicularLineTmp.p1()-ptIntersection);
+        //perpendicularLine = perpendicularLineTmp.translated(perpendicularLineTmp.p1()-ptIntersection);
         perpendicularLine.setLength(i_fMinLength_px);
     }
     return perpendicularLine;

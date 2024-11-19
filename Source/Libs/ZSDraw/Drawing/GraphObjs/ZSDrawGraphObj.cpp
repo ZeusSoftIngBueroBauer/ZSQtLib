@@ -4607,6 +4607,9 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
     ESelectionPointType i_selPtType, ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF rctBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rctBounding, i_selPt);
@@ -4636,6 +4639,9 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
     ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
 #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 }
@@ -4647,6 +4653,9 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
     ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
     QPointF ptScenePos;
     QRectF rctBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rctBounding, i_selPt);
@@ -4668,6 +4677,9 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
     ESelectionPointType i_selPtType, int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
     QPointF ptScenePos;
     QRectF rectBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, ESelectionPoint::Center);
@@ -4740,63 +4752,53 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
     const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF thisRect = getBoundingRect();
     QPointF ptThisLineSceneCoorsP1;
     QPointF ptThisLineSceneCoorsP2;
-    QPointF ptSelPtSceneCoors;
     if (i_selPt == ESelectionPoint::TopLeft) {
         ptThisLineSceneCoorsP1 = thisRect.topLeft();
         ptThisLineSceneCoorsP2 = thisRect.topRight();
-        ptSelPtSceneCoors = thisRect.topLeft();
     }
     else if (i_selPt == ESelectionPoint::TopRight) {
         ptThisLineSceneCoorsP1 = thisRect.topRight();
         ptThisLineSceneCoorsP2 = thisRect.topLeft();
-        ptSelPtSceneCoors = thisRect.topRight();
     }
     else if (i_selPt == ESelectionPoint::BottomRight) {
         ptThisLineSceneCoorsP1 = thisRect.bottomRight();
         ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
-        ptSelPtSceneCoors = thisRect.bottomRight();
     }
     else if (i_selPt == ESelectionPoint::BottomLeft) {
         ptThisLineSceneCoorsP1 = thisRect.bottomLeft();
         ptThisLineSceneCoorsP2 = thisRect.bottomRight();
-        ptSelPtSceneCoors = thisRect.bottomLeft();
     }
     else if (i_selPt == ESelectionPoint::TopCenter) {
         ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.top());
         ptThisLineSceneCoorsP2 = thisRect.topRight();
-        ptSelPtSceneCoors = QPointF(thisRect.center().x(), thisRect.top());
     }
     else if (i_selPt == ESelectionPoint::RightCenter) {
         ptThisLineSceneCoorsP1 = QPointF(thisRect.right(), thisRect.center().y());
         ptThisLineSceneCoorsP2 = thisRect.bottomRight();
-        ptSelPtSceneCoors = QPointF(thisRect.right(), thisRect.center().y());
     }
     else if (i_selPt == ESelectionPoint::BottomCenter) {
         ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.bottom());
         ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
-        ptSelPtSceneCoors = QPointF(thisRect.center().x(), thisRect.bottom());
     }
     else if (i_selPt == ESelectionPoint::LeftCenter) {
         ptThisLineSceneCoorsP1 = QPointF(thisRect.left(), thisRect.center().y());
         ptThisLineSceneCoorsP2 = thisRect.topLeft();
-        ptSelPtSceneCoors = QPointF(thisRect.left(), thisRect.center().y());
     }
     else /*if (i_selPt == ESelectionPoint::Center)*/ {
         ptThisLineSceneCoorsP1 = thisRect.center();
         ptThisLineSceneCoorsP2 = QPointF(thisRect.right(), thisRect.center().y());
-        ptSelPtSceneCoors = thisRect.center();
     }
     ptThisLineSceneCoorsP1 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP1);
     ptThisLineSceneCoorsP2 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP2);
-    ptSelPtSceneCoors = pGraphicsItemThis->mapToScene(ptSelPtSceneCoors);
     QLineF thisLineSceneCoors(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2);
-    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
-    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
+    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
 }
 
 //------------------------------------------------------------------------------
@@ -4830,6 +4832,9 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
     const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
 #pragma message(__TODO__"pure virtual")
     SPolarCoors polarCoors;
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
@@ -4873,6 +4878,9 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF thisRect = getBoundingRect();
     QPointF ptSelPtLineP1;
@@ -4930,6 +4938,9 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
 #pragma message(__TODO__"pure virtual")
     QLineF anchorLine;
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");

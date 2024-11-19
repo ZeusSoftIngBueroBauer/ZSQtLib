@@ -117,6 +117,7 @@ protected: // instance methods
         const ZS::Draw::CDrawingSize& i_drawingSize,
         const ZS::Draw::CDrawGridSettings& i_gridSettings,
         const QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints> i_mapGraphObjTypeRenderHints = QMap<ZS::Draw::EGraphObjType, QPainter::RenderHints>());
+    void createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesTransformPhysValShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -162,6 +163,9 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
+    void doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepGetPerpendicularLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepMainWindowSetGeometry(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepClearDrawingScene(ZS::Test::CTestStep* i_pTestStep);

@@ -983,7 +983,7 @@ struct ZSDRAWDLL_API SPolarCoors
 //******************************************************************************
 {
 public: // struct methods
-    static SPolarCoors fromString(const QString& i_str, const QString& i_strSeparator = "/", bool* i_pbOk = nullptr);
+    static SPolarCoors fromString(const QString& i_str, const QString& i_strSeparator = ", ", bool* i_pbOk = nullptr);
 public: // ctors
     SPolarCoors();
     SPolarCoors(double i_fLength_px, double i_fAngle_degrees);
@@ -992,9 +992,11 @@ public: // operators
     bool operator == (const SPolarCoors& i_other) const;
     bool operator != (const SPolarCoors& i_other) const;
 public: // struct methods
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = "/") const;
+    QString toString(bool i_bAddUnit = true, const QString& i_strSeparator = ", ") const;
 public: // struct members
+    /*!< Length of the line in pixels. */
     double m_fLength_px;
+    /*!< Angle in degrees counted clockwise. */
     double m_fAngle_degrees;
 };
 
