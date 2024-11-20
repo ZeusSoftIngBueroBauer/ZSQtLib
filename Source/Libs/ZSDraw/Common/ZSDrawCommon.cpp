@@ -1373,6 +1373,12 @@ QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObj) const
     return str;
 }
 
+//------------------------------------------------------------------------------
+bool SGraphObjSelectionPoint::isValid() const
+//------------------------------------------------------------------------------
+{
+    return (m_selPtType != ESelectionPointType::Undefined);
+}
 
 /*******************************************************************************
 struct SGraphObjHitInfo

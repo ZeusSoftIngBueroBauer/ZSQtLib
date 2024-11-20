@@ -25,7 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
@@ -78,6 +79,9 @@ QString CWdgtGraphObjPolygonProperties::widgetName(EWidget i_widget)
     else if (i_widget == EWidget::LineStyle) {
         str = "LineStyle";
     }
+    else if (i_widget == EWidget::FillStyle) {
+        str = "FillStyle";
+    }
     return str;
 }
 
@@ -93,11 +97,12 @@ CWdgtGraphObjPolygonProperties::CWdgtGraphObjPolygonProperties(
     QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
-        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Line",
+        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Polygon",
         ClassName(), i_strObjName, i_pWdgtParent),
     m_pWdgtLabels(nullptr),
     m_pWdgtGeometry(nullptr),
-    m_pWdgtLineStyle(nullptr)
+    m_pWdgtLineStyle(nullptr),
+    m_pWdgtFillStyle(nullptr)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -120,20 +125,28 @@ CWdgtGraphObjPolygonProperties::CWdgtGraphObjPolygonProperties(
         m_pWdgtLabels, &CWdgtGraphObjLabelsProperties::contentChanged,
         this, &CWdgtGraphObjPolygonProperties::onWdgtLabelsContentChanged);
 
-    m_pWdgtGeometry = new CWdgtGraphObjLineGeometryProperties(
+    m_pWdgtGeometry = new CWdgtGraphObjPolygonGeometryProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", i_strObjName);
     m_pLyt->addWidget(m_pWdgtGeometry);
     QObject::connect(
-        m_pWdgtGeometry, &CWdgtGraphObjLineGeometryProperties::contentChanged,
+        m_pWdgtGeometry, &CWdgtGraphObjPolygonGeometryProperties::contentChanged,
         this, &CWdgtGraphObjPolygonProperties::onWdgtGeometryContentChanged);
 
     m_pWdgtLineStyle = new CWdgtGraphObjLineStyleProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Polygon", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLineStyle);
     QObject::connect(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
         this, &CWdgtGraphObjPolygonProperties::onWdgtLineStyleContentChanged);
+
+    m_pWdgtFillStyle = new CWdgtGraphObjFillStyleProperties(
+        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
+        "StandardShapes::Polygon", i_strObjName);
+    m_pLyt->addWidget(m_pWdgtFillStyle);
+    QObject::connect(
+        m_pWdgtFillStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,
+        this, &CWdgtGraphObjPolygonProperties::onWdgtFillStyleContentChanged);
 
     // <Buttons>
     //==========
@@ -160,6 +173,7 @@ CWdgtGraphObjPolygonProperties::~CWdgtGraphObjPolygonProperties()
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
+    m_pWdgtFillStyle = nullptr;
 }
 
 /*==============================================================================
@@ -189,6 +203,9 @@ void CWdgtGraphObjPolygonProperties::expand(EWidget i_widget, bool i_bExpand)
     else if (i_widget == EWidget::LineStyle) {
         m_pWdgtLineStyle->expand(i_bExpand);
     }
+    else if (i_widget == EWidget::FillStyle) {
+        m_pWdgtFillStyle->expand(i_bExpand);
+    }
 }
 
 /*==============================================================================
@@ -208,6 +225,7 @@ bool CWdgtGraphObjPolygonProperties::setKeyInTree(const QString& i_strKeyInTree)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
+
     bool bObjectChanged = false;
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
@@ -218,6 +236,7 @@ bool CWdgtGraphObjPolygonProperties::setKeyInTree(const QString& i_strKeyInTree)
             m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
             m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
             m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
+            m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -246,6 +265,9 @@ bool CWdgtGraphObjPolygonProperties::hasErrors() const
     }
     if (!bHasErrors) {
         bHasErrors = m_pWdgtLineStyle->hasErrors();
+    }
+    if (!bHasErrors) {
+        bHasErrors = m_pWdgtFillStyle->hasErrors();
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -278,6 +300,9 @@ bool CWdgtGraphObjPolygonProperties::hasChanges() const
         }
         if (!bHasChanges) {
             bHasChanges = m_pWdgtLineStyle->hasChanges();
+        }
+        if (!bHasChanges) {
+            bHasChanges = m_pWdgtFillStyle->hasChanges();
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -318,6 +343,7 @@ void CWdgtGraphObjPolygonProperties::acceptChanges()
                 m_pWdgtLabels->acceptChanges();
                 m_pWdgtGeometry->acceptChanges();
                 m_pWdgtLineStyle->acceptChanges();
+                m_pWdgtFillStyle->acceptChanges();
             }
 
             // If the "contentChanged" signal is no longer blocked and the content of
@@ -347,6 +373,7 @@ void CWdgtGraphObjPolygonProperties::rejectChanges()
         m_pWdgtLabels->rejectChanges();
         m_pWdgtGeometry->rejectChanges();
         m_pWdgtLineStyle->rejectChanges();
+        m_pWdgtFillStyle->rejectChanges();
     }
 
     // If the "contentChanged" signal is no longer blocked and the content of
@@ -419,3 +446,23 @@ void CWdgtGraphObjPolygonProperties::onWdgtLineStyleContentChanged()
         m_bContentChanged = true;
     }
 }
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPolygonProperties::onWdgtFillStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtFillStyleContentChanged",
+        /* strAddInfo   */ "" );
+
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+    else {
+        m_bContentChanged = true;
+    }
+}
+

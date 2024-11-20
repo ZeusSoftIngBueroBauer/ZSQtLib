@@ -2216,6 +2216,10 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
         QString strLabelName = dataRow["LabelName"].toString();
         QPointF pos = dataRow["setPos"].toPointF();
+        SGraphObjSelectionPoint selPt;
+        if (dataRow.contains("AnchorPoint")) {
+            selPt = SGraphObjSelectionPoint::fromString(dataRow["AnchorPoint"].toString());
+        }
         QString strExpectedText = dataRow["ExpectedText"].toString();
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, pos, strExpectedText));
@@ -2226,6 +2230,14 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
+                if (selPt.isValid()) {
+                    if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                        pGraphObj->setLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_selPt);
+                    }
+                    else {
+                        pGraphObj->setLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_idxPt);
+                    }
+                }
                 pGraphicsItemLabel->setPos(pos);
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(resultValuesForLabel(

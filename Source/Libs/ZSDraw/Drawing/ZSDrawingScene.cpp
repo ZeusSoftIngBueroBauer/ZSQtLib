@@ -613,11 +613,15 @@ CPhysValPolygon CDrawingScene::convert(const CPhysValPolygon& i_physValPolygon) 
 CPhysValPolygon CDrawingScene::convert(const CPhysValPolygon& i_physValPolygon, const ZS::PhysVal::CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    CPhysValPolygon physValPolygon(*this, i_unitDst);
+    CPhysValPolygon physValPolygonTmp = i_physValPolygon;
+    physValPolygonTmp.setAngle(0.0);
+    QPolygonF polygon;
     for (int idxPt = 0; idxPt < i_physValPolygon.count(); ++idxPt) {
-        CPhysValPoint physValPt = convert(i_physValPolygon.at(idxPt), i_unitDst);
-        physValPolygon.append(physValPt);
+        QPointF pt = convert(physValPolygonTmp.at(idxPt), i_unitDst).toQPointF();
+        polygon.append(pt);
     }
+    CPhysValPolygon physValPolygon(*this, polygon, i_unitDst, i_physValPolygon.isClosedPolygon());
+    physValPolygon.setAngle(i_physValPolygon.angle());
     return physValPolygon;
 }
 

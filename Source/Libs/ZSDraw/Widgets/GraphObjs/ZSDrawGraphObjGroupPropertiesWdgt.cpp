@@ -242,6 +242,7 @@ bool CWdgtGraphObjGroupProperties::setKeyInTree(const QString& i_strKeyInTree)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
+
     bool bObjectChanged = false;
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;

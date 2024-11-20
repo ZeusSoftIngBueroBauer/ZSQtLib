@@ -35,7 +35,8 @@ namespace Draw
 {
 class CDrawingScene;
 class CGraphObjPolyline;
-class CWdgtGraphObjLineGeometryProperties;
+class CWdgtGraphObjPolygonGeometryProperties;
+class CWdgtGraphObjFillStyleProperties;
 class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjLabelsProperties;
 
@@ -50,7 +51,8 @@ public: // class methods
     enum class EWidget {
         Labels,
         Geometry,
-        LineStyle
+        LineStyle,
+        FillStyle
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
@@ -73,10 +75,12 @@ protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
+    void onWdgtFillStyleContentChanged();
 protected: // instance members
     CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
-    CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
+    CWdgtGraphObjPolygonGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
+    CWdgtGraphObjFillStyleProperties* m_pWdgtFillStyle;
 
 }; // class CWdgtGraphObjPolygonProperties
 

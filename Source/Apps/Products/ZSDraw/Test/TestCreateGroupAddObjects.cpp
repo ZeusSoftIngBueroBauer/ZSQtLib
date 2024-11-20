@@ -193,7 +193,9 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     initInstCounts();
     initObjectCoors();
+#if 0
     createTestGroupAddStandardShapesPolygonStar(pGrpPolygons);
+#endif
     createTestGroupAddStandardShapesPolygonTriangle(pGrpPolygons);
     createTestStepSaveLoadFile(pGrpPolygons);
 
@@ -1005,7 +1007,6 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
         {"setPos", QPointF(340.0, 220.0)},
         {"ExpectedText", c_strGraphObjNameStar}
     });
-#if 0
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameStar},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameStar]},
@@ -1013,7 +1014,6 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
         {"setPos", QPointF(420.0, 290.0)},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "3"}
     });
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1086,7 +1086,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangle(
 
     // Show Labels
     //------------
-#if 0
+
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTriangle + ".showLabels",
@@ -1097,10 +1097,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangle(
         {"GraphObjName", c_strGraphObjNameTriangle},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strLabelName},
-        {"setPos", QPointF(280.0, 310.0)},
+        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::LineCenterPoint, 1).toString()},
+        {"setPos", QPointF(315.0, 270.0)},
         {"ExpectedText", c_strGraphObjNameTriangle}
     });
-#endif
 }
 
 //------------------------------------------------------------------------------

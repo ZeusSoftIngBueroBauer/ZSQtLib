@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjGroupGeometryPropertiesWdgt_h
-#define ZSDraw_DrawGraphObjGroupGeometryPropertiesWdgt_h
+#ifndef ZSDraw_DrawGraphObjPolygonGeometryPropertiesWdgt_h
+#define ZSDraw_DrawGraphObjPolygonGeometryPropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -47,11 +47,10 @@ class CEditPhysValtemDelegate;
 }
 namespace Draw
 {
-//class CDlgGraphObjLineGeometryEditProperty;
-class CModelGraphObjGroupGeometry;
+class CModelGraphObjPolygonGeometry;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjGroupGeometryProperties : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjPolygonGeometryProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
@@ -59,14 +58,14 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtGraphObjGroupGeometryProperties"; }
+    static QString ClassName() { return "CWdgtGraphObjPolygonGeometryProperties"; }
 public: // ctors and dtor
-    CWdgtGraphObjGroupGeometryProperties(
+    CWdgtGraphObjPolygonGeometryProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strNameSpace,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjGroupGeometryProperties();
+    virtual ~CWdgtGraphObjPolygonGeometryProperties();
 public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -79,7 +78,6 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
     void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
-    void onBtnResizeGraphObjToContentClicked(bool i_bChecked = false);
 protected slots:
     void onModelGeometryContentChanged();
     //void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
@@ -102,21 +100,19 @@ private: // instance members
     QVBoxLayout* m_pLytWdgtGeometry;
     QHBoxLayout* m_pLytLineTableViewButtons;
     QPushButton* m_pBtnResizeRowsAndColumnsToContents;
-    QLabel* m_pLblResizeGraphObjToContent;
-    QPushButton* m_pBtnResizeGraphObjToContent;
     QVBoxLayout* m_pLytGeometryTableView;
     ZS::System::GUI::CTableView* m_pTableViewGeometry;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateXVal;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateYVal;
-    CModelGraphObjGroupGeometry* m_pModelGeometry;
+    CModelGraphObjPolygonGeometry* m_pModelGeometry;
     // Dialog to edit and immediately apply changed properties.
     //QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
     //CDlgGraphObjLineGeometryEditProperty* m_pDlgEditProperty;
 
-}; // class CWdgtGraphObjGroupGeometryProperties
+}; // class CWdgtGraphObjPolygonGeometryProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjGroupGeometryPropertiesWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjPolygonGeometryPropertiesWdgt_h

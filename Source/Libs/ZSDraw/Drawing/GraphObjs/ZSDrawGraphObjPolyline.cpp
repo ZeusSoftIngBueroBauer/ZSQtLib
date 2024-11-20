@@ -195,6 +195,27 @@ void CGraphObjPolyline::initInstance()
         /* strMethod    */ "CGraphObjPolyline::initInstance",
         /* strAddInfo   */ "" );
 
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
+
+    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
+    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        if (strLabelName == c_strGeometryLabelNameCenter) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameWidth) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameHeight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameAngle) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+    }
+
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
@@ -1672,21 +1693,21 @@ SPolarCoors CGraphObjPolyline::getPolarCoorsToSelectionPointFromSceneCoors(
         if (i_selPtType == ESelectionPointType::PolygonPoint) {
             if (i_idxPt == (thisPolygon.size() - 1)) {
                 ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP1 = thisPolygon[0];
+                ptThisLineSceneCoorsP2 = thisPolygon[0];
             }
             else {
                 ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt+1];
+                ptThisLineSceneCoorsP2 = thisPolygon[i_idxPt+1];
             }
         }
         else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
             if (i_idxPt == (thisPolygon.size() - 1)) {
                 ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP1 = thisPolygon[0];
+                ptThisLineSceneCoorsP2 = thisPolygon[0];
             }
             else {
                 ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt+1];
+                ptThisLineSceneCoorsP2 = thisPolygon[i_idxPt+1];
             }
             ptThisLineSceneCoorsP1 = QLineF(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2).center();
         }
@@ -1694,9 +1715,7 @@ SPolarCoors CGraphObjPolyline::getPolarCoorsToSelectionPointFromSceneCoors(
     ptThisLineSceneCoorsP1 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP1);
     ptThisLineSceneCoorsP2 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP2);
     QLineF thisLineSceneCoors(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2);
-    QLineF lineFromSelPtSceneCoors(ptThisLineSceneCoorsP1, i_pt);
-    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
+    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
 }
 
 //------------------------------------------------------------------------------
@@ -3718,7 +3737,7 @@ QPointF CGraphObjPolyline::getItemPosAndLocalCoors(
 
     // Transform the parent coordinates into local coordinate system.
     // The origin is the center point of the polygon's bounding rectangle.
-    QPointF ptPos = o_polygon.boundingRect().center(); // polygon here still in parent or scene coordinates
+    QPointF ptPos = physValPolygonTmp.center().toQPointF(); // polygon here still in parent or scene coordinates
     for (int idxPt = 0; idxPt < o_polygon.size(); ++idxPt) {
         o_polygon[idxPt] = o_polygon[idxPt] - ptPos; // polygon points now in local coordinates
     }

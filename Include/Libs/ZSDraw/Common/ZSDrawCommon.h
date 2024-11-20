@@ -927,7 +927,8 @@ public: // operators
     bool operator != (const SGraphObjSelectionPoint& i_other) const;
 public: // struct methods
     QString name() const;
-    QString toString(bool i_bIncludeGraphObj) const;
+    QString toString(bool i_bIncludeGraphObj = false) const;
+    bool isValid() const;
 public: // struct members
     /*!< Graphical object the selection point belongs to.
          nullptr, if the selection point is not used (undefined). */

@@ -24,9 +24,9 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryModel.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonGeometryModel.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
@@ -66,7 +66,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjGroupGeometryProperties : public CWdgtGraphObjPropertiesAbstract
+class CWdgtGraphObjPolygonGeometryProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -74,7 +74,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
+CWdgtGraphObjPolygonGeometryProperties::CWdgtGraphObjPolygonGeometryProperties(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strNameSpace,
     const QString& i_strObjName,
@@ -98,8 +98,6 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pLytWdgtGeometry(nullptr),
     m_pLytLineTableViewButtons(nullptr),
     m_pBtnResizeRowsAndColumnsToContents(nullptr),
-    m_pLblResizeGraphObjToContent(nullptr),
-    m_pBtnResizeGraphObjToContent(nullptr),
     m_pLytGeometryTableView(nullptr),
     m_pTableViewGeometry(nullptr),
     m_pEdtPhysValDelegateXVal(nullptr),
@@ -139,7 +137,7 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
 
     QObject::connect(
         m_pBtnCollapse, &QPushButton::clicked,
-        this, &CWdgtGraphObjGroupGeometryProperties::onBtnCollapseClicked);
+        this, &CWdgtGraphObjPolygonGeometryProperties::onBtnCollapseClicked);
 
     QPixmap pxmHeadline(":/ZS/Draw/DrawSettingsGeometry16x16.png");
     m_pLblHeadlineIcon = new QLabel();
@@ -181,21 +179,7 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pLytLineTableViewButtons->addStretch();
     QObject::connect(
         m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
-
-    m_pLblResizeGraphObjToContent = new QLabel("Resize Group To Content");
-    m_pLytLineTableViewButtons->addWidget(m_pLblResizeGraphObjToContent);
-
-    QPixmap pxmResizeGroupToContent(":/ZS/Button/ResizeToContent.png");
-    m_pBtnResizeGraphObjToContent = new QPushButton();
-    m_pBtnResizeGraphObjToContent->setIcon(pxmResizeToContents);
-    m_pBtnResizeGraphObjToContent->setFixedSize(QSize(24, 24));
-    m_pBtnResizeGraphObjToContent->setToolTip("Press to resize the rows and columns to their contents");
-    m_pLytLineTableViewButtons->addWidget(m_pBtnResizeGraphObjToContent);
-    m_pLytLineTableViewButtons->addStretch();
-    QObject::connect(
-        m_pBtnResizeGraphObjToContent, &QPushButton::clicked,
-        this, &CWdgtGraphObjGroupGeometryProperties::onBtnResizeGraphObjToContentClicked );
+        this, &CWdgtGraphObjPolygonGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
 
     // Table View
     //------------------
@@ -203,8 +187,8 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pLytGeometryTableView = new QVBoxLayout();
     m_pLytWdgtGeometry->addLayout(m_pLytGeometryTableView, 1);
 
-    m_pModelGeometry = new CModelGraphObjGroupGeometry(
-        m_pDrawingScene, i_strNameSpace, "StandardShapes::Group",
+    m_pModelGeometry = new CModelGraphObjPolygonGeometry(
+        m_pDrawingScene, i_strNameSpace, "StandardShapes::Polygon",
         i_strObjName, CEnumScaleDimensionUnit(), this);
     m_pTableViewGeometry = new CTableView(i_strObjName);
     m_pTableViewGeometry->setModel(m_pModelGeometry);
@@ -212,28 +196,28 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pEdtPhysValDelegateXVal =
         new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjGroupGeometry::EColumnXVal, m_pEdtPhysValDelegateXVal);
+        CModelGraphObjPolygonGeometry::EColumnXVal, m_pEdtPhysValDelegateXVal);
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjGroupGeometry::EColumnXVal, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjPolygonGeometry::EColumnXVal, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pEdtPhysValDelegateYVal =
         new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjGroupGeometry::EColumnYVal, m_pEdtPhysValDelegateYVal);
+        CModelGraphObjPolygonGeometry::EColumnYVal, m_pEdtPhysValDelegateYVal);
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjGroupGeometry::EColumnYVal, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjPolygonGeometry::EColumnYVal, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjGroupGeometry::EColumnShowVals,
+        CModelGraphObjPolygonGeometry::EColumnShowVals,
         new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjGroupGeometry::EColumnShowVals, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjPolygonGeometry::EColumnShowVals, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjGroupGeometry::EColumnShowLine,
+        CModelGraphObjPolygonGeometry::EColumnShowLine,
         new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjGroupGeometry::EColumnShowLine, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjPolygonGeometry::EColumnShowLine, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableViewGeometry->setEditTriggers(
         QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
@@ -242,8 +226,8 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pLytGeometryTableView->addWidget(m_pTableViewGeometry);
 
     QObject::connect(
-        m_pModelGeometry, &CModelGraphObjGroupGeometry::contentChanged,
-        this, &CWdgtGraphObjGroupGeometryProperties::onModelGeometryContentChanged);
+        m_pModelGeometry, &CModelGraphObjPolygonGeometry::contentChanged,
+        this, &CWdgtGraphObjPolygonGeometryProperties::onModelGeometryContentChanged);
 
     // Update controls depending on drawing size (dimension unit etc.)
     //----------------------------------------------------------------
@@ -261,7 +245,7 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjGroupGeometryProperties::~CWdgtGraphObjGroupGeometryProperties()
+CWdgtGraphObjPolygonGeometryProperties::~CWdgtGraphObjPolygonGeometryProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -293,8 +277,6 @@ CWdgtGraphObjGroupGeometryProperties::~CWdgtGraphObjGroupGeometryProperties()
     m_pLytWdgtGeometry = nullptr;
     m_pLytLineTableViewButtons = nullptr;
     m_pBtnResizeRowsAndColumnsToContents = nullptr;
-    m_pLblResizeGraphObjToContent = nullptr;
-    m_pBtnResizeGraphObjToContent = nullptr;
     m_pLytGeometryTableView = nullptr;
     m_pTableViewGeometry = nullptr;
     m_pEdtPhysValDelegateXVal = nullptr;
@@ -310,7 +292,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::expand(bool i_bExpand)
+void CWdgtGraphObjPolygonGeometryProperties::expand(bool i_bExpand)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -343,7 +325,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjGroupGeometryProperties::setKeyInTree(const QString& i_strKeyInTree)
+bool CWdgtGraphObjPolygonGeometryProperties::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -376,7 +358,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjGroupGeometryProperties::hasErrors() const
+bool CWdgtGraphObjPolygonGeometryProperties::hasErrors() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -395,7 +377,7 @@ bool CWdgtGraphObjGroupGeometryProperties::hasErrors() const
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjGroupGeometryProperties::hasChanges() const
+bool CWdgtGraphObjPolygonGeometryProperties::hasChanges() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -414,7 +396,7 @@ bool CWdgtGraphObjGroupGeometryProperties::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::acceptChanges()
+void CWdgtGraphObjPolygonGeometryProperties::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -443,7 +425,7 @@ void CWdgtGraphObjGroupGeometryProperties::acceptChanges()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::rejectChanges()
+void CWdgtGraphObjPolygonGeometryProperties::rejectChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -473,7 +455,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjPolygonGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -491,7 +473,7 @@ void CWdgtGraphObjGroupGeometryProperties::onBtnCollapseClicked(bool /*i_bChecke
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjPolygonGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -504,28 +486,12 @@ void CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsCl
     m_pTableViewGeometry->resizeRowsToContents();
 }
 
-//------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::onBtnResizeGraphObjToContentClicked(bool /*i_bChecked*/)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnResizeGraphObjToContentClicked",
-        /* strAddInfo   */ "" );
-
-    if (m_pGraphObj != nullptr && m_pGraphObj->type() == EGraphObjTypeGroup) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObj);
-        pGraphObjGroup->resizeToContent();
-    }
-}
-
 /*==============================================================================
 protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGroupGeometryProperties::onModelGeometryContentChanged()
+void CWdgtGraphObjPolygonGeometryProperties::onModelGeometryContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -538,7 +504,7 @@ void CWdgtGraphObjGroupGeometryProperties::onModelGeometryContentChanged()
 }
 
 ////------------------------------------------------------------------------------
-//void CWdgtGraphObjGroupGeometryProperties::onDlgEditPropertyDestroyed(QObject* i_pObj)
+//void CWdgtGraphObjPolygonGeometryProperties::onDlgEditPropertyDestroyed(QObject* i_pObj)
 ////------------------------------------------------------------------------------
 //{
 //    CMethodTracer mthTracer(
@@ -565,7 +531,7 @@ void CWdgtGraphObjGroupGeometryProperties::onModelGeometryContentChanged()
         edited. E.g. for "Pixels.Point 1.X" the x coordinate of Point 1
         in dimension unit pixels will be edited.
 */
-//void CWdgtGraphObjGroupGeometryProperties::registerEditPropertyDialog(CWdgtEditPhysVal* i_pEdtWidget)
+//void CWdgtGraphObjPolygonGeometryProperties::registerEditPropertyDialog(CWdgtEditPhysVal* i_pEdtWidget)
 //------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
@@ -595,7 +561,7 @@ protected: // overridables of base class QObject
 //------------------------------------------------------------------------------
 /*! @brief Opens the edit property dialog on pressing Ctrl + MouseDblClick.
 */
-//bool CWdgtGraphObjGroupGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
+//bool CWdgtGraphObjPolygonGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
 //------------------------------------------------------------------------------
 //{
 //    bool bHandled = false;
@@ -610,7 +576,7 @@ protected: // overridables of base class QObject
 //                    m_pDlgEditProperty->setAttribute(Qt::WA_DeleteOnClose, true);
 //                    QObject::connect(
 //                        m_pDlgEditProperty, &QDialog::destroyed,
-//                        this, &CWdgtGraphObjGroupGeometryProperties::onDlgEditPropertyDestroyed);
+//                        this, &CWdgtGraphObjPolygonGeometryProperties::onDlgEditPropertyDestroyed);
 //                }
 //                CGraphObjLine* pGraphObjLine = nullptr;
 //                if (m_pGraphObj != nullptr) {
