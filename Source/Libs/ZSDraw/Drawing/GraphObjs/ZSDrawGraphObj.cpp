@@ -5923,6 +5923,19 @@ void CGraphObj::setLabelAnchorPoint(
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
+    bool bSelPtAllowed = false;
+    QList<SGraphObjSelectionPoint> arSelPts = getPossibleLabelAnchorPoints(i_strName);
+    for (const SGraphObjSelectionPoint& selPt : arSelPts) {
+        if (selPt.m_selPtType == i_selPtType && selPt.m_selPt == i_selPt) {
+            bSelPtAllowed = true;
+            break;
+        }
+    }
+    if (!bSelPtAllowed) {
+        SGraphObjSelectionPoint selPt(this, i_selPtType, i_selPt);
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
+    }
+
     SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
     if (labelDscr.m_selPt1.m_selPtType != i_selPtType || labelDscr.m_selPt1.m_selPt != i_selPt) {
         labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
@@ -5967,6 +5980,19 @@ void CGraphObj::setLabelAnchorPoint(
 
     if (!m_hshLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bSelPtAllowed = false;
+    QList<SGraphObjSelectionPoint> arSelPts = getPossibleLabelAnchorPoints(i_strName);
+    for (const SGraphObjSelectionPoint& selPt : arSelPts) {
+        if (selPt.m_selPtType == i_selPtType && selPt.m_idxPt == i_idxPt) {
+            bSelPtAllowed = true;
+            break;
+        }
+    }
+    if (!bSelPtAllowed) {
+        SGraphObjSelectionPoint selPt(this, i_selPtType, i_idxPt);
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
     }
 
     SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];

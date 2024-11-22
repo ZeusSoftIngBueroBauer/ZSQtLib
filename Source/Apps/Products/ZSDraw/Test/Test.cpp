@@ -174,10 +174,10 @@ CTest::~CTest()
     delete m_pPhysValLineSmallRectLeftLine;
     m_pPhysValLineSmallRectLeftLine = nullptr;
 
-    delete m_pPhysValPolygonStar;
-    m_pPhysValPolygonStar = nullptr;
     delete m_pPhysValPolygonTriangle;
     m_pPhysValPolygonTriangle = nullptr;
+    delete m_pPhysValPolygonStar;
+    m_pPhysValPolygonStar = nullptr;
 
     delete m_pPhysValRectSmallPlusSign;
     m_pPhysValRectSmallPlusSign = nullptr;
@@ -238,8 +238,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Polygons
     //----------
-    m_pPhysValPolygonStar = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonTriangle = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonStar = new CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
@@ -329,13 +329,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpPixelsDrawing800x600px, drawingSize, gridSettings);
 
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
-#endif
+//#endif
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
@@ -2900,6 +2900,66 @@ void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepModifyGraphObjPolylineByDirectMethodCalls",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
+
+    CGraphObjPolyline* pGraphObj = dynamic_cast<CGraphObjPolyline*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    if (pGraphObj != nullptr) {
+        if (strMethod.compare("setPolygon", Qt::CaseInsensitive) == 0) {
+            if (i_pTestStep->hasConfigValue("polygon")) {
+                CPhysValPolygon physValPolygon(*m_pDrawingScene);
+                //physValPolygon = i_pTestStep->getConfigValue("polygon").toPolygonF();
+                pGraphObj->setPolygon(physValPolygon);
+            }
+        }
+        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
+            CPhysValPoint physValPos(*m_pDrawingScene);
+            physValPos = i_pTestStep->getConfigValue("Pos").toPointF();
+            pGraphObj->setPosition(physValPos);
+        }
+        else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
+            CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
+            QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
+            physValAngle = strAngle;
+            pGraphObj->setRotationAngle(physValAngle);
+        }
+        else if (strMethod.compare("replace", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("point.unit")) {
+                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            }
+            pGraphObj->replace(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
+        }
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -3446,15 +3506,15 @@ void CTest::initObjectCoors()
     // Polylines
     //----------
 
-    m_ptPosPolygonStar = QPointF();
-    m_polygonStar = QPolygonF();
-    *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
-    m_physValAnglePolygonStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
-
     m_ptPosPolygonTriangle = QPointF();
     m_polygonTriangle = QPolygonF();
     *m_pPhysValPolygonTriangle = CPhysValPolygon(*m_pDrawingScene);
     m_physValAnglePolygonTriangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosPolygonStar = QPointF();
+    m_polygonStar = QPolygonF();
+    *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAnglePolygonStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Groups
     //-------

@@ -2548,6 +2548,7 @@ SPolarCoors ZS::Draw::getPolarCoors(const QLineF& i_line, const QPointF& i_pt)
 QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px)
 //------------------------------------------------------------------------------
 {
+    QPointF ptIntersection;
     // Find parallel line to the given line that passes through the given point.
     QPointF ptOffset = i_pt - i_line.p1();
     QLineF parallelLine = i_line.translated(ptOffset);
@@ -2555,10 +2556,10 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt,
     // the same starting point and length.
     QLineF perpendicularLineTmp = parallelLine.normalVector();
     // Now get the intersection point of the perpendicular line with the given line.
-    QPointF ptIntersection;
     perpendicularLineTmp.intersects(i_line, &ptIntersection);
     // Return the line from the given point to the intersection point.
     QLineF perpendicularLine(i_pt, ptIntersection);
+    todo perpendicularLine length == 0
     if (i_fMinLength_px > 0.0 && perpendicularLine.length() < i_fMinLength_px) {
         //perpendicularLine = perpendicularLineTmp.translated(perpendicularLineTmp.p1()-ptIntersection);
         perpendicularLine.setLength(i_fMinLength_px);

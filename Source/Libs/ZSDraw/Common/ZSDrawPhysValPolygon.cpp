@@ -58,11 +58,11 @@ CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, bool i_bIs
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
     m_bIsClosedPolygon(i_bIsClosedPolygon),
-    m_physValRect(i_drawingScene),
     m_ptCenterOrig(),
     m_sizeOrig(),
     m_polygonOrig(),
-    m_polygonModified()
+    m_polygonScaledAndRotated(),
+    m_physValRectScaledAndRotated(i_drawingScene)
 {
 }
 
@@ -74,11 +74,11 @@ CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, const CUni
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
     m_bIsClosedPolygon(i_bIsClosedPolygon),
-    m_physValRect(i_drawingScene, i_unit),
     m_ptCenterOrig(),
     m_sizeOrig(),
     m_polygonOrig(),
-    m_polygonModified()
+    m_polygonScaledAndRotated(),
+    m_physValRectScaledAndRotated(i_drawingScene, i_unit)
 {
 }
 
@@ -87,17 +87,17 @@ CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF 
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
     m_bIsClosedPolygon(i_bIsClosedPolygon),
-    m_physValRect(i_drawingScene),
     m_ptCenterOrig(),
     m_sizeOrig(),
     m_polygonOrig(std::move(i_polygon)),
-    m_polygonModified()
+    m_polygonScaledAndRotated(),
+    m_physValRectScaledAndRotated(i_drawingScene)
 {
-    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
-    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
-    m_ptCenterOrig = m_physValRect.center().toQPointF();
-    m_sizeOrig = m_physValRect.size().toQSizeF();
-    m_polygonModified = m_polygonOrig;
+    m_physValRectScaledAndRotated.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    m_physValRectScaledAndRotated.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
+    m_ptCenterOrig = m_physValRectScaledAndRotated.center().toQPointF();
+    m_sizeOrig = m_physValRectScaledAndRotated.size().toQSizeF();
+    m_polygonScaledAndRotated = m_polygonOrig;
 }
 
 //------------------------------------------------------------------------------
@@ -106,16 +106,16 @@ CPhysValPolygon::CPhysValPolygon(
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
     m_bIsClosedPolygon(i_bIsClosedPolygon),
-    m_physValRect(i_drawingScene, i_unit),
     m_sizeOrig(),
     m_polygonOrig(std::move(i_polygon)),
-    m_polygonModified()
+    m_polygonScaledAndRotated(),
+    m_physValRectScaledAndRotated(i_drawingScene, i_unit)
 {
-    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
-    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
-    m_ptCenterOrig = m_physValRect.center().toQPointF();
-    m_sizeOrig = m_physValRect.size().toQSizeF();
-    m_polygonModified = m_polygonOrig;
+    m_physValRectScaledAndRotated.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    m_physValRectScaledAndRotated.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
+    m_ptCenterOrig = m_physValRectScaledAndRotated.center().toQPointF();
+    m_sizeOrig = m_physValRectScaledAndRotated.size().toQSizeF();
+    m_polygonScaledAndRotated = m_polygonOrig;
 }
 
 /*==============================================================================
@@ -127,11 +127,11 @@ CPhysValPolygon::CPhysValPolygon(const CPhysValPolygon& i_physValPolygonOther) :
 //------------------------------------------------------------------------------
     CPhysValShape(i_physValPolygonOther),
     m_bIsClosedPolygon(i_physValPolygonOther.m_bIsClosedPolygon),
-    m_physValRect(i_physValPolygonOther.m_physValRect),
     m_ptCenterOrig(i_physValPolygonOther.m_ptCenterOrig),
     m_sizeOrig(i_physValPolygonOther.m_sizeOrig),
     m_polygonOrig(i_physValPolygonOther.m_polygonOrig),
-    m_polygonModified(i_physValPolygonOther.m_polygonModified)
+    m_polygonScaledAndRotated(i_physValPolygonOther.m_polygonScaledAndRotated),
+    m_physValRectScaledAndRotated(i_physValPolygonOther.m_physValRectScaledAndRotated)
 {
 }
 
@@ -155,11 +155,11 @@ CPhysValPolygon& CPhysValPolygon::operator = ( const QPolygonF& i_polygon )
 //------------------------------------------------------------------------------
 {
     m_polygonOrig = i_polygon;
-    m_polygonModified = i_polygon;
-    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
-    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
-    m_ptCenterOrig = m_physValRect.center().toQPointF();
-    m_sizeOrig = m_physValRect.size().toQSizeF();
+    m_polygonScaledAndRotated = i_polygon;
+    m_physValRectScaledAndRotated.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    m_physValRectScaledAndRotated.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
+    m_ptCenterOrig = m_physValRectScaledAndRotated.center().toQPointF();
+    m_sizeOrig = m_physValRectScaledAndRotated.size().toQSizeF();
     return *this;
 }
 
@@ -175,11 +175,11 @@ CPhysValShape& CPhysValPolygon::operator = ( const CPhysValShape& i_physValPolyg
     m_bYAxisTopDown = physValPolygonOther.m_bYAxisTopDown;
     m_unit = physValPolygonOther.m_unit;
     m_bIsClosedPolygon = physValPolygonOther.m_bIsClosedPolygon;
-    m_physValRect = physValPolygonOther.m_physValRect;
+    m_physValRectScaledAndRotated = physValPolygonOther.m_physValRectScaledAndRotated;
     m_ptCenterOrig = physValPolygonOther.m_ptCenterOrig;
     m_sizeOrig = physValPolygonOther.m_sizeOrig;
     m_polygonOrig = physValPolygonOther.m_polygonOrig;
-    m_polygonModified = physValPolygonOther.m_polygonModified;
+    m_polygonScaledAndRotated = physValPolygonOther.m_polygonScaledAndRotated;
     return *this;
 }
 
@@ -202,13 +202,13 @@ bool CPhysValPolygon::operator == ( const CPhysValShape& i_physValPolygonOther )
     else if (m_bIsClosedPolygon != physValPolygonOther.m_bIsClosedPolygon) {
         bEqual = false;
     }
-    else if (m_physValRect != physValPolygonOther.m_physValRect) {
+    else if (m_physValRectScaledAndRotated != physValPolygonOther.m_physValRectScaledAndRotated) {
         bEqual = false;
     }
-    else if (m_polygonModified.size() != physValPolygonOther.m_polygonModified.size()) {
+    else if (m_polygonScaledAndRotated.size() != physValPolygonOther.m_polygonScaledAndRotated.size()) {
         bEqual = false;
     }
-    else if (m_unit == physValPolygonOther.m_unit && m_polygonModified != physValPolygonOther.m_polygonModified) {
+    else if (m_unit == physValPolygonOther.m_unit && m_polygonScaledAndRotated != physValPolygonOther.m_polygonScaledAndRotated) {
         bEqual = false;
     }
     else if (m_unit != physValPolygonOther.m_unit) {
@@ -239,11 +239,11 @@ public: // must overridables of base class CPhysValShape
 void CPhysValPolygon::invalidate()
 //------------------------------------------------------------------------------
 {
-    m_physValRect.invalidate();
+    m_physValRectScaledAndRotated.invalidate();
     m_ptCenterOrig = QPointF();
     m_sizeOrig = QSizeF();
     m_polygonOrig = QPolygonF();
-    m_polygonModified = QPolygonF();
+    m_polygonScaledAndRotated = QPolygonF();
 }
 
 //------------------------------------------------------------------------------
@@ -265,7 +265,7 @@ bool CPhysValPolygon::isValid() const
 bool CPhysValPolygon::isNull() const
 //------------------------------------------------------------------------------
 {
-    return m_polygonModified.isEmpty();
+    return m_polygonScaledAndRotated.isEmpty();
 }
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
     QPen pen(i_drawSettings.getPenColor());
     pen.setStyle(Qt::SolidLine);
     i_pPainter->setPen(pen);
-    QPolygonF polygon_px = m_polygonModified;
+    QPolygonF polygon_px = m_polygonScaledAndRotated;
     if (m_unit != Units.Length.px) {
         for (int idxPt = 0; idxPt < polygon_px.size(); ++idxPt) {
             polygon_px[idxPt] = m_pDrawingScene->convert(at(idxPt), Units.Length.px).toQPointF();
@@ -296,15 +296,15 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
         i_pPainter->drawText(polygon_px[idxPt], "P" + QString::number(idxPt));
         break;
     }
-    QPointF ptCenter = m_pDrawingScene->convert(m_physValRect.center(), Units.Length.px).toQPointF();
-    QPointF ptTL = m_pDrawingScene->convert(m_physValRect.topLeft(), Units.Length.px).toQPointF();
-    QPointF ptTR = m_pDrawingScene->convert(m_physValRect.topRight(), Units.Length.px).toQPointF();
-    QPointF ptBR = m_pDrawingScene->convert(m_physValRect.bottomRight(), Units.Length.px).toQPointF();
-    QPointF ptBL = m_pDrawingScene->convert(m_physValRect.bottomLeft(), Units.Length.px).toQPointF();
-    QPointF ptTC = m_pDrawingScene->convert(m_physValRect.topCenter(), Units.Length.px).toQPointF();
-    QPointF ptRC = m_pDrawingScene->convert(m_physValRect.rightCenter(), Units.Length.px).toQPointF();
-    QPointF ptBC = m_pDrawingScene->convert(m_physValRect.bottomCenter(), Units.Length.px).toQPointF();
-    QPointF ptLC = m_pDrawingScene->convert(m_physValRect.leftCenter(), Units.Length.px).toQPointF();
+    QPointF ptCenter = m_pDrawingScene->convert(m_physValRectScaledAndRotated.center(), Units.Length.px).toQPointF();
+    QPointF ptTL = m_pDrawingScene->convert(m_physValRectScaledAndRotated.topLeft(), Units.Length.px).toQPointF();
+    QPointF ptTR = m_pDrawingScene->convert(m_physValRectScaledAndRotated.topRight(), Units.Length.px).toQPointF();
+    QPointF ptBR = m_pDrawingScene->convert(m_physValRectScaledAndRotated.bottomRight(), Units.Length.px).toQPointF();
+    QPointF ptBL = m_pDrawingScene->convert(m_physValRectScaledAndRotated.bottomLeft(), Units.Length.px).toQPointF();
+    QPointF ptTC = m_pDrawingScene->convert(m_physValRectScaledAndRotated.topCenter(), Units.Length.px).toQPointF();
+    QPointF ptRC = m_pDrawingScene->convert(m_physValRectScaledAndRotated.rightCenter(), Units.Length.px).toQPointF();
+    QPointF ptBC = m_pDrawingScene->convert(m_physValRectScaledAndRotated.bottomCenter(), Units.Length.px).toQPointF();
+    QPointF ptLC = m_pDrawingScene->convert(m_physValRectScaledAndRotated.leftCenter(), Units.Length.px).toQPointF();
     pen.setStyle(Qt::DotLine);
     i_pPainter->setPen(pen);
     i_pPainter->drawLine(ptTL, ptTR);
@@ -343,19 +343,19 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
 QString CPhysValPolygon::toString(bool i_bAddUnit, const QString& i_strSeparator, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
-    QString str = "[" + QString::number(m_polygonModified.size()) + "]";
-    if (!m_polygonModified.isEmpty()) {
+    QString str = "[" + QString::number(m_polygonScaledAndRotated.size()) + "]";
+    if (!m_polygonScaledAndRotated.isEmpty()) {
         str += "(";
         if (i_iPrecision < 0) {
-            for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
+            for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
                 if (!str.endsWith("(")) str += i_strSeparator;
-                str += QString::number(idxPt) + ": {" + qPoint2Str(m_polygonModified[idxPt], i_strSeparator) + "}";
+                str += QString::number(idxPt) + ": {" + qPoint2Str(m_polygonScaledAndRotated[idxPt], i_strSeparator) + "}";
             }
         }
         else {
-            for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
+            for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
                 if (!str.endsWith("(")) str += i_strSeparator;
-                str += QString::number(idxPt) + ": {" + qPoint2Str(m_polygonModified[idxPt], i_strSeparator, 'f', i_iPrecision) + "}";
+                str += QString::number(idxPt) + ": {" + qPoint2Str(m_polygonScaledAndRotated[idxPt], i_strSeparator, 'f', i_iPrecision) + "}";
             }
         }
         str += ")";
@@ -374,91 +374,91 @@ public: // instance methods
 CPhysValPoint CPhysValPolygon::center() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.center();
+    return m_physValRectScaledAndRotated.center();
 }
 
 //------------------------------------------------------------------------------
 CPhysValSize CPhysValPolygon::size() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.size();
+    return m_physValRectScaledAndRotated.size();
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValPolygon::width() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.width();
+    return m_physValRectScaledAndRotated.width();
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValPolygon::height() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.height();
+    return m_physValRectScaledAndRotated.height();
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValPolygon::angle() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.angle();
+    return m_physValRectScaledAndRotated.angle();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::topLeft() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.topLeft();
+    return m_physValRectScaledAndRotated.topLeft();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::topRight() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.topRight();
+    return m_physValRectScaledAndRotated.topRight();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::bottomRight() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.bottomRight();
+    return m_physValRectScaledAndRotated.bottomRight();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::bottomLeft() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.bottomLeft();
+    return m_physValRectScaledAndRotated.bottomLeft();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::topCenter() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.topCenter();
+    return m_physValRectScaledAndRotated.topCenter();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::rightCenter() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.rightCenter();
+    return m_physValRectScaledAndRotated.rightCenter();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::bottomCenter() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.bottomCenter();
+    return m_physValRectScaledAndRotated.bottomCenter();
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValPolygon::leftCenter() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRect.leftCenter();
+    return m_physValRectScaledAndRotated.leftCenter();
 }
 
 /*==============================================================================
@@ -495,15 +495,15 @@ void CPhysValPolygon::setCenter(const QPointF& i_pt)
 void CPhysValPolygon::setCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setCenter(i_physValPoint);
-    QPointF ptCenterModified = m_physValRect.center().toQPointF();
+    m_physValRectScaledAndRotated.setCenter(i_physValPoint);
+    QPointF ptCenterModified = m_physValRectScaledAndRotated.center().toQPointF();
     QPointF ptCenterMove = ptCenterModified - m_ptCenterOrig;
     m_ptCenterOrig = ptCenterModified;
     for (int idxPt = 0; idxPt < m_polygonOrig.size(); ++idxPt) {
         m_polygonOrig[idxPt] += ptCenterMove;
     }
-    for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
-        m_polygonModified[idxPt] += ptCenterMove;
+    for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
+        m_polygonScaledAndRotated[idxPt] += ptCenterMove;
     }
 }
 
@@ -548,8 +548,8 @@ void CPhysValPolygon::setSize(const QSizeF& i_size)
 void CPhysValPolygon::setSize(const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setSize(i_physValSize);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setSize(i_physValSize);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -580,8 +580,8 @@ void CPhysValPolygon::setWidth(double i_fWidth)
 void CPhysValPolygon::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setWidth(i_physValWidth);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setWidth(i_physValWidth);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -630,8 +630,8 @@ void CPhysValPolygon::setWidthByMovingLeftCenter(const QPointF& i_pt)
 void CPhysValPolygon::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setWidthByMovingLeftCenter(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setWidthByMovingLeftCenter(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -669,8 +669,8 @@ void CPhysValPolygon::setWidthByMovingRightCenter(const QPointF& i_pt)
 void CPhysValPolygon::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setWidthByMovingRightCenter(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setWidthByMovingRightCenter(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -712,8 +712,8 @@ void CPhysValPolygon::setHeight(double i_fHeight)
 void CPhysValPolygon::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setHeight(i_physValHeight);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setHeight(i_physValHeight);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -753,8 +753,8 @@ void CPhysValPolygon::setHeightByMovingTopCenter(const QPointF& i_pt)
 void CPhysValPolygon::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setHeightByMovingTopCenter(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setHeightByMovingTopCenter(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -794,8 +794,8 @@ void CPhysValPolygon::setHeightByMovingBottomCenter(const QPointF& i_pt)
 void CPhysValPolygon::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setHeightByMovingBottomCenter(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setHeightByMovingBottomCenter(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -829,8 +829,8 @@ void CPhysValPolygon::setAngle( double i_fAngle_degree )
 void CPhysValPolygon::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setAngle(i_physValAngle);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setAngle(i_physValAngle);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -864,8 +864,8 @@ void CPhysValPolygon::setTopLeft(const QPointF& i_pt)
 void CPhysValPolygon::setTopLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setTopLeft(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setTopLeft(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -899,8 +899,8 @@ void CPhysValPolygon::setTopRight(const QPointF& i_pt)
 void CPhysValPolygon::setTopRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setTopRight(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setTopRight(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -934,8 +934,8 @@ void CPhysValPolygon::setBottomRight(const QPointF& i_pt)
 void CPhysValPolygon::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setBottomRight(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setBottomRight(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 //------------------------------------------------------------------------------
@@ -969,8 +969,8 @@ void CPhysValPolygon::setBottomLeft(const QPointF& i_pt)
 void CPhysValPolygon::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_physValRect.setBottomLeft(i_physValPoint);
-    updateModifiedPolygon();
+    m_physValRectScaledAndRotated.setBottomLeft(i_physValPoint);
+    updateScaledAndRotatedPolygon();
 }
 
 /*==============================================================================
@@ -993,7 +993,7 @@ bool CPhysValPolygon::isClosedPolygon() const
 bool CPhysValPolygon::isEmpty() const
 //------------------------------------------------------------------------------
 {
-    return m_polygonModified.isEmpty();
+    return m_polygonScaledAndRotated.isEmpty();
 }
 
 //------------------------------------------------------------------------------
@@ -1005,7 +1005,7 @@ bool CPhysValPolygon::isEmpty() const
 int CPhysValPolygon::count() const
 //------------------------------------------------------------------------------
 {
-    return m_polygonModified.size();
+    return m_polygonScaledAndRotated.size();
 }
 
 //------------------------------------------------------------------------------
@@ -1023,15 +1023,16 @@ int CPhysValPolygon::count() const
 CPhysValPoint CPhysValPolygon::at(int i_idx) const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(*m_pDrawingScene, m_polygonModified[i_idx]);
+    return CPhysValPoint(*m_pDrawingScene, m_polygonScaledAndRotated[i_idx]);
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Replaces the point at the given index.
 
-    When moving a point of the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 
     @param [in] i_idx
         Index of the point to be replaced.
@@ -1041,16 +1042,17 @@ CPhysValPoint CPhysValPolygon::at(int i_idx) const
 void CPhysValPolygon::replace(int i_idx, const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.replace(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
+    m_polygonScaledAndRotated.replace(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
     updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Appends the point at the end of the polygon.
 
-    When adding a point to the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 
     @param [in] i_physValPoint
         Point to be added.
@@ -1058,16 +1060,17 @@ void CPhysValPolygon::replace(int i_idx, const CPhysValPoint& i_physValPoint)
 void CPhysValPolygon::append(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.append(std::move(i_physValPoint.toQPointF(m_unit)));
+    m_polygonScaledAndRotated.append(std::move(i_physValPoint.toQPointF(m_unit)));
     updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Inserts the point at the given index to the polygon.
 
-    When adding a point to the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 
     @param [in] i_idx
         Index of the point to be replaced.
@@ -1077,16 +1080,17 @@ void CPhysValPolygon::append(const CPhysValPoint& i_physValPoint)
 void CPhysValPolygon::insert(int i_idx, const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.insert(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
+    m_polygonScaledAndRotated.insert(i_idx, std::move(i_physValPoint.toQPointF(m_unit)));
     updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the given number of points from the polygon starting at the given index.
 
-    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 
     @param [in] i_idx
         Index where the remove starts.
@@ -1096,16 +1100,17 @@ void CPhysValPolygon::insert(int i_idx, const CPhysValPoint& i_physValPoint)
 void CPhysValPolygon::remove(int i_idx, int i_iCount)
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.remove(i_idx, i_iCount);
+    m_polygonScaledAndRotated.remove(i_idx, i_iCount);
     updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the point from the polygon at the given index.
 
-    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 
     @param [in] i_idx
         Index to be removed.
@@ -1113,35 +1118,37 @@ void CPhysValPolygon::remove(int i_idx, int i_iCount)
 void CPhysValPolygon::removeAt(int i_idx)
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.removeAt(i_idx);
+    m_polygonScaledAndRotated.removeAt(i_idx);
     updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the first point from the polygon.
 
-    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 */
 void CPhysValPolygon::removeFirst()
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.removeFirst();
+    m_polygonScaledAndRotated.removeFirst();
     updateOriginalPolygon();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the last point from the polygon.
 
-    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 */
 void CPhysValPolygon::removeLast()
 //------------------------------------------------------------------------------
 {
-    m_polygonModified.removeLast();
+    m_polygonScaledAndRotated.removeLast();
     updateOriginalPolygon();
 }
 
@@ -1149,9 +1156,10 @@ void CPhysValPolygon::removeLast()
 /*! @brief Removes the point from the polygon at the given index and returns
            the removed point.
 
-    When removing a point a point from the polygon, the bounding rectangle must be updated.
+    When moving a point of the polygon, the rotated rectangle around the polygon
+    may change and therefore the size and center point of the rectangle must be updated.
     The modified polygon points become the original polygon points by the means that
-    the X and Y scale factors are reset to 1.0. But the rotation angle will be kept.
+    the X and Y scale factors are reset to 1.0 but keeping the rotation angle.
 
     @param [in] i_idx
         Index to be removed.
@@ -1159,7 +1167,7 @@ void CPhysValPolygon::removeLast()
 CPhysValPoint CPhysValPolygon::takeAt(int i_idx)
 //------------------------------------------------------------------------------
 {
-    QPointF pt = m_polygonModified.takeAt(i_idx);
+    QPointF pt = m_polygonScaledAndRotated.takeAt(i_idx);
     updateOriginalPolygon();
     return CPhysValPoint(*m_pDrawingScene, pt, m_unit);
 }
@@ -1174,7 +1182,7 @@ CPhysValPoint CPhysValPolygon::takeAt(int i_idx)
 CPhysValPoint CPhysValPolygon::takeFirst()
 //------------------------------------------------------------------------------
 {
-    QPointF pt = m_polygonModified.takeFirst();
+    QPointF pt = m_polygonScaledAndRotated.takeFirst();
     updateOriginalPolygon();
     return CPhysValPoint(*m_pDrawingScene, pt, m_unit);
 }
@@ -1189,7 +1197,7 @@ CPhysValPoint CPhysValPolygon::takeFirst()
 CPhysValPoint CPhysValPolygon::takeLast()
 //------------------------------------------------------------------------------
 {
-    QPointF pt = m_polygonModified.takeLast();
+    QPointF pt = m_polygonScaledAndRotated.takeLast();
     updateOriginalPolygon();
     return CPhysValPoint(*m_pDrawingScene, pt, m_unit);
 }
@@ -1204,7 +1212,7 @@ public: // instance methods (to convert the values into another unit)
 QPolygonF CPhysValPolygon::toQPolygonF() const
 //------------------------------------------------------------------------------
 {
-    return m_polygonModified;
+    return m_polygonScaledAndRotated;
 }
 
 //------------------------------------------------------------------------------
@@ -1216,7 +1224,7 @@ QPolygonF CPhysValPolygon::toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const
     if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QPolygonF polygon = m_polygonModified;
+    QPolygonF polygon = m_polygonScaledAndRotated;
     if (i_unit != m_unit) {
         for (int idxPt = 0; idxPt < polygon.size(); ++idxPt) {
             polygon[idxPt].setX(CPhysVal(polygon[idxPt].x(), m_unit).getVal(i_unit));
@@ -1246,27 +1254,27 @@ protected: // auxiliary instance methods
 
     The point will then be rotated by the angle around the new, modified center point.
 */
-void CPhysValPolygon::updateModifiedPolygon()
+void CPhysValPolygon::updateScaledAndRotatedPolygon()
 //------------------------------------------------------------------------------
 {
-    QSizeF sizeModified = m_physValRect.size().toQSizeF();
-    QPointF ptCenterModified = m_physValRect.center().toQPointF();
+    QSizeF sizeModified = m_physValRectScaledAndRotated.size().toQSizeF();
+    QPointF ptCenterModified = m_physValRectScaledAndRotated.center().toQPointF();
     double fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
     double fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
-    for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
+    for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
         double fdxOrig = m_polygonOrig[idxPt].x() - m_ptCenterOrig.x();
         double fdyOrig = m_polygonOrig[idxPt].y() - m_ptCenterOrig.y();
         double fdxModified = fXScaleFactor * fdxOrig;
         double fdyModified = fYScaleFactor * fdyOrig;
-        m_polygonModified[idxPt] = QPointF(ptCenterModified.x() + fdxModified, ptCenterModified.y() + fdyModified);
-        if (m_physValRect.angle().getVal() != 0.0) {
-            double fAngle_rad = m_physValRect.angle().getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
+        m_polygonScaledAndRotated[idxPt] = QPointF(ptCenterModified.x() + fdxModified, ptCenterModified.y() + fdyModified);
+        if (m_physValRectScaledAndRotated.angle().getVal() != 0.0) {
+            double fAngle_rad = m_physValRectScaledAndRotated.angle().getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
             fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
             if (!m_bYAxisTopDown) {
                 // For BottomUp YAxis scale reflection on the x-axis:
                 fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
             }
-            m_polygonModified[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], fAngle_rad);
+            m_polygonScaledAndRotated[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonScaledAndRotated[idxPt], fAngle_rad);
         }
     }
 }
@@ -1275,7 +1283,8 @@ void CPhysValPolygon::updateModifiedPolygon()
 /*! @brief Internal method to update the original polygon coordinates.
 
     When changing the polygon directly by either modifying points, inserting
-    or removing points, the bounding rectangle need to be updated.
+    or removing points, the rotated rectangle around the polygon may change and
+    therefore the size and center point of the rectangle must be updated.
 
     The original coordinates of the bounding rectangle (size, center point)
     will be newly calculated and the modified polygon points will be further
@@ -1299,11 +1308,11 @@ void CPhysValPolygon::updateOriginalPolygon()
     // Points may have been added or removed. The modified polygon may have a
     // different size. Just assign the modified to the original coordinates
     // to correct the sizes. For a not rotated polygon thats even the result.
-    m_polygonOrig = m_polygonModified;
+    m_polygonOrig = m_polygonScaledAndRotated;
     double fAngle_rad = 0.0;
-    CPhysVal physValAngle = m_physValRect.angle();
+    CPhysVal physValAngle = m_physValRectScaledAndRotated.angle();
     if (physValAngle.getVal() != 0.0) {
-        QPointF ptCenterModified = m_physValRect.center().toQPointF();
+        QPointF ptCenterModified = m_physValRectScaledAndRotated.center().toQPointF();
         fAngle_rad = physValAngle.getVal(Units.Angle.Rad); // clockwise, 0° at 3 o'clock
         fAngle_rad = ZS::System::Math::toCounterClockWiseAngleRad(fAngle_rad);
         if (!m_bYAxisTopDown) {
@@ -1311,23 +1320,26 @@ void CPhysValPolygon::updateOriginalPolygon()
             fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
         }
         // Rotate back:
-        for (int idxPt = 0; idxPt < m_polygonModified.size(); ++idxPt) {
-            m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonModified[idxPt], -fAngle_rad);
+        for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
+            m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonScaledAndRotated[idxPt], -fAngle_rad);
         }
     }
-    m_physValRect = CPhysValRect(*m_pDrawingScene, m_unit);
-    m_physValRect.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
-    m_physValRect.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
+    m_physValRectScaledAndRotated = CPhysValRect(*m_pDrawingScene, m_unit);
+    m_physValRectScaledAndRotated.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
+    m_physValRectScaledAndRotated.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     // Calculate the offset error by rotating one of the original points
     // around the current center of the bounding rectangle.
     if (!m_polygonOrig.isEmpty() && physValAngle.getVal() != 0.0) {
-        QPointF ptCenter = m_physValRect.center().toQPointF();
+        QPointF ptCenter = m_physValRectScaledAndRotated.center().toQPointF();
         QPointF ptRotated = ZS::Draw::rotatePoint(ptCenter, m_polygonOrig[0], fAngle_rad);
-        QPointF ptOffset = ptRotated - m_polygonModified[0];
+        QPointF ptOffset = ptRotated - m_polygonScaledAndRotated[0];
         ptCenter -= ptOffset;
-        m_physValRect.setCenter(ptCenter);
+        m_physValRectScaledAndRotated.setCenter(ptCenter);
+        for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
+            m_polygonOrig[idxPt] -= ptOffset;
+        }
     }
-    m_physValRect.setAngle(physValAngle);
-    m_ptCenterOrig = m_physValRect.center().toQPointF();
-    m_sizeOrig = m_physValRect.size().toQSizeF();
+    m_physValRectScaledAndRotated.setAngle(physValAngle);
+    m_ptCenterOrig = m_physValRectScaledAndRotated.center().toQPointF();
+    m_sizeOrig = m_physValRectScaledAndRotated.size().toQSizeF();
 }

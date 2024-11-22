@@ -140,24 +140,28 @@ public: // instance methods (to convert the values into another unit)
     QPolygonF toQPolygonF() const;
     QPolygonF toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // auxiliary instance methods
-    void updateModifiedPolygon();
+    void updateScaledAndRotatedPolygon();
     void updateOriginalPolygon();
 protected: // instance members
     /*!< true, if the polygon should be closed by drawing a line from the last point
          to the first point. false otherwise. */
     bool m_bIsClosedPolygon;
-    /*!< Rectangle around the polygon which may be rotated.
-         This is not the bounding rectangle. The bounding rectangle
-         of the polygon is not rotated. */
-    CPhysValRect m_physValRect;
-    /*!< Original center point of the polygons bounding rectangle before resizing events. */
+    /*!< Original center point of the unscaled and unrotated polygon. */
     QPointF m_ptCenterOrig;
-    /*!< Original size of the polygons bounding rectangle before resizing events. */
+    /*!< Original size of the unscaled and unrotated polygon. */
     QSizeF m_sizeOrig;
-    /*!< Points of the original polygon stored in "m_unit" before resizing events. */
+    /*!< Original points of the unscaled and unrotated polygon stored in "m_unit". */
     QPolygonF m_polygonOrig;
-    /*!< Points of the scaled polygon stored in "m_unit" after resizing events. */
-    QPolygonF m_polygonModified;
+    /*!< Resized and rotated polygon stored in "m_unit".
+         Calculated from the original polygon points applying the scale factor and rotationg angle
+         as defined by the resized and rotated rectangle around the polygon. */
+    QPolygonF m_polygonScaledAndRotated;
+    /*!< Resized and rotated bounding rectangle around the polygon.
+         The scale factor of the resized polygon is calculated by thee width and height of the
+         scaled and rotated rectangle and the original size of the polygon.
+         Please note that if the polygon is rotated "m_polygonScaledAndRotated.boundingRect()"
+         returns a rectangle with a different width and hight than "m_physValRectScaledAndRotated". */
+    CPhysValRect m_physValRectScaledAndRotated;
 
 }; // class CPhysValPolygon
 

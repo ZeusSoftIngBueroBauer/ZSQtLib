@@ -135,9 +135,11 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolylineTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolylineStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -189,6 +191,7 @@ protected slots:
     void doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep);
@@ -261,16 +264,16 @@ protected: // instance members
 
     // Polygons
     //----------
-    // Star
-    QPointF m_ptPosPolygonStar;
-    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonStar = nullptr;
-    QPolygonF m_polygonStar;
-    ZS::PhysVal::CPhysVal m_physValAnglePolygonStar;
     // Triangle
     QPointF m_ptPosPolygonTriangle;
     QPolygonF m_polygonTriangle;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonTriangle = nullptr;
     ZS::PhysVal::CPhysVal m_physValAnglePolygonTriangle;
+    // Star
+    QPointF m_ptPosPolygonStar;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonStar = nullptr;
+    QPolygonF m_polygonStar;
+    ZS::PhysVal::CPhysVal m_physValAnglePolygonStar;
 
     // Groups
     //-------

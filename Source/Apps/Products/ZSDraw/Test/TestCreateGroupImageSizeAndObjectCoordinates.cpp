@@ -44,7 +44,7 @@ using namespace ZS::Draw;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
 
-#if 0
+//#if 0
 /*******************************************************************************
 class CTest : public Test::CTest
 *******************************************************************************/
@@ -1987,9 +1987,6 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     /* setWidthByMovingLeftCenter(BeyondRightBorder)
     ------------------------------------------------
     */
-    // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
-    // The resulting center point, when resizing the rectangle by moving the left edge to a new width of 100.0, is the
-    // same as setting the width to 300.0 by moving the right edge of the rectangle. But only in this special case.
     ptMoved = QPointF(300.0, bYAxisTopDown ? 480.0 : 120.0);
     physValAngleCorrected.setVal(270.0);
     double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle90 = 80.0;
@@ -13574,4 +13571,4 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(
     strlstExpectedValues.append("Height: " + QString::number(size_px.height(), 'f', 0) + " px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
-#endif
+//#endif
