@@ -491,7 +491,7 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
     QLineF perpendicularLine = ZS::Draw::getPerpendicularLine(lineSelPtSceneCoors, ptCenterScenePosThis);
 
     // We need two perpendicular lines at the start and end point of the line.
-    // Create those two liney by moving the perpendicular line correspondingly.
+    // Create those two lines by moving the perpendicular line correspondingly.
     QPointF ptOffset1 = lineSelPtSceneCoors.p1() - perpendicularLine.p2();
     QPointF ptOffset2 = lineSelPtSceneCoors.p2() - perpendicularLine.p2();
     QLineF perpendicularLine1 = perpendicularLine.translated(ptOffset1);

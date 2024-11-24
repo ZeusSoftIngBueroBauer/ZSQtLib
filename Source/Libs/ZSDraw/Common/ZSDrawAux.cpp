@@ -2541,28 +2541,40 @@ SPolarCoors ZS::Draw::getPolarCoors(const QLineF& i_line, const QPointF& i_pt)
         For values > 0.0 the returned perpendiculars length is of this
         minimum length. Useful if the passed line is on the given line
         as in this case the resulting line would have zero length.
+    @param [out] o_pPtIntersection
+        Intersection of the perpendicular line with the passed line.
 
     @return Perpendicular line with the given length whose start point is
-            at the given point.
+            at the given point and whose end point is on the given line.
+            If for the mimimum length a value > 0.0 is provided, the end point may
+            not be on the given line but the perpendicular may pass the given line.
+            If for the mimimum length a value <= 0.0 is provided, the end point may
+            be on the given line. In addition the length of the perpendicular may be 0.0.
 */
-QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px)
+QLineF ZS::Draw::getPerpendicularLine(
+    const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px, QPointF* o_pPtIntersection)
 //------------------------------------------------------------------------------
 {
     QPointF ptIntersection;
     // Find parallel line to the given line that passes through the given point.
     QPointF ptOffset = i_pt - i_line.p1();
     QLineF parallelLine = i_line.translated(ptOffset);
-    // Returns a line that is perpendicular to this line with
-    // the same starting point and length.
+    // Returns a line that is perpendicular to this line with the same starting point and length.
     QLineF perpendicularLineTmp = parallelLine.normalVector();
     // Now get the intersection point of the perpendicular line with the given line.
     perpendicularLineTmp.intersects(i_line, &ptIntersection);
     // Return the line from the given point to the intersection point.
     QLineF perpendicularLine(i_pt, ptIntersection);
-    todo perpendicularLine length == 0
     if (i_fMinLength_px > 0.0 && perpendicularLine.length() < i_fMinLength_px) {
-        //perpendicularLine = perpendicularLineTmp.translated(perpendicularLineTmp.p1()-ptIntersection);
+        // If the passed point lies on the passed line or the extended line ..
+        if (i_pt == ptIntersection) {
+            // .. use the calculated normal vector.
+            perpendicularLine = perpendicularLineTmp;
+        }
         perpendicularLine.setLength(i_fMinLength_px);
+    }
+    if (o_pPtIntersection != nullptr) {
+        *o_pPtIntersection = ptIntersection;
     }
     return perpendicularLine;
 }

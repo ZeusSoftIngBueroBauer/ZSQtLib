@@ -1055,37 +1055,35 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
         double fAngle1_degree = lineWidth.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        // Determine the perpendicularLine to the widthLine going through ptPosMoved.
-        QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
-        // Determine the intersection point LC'' of the perpendicularLine with the widthLine.
-        if (lineWidth.intersects(linePerpendicular, &ptLeftCenter) != QLineF::NoIntersection) {
-            // Get length of line from LC'' to RC' and use this as the new width w'' of the rectangle
-            lineWidth.setP1(ptLeftCenter);
-            double fWidth = lineWidth.length();
-            // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
-            // If LC has not been moved beyond the right center selection point, the rotation angle α remains the same.
-            // Otherwise 180° has to be added to the rotation angle.
-            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
-            // For BottomUp Y-Scales the angle is returned clockwise counted.
-            double fAngle2_degree = lineWidth.angle();
-            // Correct angle only if not already clockwise counted:
-            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            double fAngleHorLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
-            if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
-                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
-            }
-            else {
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
-            }
-            // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
-            m_ptCenter = lineWidth.center();
-            m_size.setWidth(fWidth);
-            m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::LeftCenter)] =
-                CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
-            m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::LeftCenter)] = true;
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
+        // Determine the perpendicularLine to the widthLine going through ptPosMoved
+        // and the intersection point LC'' of the perpendicular to the width line.
+        QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 0.0, &ptLeftCenter);
+        // Get length of line from LC'' to RC' and use this as the new width w'' of the rectangle
+        lineWidth.setP1(ptLeftCenter);
+        double fWidth = lineWidth.length();
+        // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
+        // If LC has not been moved beyond the right center selection point, the rotation angle α remains the same.
+        // Otherwise 180° has to be added to the rotation angle.
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle2_degree = lineWidth.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+        double fAngleHorLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+        }
+        // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
+        m_ptCenter = lineWidth.center();
+        m_size.setWidth(fWidth);
+        m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::LeftCenter)] =
+            CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
+        m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::LeftCenter)] = true;
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
     }
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
@@ -1161,37 +1159,35 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         double fAngle1_degree = lineWidth.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        // Determine the perpendicularLine to the widthLine going through ptPosMoved.
-        QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
-        // Determine the intersection point LC'' of the perpendicularLine with the widthLine.
-        if (lineWidth.intersects(linePerpendicular, &ptRightCenter) != QLineF::NoIntersection) {
-            // Get length of line from LC'' to RC' and use this as the new width w'' of the rectangle
-            lineWidth.setP2(ptRightCenter);
-            double fWidth = lineWidth.length();
-            // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
-            // If RC has not been moved beyond the left center selection point, the rotation angle α remains the same.
-            // Otherwise 180° has to be added to the rotation angle.
-            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
-            // For BottomUp Y-Scales the angle is returned clockwise counted.
-            double fAngle2_degree = lineWidth.angle();
-            // Correct angle only if not already clockwise counted:
-            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            double fAngleHorLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
-            if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
-                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
-            }
-            else {
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
-            }
-            // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
-            m_ptCenter = lineWidth.center();
-            m_size.setWidth(fWidth);
-            m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
-                CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
-            m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::RightCenter)] = true;
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
+        // Determine the perpendicularLine to the widthLine going through ptPosMoved
+        // and the intersection point RC'' of the perpendicular to the width line.
+        QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 0.0, &ptRightCenter);
+        // Get length of line from RC'' to LC' and use this as the new width w'' of the rectangle
+        lineWidth.setP2(ptRightCenter);
+        double fWidth = lineWidth.length();
+        // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
+        // If RC has not been moved beyond the left center selection point, the rotation angle α remains the same.
+        // Otherwise 180° has to be added to the rotation angle.
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle2_degree = lineWidth.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+        double fAngleHorLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+        }
+        // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
+        m_ptCenter = lineWidth.center();
+        m_size.setWidth(fWidth);
+        m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
+            CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
+        m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::RightCenter)] = true;
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
     }
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
@@ -1358,36 +1354,34 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         double fAngle1_degree = lineHeight.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        // Determine the perpendicularLine to the heightLine going through ptPosMoved.
-        QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
-        // Determine the intersection point TC'' of the perpendicularLine with the heightLine.
-        if (lineHeight.intersects(linePerpendicular, &ptTopCenter) != QLineF::NoIntersection) {
-            lineHeight.setP1(ptTopCenter);
-            double fHeight = lineHeight.length();
-            // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
-            // If TC has not been moved beyond the bottom center selection point, the rotation angle α remains the same.
-            // Otherwise 180° has to be added to the rotation angle.
-            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
-            // For BottomUp Y-Scales the angle is returned clockwise counted.
-            double fAngle2_degree = lineHeight.angle();
-            // Correct angle only if not already clockwise counted:
-            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            double fAngleVerLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
-            if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
-                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
-            }
-            else {
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
-            }
-            // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
-            m_ptCenter = lineHeight.center();
-            m_size.setHeight(fHeight);
-            m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
-                CPhysValPoint(*m_pDrawingScene, ptTopCenter, m_unit);
-            m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::TopCenter)] = true;
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
+        // Determine the perpendicularLine to the heightLine going through ptPosMoved
+        // and the intersection point TC'' of the perpendicular to the height line.
+        QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 0.0, &ptTopCenter);
+        lineHeight.setP1(ptTopCenter);
+        double fHeight = lineHeight.length();
+        // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
+        // If TC has not been moved beyond the bottom center selection point, the rotation angle α remains the same.
+        // Otherwise 180° has to be added to the rotation angle.
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle2_degree = lineHeight.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+        double fAngleVerLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+        }
+        // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
+        m_ptCenter = lineHeight.center();
+        m_size.setHeight(fHeight);
+        m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
+            CPhysValPoint(*m_pDrawingScene, ptTopCenter, m_unit);
+        m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::TopCenter)] = true;
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
     }
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
@@ -1479,36 +1473,34 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         double fAngle1_degree = lineHeight.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        // Determine the perpendicularLine to the heightLine going through ptPosMoved.
-        QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
-        // Determine the intersection point BC'' of the perpendicularLine with the heightLine.
-        if (lineHeight.intersects(linePerpendicular, &ptBottomCenter) != QLineF::NoIntersection) {
-            lineHeight.setP2(ptBottomCenter);
-            double fHeight = lineHeight.length();
-            // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
-            // If BC has not been moved beyond the top center selection point, the rotation angle α remains the same.
-            // Otherwise 180° has to be added to the rotation angle.
-            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
-            // For BottomUp Y-Scales the angle is returned clockwise counted.
-            double fAngle2_degree = lineHeight.angle();
-            // Correct angle only if not already clockwise counted:
-            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            double fAngleVerLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
-            if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
-                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
-            }
-            else {
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
-            }
-            // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
-            m_ptCenter = lineHeight.center();
-            m_size.setHeight(fHeight);
-            m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
-                CPhysValPoint(*m_pDrawingScene, ptBottomCenter, m_unit);
-            m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::BottomCenter)] = true;
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
+        // Determine the perpendicularLine to the heightLine going through ptPosMoved
+        // and the intersection point BC'' of the perpendicular to the height line.
+        QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 0.0, &ptBottomCenter);
+        lineHeight.setP2(ptBottomCenter);
+        double fHeight = lineHeight.length();
+        // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
+        // If BC has not been moved beyond the top center selection point, the rotation angle α remains the same.
+        // Otherwise 180° has to be added to the rotation angle.
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle2_degree = lineHeight.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+        double fAngleVerLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+        }
+        // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
+        m_ptCenter = lineHeight.center();
+        m_size.setHeight(fHeight);
+        m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
+            CPhysValPoint(*m_pDrawingScene, ptBottomCenter, m_unit);
+        m_arbRectSelectionPointsCalculated[static_cast<int>(ESelectionPoint::BottomCenter)] = true;
+        ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
     }
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }

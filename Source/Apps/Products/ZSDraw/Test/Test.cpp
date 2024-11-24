@@ -406,13 +406,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mm, drawingSize, gridSettings);
 
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
-#endif
+//#endif
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -472,13 +472,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
-#if 0
+//#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
-#endif
+//#endif
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -1229,7 +1229,7 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
         QString strGraphObjType = dataRow["GraphObjType"].toString();
         EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
-        QPainter::RenderHints uPainterRenderHints = dataRow["PainterRenderHints"].toUInt();
+        QPainter::RenderHints uPainterRenderHints = dataRow["PainterRenderHints"].value<QPainter::RenderHints>();
         if (graphObjType == EGraphObjTypePoint) {
             //CGraphObjPoint::setPainterRenderHints(uPainterRenderHints);
         }

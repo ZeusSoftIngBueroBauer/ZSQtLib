@@ -433,14 +433,28 @@ QString ZS::System::GUI::qPainterRenderHints2Str(QPainter::RenderHints i_painter
         if (!str.isEmpty()) str += "|";
         str += "SmoothPixmapTransform";
     }
+    #if QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
     if (i_painterRenderHints.testFlag(QPainter::Qt4CompatiblePainting)) {
         if (!str.isEmpty()) str += "|";
         str += "Qt4CompatiblePainting";
     }
+    #endif
+    #if QT_VERSION >= 0x060000
+    if (i_painterRenderHints.testFlag(QPainter::VerticalSubpixelPositioning)) {
+        if (!str.isEmpty()) str += "|";
+        str += "VerticalSubpixelPositioning";
+    }
+    #endif
     if (i_painterRenderHints.testFlag(QPainter::LosslessImageRendering)) {
         if (!str.isEmpty()) str += "|";
         str += "LosslessImageRendering";
     }
+    #if QT_VERSION >= 0x060000
+    if (i_painterRenderHints.testFlag(QPainter::NonCosmeticBrushPatterns)) {
+        if (!str.isEmpty()) str += "|";
+        str += "NonCosmeticBrushPatterns";
+    }
+    #endif
     return str;
 }
 
