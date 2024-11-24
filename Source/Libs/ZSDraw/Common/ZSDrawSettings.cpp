@@ -69,7 +69,7 @@ const SEnumEntry s_arEnumStrDrawAttributes[] =
     /* 15 */ SEnumEntry( EDrawAttributeLineP2ArrowHeadWidth,         XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth         ),
     /* 16 */ SEnumEntry( EDrawAttributeLineP2ArrowHeadLength,        XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength        ),
     /* 17 */ SEnumEntry( EDrawAttributeTextColor,                    XmlStreamParser::c_strXmlElemNameTextColor                    ),
-    /* 18 */ SEnumEntry( EDrawAttributeTextFont,                     XmlStreamParser::c_strXmlElemNameFont                     ),
+    /* 18 */ SEnumEntry( EDrawAttributeTextFont,                     XmlStreamParser::c_strXmlElemNameFont                         ),
     /* 19 */ SEnumEntry( EDrawAttributeTextStyle,                    XmlStreamParser::c_strXmlElemNameTextStyle                    ),
     /* 20 */ SEnumEntry( EDrawAttributeTextSize,                     XmlStreamParser::c_strXmlElemNameTextSize                     ),
     /* 21 */ SEnumEntry( EDrawAttributeTextEffect,                   XmlStreamParser::c_strXmlElemNameTextEffect                   )

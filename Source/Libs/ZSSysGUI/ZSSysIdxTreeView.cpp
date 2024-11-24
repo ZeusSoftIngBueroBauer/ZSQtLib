@@ -1027,18 +1027,14 @@ bool CTreeViewIdxTree::event( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "event",
         /* strMethodInArgs    */ strMthInArgs );
-
     return QTreeView::event(i_pEv);
 }
 
@@ -1051,12 +1047,9 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qKeyEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1069,18 +1062,15 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
 
     QModelIndex modelIdxSelected = pSelModel->currentIndex();
 
-    if( modelIdxSelected.isValid() )
-    {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-        {
+    if (modelIdxSelected.isValid()) {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
 
         CModelIdxTreeEntry* pModelTreeEntrySelected = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
 
-        if( pModelTreeEntrySelected != nullptr )
-        {
+        if (pModelTreeEntrySelected != nullptr) {
             switch( i_pEv->key() )
             {
                 case Qt::Key_Enter:
@@ -1241,17 +1231,18 @@ void CTreeViewIdxTree::keyPressEvent( QKeyEvent* i_pEv )
 
 } // keyPressEvent
 
+/*==============================================================================
+public: // overridables of base class QTreeView (public to pass mouse events from test steps)
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1262,81 +1253,56 @@ void CTreeViewIdxTree::mousePressEvent( QMouseEvent* i_pEv )
 
     m_modelIdxSelectedOnMousePressEvent = indexAt(i_pEv->pos());
 
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
+    if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-        {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
-
-        if( pModelTreeEntry != nullptr )
-        {
-            if( i_pEv->buttons() & Qt::RightButton )
-            {
-                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-                {
-                    if( m_pMenuBranchContext != nullptr )
-                    {
-                        m_pActionBranchTitle->setText( "Branch: " + pModelTreeEntry->name() );
-
-                        if( m_modelIdxSelectedForPaste.isValid() )
-                        {
+        if (pModelTreeEntry != nullptr) {
+            if (i_pEv->buttons() & Qt::RightButton) {
+                if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
+                    if (m_pMenuBranchContext != nullptr) {
+                        m_pActionBranchTitle->setText("Branch: " + pModelTreeEntry->name());
+                        if (m_modelIdxSelectedForPaste.isValid()) {
                             m_pActionBranchPaste->setEnabled(true);
                         }
-                        else
-                        {
+                        else {
                             m_pActionBranchPaste->setEnabled(false);
                         }
                         m_pMenuBranchContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                     }
                     bEventHandled = true;
-
-                } // if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-
-                else if( pModelTreeEntry->isLeave() )
-                {
-                    if( m_pMenuLeaveContext != nullptr )
-                    {
-                        m_pActionLeaveTitle->setText( "Leave: " + pModelTreeEntry->name() );
-
-                        if( m_modelIdxSelectedForPaste.isValid() )
-                        {
+                }
+                else if (pModelTreeEntry->isLeave()) {
+                    if (m_pMenuLeaveContext != nullptr) {
+                        m_pActionLeaveTitle->setText("Leave: " + pModelTreeEntry->name());
+                        if (m_modelIdxSelectedForPaste.isValid()) {
                             m_pActionLeavePaste->setEnabled(true);
                         }
-                        else
-                        {
+                        else {
                             m_pActionLeavePaste->setEnabled(false);
                         }
                         m_pMenuLeaveContext->popup(QWidget::mapToGlobal(i_pEv->pos()));
                     }
                     bEventHandled = true;
-
-                } // if( pModelTreeEntry->isLeave() )
-            } // if( i_pEv->buttons() & Qt::RightButton )
-        } // if( pModelTreeEntry != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
-    if( !bEventHandled )
-    {
+                }
+            }
+        }
+    }
+    if (!bEventHandled) {
         QTreeView::mousePressEvent(i_pEv);
     }
-
-} // mousePressEvent
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1347,79 +1313,60 @@ void CTreeViewIdxTree::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     m_modelIdxSelectedOnMouseReleaseEvent = indexAt(i_pEv->pos());
 
-    if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
-    {
+    if (m_modelIdxSelectedOnMouseReleaseEvent.isValid()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-        {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
-
-        if( pModelTreeEntry != nullptr )
-        {
+        if (pModelTreeEntry != nullptr) {
             if( i_pEv->buttons() & Qt::LeftButton )
             {
-            } // if( i_pEv->buttons() & Qt::LeftButton )
-        } // if( pModelTreeEntry != nullptr )
-    } // if( m_modelIdxSelectedOnMouseReleaseEvent.isValid() )
-
-    if( !bEventHandled )
-    {
+            }
+        }
+    }
+    if (!bEventHandled) {
         QTreeView::mouseReleaseEvent(i_pEv);
     }
-} // mouseReleaseEvent
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTree::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "mouseDoubleClickEvent",
         /* strMethodInArgs    */ strMthInArgs );
-
     bool bEventHandled = false;
-
-    if( !bEventHandled )
-    {
+    if (!bEventHandled) {
         QTreeView::mouseDoubleClickEvent(i_pEv);
     }
-} // mouseDoubleClickEvent
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewIdxTree::mouseMoveEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qMouseEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "mouseMoveEvent",
         /* strMethodInArgs    */ strMthInArgs );
-
     bool bEventHandled = false;
-
-    if( !bEventHandled )
-    {
+    if (!bEventHandled) {
         QTreeView::mouseMoveEvent(i_pEv);
     }
-} // mouseMoveEvent
+}
 
 /*==============================================================================
 protected: // overridables of base class QTreeView
@@ -1525,12 +1472,9 @@ void CTreeViewIdxTree::dragEnterEvent( QDragEnterEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qDragEnterEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1545,12 +1489,9 @@ void CTreeViewIdxTree::dragLeaveEvent( QDragLeaveEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qDragLeaveEvent2Str(i_pEv)  + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1565,12 +1506,9 @@ void CTreeViewIdxTree::dragMoveEvent( QDragMoveEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qDragMoveEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1585,12 +1523,9 @@ void CTreeViewIdxTree::dropEvent( QDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "{" + qDropEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1610,12 +1545,9 @@ void CTreeViewIdxTree::onModelSortOrderChanged(EIdxTreeSortOrder i_sortOrder)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1635,12 +1567,9 @@ void CTreeViewIdxTree::onActionBranchExpandTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1663,12 +1592,9 @@ void CTreeViewIdxTree::onActionBranchCollapseTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1690,12 +1616,9 @@ void CTreeViewIdxTree::onActionBranchCreateNewBranchTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1744,12 +1667,9 @@ void CTreeViewIdxTree::onActionBranchCreateNewLeaveTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1798,12 +1718,9 @@ void CTreeViewIdxTree::onActionBranchDeleteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1839,12 +1756,9 @@ void CTreeViewIdxTree::onActionBranchCutTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1869,12 +1783,9 @@ void CTreeViewIdxTree::onActionBranchCopyTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1899,12 +1810,9 @@ void CTreeViewIdxTree::onActionBranchPasteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1963,12 +1871,9 @@ void CTreeViewIdxTree::onActionLeaveDeleteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2004,12 +1909,9 @@ void CTreeViewIdxTree::onActionLeaveCutTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2034,12 +1936,9 @@ void CTreeViewIdxTree::onActionLeaveCopyTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2064,12 +1963,9 @@ void CTreeViewIdxTree::onActionLeavePasteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

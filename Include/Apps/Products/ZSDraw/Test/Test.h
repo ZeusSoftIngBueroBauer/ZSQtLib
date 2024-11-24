@@ -94,6 +94,9 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallRectRightLine = "SmallRect-RightLine";
     const QString c_strGraphObjNameSmallRectBottomLine = "SmallRect-BottomLine";
     const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
+    // Polylines
+    //----------
+    const QString c_strGraphObjNameOpenArrow = "OpenArrow";
     // Polygons
     //---------
     const QString c_strGraphObjNameStar = "Star";
@@ -135,8 +138,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesPolylineTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesPolylineStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPolylineOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -262,18 +264,26 @@ protected: // instance members
     QLineF m_lineSmallRectLeftLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectLeftLine = nullptr;
 
+    // Polylines
+    //----------
+    // Open Arrow
+    QPointF m_ptPosOpenArrow;
+    QPolygonF m_polygonOpenArrow;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonOpenArrow = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleOpenArrow;
+
     // Polygons
     //----------
     // Triangle
-    QPointF m_ptPosPolygonTriangle;
+    QPointF m_ptPosTriangle;
     QPolygonF m_polygonTriangle;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonTriangle = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAnglePolygonTriangle;
+    ZS::PhysVal::CPhysVal m_physValAngleTriangle;
     // Star
-    QPointF m_ptPosPolygonStar;
+    QPointF m_ptPosStar;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonStar = nullptr;
     QPolygonF m_polygonStar;
-    ZS::PhysVal::CPhysVal m_physValAnglePolygonStar;
+    ZS::PhysVal::CPhysVal m_physValAngleStar;
 
     // Groups
     //-------

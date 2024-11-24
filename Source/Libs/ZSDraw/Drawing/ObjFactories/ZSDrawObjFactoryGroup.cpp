@@ -390,10 +390,6 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                 physValAngle = physValAngleTmp;
                             }
                         }
-                        else {
-                            XmlStreamParser::raiseErrorAttributeNotDefined(
-                                i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameAngle);
-                        }
                         if (!i_xmlStreamReader.hasError()) {
                             if (physValPointCenter.isValid() && physValSize.isValid()) {
                                 CPhysValRect physValRect(*i_pDrawingScene);

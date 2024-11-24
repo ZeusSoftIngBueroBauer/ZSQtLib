@@ -31,13 +31,6 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-namespace GUI
-{
-class CTableView;
-}
-}
 namespace PhysVal
 {
 namespace GUI
@@ -47,6 +40,7 @@ class CEditPhysValtemDelegate;
 }
 namespace Draw
 {
+class CTableViewGraphObjPolygonGeometry;
 class CModelGraphObjPolygonGeometry;
 
 //******************************************************************************
@@ -101,7 +95,7 @@ private: // instance members
     QHBoxLayout* m_pLytLineTableViewButtons;
     QPushButton* m_pBtnResizeRowsAndColumnsToContents;
     QVBoxLayout* m_pLytGeometryTableView;
-    ZS::System::GUI::CTableView* m_pTableViewGeometry;
+    CTableViewGraphObjPolygonGeometry* m_pTableViewGeometry;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateXVal;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateYVal;
     CModelGraphObjPolygonGeometry* m_pModelGeometry;

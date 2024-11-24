@@ -26,12 +26,12 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonGeometryPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonGeometryModel.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonGeometryTableView.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
-#include "ZSSysGUI/ZSSysTableView.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
@@ -82,7 +82,7 @@ CWdgtGraphObjPolygonGeometryProperties::CWdgtGraphObjPolygonGeometryProperties(
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene,
-        i_strNameSpace, "StandardShapes::Group", ClassName(),
+        i_strNameSpace, "StandardShapes::Polygon", ClassName(),
         i_strObjName, i_pWdgtParent),
     // Headline with collapse button.
     m_pWdgtHeadline(nullptr),
@@ -190,7 +190,7 @@ CWdgtGraphObjPolygonGeometryProperties::CWdgtGraphObjPolygonGeometryProperties(
     m_pModelGeometry = new CModelGraphObjPolygonGeometry(
         m_pDrawingScene, i_strNameSpace, "StandardShapes::Polygon",
         i_strObjName, CEnumScaleDimensionUnit(), this);
-    m_pTableViewGeometry = new CTableView(i_strObjName);
+    m_pTableViewGeometry = new CTableViewGraphObjPolygonGeometry(i_strObjName);
     m_pTableViewGeometry->setModel(m_pModelGeometry);
 
     m_pEdtPhysValDelegateXVal =

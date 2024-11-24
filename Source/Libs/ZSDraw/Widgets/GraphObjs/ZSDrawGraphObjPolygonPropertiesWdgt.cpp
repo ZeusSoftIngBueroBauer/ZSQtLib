@@ -237,6 +237,16 @@ bool CWdgtGraphObjPolygonProperties::setKeyInTree(const QString& i_strKeyInTree)
             m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
             m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
             m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
+            EGraphObjType graphObjType = EGraphObjTypeUndefined;
+            if (m_pGraphObj != nullptr) {
+                graphObjType = m_pGraphObj->type();
+            }
+            if (graphObjType == EGraphObjTypePolygon) {
+                m_pWdgtFillStyle->show();
+            }
+            else {
+                m_pWdgtFillStyle->hide();
+            }
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

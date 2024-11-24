@@ -401,6 +401,7 @@ void CGraphObjPolygon::paint(
     i_pPainter->save();
 
     QPen pn = pen();
+    QBrush brsh;
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
@@ -424,6 +425,9 @@ void CGraphObjPolygon::paint(
     pn.setWidth(m_drawSettings.getPenWidth());
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
     i_pPainter->setPen(pn);
+    brsh.setColor(m_drawSettings.getFillColor());
+    brsh.setStyle(fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()));
+    i_pPainter->setBrush(brsh);
     i_pPainter->setRenderHints(s_painterRenderHints);
     i_pPainter->drawPolygon(polygon);
 
@@ -435,7 +439,6 @@ void CGraphObjPolygon::paint(
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         i_pPainter->setPen(pn);
-        QBrush brsh(pn.color());
         if (lineEndStyleLineStart != ELineEndStyle::Normal) {
             brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start)));
             i_pPainter->setBrush(brsh);
@@ -453,7 +456,7 @@ void CGraphObjPolygon::paint(
             }
         }
         if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
-            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)) );
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)));
             i_pPainter->setBrush(brsh);
             if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgLineEndArrowHead);

@@ -174,6 +174,9 @@ CTest::~CTest()
     delete m_pPhysValLineSmallRectLeftLine;
     m_pPhysValLineSmallRectLeftLine = nullptr;
 
+    delete m_pPhysValPolygonOpenArrow;
+    m_pPhysValPolygonOpenArrow = nullptr;
+
     delete m_pPhysValPolygonTriangle;
     m_pPhysValPolygonTriangle = nullptr;
     delete m_pPhysValPolygonStar;
@@ -235,6 +238,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValLineSmallRectRightLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallRectBottomLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallRectLeftLine = new CPhysValLine(*m_pDrawingScene);
+
+    // Polylines
+    //----------
+    m_pPhysValPolygonOpenArrow = new CPhysValPolygon(*m_pDrawingScene);
 
     // Polygons
     //----------
@@ -329,13 +336,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpPixelsDrawing800x600px, drawingSize, gridSettings);
 
-//#if 0
+#if 0
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
-//#endif
+#endif
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
@@ -406,13 +413,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mm, drawingSize, gridSettings);
 
-//#if 0
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
-//#endif
+#endif
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -472,13 +479,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
-//#if 0
+#if 0
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
-//#endif
+#endif
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -2473,6 +2480,7 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
     QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -2481,7 +2489,7 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
-        CDrawSettings drawSettings(EGraphObjTypePolyline);
+        CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(pGraphObj);
@@ -3506,15 +3514,23 @@ void CTest::initObjectCoors()
     // Polylines
     //----------
 
-    m_ptPosPolygonTriangle = QPointF();
+    m_ptPosOpenArrow = QPointF();
+    m_polygonOpenArrow = QPolygonF();
+    *m_pPhysValPolygonOpenArrow = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAngleOpenArrow = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    // Polygons
+    //----------
+
+    m_ptPosTriangle = QPointF();
     m_polygonTriangle = QPolygonF();
     *m_pPhysValPolygonTriangle = CPhysValPolygon(*m_pDrawingScene);
-    m_physValAnglePolygonTriangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleTriangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
-    m_ptPosPolygonStar = QPointF();
+    m_ptPosStar = QPointF();
     m_polygonStar = QPolygonF();
     *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
-    m_physValAnglePolygonStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Groups
     //-------

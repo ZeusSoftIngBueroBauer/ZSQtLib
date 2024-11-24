@@ -144,6 +144,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
     CDrawSettings drawSettings(EGraphObjTypePolyline);
     CPhysValPolygon physValPolygon(*i_pDrawingScene, false);
+    CPhysVal physValAngle(Units.Angle.Degree);
     double fZValue = 0.0;
     QList<SLabelDscr> arTextLabels;
     QList<SLabelDscr> arGeometryLabels;
@@ -186,8 +187,32 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
                             i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameShapePoints);
                     }
                     if (!i_xmlStreamReader.hasError()) {
+                        if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameAngle)) {
+                            strElemAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameAngle).toString();
+                            bool bConverted = false;
+                            CPhysVal physValAngleTmp(Units.Angle.Degree);
+                            try {
+                                physValAngleTmp = strElemAttr;
+                                bConverted = true;
+                            }
+                            catch (...) {
+                                bConverted = false;
+                            }
+                            if (!bConverted) {
+                                i_xmlStreamReader.raiseError(
+                                    "Element \"" + strElemName + "\" (" + strElemAttr + ") cannot be converted to Angle");
+                            }
+                            else {
+                                physValAngle = physValAngleTmp;
+                            }
+                        }
+                    }
+                    if (!i_xmlStreamReader.hasError()) {
                         if (physValPolygon.isValid()) {
                             pGraphObj->setPolygon(physValPolygon);
+                        }
+                        if (physValAngle.isValid()) {
+                            pGraphObj->setRotationAngle(physValAngle);
                         }
                     }
                 }
