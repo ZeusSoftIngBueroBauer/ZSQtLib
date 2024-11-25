@@ -61,6 +61,7 @@ CTableViewGraphObjPolygonGeometry::CTableViewGraphObjPolygonGeometry(
     CTableView(i_strObjName, i_pWdgtParent),
     m_pModel(nullptr),
     m_pMenu(nullptr),
+    m_pActionTitle(nullptr),
     m_pActionDelete(nullptr),
     m_pActionInsertBefore(nullptr),
     m_pActionInsertAfter(nullptr),
@@ -82,19 +83,30 @@ CTableViewGraphObjPolygonGeometry::CTableViewGraphObjPolygonGeometry(
 
     m_pMenu = new QMenu("Point", this);
 
-    m_pActionDelete = new QAction("Delete", this);
+    m_pActionTitle = new QAction("Point", this);
+    QFont fntActionTitle = m_pActionTitle->font();
+    fntActionTitle.setBold(true);
+    m_pActionTitle->setFont(fntActionTitle);
+    m_pMenu->addAction(m_pActionTitle);
+
+    m_pMenu->addSeparator();
+
+    QPixmap pxmDelete(":/ZS/Button/ButtonDelete24x24.png");
+    QPixmap pxmInsert(":/ZS/Button/ButtonAdd24x24.png");
+
+    m_pActionDelete = new QAction(pxmDelete, "Delete Point", this);
     m_pMenu->addAction(m_pActionDelete);
     QObject::connect(
         m_pActionDelete, &QAction::triggered,
         this, &CTableViewGraphObjPolygonGeometry::onActionDeleteTriggered );
 
-    m_pActionInsertBefore = new QAction("Insert Before", this);
+    m_pActionInsertBefore = new QAction(pxmInsert, "Insert Point Before", this);
     m_pMenu->addAction(m_pActionInsertBefore);
     QObject::connect(
         m_pActionInsertBefore, &QAction::triggered,
         this, &CTableViewGraphObjPolygonGeometry::onActionInsertBeforeTriggered );
 
-    m_pActionInsertAfter = new QAction("Insert After", this);
+    m_pActionInsertAfter = new QAction(pxmInsert, "Insert Point After", this);
     m_pMenu->addAction(m_pActionInsertAfter);
     QObject::connect(
         m_pActionInsertAfter, &QAction::triggered,
@@ -116,6 +128,7 @@ CTableViewGraphObjPolygonGeometry::~CTableViewGraphObjPolygonGeometry()
 
     m_pModel = nullptr;
     m_pMenu = nullptr;
+    m_pActionTitle = nullptr;
     m_pActionDelete = nullptr;
     m_pActionInsertBefore = nullptr;
     m_pActionInsertAfter = nullptr;
@@ -174,8 +187,11 @@ void CTableViewGraphObjPolygonGeometry::mousePressEvent(QMouseEvent* i_pEv)
             mthTracer.trace(strMthInArgs, ELogDetailLevel::Debug);
         }
         if (i_pEv->buttons() & Qt::RightButton) {
-            m_pMenu->popup(QWidget::mapToGlobal(i_pEv->pos()));
-            bEventHandled = true;
+            if (m_pModel->isPointRow(m_modelIdxSelectedOnMousePressEvent.row())) {
+                m_pActionTitle->setText(m_pModel->getLabelName(m_modelIdxSelectedOnMousePressEvent.row()));
+                m_pMenu->popup(QWidget::mapToGlobal(i_pEv->pos()));
+                bEventHandled = true;
+            }
         }
     }
     if (!bEventHandled) {
@@ -231,6 +247,9 @@ void CTableViewGraphObjPolygonGeometry::onActionDeleteTriggered(bool i_bChecked)
         strMthInArgs = "ModelIdxPressed {" + qModelIndex2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
         mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
     }
+
+    QString strLabelName = m_pModel->getLabelName(m_modelIdxSelectedOnMousePressEvent.row());
+    m_pModel->removePoint(strLabelName);
 }
 
 //------------------------------------------------------------------------------
@@ -250,6 +269,9 @@ void CTableViewGraphObjPolygonGeometry::onActionInsertBeforeTriggered(bool i_bCh
         strMthInArgs = "ModelIdxPressed {" + qModelIndex2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
         mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
     }
+
+    QString strLabelName = m_pModel->getLabelName(m_modelIdxSelectedOnMousePressEvent.row());
+    m_pModel->insertPointBefore(strLabelName);
 }
 
 //------------------------------------------------------------------------------
@@ -269,4 +291,7 @@ void CTableViewGraphObjPolygonGeometry::onActionInsertAfterTriggered(bool i_bChe
         strMthInArgs = "ModelIdxPressed {" + qModelIndex2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
         mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
     }
+
+    QString strLabelName = m_pModel->getLabelName(m_modelIdxSelectedOnMousePressEvent.row());
+    m_pModel->insertPointAfter(strLabelName);
 }

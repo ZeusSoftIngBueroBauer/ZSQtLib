@@ -119,7 +119,7 @@ protected: // type definitions and constants
         bool operator == (const SLabelSettings& i_other) const;
         bool operator != (const SLabelSettings& i_other) const;
     public: // struct members
-        /*!< Name of the value as retrieved from the graphical object.
+        /*!< Name of the value as retrieved from the graphical object as retrieved by invoking "getGeometryLabelNames".
              Possible names could be TopLeft, TopRight, BottomLeft, BottomRight, Width, Height and Angle.
              Please note that Width and Height cannot be combined in the same row (e.g. named Size)
              as the visibility of the Width and Height Labels is set separately.

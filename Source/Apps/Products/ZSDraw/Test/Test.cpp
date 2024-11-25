@@ -870,6 +870,7 @@ void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGrou
         /* szDoTestStepFct */ SLOT(doTestStepSaveLoadFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
     pTestStep->setConfigValue("FileName", strFileName);
+    pTestStep->setConfigValue("ResultValuesPrecision", 6);
 }
 
 /*==============================================================================
@@ -2139,6 +2140,8 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
     QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
     QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
     QString strAbsFilePath = strAbsDirPath + QDir::separator() + strFileName;
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
 
     QFileInfo fileInfo(strAbsFilePath);
     QDir dir = fileInfo.absoluteDir();
@@ -2160,7 +2163,7 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
             if (pGraphObj != nullptr) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true));
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
             }
             ++itIdxTree;
         }
@@ -2181,7 +2184,7 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
                 CIdxTreeEntry* pTreeEntry = *itIdxTree;
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
                 if (pGraphObj != nullptr) {
-                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, true));
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
                 }
                 ++itIdxTree;
             }
@@ -2926,6 +2929,7 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
+    CPhysValPoint physValPointTaken(*m_pDrawingScene);
 
     CGraphObjPolyline* pGraphObj = dynamic_cast<CGraphObjPolyline*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
@@ -2956,11 +2960,59 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
             }
             pGraphObj->replace(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
         }
+        else if (strMethod.compare("append", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("point.unit")) {
+                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            }
+            pGraphObj->append(CPhysValPoint(*m_pDrawingScene, pt, unit));
+        }
+        else if (strMethod.compare("insert", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("point.unit")) {
+                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            }
+            pGraphObj->insert(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
+        }
+        else if (strMethod.compare("remove", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            int iCount = i_pTestStep->getConfigValue("count").toInt();
+            pGraphObj->remove(idxPt, iCount);
+        }
+        else if (strMethod.compare("removeAt", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            pGraphObj->removeAt(idxPt);
+        }
+        else if (strMethod.compare("removeFirst", Qt::CaseInsensitive) == 0) {
+            pGraphObj->removeFirst();
+        }
+        else if (strMethod.compare("removeLast", Qt::CaseInsensitive) == 0) {
+            pGraphObj->removeLast();
+        }
+        else if (strMethod.compare("takeAt", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            physValPointTaken = pGraphObj->takeAt(idxPt);
+        }
+        else if (strMethod.compare("takeFirst", Qt::CaseInsensitive) == 0) {
+            physValPointTaken = pGraphObj->takeFirst();
+        }
+        else if (strMethod.compare("takeLast", Qt::CaseInsensitive) == 0) {
+            physValPointTaken = pGraphObj->takeLast();
+        }
     }
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
+    if (!physValPointTaken.isNull()) {
+        strlstResultValues.append(
+            "Taken: {" +
+            physValPointTaken.toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPointTaken.unit().symbol());
+    }
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
     }
@@ -3789,7 +3841,7 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
                     pGraphicsItem = dynamic_cast<const QGraphicsItem*>(pGraphObjLabel);
                     strlstResultValues += resultValuesForLabel(
                         i_pGraphObj->name() + "." + pGraphObjLabel->name(),
-                        pGraphicsItem->pos(), pGraphObjLabel->text());
+                        pGraphicsItem->pos(), pGraphObjLabel->text(), i_iPrecision);
                 }
             }
             strlstLabelNames = i_pGraphObj->getGeometryLabelNames();
@@ -3799,7 +3851,7 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
                     pGraphicsItem = dynamic_cast<const QGraphicsItem*>(pGraphObjLabel);
                     strlstResultValues += resultValuesForLabel(
                         i_pGraphObj->name() + "." + pGraphObjLabel->name(),
-                        pGraphicsItem->pos(), pGraphObjLabel->text());
+                        pGraphicsItem->pos(), pGraphObjLabel->text(), i_iPrecision);
                 }
             }
         }
@@ -3905,13 +3957,19 @@ QStringList CTest::resultValuesForPolygon(
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForLabel(
-    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const
+    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QStringList strlstResultValues;
     if (!i_pos.isNull()) {
-        strlstResultValues = QStringList({
-            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
+        if (i_iPrecision < 0) {
+            strlstResultValues = QStringList({
+                strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
+        }
+        else {
+            strlstResultValues = QStringList({
+                strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 2) + "} px"});
+        }
     }
     strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
     return strlstResultValues;

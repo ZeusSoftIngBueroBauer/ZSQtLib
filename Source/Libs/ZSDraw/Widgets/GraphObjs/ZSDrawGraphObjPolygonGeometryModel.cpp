@@ -557,12 +557,12 @@ public: // instance methods
 
     @return Row index of the label with the given current name, -1 otherwise.
 */
-int CModelGraphObjPolygonGeometry::getLabelRowIndex(const QString& i_strName) const
+int CModelGraphObjPolygonGeometry::getLabelRowIndex(const QString& i_strLabelName) const
 //------------------------------------------------------------------------------
 {
     int iRowIdx = -1;
     for (const SLabelSettings& labelSettings : m_arLabelSettings) {
-        if (i_strName == labelSettings.m_strValueName) {
+        if (i_strLabelName == labelSettings.m_strValueName) {
             iRowIdx = labelSettings.m_iRowIdx;
             break;
         }
@@ -581,6 +581,121 @@ QStringList CModelGraphObjPolygonGeometry::labelNames() const
         strlstNames.append(labelSettings.m_strValueName);
     }
     return strlstNames;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a list with the current names of the labels.
+*/
+QString CModelGraphObjPolygonGeometry::getLabelName(int i_iRow) const
+//------------------------------------------------------------------------------
+{
+    return m_arLabelSettings[i_iRow].m_strValueName;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true if the specified row contains the coordinates of a polygon point,
+           false otherwise.
+
+    @param [in] i_iRow
+        Row number to be checked.
+*/
+bool CModelGraphObjPolygonGeometry::isPointRow(int i_iRow) const
+//------------------------------------------------------------------------------
+{
+    return CGraphObjPolyline::isPolygonPointLabelName(m_arLabelSettings[i_iRow].m_strValueName);
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjPolygonGeometry::removePoint(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strLabelName;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "removePoint",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(i_strLabelName);
+    int iRow = getLabelRowIndex(i_strLabelName);
+    _beginRemoveRows(QModelIndex(), iRow, iRow);
+    m_physValPolygon.removeAt(idxPt);
+    m_arLabelSettings.removeAt(iRow);
+    _endRemoveRows();
+    for (; iRow < m_arLabelSettings.size(); ++iRow, ++idxPt) {
+        m_arLabelSettings[iRow].m_iRowIdx = iRow;
+        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+        QModelIndex modelIdxTL = index(iRow, 0);
+        QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
+        emit_dataChanged(modelIdxTL, modelIdxBR);
+    }
+    emit_contentChanged();
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjPolygonGeometry::insertPointBefore(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strLabelName;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "insertPointBefore",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(i_strLabelName);
+    int iRow = getLabelRowIndex(i_strLabelName);
+    _beginInsertRows(QModelIndex(), iRow, iRow);
+    m_physValPolygon.insert(idxPt, CPhysValPoint(*m_pDrawingScene));
+    m_arLabelSettings.insert(iRow, SLabelSettings());
+    m_arLabelSettings[iRow].m_iRowIdx = iRow;
+    m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+    _endInsertRows();
+    for (++iRow, ++idxPt; iRow < m_arLabelSettings.size(); ++iRow, ++idxPt) {
+        m_arLabelSettings[iRow].m_iRowIdx = iRow;
+        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+        QModelIndex modelIdxTL = index(iRow, 0);
+        QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
+        emit_dataChanged(modelIdxTL, modelIdxBR);
+    }
+    emit_contentChanged();
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjPolygonGeometry::insertPointAfter(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strLabelName;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "insertPointAfter",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(i_strLabelName) + 1;
+    int iRow = getLabelRowIndex(i_strLabelName) + 1;
+    _beginInsertRows(QModelIndex(), iRow, iRow);
+    m_physValPolygon.insert(idxPt, CPhysValPoint(*m_pDrawingScene));
+    m_arLabelSettings[iRow].m_iRowIdx = iRow;
+    m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+    _endInsertRows();
+    for (++iRow, ++idxPt; iRow < m_arLabelSettings.size(); ++iRow, ++idxPt) {
+        m_arLabelSettings[iRow].m_iRowIdx = iRow;
+        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+        QModelIndex modelIdxTL = index(iRow, 0);
+        QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
+        emit_dataChanged(modelIdxTL, modelIdxBR);
+    }
+    emit_contentChanged();
 }
 
 /*==============================================================================

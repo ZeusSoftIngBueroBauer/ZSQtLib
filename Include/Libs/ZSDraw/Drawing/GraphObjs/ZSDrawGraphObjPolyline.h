@@ -53,6 +53,10 @@ public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
+public: // class methods
+    static QString createPolygonPointLabelName(int i_idxPt);
+    static bool isPolygonPointLabelName(const QString& i_strLabelName);
+    static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 public: // ctors
     CGraphObjPolyline(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
@@ -209,15 +213,28 @@ public: // class members
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
-    /*!< First and lasst point may differ from polygon() depending on line end base line types. */
     QPolygonF m_polygonOrig;
     CPhysValPolygon m_physValPolygonOrig;
     CPhysValPolygon m_physValPolygonScaled;
     CPhysValPolygon m_physValPolygonScaledAndRotated;
     QPolygonF m_plgLineStartArrowHead;
     QPolygonF m_plgLineEndArrowHead;
-    /*!< In item's coordinate system (original size before editing (resizing) the object by mouse events) */
-    //QPolygonF m_plgOnMousePressEvent;
+    /*!< On inserting points the polygon is retrieved, modified and afterwards set by invoking "setPolygon".
+         The indices of the inserted points are stored before invoking setPolygon and cleared afterwards.
+         This way the setPolygon method can update the labels correspondingly.
+         The first element contains the index of the first inserted point,
+         the second element the number of inserted points.
+         Please note that points may not be added or removed at the same time by the same "setPolygon" call
+         and either m_idxsAdded or m_idxsRemoved may refer to valid element indices but not both at the same time. */
+    QPair<int, int> m_idxsAdded;
+    /*!< On removing points the polygon is retrieved, modified and afterwards set by invoking "setPolygon".
+         The indices of the removed points are stored before invoking setPolygon and cleared afterwards.
+         This way the setPolygon method can update the labels correspondingly.
+         The first element contains the index of the first removed point,
+         the second element the number of removed points.
+         Please note that points may not be added or removed at the same time by the same "setPolygon" call
+         and either m_idxsAdded or m_idxsRemoved may refer to valid element indices but not both at the same time. */
+    QPair<int, int> m_idxsRemoved;
 
 }; // class CGraphObjPolyline
 

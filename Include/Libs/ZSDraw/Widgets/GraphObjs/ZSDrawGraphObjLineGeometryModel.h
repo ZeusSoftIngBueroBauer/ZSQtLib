@@ -117,7 +117,7 @@ protected: // type definitions and constants
         bool operator == (const SLabelSettings& i_other) const;
         bool operator != (const SLabelSettings& i_other) const;
     public: // struct members
-        /*!< Name of the value as retrieved from the graphical object.
+        /*!< Name of the value as retrieved from the graphical object by invoking "getGeometryLabelNames".
              Possible names could be P1, P2, Center, dX, dY, Length and Angle.
              dX and dY will be combined in the same row named Size.
              Length and Angle are also treated in a special way as they are

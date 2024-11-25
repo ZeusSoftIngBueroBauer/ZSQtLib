@@ -344,6 +344,7 @@ void CGraphObjLabel::setKey(const QString& i_strKey)
         /* strAddInfo   */ strMthInArgs );
 
     if (m_labelDscr.m_strKey != i_strKey) {
+        setName(i_strKey);
         m_labelDscr.m_strKey = i_strKey;
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);

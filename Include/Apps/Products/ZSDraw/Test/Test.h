@@ -214,7 +214,7 @@ protected: // auxiliary instance methods
         const QString& strGraphObjName, const QPointF& i_pos,
         const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;
     QStringList resultValuesForLabel(
-        const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const;
+        const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision = -1) const;
 public: // overridables of base class CTest (make protected method public)
     void triggerDoTestStep(int i_iInterval_ms = -1) override;
 protected: // class members

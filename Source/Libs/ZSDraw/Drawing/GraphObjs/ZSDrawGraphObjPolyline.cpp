@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -103,6 +104,50 @@ void CGraphObjPolyline::resetPainterRenderHints()
 }
 
 /*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CGraphObjPolyline::createPolygonPointLabelName(int i_idxPt)
+//------------------------------------------------------------------------------
+{
+    return c_strGeometryLabelNameP + QString::number(i_idxPt+1);
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObjPolyline::isPolygonPointLabelName(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    bool bIs = false;
+    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
+        QString strIndex = i_strLabelName.mid(1);
+        bool bIsValidIndex = false;
+        strIndex.toInt(&bIsValidIndex);
+        if (bIsValidIndex) {
+            bIs = true;
+        }
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+int CGraphObjPolyline::extractIndexFromPolygonPointLabelName(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    int idxPt = -1;
+    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
+        QString strIndex = i_strLabelName.mid(1);
+        bool bIsValidIndex = false;
+        int idxPtTmp = strIndex.toInt(&bIsValidIndex);
+        // The label name for the polygon point at index 0 is P1.
+        if (bIsValidIndex && idxPtTmp > 0) {
+            idxPt = idxPtTmp - 1;
+        }
+    }
+    return idxPt;
+}
+
+/*==============================================================================
 public: // ctors
 ==============================================================================*/
 
@@ -121,7 +166,9 @@ CGraphObjPolyline::CGraphObjPolyline(CDrawingScene* i_pDrawingScene, const QStri
     m_physValPolygonScaled(*m_pDrawingScene),
     m_physValPolygonScaledAndRotated(*m_pDrawingScene),
     m_plgLineStartArrowHead(),
-    m_plgLineEndArrowHead()
+    m_plgLineEndArrowHead(),
+    m_idxsAdded(),
+    m_idxsRemoved()
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -166,22 +213,10 @@ CGraphObjPolyline::CGraphObjPolyline(
     m_physValPolygonScaled(*m_pDrawingScene),
     m_physValPolygonScaledAndRotated(*m_pDrawingScene),
     m_plgLineStartArrowHead(),
-    m_plgLineEndArrowHead()
+    m_plgLineEndArrowHead(),
+    m_idxsAdded(),
+    m_idxsRemoved()
 {
-    createTraceAdminObjs("StandardShapes::" + ClassName());
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ObjName: " + i_strObjName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
-
-    initInstance();
 }
 
 //------------------------------------------------------------------------------
@@ -220,8 +255,7 @@ void CGraphObjPolyline::initInstance()
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
-
-} // initInstance
+}
 
 /*==============================================================================
 public: // dtor
@@ -395,8 +429,8 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
             // Store physical coordinates.
             CPhysValPolygon physValPolygon(i_physValPolygon);
             physValPolygon.setAngle(0.0);
-            setPhysValPolygonOrig(i_physValPolygon);
-            setPhysValPolygonScaled(i_physValPolygon);
+            setPhysValPolygonOrig(physValPolygon);
+            setPhysValPolygonScaled(physValPolygon);
             setPhysValPolygonScaledAndRotated(i_physValPolygon);
 
             // Set the polygon in local coordinate system.
@@ -432,37 +466,161 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
             addLabel(c_strLabelName, c_strLabelName, ESelectionPointType::LineCenterPoint, 0);
         }
 
-        // Update list of predefined label names.
-        int iNumberOfPredefinedPointLabelsPrev = getNumberOfPredefinedPolygonPointLabelNames();
-        if (iNumberOfPredefinedPointLabelsPrev < polygon.size()) {
-            for (int idxPt = iNumberOfPredefinedPointLabelsPrev; idxPt < polygon.size(); ++idxPt) {
+        if (m_idxsAdded.second > 0) {
+            int iCount = getNumberOfPredefinedPolygonPointLabelNames();
+            for (int idxPt = iCount; idxPt < iCount + m_idxsAdded.second; ++idxPt) {
                 const QString strLabelName = createPolygonPointLabelName(idxPt);
                 m_strlstPredefinedLabelNames.append(strLabelName);
                 addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, idxPt);
             }
+            iCount = getNumberOfPredefinedPolygonPointLabelNames();
+            // Update the indicated point labels. E.g. if inserting a point at the beginning,
+            // previously the label P1 pointed to index 0. After inserting a point at index 0,
+            // the label P1 must be renamed to P2 pointing to index 1.
+            for (int idxPt = (iCount - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
+                const QString strLabelNameOld = createPolygonPointLabelName(idxPt - m_idxsAdded.second);
+                const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
+                SLabelDscr& labelDscrOld = m_hshLabelDscrs[strLabelNameOld];
+                SLabelDscr& labelDscrNew = m_hshLabelDscrs[strLabelNameNew];
+                labelDscrNew.m_bLabelIsVisible = labelDscrOld.m_bLabelIsVisible;
+                labelDscrNew.m_bShowAnchorLine = labelDscrOld.m_bShowAnchorLine;
+                labelDscrNew.m_polarCoorsToLinkedSelPt = labelDscrOld.m_polarCoorsToLinkedSelPt;
+                CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelNameOld, nullptr);
+                if (pGraphObjLabel != nullptr) {
+                    m_hshpLabels.remove(strLabelNameOld);
+                    m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
+                    pGraphObjLabel->setKey(strLabelNameNew);
+                    pGraphObjLabel->setText(strLabelNameNew);
+                    pGraphObjLabel->setSelectionPoint1(labelDscrNew.m_selPt1);
+                    pGraphObjLabel->setSelectionPoint2(labelDscrNew.m_selPt2);
+                }
+                labelDscrOld.m_bLabelIsVisible = false;
+                labelDscrOld.m_bShowAnchorLine = false;
+                labelDscrOld.m_polarCoorsToLinkedSelPt = SPolarCoors();
+            }
+            // Update the position of the indicated name and user defined labels.
+            for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
+                if (!isPolygonPointLabelName(strLabelName)) {
+                    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
+                    SLabelDscr& labelDscr = m_hshLabelDscrs[strLabelName];
+                    if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
+                     || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt1.m_idxPt >= m_idxsAdded.first) {
+                            labelDscr.m_selPt1.m_idxPt += m_idxsAdded.second;
+                        }
+                    }
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
+                    }
+                    if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
+                     || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt2.m_idxPt >= m_idxsAdded.first) {
+                            labelDscr.m_selPt2.m_idxPt += m_idxsAdded.second;
+                        }
+                    }
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                    }
+                }
+            }
+            m_idxsAdded = qMakePair(-1, 0);
         }
-        else if (iNumberOfPredefinedPointLabelsPrev > polygon.size()) {
-            for (int idxPt = polygon.size() - 1; idxPt >= iNumberOfPredefinedPointLabelsPrev; --idxPt) {
+        else if (m_idxsRemoved.second > 0) {
+            int iCount = m_idxsRemoved.first + m_idxsRemoved.second;
+            for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
                 const QString strLabelName = createPolygonPointLabelName(idxPt);
-                // isPredefinedLabelName must return false when calling removeLabel
                 m_strlstPredefinedLabelNames.removeOne(strLabelName);
                 removeLabel(strLabelName);
             }
-        }
-        int iNumberOfPointGeometryLabelsPrev = getNumberOfPolygonPointGeometryLabelNames();
-        if (iNumberOfPointGeometryLabelsPrev < polygon.size()) {
-            for (int idxPt = iNumberOfPointGeometryLabelsPrev; idxPt < polygon.size(); ++idxPt) {
-                const QString strLabelName = createPolygonPointLabelName(idxPt);
-                m_strlstGeometryLabelNames.append(strLabelName);
-                addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, idxPt);
+            iCount = getNumberOfPredefinedPolygonPointLabelNames();
+            // Update the indicated point labels. E.g. if removing the first point, previously
+            // the label P2 pointed to index 1. After removing the point at index 0, the label
+            // P2 must be renamed to P1 pointing to index 0.
+            for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+                const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
+                const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
+                SLabelDscr labelDscr = m_hshLabelDscrs[strLabelNameOld];
+                labelDscr.m_strKey = strLabelNameNew;
+                labelDscr.m_strText = strLabelNameNew;
+                labelDscr.m_selPt1.m_idxPt = idxPt;
+                m_hshLabelDscrs[strLabelNameNew] = labelDscr;
+                m_hshLabelDscrs.remove(strLabelNameOld);
+                int idxLabelName = m_strlstPredefinedLabelNames.indexOf(strLabelNameOld);
+                m_strlstPredefinedLabelNames[idxLabelName] = strLabelNameNew;
+                CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelNameOld, nullptr);
+                if (pGraphObjLabel != nullptr) {
+                    m_hshpLabels.remove(strLabelNameOld);
+                    m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
+                    pGraphObjLabel->setKey(strLabelNameNew);
+                    pGraphObjLabel->setText(strLabelNameNew);
+                    pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
+                    pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                }
             }
+            // Update the position of the indicated name and user defined labels.
+            for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
+                if (!isPolygonPointLabelName(strLabelName)) {
+                    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
+                    SLabelDscr& labelDscr = m_hshLabelDscrs[strLabelName];
+                    if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
+                     || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt1.m_idxPt >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt1.m_idxPt -= m_idxsRemoved.second;
+                        }
+                    }
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
+                    }
+                    if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
+                     || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt2.m_idxPt >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt2.m_idxPt -= m_idxsRemoved.second;
+                        }
+                    }
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                    }
+                }
+            }
+            m_idxsRemoved = qMakePair(-1, 0);
         }
-        else if (iNumberOfPointGeometryLabelsPrev > polygon.size()) {
-            for (int idxPt = polygon.size() - 1; idxPt >= iNumberOfPointGeometryLabelsPrev; --idxPt) {
-                const QString strLabelName = createPolygonPointLabelName(idxPt);
-                // isPredefinedLabelName must return false when calling removeLabel
-                m_strlstGeometryLabelNames.removeOne(strLabelName);
-                removeGeometryLabel(strLabelName);
+        else {
+            // Update list of predefined label names.
+            int iNumberOfPredefinedPointLabelsPrev = getNumberOfPredefinedPolygonPointLabelNames();
+            if (iNumberOfPredefinedPointLabelsPrev < polygon.size()) {
+                for (int idxPt = iNumberOfPredefinedPointLabelsPrev; idxPt < polygon.count(); ++idxPt) {
+                    const QString strLabelName = createPolygonPointLabelName(idxPt);
+                    m_strlstPredefinedLabelNames.append(strLabelName);
+                    addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, idxPt);
+                }
+            }
+            else if (iNumberOfPredefinedPointLabelsPrev > polygon.count()) {
+                for (int idxPt = polygon.size() - 1; idxPt >= iNumberOfPredefinedPointLabelsPrev; --idxPt) {
+                    const QString strLabelName = createPolygonPointLabelName(idxPt);
+                    // isPredefinedLabelName must return false when calling removeLabel
+                    m_strlstPredefinedLabelNames.removeOne(strLabelName);
+                    removeLabel(strLabelName);
+                }
+            }
+            int iNumberOfPointGeometryLabelsPrev = getNumberOfPolygonPointGeometryLabelNames();
+            if (iNumberOfPointGeometryLabelsPrev < polygon.count()) {
+                for (int idxPt = iNumberOfPointGeometryLabelsPrev; idxPt < polygon.count(); ++idxPt) {
+                    const QString strLabelName = createPolygonPointLabelName(idxPt);
+                    m_strlstGeometryLabelNames.append(strLabelName);
+                    addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, idxPt);
+                }
+            }
+            else if (iNumberOfPointGeometryLabelsPrev > polygon.count()) {
+                for (int idxPt = polygon.count() - 1; idxPt >= iNumberOfPointGeometryLabelsPrev; --idxPt) {
+                    const QString strLabelName = createPolygonPointLabelName(idxPt);
+                    // isPredefinedLabelName must return false when calling removeLabel
+                    m_strlstGeometryLabelNames.removeOne(strLabelName);
+                    removeGeometryLabel(strLabelName);
+                }
             }
         }
     }
@@ -1205,8 +1363,10 @@ void CGraphObjPolyline::append(const CPhysValPoint& i_physValPoint)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsAdded = qMakePair(physValPolygon.count(), 1);
     physValPolygon.append(i_physValPoint);
     setPolygon(physValPolygon);
+    m_idxsAdded = qMakePair(-1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1225,8 +1385,10 @@ void CGraphObjPolyline::insert(int i_idx, const CPhysValPoint& i_physValPoint)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsAdded = qMakePair(i_idx, 1);
     physValPolygon.insert(i_idx, i_physValPoint);
     setPolygon(physValPolygon);
+    m_idxsAdded = qMakePair(-1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1245,8 +1407,10 @@ void CGraphObjPolyline::remove(int i_idx, int i_iCount)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(i_idx, i_iCount);
     physValPolygon.remove(i_idx, i_iCount);
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1265,8 +1429,10 @@ void CGraphObjPolyline::removeAt(int i_idx)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(i_idx, 1);
     physValPolygon.removeAt(i_idx);
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1281,8 +1447,10 @@ void CGraphObjPolyline::removeFirst()
         /* strAddInfo   */ "" );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(0, 1);
     physValPolygon.removeFirst();
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1297,8 +1465,10 @@ void CGraphObjPolyline::removeLast()
         /* strAddInfo   */ "" );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(physValPolygon.count()-1, 1);
     physValPolygon.removeLast();
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1317,8 +1487,10 @@ CPhysValPoint CGraphObjPolyline::takeAt(int i_idx)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(i_idx, 1);
     CPhysValPoint physValPoint = physValPolygon.takeAt(i_idx);
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(physValPoint.toString());
     }
@@ -1337,8 +1509,10 @@ CPhysValPoint CGraphObjPolyline::takeFirst()
         /* strAddInfo   */ "" );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(0, 1);
     CPhysValPoint physValPoint = physValPolygon.takeFirst();
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(physValPoint.toString());
     }
@@ -1357,8 +1531,10 @@ CPhysValPoint CGraphObjPolyline::takeLast()
         /* strAddInfo   */ "" );
 
     CPhysValPolygon physValPolygon = getPolygon();
+    m_idxsRemoved = qMakePair(physValPolygon.count()-1, 1);
     CPhysValPoint physValPoint = physValPolygon.takeLast();
     setPolygon(physValPolygon);
+    m_idxsRemoved = qMakePair(-1, 0);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(physValPoint.toString());
     }

@@ -86,11 +86,11 @@ CGraphObjPolygon::CGraphObjPolygon(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    QString strMthInArgs;
-
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -99,18 +99,8 @@ CGraphObjPolygon::CGraphObjPolygon(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    QPolygonF plg = polygon();
-    QRectF    rctBounding = plg.boundingRect();
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_ptRotOriginCurr = rctBounding.center();
-#endif
-
-    //onDrawSettingsChanged();
-
-    //updateToolTip();
-
-} // ctor
+    initInstance();
+}
 
 //------------------------------------------------------------------------------
 CGraphObjPolygon::~CGraphObjPolygon()

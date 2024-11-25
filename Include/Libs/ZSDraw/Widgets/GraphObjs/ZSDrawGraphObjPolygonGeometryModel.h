@@ -95,8 +95,13 @@ public: // instance methods
     void acceptChanges();
     void rejectChanges();
 public: // instance methods
-    int getLabelRowIndex(const QString& i_strValueName) const;
+    int getLabelRowIndex(const QString& i_strLabelName) const;
     QStringList labelNames() const;
+    QString getLabelName(int i_iRow) const;
+    bool isPointRow(int i_iRow) const;
+    void removePoint(const QString& i_strLabelName);
+    void insertPointBefore(const QString& i_strLabelName);
+    void insertPointAfter(const QString& i_strLabelName);
 public: // overridables of base class QAbstractItemModel
     int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
     int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
@@ -119,8 +124,7 @@ protected: // type definitions and constants
         bool operator == (const SLabelSettings& i_other) const;
         bool operator != (const SLabelSettings& i_other) const;
     public: // struct members
-        /*!< Name of the value as retrieved from the graphical object.
-             Possible names could be TopLeft, TopRight, BottomLeft, BottomRight, Width, Height and Angle.
+        /*!< Name of the value as retrieved from the graphical object by invoking "getGeometryLabelNames".
              Please note that Width and Height cannot be combined in the same row (e.g. named Size)
              as the visibility of the Width and Height Labels is set separately.
              Width, Height and Angle are treated in a special way as those are single values

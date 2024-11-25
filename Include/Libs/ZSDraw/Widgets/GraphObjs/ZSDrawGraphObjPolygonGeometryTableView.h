@@ -63,6 +63,7 @@ protected slots:
 private: // instance members
     CModelGraphObjPolygonGeometry* m_pModel;
     QMenu* m_pMenu;
+    QAction* m_pActionTitle;
     QAction* m_pActionDelete;
     QAction* m_pActionInsertBefore;
     QAction* m_pActionInsertAfter;
