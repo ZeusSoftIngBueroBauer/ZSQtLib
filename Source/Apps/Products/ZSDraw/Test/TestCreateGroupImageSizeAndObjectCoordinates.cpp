@@ -44,7 +44,6 @@ using namespace ZS::Draw;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
 
-//#if 0
 /*******************************************************************************
 class CTest : public Test::CTest
 *******************************************************************************/
@@ -78,7 +77,6 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
-//#if 0
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
@@ -11098,7 +11096,6 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
-//#endif
 }
 
 //------------------------------------------------------------------------------
@@ -13571,4 +13568,3 @@ void CTest::createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(
     strlstExpectedValues.append("Height: " + QString::number(size_px.height(), 'f', 0) + " px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
-//#endif

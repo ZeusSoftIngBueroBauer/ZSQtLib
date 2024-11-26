@@ -1193,8 +1193,7 @@ protected: // overridables of base class QGraphicsItem
 QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
 //------------------------------------------------------------------------------
 {
-    if( m_bDtorInProgress )
-    {
+    if (m_bDtorInProgress) {
         return i_value;
     }
 

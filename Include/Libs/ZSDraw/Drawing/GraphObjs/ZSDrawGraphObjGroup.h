@@ -209,6 +209,7 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
     virtual QRectF getEffectiveBoundingRectOnScene() const override;
+    virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)

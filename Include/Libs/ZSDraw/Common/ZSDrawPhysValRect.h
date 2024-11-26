@@ -105,6 +105,7 @@ public: // instance methods
     CPhysValPoint rightCenter() const;
     CPhysValPoint bottomCenter() const;
     CPhysValPoint leftCenter() const;
+    CPhysValPoint selectionPoint(ESelectionPoint i_selPt) const;
 public: // instance methods
     void setCenter(const QPointF& i_pt);
     void setCenter(const CPhysValPoint& i_physValPoint);

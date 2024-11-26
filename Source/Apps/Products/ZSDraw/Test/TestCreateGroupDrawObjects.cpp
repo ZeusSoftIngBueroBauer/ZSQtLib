@@ -74,7 +74,9 @@ void CTest::createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGrou
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw " + CObjFactory::c_strGroupNameStandardShapes,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES == 1
     createTestGroupDrawStandardShapes(pGrpDrawStandardShapes);
+#endif // TEST_DRAW_OBJECTS_STANDARDSHAPES
 }
 
 //------------------------------------------------------------------------------
@@ -96,62 +98,68 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     // Lines
     //======
 
-    //ZS::Test::CTestStepGroup* pGrpLines = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Lines",
-    //    /* pTSGrpParent */ i_pTestStepGroupParent );
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES == 1
 
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
-    //    /* strOperation    */ "DrawingScene.clear",
-    //    /* pGrpParent      */ pGrpLines,
-    //    /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
-    //pTestStep->setExpectedValue("");
+    ZS::Test::CTestStepGroup* pGrpLines = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Lines",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    //initInstCounts();
-    //initObjectCoors();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpLines,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
 
-    //// SmallPlusSign
-    ////--------------
+    initInstCounts();
+    initObjectCoors();
 
-    //ZS::Test::CTestStepGroup* pGrpLinesSmallPlusSign = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallPlusSign,
-    //    /* pTSGrpParent */ pGrpLines );
-    //createTestGroupDrawStandardShapesLinesSmallPlusSign(pGrpLinesSmallPlusSign);
+    // SmallPlusSign
+    //--------------
 
-    //// BigPlusSign
-    ////------------
+    ZS::Test::CTestStepGroup* pGrpLinesSmallPlusSign = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallPlusSign,
+        /* pTSGrpParent */ pGrpLines );
+    createTestGroupDrawStandardShapesLinesSmallPlusSign(pGrpLinesSmallPlusSign);
 
-    //ZS::Test::CTestStepGroup* pGrpLinesBigPlusSign = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameBigPlusSign,
-    //    /* pTSGrpParent */ pGrpLines );
-    //createTestGroupDrawStandardShapesLinesBigPlusSign(pGrpLinesBigPlusSign);
+    // BigPlusSign
+    //------------
 
-    //// Checkmark
-    ////----------
+    ZS::Test::CTestStepGroup* pGrpLinesBigPlusSign = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameBigPlusSign,
+        /* pTSGrpParent */ pGrpLines );
+    createTestGroupDrawStandardShapesLinesBigPlusSign(pGrpLinesBigPlusSign);
 
-    //ZS::Test::CTestStepGroup* pGrpLinesCheckmark = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameCheckmark,
-    //    /* pTSGrpParent */ pGrpLines );
-    //createTestGroupDrawStandardShapesLinesCheckmark(pGrpLinesCheckmark);
+    // Checkmark
+    //----------
 
-    //// SmallRect
-    ////----------
+    ZS::Test::CTestStepGroup* pGrpLinesCheckmark = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameCheckmark,
+        /* pTSGrpParent */ pGrpLines );
+    createTestGroupDrawStandardShapesLinesCheckmark(pGrpLinesCheckmark);
 
-    //ZS::Test::CTestStepGroup* pGrpLinesSmallRect = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallRect,
-    //    /* pTSGrpParent */ pGrpLines );
-    //createTestGroupDrawStandardShapesLinesSmallRect(pGrpLinesSmallRect);
+    // SmallRect
+    //----------
 
-    //createTestStepSaveLoadFile(pGrpLines);
+    ZS::Test::CTestStepGroup* pGrpLinesSmallRect = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallRect,
+        /* pTSGrpParent */ pGrpLines );
+    createTestGroupDrawStandardShapesLinesSmallRect(pGrpLinesSmallRect);
+
+    createTestStepSaveLoadFile(pGrpLines);
+
+#endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES
 
     // Groups
     //=======
+
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS == 1
 
     ZS::Test::CTestStepGroup* pGrpGroups = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -161,63 +169,69 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     // SmallPlusSign
     //--------------
 
-    //ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSign = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNameSmallPlusSign,
-    //    /* pTSGrpParent */ pGrpGroups );
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN == 1
 
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
-    //    /* strOperation    */ "DrawingScene.clear",
-    //    /* pGrpParent      */ pGrpGroupsSmallPlusSign,
-    //    /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
-    //pTestStep->setExpectedValue("");
+    ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSign = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNameSmallPlusSign,
+        /* pTSGrpParent */ pGrpGroups );
 
-    //initInstCounts();
-    //initObjectCoors();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpGroupsSmallPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
 
-    //ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSignDrawShapes = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Shapes",
-    //    /* pTSGrpParent */ pGrpGroupsSmallPlusSign );
+    initInstCounts();
+    initObjectCoors();
 
-    //createTestGroupDrawStandardShapesGroupSmallPlusSign(pGrpGroupsSmallPlusSignDrawShapes);
-    //createTestGroupDrawStandardShapesGroupSmallPlusSignResize(pGrpGroupsSmallPlusSign);
-    //createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
+    ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSignDrawShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Shapes",
+        /* pTSGrpParent */ pGrpGroupsSmallPlusSign );
+
+    createTestGroupDrawStandardShapesGroupSmallPlusSign(pGrpGroupsSmallPlusSignDrawShapes);
+    createTestGroupDrawStandardShapesGroupSmallPlusSignResize(pGrpGroupsSmallPlusSign);
+    createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
+
+#endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN
 
     // BigPlusSign
     //------------
+
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN == 1
 
     ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNameBigPlusSign,
         /* pTSGrpParent */ pGrpGroups );
 
-    //ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateTop = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Rotate "  + c_strGraphObjNameTopGroup,
-    //    /* pTSGrpParent */ pGrpGroupsBigPlusSign );
+    ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateTop = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Rotate "  + c_strGraphObjNameTopGroup,
+        /* pTSGrpParent */ pGrpGroupsBigPlusSign );
 
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
-    //    /* strOperation    */ "DrawingScene.clear",
-    //    /* pGrpParent      */ pGrpGroupsBigPlusSignRotateTop,
-    //    /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
-    //pTestStep->setExpectedValue("");
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpGroupsBigPlusSignRotateTop,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
 
-    //initInstCounts();
-    //initObjectCoors();
+    initInstCounts();
+    initObjectCoors();
 
-    //ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateTopDrawShapes = new ZS::Test::CTestStepGroup(
-    //    /* pTest        */ this,
-    //    /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Shapes",
-    //    /* pTSGrpParent */ pGrpGroupsBigPlusSignRotateTop );
+    ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateTopDrawShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Shapes",
+        /* pTSGrpParent */ pGrpGroupsBigPlusSignRotateTop );
 
-    //createTestGroupDrawStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateTopDrawShapes);
-    //createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
-    //createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateTop);
+    createTestGroupDrawStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateTopDrawShapes);
+    createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
+    createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateTop, 2);
 
     ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateAndResize = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -243,6 +257,9 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     createTestGroupDrawStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateAndResizeDrawShapes);
     createTestGroupDrawStandardShapesGroupBigPlusSignModfications(pGrpGroupsBigPlusSignRotateAndResize);
     createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateAndResize);
+
+#endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN
+#endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS
 }
 
 //------------------------------------------------------------------------------
@@ -2675,4 +2692,6 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+todo: check why with direct mouse events the childrens are not resized
 }

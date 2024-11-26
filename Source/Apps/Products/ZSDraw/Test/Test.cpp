@@ -263,11 +263,17 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
+#if TEST_AUX_METHODS == 1
     createTestGroupAuxMethods(nullptr);
+#endif
+#if TEST_DRAWINGSIZE == 1
     createTestGroupDrawingSize(nullptr);
+#endif
 
     // Pixels Drawings
     //----------------
+
+#if TEST_PIXELS_DRAWINGS == 1
 
     CDrawingSize drawingSize;
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
@@ -283,7 +289,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     const QMap<EGraphObjType, QPainter::RenderHints> mapGraphObjTypeRenderHints({
         {EGraphObjTypeLine, QPainter::RenderHints()}
     });
-#if 0
+
+#if TEST_PIXELS_DRAWINGS_100x100 == 1
     drawingSize.setImageSize(CPhysVal(100, Units.Length.px), CPhysVal(100, Units.Length.px));
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
     // drawing size to name test groups and steps and to parametrize the test steps.
@@ -301,9 +308,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing100x100px );
     createTestGroupObjectCoordinatesAddLines(pGrpPixelsDrawing100x100pxObjectCoordinates);
-#endif
+#endif // TEST_PIXELS_DRAWINGS_100x100
 
-#if 0
+#if TEST_PIXELS_DRAWINGS_101x101 == 1
     drawingSize.setImageSize(CPhysVal(101, Units.Length.px), CPhysVal(101, Units.Length.px));
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
     // drawing size to name test groups and steps and to parametrize the test steps.
@@ -322,8 +329,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* pTSGrpParent */ pGrpPixelsDrawing101x101px );
     // For 101x101 pixel drawing we want to show that the right and bottom lines becomes even if no aliasing is set.
     createTestGroupObjectCoordinatesAddLines(pGrpPixelsDrawing101x101pxObjectCoordinates);
-#endif
+#endif // TEST_PIXELS_DRAWINGS_101x101
 
+#if TEST_PIXELS_DRAWINGS_800x600 == 1
     drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
     // drawing size to name test groups and steps and to parametrize the test steps.
@@ -336,29 +344,36 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpPixelsDrawing800x600px, drawingSize, gridSettings);
 
-#if 0
+#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES == 1
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
-#endif
+#endif // TEST_PIXELS_DRAWINGS_OJBECT_COORDINATES
+
+#if TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupAddObjects(pGrpPixelsDrawing800x600pxAddObjects);
+#endif // TEST_PIXELS_DRAWINGS_ADD_OBJECTS
 
-#if 0
+#if TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupDrawObjects(pGrpPixelsDrawing800x600pxDrawObjects);
-#endif
+#endif // TEST_PIXELS_DRAWINGS_DRAW_OBJECTS
+#endif // TEST_PIXELS_DRAWINGS_800x600
+#endif // TEST_PIXELS_DRAWINGS
 
     // Metrics Drawings
     //-----------------
+
+#if TEST_METRICS_DRAWINGS == 1
 
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
     drawingSize.setMetricUnit(Units.Length.mm);
@@ -372,6 +387,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // YScaleTopDown
     //--------------
 
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN == 1
+
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown = new ZS::Test::CTestStepGroup(
@@ -379,7 +396,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale TopDown",
         /* pTSGrpParent */ pGrpMetricsDrawing );
 
-#if 0
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 == 1
     drawingSize.setImageSize(CPhysVal(100, Units.Length.mm), CPhysVal(100, Units.Length.mm));
     drawingSize.setScreenResolutionInPxPerMM(3.5);
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
@@ -398,8 +415,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown100x100mm );
     createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100mmObjectCoordinates);
-#endif
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100
 
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 == 1
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
     drawingSize.setScreenResolutionInPxPerMM(1.0);
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
@@ -413,30 +431,36 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mm, drawingSize, gridSettings);
 
-#if 0
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
-#endif
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES
 
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects);
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS
 
-#if 0
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
-#endif
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN
 
     // YScaleBottomUp
     //---------------
+
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP == 1
 
     drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
 
@@ -445,7 +469,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Y-Scale BottomUp",
         /* pTSGrpParent */ pGrpMetricsDrawing );
 
-#if 0
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 == 1
     drawingSize.setImageSize(CPhysVal(100, Units.Length.mm), CPhysVal(100, Units.Length.mm));
     drawingSize.setScreenResolutionInPxPerMM(3.5);
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
@@ -464,8 +488,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp100x100mm );
     createTestGroupObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100mmObjectCoordinates);
-#endif
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100
 
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 == 1
     drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
     drawingSize.setScreenResolutionInPxPerMM(1.0);
     // Must be set before creating test groups and test steps as the methods access the drawing scenes
@@ -479,27 +504,32 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
-#if 0
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
-#endif
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES
 
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects);
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS
 
-#if 0
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
-#endif
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP
+#endif // TEST_METRICS_DRAWINGS == 1
 
     // Recall test step settings
     //--------------------------
@@ -835,7 +865,7 @@ void CTest::createTestGroupPrepareScene(
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int i_iResultValuesPrecision)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -870,7 +900,7 @@ void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGrou
         /* szDoTestStepFct */ SLOT(doTestStepSaveLoadFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
     pTestStep->setConfigValue("FileName", strFileName);
-    pTestStep->setConfigValue("ResultValuesPrecision", 6);
+    pTestStep->setConfigValue("ResultValuesPrecision", i_iResultValuesPrecision);
 }
 
 /*==============================================================================
@@ -2121,76 +2151,6 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pT
     strlstResultValues.append("Width: " + physValRectResult.width().toString());
     strlstResultValues.append("Height: " + physValRectResult.height().toString());
     i_pTestStep->setResultValues(strlstResultValues);
-}
-
-//------------------------------------------------------------------------------
-void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pTestStep->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepSaveLoadFile",
-        /* strAddInfo   */ strMthInArgs );
-
-    QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
-    QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
-    QString strAbsFilePath = strAbsDirPath + QDir::separator() + strFileName;
-    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
-        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
-
-    QFileInfo fileInfo(strAbsFilePath);
-    QDir dir = fileInfo.absoluteDir();
-    if (!dir.exists()) {
-        dir.mkpath(dir.absolutePath());
-    }
-
-    SErrResultInfo errResultInfoSave = m_pDrawingScene->save(strAbsFilePath);
-    if (errResultInfoSave.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfoSave);
-        i_pTestStep->setExpectedValue(SErrResultInfo().toString());
-        i_pTestStep->setResultValue(errResultInfoSave.toString());
-    }
-    else {
-        QStringList strlstExpectedValues;
-        CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
-        CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
-        while (itIdxTree != pIdxTree->end()) {
-            CIdxTreeEntry* pTreeEntry = *itIdxTree;
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-            if (pGraphObj != nullptr) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
-            }
-            ++itIdxTree;
-        }
-        i_pTestStep->setExpectedValues(strlstExpectedValues);
-    }
-    if (!errResultInfoSave.isErrorResult()) {
-        SErrResultInfo errResultInfoLoad = m_pDrawingScene->load(strAbsFilePath);
-        if (errResultInfoLoad.isErrorResult()) {
-            CErrLog::GetInstance()->addEntry(errResultInfoLoad);
-            i_pTestStep->setExpectedValue(SErrResultInfo().toString());
-            i_pTestStep->setResultValue(errResultInfoLoad.toString());
-        }
-        else {
-            QStringList strlstResultValues;
-            CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
-            CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
-            while (itIdxTree != pIdxTree->end()) {
-                CIdxTreeEntry* pTreeEntry = *itIdxTree;
-                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-                if (pGraphObj != nullptr) {
-                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
-                }
-                ++itIdxTree;
-            }
-            i_pTestStep->setResultValues(strlstResultValues);
-        }
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -3499,6 +3459,76 @@ void CTest::doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep)
     }
 }
 
+//------------------------------------------------------------------------------
+void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepSaveLoadFile",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
+    QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
+    QString strAbsFilePath = strAbsDirPath + QDir::separator() + strFileName;
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+
+    QFileInfo fileInfo(strAbsFilePath);
+    QDir dir = fileInfo.absoluteDir();
+    if (!dir.exists()) {
+        dir.mkpath(dir.absolutePath());
+    }
+
+    SErrResultInfo errResultInfoSave = m_pDrawingScene->save(strAbsFilePath);
+    if (errResultInfoSave.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfoSave);
+        i_pTestStep->setExpectedValue(SErrResultInfo().toString());
+        i_pTestStep->setResultValue(errResultInfoSave.toString());
+    }
+    else {
+        QStringList strlstExpectedValues;
+        CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+        CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+        while (itIdxTree != pIdxTree->end()) {
+            CIdxTreeEntry* pTreeEntry = *itIdxTree;
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+            if (pGraphObj != nullptr) {
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
+            }
+            ++itIdxTree;
+        }
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
+    }
+    if (!errResultInfoSave.isErrorResult()) {
+        SErrResultInfo errResultInfoLoad = m_pDrawingScene->load(strAbsFilePath);
+        if (errResultInfoLoad.isErrorResult()) {
+            CErrLog::GetInstance()->addEntry(errResultInfoLoad);
+            i_pTestStep->setExpectedValue(SErrResultInfo().toString());
+            i_pTestStep->setResultValue(errResultInfoLoad.toString());
+        }
+        else {
+            QStringList strlstResultValues;
+            CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+            CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+            while (itIdxTree != pIdxTree->end()) {
+                CIdxTreeEntry* pTreeEntry = *itIdxTree;
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                if (pGraphObj != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
+                }
+                ++itIdxTree;
+            }
+            i_pTestStep->setResultValues(strlstResultValues);
+        }
+    }
+}
+
 /*==============================================================================
 protected: // auxiliary instance methods
 ==============================================================================*/
@@ -3968,7 +3998,7 @@ QStringList CTest::resultValuesForLabel(
         }
         else {
             strlstResultValues = QStringList({
-                strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 2) + "} px"});
+                strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', i_iPrecision) + "} px"});
         }
     }
     strlstResultValues.append(strGraphObjName + ".text: " + i_strText);

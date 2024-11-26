@@ -2099,10 +2099,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the scaled but not rotated rectangle coordinates in local
-           coordinates relative to the origin of the groups bounding rectangle.
-
-    @return Bounding rectangle in local coordinates.
+/*! @brief Reimplements the virtual method of base class CGraphObj.
 */
 QRectF CGraphObjGroup::getBoundingRect() const
 //------------------------------------------------------------------------------
@@ -2120,12 +2117,7 @@ QRectF CGraphObjGroup::getBoundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the effective (resulting) bounding rectangle of this item
-           on the drawing scene.
-
-    To get the effective bounding rectangle the left most, the right most
-    as well as the top most and bottom most rectangle points of the transformed
-    (rotated and scaled) rectangle are are taken into account.
+/*! @brief Reimplements the virtual method of base class CGraphObj.
 */
 QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
@@ -2142,6 +2134,36 @@ QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotated, physical bounding rectangle.
+*/
+CPhysValRect CGraphObjGroup::getPhysValBoundingRect(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectBounding = m_physValRectScaledAndRotated;
+    if (parentGroup() != nullptr) {
+        physValRectBounding = parentGroup()->convert(physValRectBounding, i_unit);
+    }
+    else {
+        physValRectBounding = m_pDrawingScene->convert(physValRectBounding, i_unit);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + m_physValRectScaledAndRotated.toString(true) + "}");
+    }
+    return physValRectBounding;
 }
 
 /*==============================================================================
@@ -2218,10 +2240,6 @@ public: // overridables of base class CGraphObj
 //    }
 //    return bIsHit;
 //}
-
-/*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
 
 /*==============================================================================
 protected: // must overridables of base class CGraphObj

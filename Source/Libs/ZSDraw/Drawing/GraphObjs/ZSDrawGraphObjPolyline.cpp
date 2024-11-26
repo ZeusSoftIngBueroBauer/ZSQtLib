@@ -392,7 +392,7 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "[" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ")";
+        strMthInArgs = "{" + i_physValPolygon.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -437,6 +437,8 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
             // Also note that itemChange must not overwrite the current values (refCountGuard).
             setPolygonOrig(polygon);
             QGraphicsPolygonItem_setPolygon(polygon);
+todo:
+            QGraphicsPolygonItem_setRotationAngle();
 
             // Please note that GraphicsPolygonItem::setPolygon did not update the position of the
             // item in the parent. This has to be done "manually" afterwards.
@@ -466,7 +468,10 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
             addLabel(c_strLabelName, c_strLabelName, ESelectionPointType::LineCenterPoint, 0);
         }
 
+todo: encapsulate in methods
+
         if (m_idxsAdded.second > 0) {
+            // Update text, position and user defined labels.
             int iCount = getNumberOfPredefinedPolygonPointLabelNames();
             for (int idxPt = iCount; idxPt < iCount + m_idxsAdded.second; ++idxPt) {
                 const QString strLabelName = createPolygonPointLabelName(idxPt);
@@ -525,9 +530,42 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
                     }
                 }
             }
+            // Update geometry labels.
+            iCount = getNumberOfPolygonPointGeometryLabelNames();
+            for (int idxPt = iCount; idxPt < iCount + m_idxsAdded.second; ++idxPt) {
+                const QString strLabelName = createPolygonPointLabelName(idxPt);
+                m_strlstGeometryLabelNames.append(strLabelName);
+                addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, idxPt);
+            }
+            iCount = getNumberOfPolygonPointGeometryLabelNames();
+            // Update the indicated position labels. E.g. if inserting a point at the beginning,
+            // previously the label P1 pointed to index 0. After inserting a point at index 0,
+            // the label P1 must be renamed to P2 pointing to index 1.
+            for (int idxPt = (iCount - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
+                const QString strLabelNameOld = createPolygonPointLabelName(idxPt - m_idxsAdded.second);
+                const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
+                SLabelDscr& labelDscrOld = m_hshGeometryLabelDscrs[strLabelNameOld];
+                SLabelDscr& labelDscrNew = m_hshGeometryLabelDscrs[strLabelNameNew];
+                labelDscrNew.m_bLabelIsVisible = labelDscrOld.m_bLabelIsVisible;
+                labelDscrNew.m_bShowAnchorLine = labelDscrOld.m_bShowAnchorLine;
+                labelDscrNew.m_polarCoorsToLinkedSelPt = labelDscrOld.m_polarCoorsToLinkedSelPt;
+                CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(strLabelNameOld, nullptr);
+                if (pGraphObjLabel != nullptr) {
+                    m_hshpGeometryLabels.remove(strLabelNameOld);
+                    m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
+                    pGraphObjLabel->setKey(strLabelNameNew);
+                    pGraphObjLabel->setText(strLabelNameNew);
+                    pGraphObjLabel->setSelectionPoint1(labelDscrNew.m_selPt1);
+                    pGraphObjLabel->setSelectionPoint2(labelDscrNew.m_selPt2);
+                }
+                labelDscrOld.m_bLabelIsVisible = false;
+                labelDscrOld.m_bShowAnchorLine = false;
+                labelDscrOld.m_polarCoorsToLinkedSelPt = SPolarCoors();
+            }
             m_idxsAdded = qMakePair(-1, 0);
         }
         else if (m_idxsRemoved.second > 0) {
+            // Update text, position and user defined labels.
             int iCount = m_idxsRemoved.first + m_idxsRemoved.second;
             for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
                 const QString strLabelName = createPolygonPointLabelName(idxPt);
@@ -584,6 +622,38 @@ void CGraphObjPolyline::setPolygon(const CPhysValPolygon& i_physValPolygon)
                     if (pGraphObjLabel != nullptr) {
                         pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
                     }
+                }
+            }
+            // Update geometry labels.
+            iCount = m_idxsRemoved.first + m_idxsRemoved.second;
+            for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+                const QString strLabelName = createPolygonPointLabelName(idxPt);
+                m_strlstGeometryLabelNames.removeOne(strLabelName);
+                removeGeometryLabel(strLabelName);
+            }
+            iCount = getNumberOfPolygonPointGeometryLabelNames();
+            // Update the indicated point labels. E.g. if removing the first point, previously
+            // the label P2 pointed to index 1. After removing the point at index 0, the label
+            // P2 must be renamed to P1 pointing to index 0.
+            for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+                const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
+                const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
+                SLabelDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
+                labelDscr.m_strKey = strLabelNameNew;
+                labelDscr.m_strText = strLabelNameNew;
+                labelDscr.m_selPt1.m_idxPt = idxPt;
+                m_hshGeometryLabelDscrs[strLabelNameNew] = labelDscr;
+                m_hshGeometryLabelDscrs.remove(strLabelNameOld);
+                int idxLabelName = m_strlstGeometryLabelNames.indexOf(strLabelNameOld);
+                m_strlstGeometryLabelNames[idxLabelName] = strLabelNameNew;
+                CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(strLabelNameOld, nullptr);
+                if (pGraphObjLabel != nullptr) {
+                    m_hshpGeometryLabels.remove(strLabelNameOld);
+                    m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
+                    pGraphObjLabel->setKey(strLabelNameNew);
+                    pGraphObjLabel->setText(strLabelNameNew);
+                    pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
+                    pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
                 }
             }
             m_idxsRemoved = qMakePair(-1, 0);
@@ -1546,14 +1616,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the scaled but not rotated coordinates in local coordinates
-           relative to the origin of the bounding rectangle.
-
-    Please note that the boundingRect call of QGraphicsItem als takes the pen width
-    into account. So we cannot call this method to get the real bounding rectangle of
-    the object if only the real shape points should be considered.
-
-    @return Bounding rectangle in local coordinates.
+/*! @brief Reimplements the virtual method of base class CGraphObj.
 */
 QRectF CGraphObjPolyline::getBoundingRect() const
 //------------------------------------------------------------------------------
@@ -1575,30 +1638,7 @@ QRectF CGraphObjPolyline::getBoundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the effective (resulting) bounding rectangle of this item
-           on the drawing scene.
-
-    To get the effective bounding rectangle the left most, the right most
-    as well as the top most and bottom most points of the transformed
-    (rotated and scaled) item are are taken into account.
-
-    If the item is rotated the effective bounding rectangle is not the
-    bounding rectangle (in item coordinates) mapped to the scene.
-    Before mapping the points to the scene the TopMost, BottomMost, LeftMost
-    and RightMost points of the rotated item have to be calculated and each
-    point has to be mapped to the scene.
-
-    E.g. rotated trapez on the scene:
-
-                             + TopMost
-                            / \
-                           /   \
-                          /     \
-                LeftMost +       + RightMost
-                          \     /
-                           \   /
-                            \ /
-                             + BottomMost
+/*! @brief Reimplements the virtual method of base class CGraphObj.
 */
 QRectF CGraphObjPolyline::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
@@ -1618,6 +1658,36 @@ QRectF CGraphObjPolyline::getEffectiveBoundingRectOnScene() const
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotated, physical bounding rectangle.
+*/
+CPhysValRect CGraphObjPolyline::getPhysValBoundingRect(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectBounding = m_physValPolygonScaledAndRotated.physValBoundingRect();
+    if (parentGroup() != nullptr) {
+        physValRectBounding = parentGroup()->convert(physValRectBounding, i_unit);
+    }
+    else {
+        physValRectBounding = m_pDrawingScene->convert(physValRectBounding, i_unit);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValRectBounding.toString(true) + "}");
+    }
+    return physValRectBounding;
 }
 
 /*==============================================================================
@@ -1776,39 +1846,31 @@ CPhysValPoint CGraphObjPolyline::getPositionOfSelectionPoint(
     if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    CPhysValPoint physValPos(*m_pDrawingScene);
-    CGraphObjPolyline* pVThis = const_cast<CGraphObjPolyline*>(this);
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryOnSceneChangedSignalBlockedCounter);
-    QPolygonF plg = polygon();
-    if (plg.size() >= 2) {
-        QPointF ptPos;
+    CPhysValPoint physValPoint(*m_pDrawingScene);
+    if (m_physValPolygonScaledAndRotated.count() >= 2) {
         if (i_selPtType == ESelectionPointType::PolygonPoint) {
-            ptPos = plg[i_idxPt];
+            physValPoint = m_physValPolygonScaledAndRotated.at(i_idxPt);
         }
         else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-            if (i_idxPt == (plg.size() - 1)) {
-                ptPos = QLineF(plg[i_idxPt], plg[0]).center();
+            if (i_idxPt == (m_physValPolygonScaledAndRotated.count() - 1)) {
+                CPhysValPoint physValPointP1 = m_physValPolygonScaledAndRotated.at(i_idxPt);
+                CPhysValPoint physValPointP2 = m_physValPolygonScaledAndRotated.at(0);
+                physValPoint = CPhysValLine(physValPointP1, physValPointP2).center();
             }
             else {
-                ptPos = QLineF(plg[i_idxPt], plg[i_idxPt+1]).center();
+                CPhysValPoint physValPointP1 = m_physValPolygonScaledAndRotated.at(i_idxPt);
+                CPhysValPoint physValPointP2 = m_physValPolygonScaledAndRotated.at(i_idxPt+1);
+                physValPoint = CPhysValLine(physValPointP1, physValPointP2).center();
             }
         }
-        // Before mapping to parent or scene, the rotation will be reset.
-        // Otherwise transformed coordinates will be returned.
-        // And itemChange is called but should not emit the geometryChangds signal ..
-        pVThis->QGraphicsItem_setRotation(0.0);
-        ptPos = pGraphicsItemThis->mapToParent(ptPos);
-        pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
         if (parentGroup() != nullptr) {
-            ptPos = parentGroup()->mapToTopLeftOfBoundingRect(ptPos);
-            physValPos = parentGroup()->convert(ptPos, i_unit);
+            physValPoint = parentGroup()->convert(physValPoint, i_unit);
         }
         else {
-            physValPos = m_pDrawingScene->convert(ptPos, i_unit);
+            physValPoint = m_pDrawingScene->convert(physValPoint, i_unit);
         }
     }
-    return physValPos;
+    return physValPoint;
 }
 
 //------------------------------------------------------------------------------
@@ -1818,27 +1880,32 @@ QPointF CGraphObjPolyline::getPositionOfSelectionPointInSceneCoors(
     ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
-    QPointF ptScenePos;
-    QPolygonF plg = polygon();
-    if (i_idxPt >= 0 && i_idxPt < plg.size()) {
-        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            QPointF ptPos;
-            if (i_selPtType == ESelectionPointType::PolygonPoint) {
-                ptPos = plg[i_idxPt];
+    CPhysValPoint physValPoint(*m_pDrawingScene);
+    if (m_physValPolygonScaledAndRotated.count() >= 2) {
+        if (i_selPtType == ESelectionPointType::PolygonPoint) {
+            physValPoint = m_physValPolygonScaledAndRotated.at(i_idxPt);
+        }
+        else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
+            if (i_idxPt == (m_physValPolygonScaledAndRotated.count() - 1)) {
+                CPhysValPoint physValPointP1 = m_physValPolygonScaledAndRotated.at(i_idxPt);
+                CPhysValPoint physValPointP2 = m_physValPolygonScaledAndRotated.at(0);
+                physValPoint = CPhysValLine(physValPointP1, physValPointP2).center();
             }
-            else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-                if (i_idxPt == (plg.size() - 1)) {
-                    ptPos = QLineF(plg[i_idxPt], plg[0]).center();
-                }
-                else {
-                    ptPos = QLineF(plg[i_idxPt], plg[i_idxPt+1]).center();
-                }
+            else {
+                CPhysValPoint physValPointP1 = m_physValPolygonScaledAndRotated.at(i_idxPt);
+                CPhysValPoint physValPointP2 = m_physValPolygonScaledAndRotated.at(i_idxPt+1);
+                physValPoint = CPhysValLine(physValPointP1, physValPointP2).center();
             }
-            ptScenePos = pGraphicsItem->mapToScene(ptPos);
+        }
+        if (parentGroup() != nullptr) {
+            physValPoint = parentGroup()->mapToScene(physValPoint);
+            physValPoint = parentGroup()->convert(physValPoint, Units.Length.px);
+        }
+        else {
+            physValPoint = m_pDrawingScene->convert(physValPoint, Units.Length.px);
         }
     }
-    return ptScenePos;
+    return physValPoint.toQPointF();
 }
 
 /*==============================================================================
@@ -2090,7 +2157,7 @@ bool CGraphObjPolyline::geometryLabelHasDefaultValues(const QString& i_strName) 
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (!labelDscr.m_strText.isEmpty()) {
+        else if (!labelDscr.m_strText.isEmpty() && labelDscr.m_strText != labelDscr.m_strKey) {
             bHasDefaultValues = false;
         }
         else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
@@ -4138,6 +4205,7 @@ CPhysValPolygon CGraphObjPolyline::setPhysValPolygonScaledAndRotated(const CPhys
 
     CPhysValPolygon physValPolygonPrev = m_physValPolygonScaledAndRotated;
     m_physValPolygonScaledAndRotated = i_physValPolygon;
+    m_physValRotationAngle = i_physValPolygon.angle();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ") " + physValPolygonPrev.unit().symbol());
     }

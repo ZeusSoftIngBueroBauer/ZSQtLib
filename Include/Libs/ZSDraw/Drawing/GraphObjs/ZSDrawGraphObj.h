@@ -567,6 +567,8 @@ public: // overridables
 public: // must overridables
     virtual QRectF getBoundingRect() const;
     virtual QRectF getEffectiveBoundingRectOnScene() const;
+    virtual CPhysValRect getPhysValBoundingRect() const;
+    virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
     virtual void setPosition(const CPhysValPoint& i_physValPos);
     virtual CPhysValPoint position() const;

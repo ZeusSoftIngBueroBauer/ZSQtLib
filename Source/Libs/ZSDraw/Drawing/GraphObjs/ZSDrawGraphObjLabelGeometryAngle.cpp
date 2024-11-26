@@ -436,6 +436,8 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
 
     m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
     m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = m_lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
+        Math::toClockWiseAngleDegree(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strRuntimeInfo = "PolarCoors {" + QString::number(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +

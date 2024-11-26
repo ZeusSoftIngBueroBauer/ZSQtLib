@@ -3646,7 +3646,7 @@ QRectF CGraphObj::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::getEffectiveBoundingRectOnScene",
@@ -3660,6 +3660,48 @@ QRectF CGraphObj::getEffectiveBoundingRectOnScene() const
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotated, physical bounding rectangle.
+*/
+CPhysValRect CGraphObj::getPhysValBoundingRect() const
+//------------------------------------------------------------------------------
+{
+    return getPhysValBoundingRect(m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotated, physical bounding rectangle.
+*/
+CPhysValRect CGraphObj::getPhysValBoundingRect(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::getPhysValBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+#pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+
+    CPhysValRect physValRectBounding(*m_pDrawingScene, getBoundingRect());
+    if (parentGroup() != nullptr) {
+        physValRectBounding = parentGroup()->convert(physValRectBounding, i_unit);
+    }
+    else {
+        physValRectBounding = m_pDrawingScene->convert(physValRectBounding, i_unit);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValRectBounding.toString(true) + "}");
+    }
+    return physValRectBounding;
 }
 
 /*==============================================================================
@@ -4580,6 +4622,22 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
         physValPos = m_pDrawingScene->convert(ptPos, i_unit);
     }
     return physValPos;
+    //CPhysValRect physValRctBounding = getPhysValBoundingRect(i_unit);
+    //CPhysValPoint physValPoint(*m_pDrawingScene);
+    //if (i_selPt == ESelectionPoint::RotateTop) {
+    //    physValPoint = physValRctBounding.topCenter();
+    //    CPhysVal physValDistance(getSelectionPointRotateDistance(), Units.Length.px);
+    //    physValPoint.setY(physValPoint.y().getVal() - physValDistance.getVal(i_unit));
+    //}
+    //else if (i_selPt == ESelectionPoint::RotateBottom) {
+    //    physValPoint = physValRctBounding.bottomCenter();
+    //    CPhysVal physValDistance(getSelectionPointRotateDistance(), Units.Length.px);
+    //    physValPoint.setY(physValPoint.y().getVal() - physValDistance.getVal(i_unit));
+    //}
+    //else {
+    //    physValPoint = physValRctBounding.selectionPoint(i_selPt);
+    //}
+    //return physValPoint;
 }
 
 //------------------------------------------------------------------------------
@@ -4620,6 +4678,12 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
         ptScenePos = pGraphicsItem->mapToScene(ptPos);
     }
     return ptScenePos;
+    //CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
+    //CPhysValPoint physValPoint = physValRctBounding.selectionPoint(i_selPt);
+    //if (parentGroup() != nullptr) {
+    //    physValPoint = parentGroup()->mapToScene(physValPoint);
+    //}
+    //return physValPoint.toQPointF();
 }
 
 //------------------------------------------------------------------------------
@@ -4636,14 +4700,8 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
     if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    QPointF ptScenePos;
-    QRectF rectBounding = getBoundingRect();
-    QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, ESelectionPoint::Center);
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        ptScenePos = pGraphicsItem->mapToScene(ptPos);
-    }
-    return ptScenePos;
+#pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 }
 
 /*==============================================================================
@@ -4711,50 +4769,42 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QRectF thisRect = getBoundingRect();
-    QPointF ptThisLineSceneCoorsP1;
-    QPointF ptThisLineSceneCoorsP2;
+    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
+    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
+    CPhysValPoint physValPointP2(*m_pDrawingScene);
     if (i_selPt == ESelectionPoint::TopLeft) {
-        ptThisLineSceneCoorsP1 = thisRect.topLeft();
-        ptThisLineSceneCoorsP2 = thisRect.topRight();
+        physValPointP2 = physValRctBounding.topRight();
     }
     else if (i_selPt == ESelectionPoint::TopRight) {
-        ptThisLineSceneCoorsP1 = thisRect.topRight();
-        ptThisLineSceneCoorsP2 = thisRect.topLeft();
+        physValPointP2 = physValRctBounding.topLeft();
     }
     else if (i_selPt == ESelectionPoint::BottomRight) {
-        ptThisLineSceneCoorsP1 = thisRect.bottomRight();
-        ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
+        physValPointP2 = physValRctBounding.bottomLeft();
     }
     else if (i_selPt == ESelectionPoint::BottomLeft) {
-        ptThisLineSceneCoorsP1 = thisRect.bottomLeft();
-        ptThisLineSceneCoorsP2 = thisRect.bottomRight();
+        physValPointP2 = physValRctBounding.bottomRight();
     }
     else if (i_selPt == ESelectionPoint::TopCenter) {
-        ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.top());
-        ptThisLineSceneCoorsP2 = thisRect.topRight();
+        physValPointP2 = physValRctBounding.topRight();
     }
     else if (i_selPt == ESelectionPoint::RightCenter) {
-        ptThisLineSceneCoorsP1 = QPointF(thisRect.right(), thisRect.center().y());
-        ptThisLineSceneCoorsP2 = thisRect.bottomRight();
+        physValPointP2 = physValRctBounding.bottomRight();
     }
     else if (i_selPt == ESelectionPoint::BottomCenter) {
-        ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.bottom());
-        ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
+        physValPointP2 = physValRctBounding.bottomLeft();
     }
     else if (i_selPt == ESelectionPoint::LeftCenter) {
-        ptThisLineSceneCoorsP1 = QPointF(thisRect.left(), thisRect.center().y());
-        ptThisLineSceneCoorsP2 = thisRect.topLeft();
+        physValPointP2 = physValRctBounding.topLeft();
     }
     else /*if (i_selPt == ESelectionPoint::Center)*/ {
-        ptThisLineSceneCoorsP1 = thisRect.center();
-        ptThisLineSceneCoorsP2 = QPointF(thisRect.right(), thisRect.center().y());
+        physValPointP2 = physValRctBounding.rightCenter();
     }
-    ptThisLineSceneCoorsP1 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP1);
-    ptThisLineSceneCoorsP2 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP2);
-    QLineF thisLineSceneCoors(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2);
-    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
+    if (parentGroup() != nullptr) {
+        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
+        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
+    }
+    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
+    return ZS::Draw::getPolarCoors(lineSceneCoors, i_pt);
 }
 
 //------------------------------------------------------------------------------
@@ -4837,51 +4887,43 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QRectF thisRect = getBoundingRect();
-    QPointF ptSelPtLineP1;
-    QPointF ptSelPtLineP2;
+    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
+    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
+    CPhysValPoint physValPointP2(*m_pDrawingScene);
     if (i_selPt == ESelectionPoint::TopLeft) {
-        ptSelPtLineP1 = thisRect.topLeft();
-        ptSelPtLineP2 = thisRect.topRight();
+        physValPointP2 = physValRctBounding.topRight();
     }
     else if (i_selPt == ESelectionPoint::TopRight) {
-        ptSelPtLineP1 = thisRect.topRight();
-        ptSelPtLineP2 = thisRect.topLeft();
+        physValPointP2 = physValRctBounding.topLeft();
     }
     else if (i_selPt == ESelectionPoint::BottomRight) {
-        ptSelPtLineP1 = thisRect.bottomRight();
-        ptSelPtLineP2 = thisRect.bottomLeft();
+        physValPointP2 = physValRctBounding.bottomLeft();
     }
     else if (i_selPt == ESelectionPoint::BottomLeft) {
-        ptSelPtLineP1 = thisRect.bottomLeft();
-        ptSelPtLineP2 = thisRect.bottomRight();
+        physValPointP2 = physValRctBounding.bottomRight();
     }
     else if (i_selPt == ESelectionPoint::TopCenter) {
-        ptSelPtLineP1 = QPointF(thisRect.center().x(), thisRect.top());
-        ptSelPtLineP2 = thisRect.topRight();
+        physValPointP2 = physValRctBounding.topRight();
     }
     else if (i_selPt == ESelectionPoint::RightCenter) {
-        ptSelPtLineP1 = QPointF(thisRect.right(), thisRect.center().y());
-        ptSelPtLineP2 = thisRect.bottomRight();
+        physValPointP2 = physValRctBounding.bottomRight();
     }
     else if (i_selPt == ESelectionPoint::BottomCenter) {
-        ptSelPtLineP1 = QPointF(thisRect.center().x(), thisRect.bottom());
-        ptSelPtLineP2 = thisRect.bottomLeft();
+        physValPointP2 = physValRctBounding.bottomLeft();
     }
     else if (i_selPt == ESelectionPoint::LeftCenter) {
-        ptSelPtLineP1 = QPointF(thisRect.left(), thisRect.center().y());
-        ptSelPtLineP2 = thisRect.topLeft();
+        physValPointP2 = physValRctBounding.topLeft();
     }
     else /*if (i_selPt == ESelectionPoint::Center)*/ {
-        ptSelPtLineP1 = thisRect.center();
-        ptSelPtLineP2 = QPointF(thisRect.right(), thisRect.center().y());
+        physValPointP2 = physValRctBounding.rightCenter();
     }
-    ptSelPtLineP1 = pGraphicsItemThis->mapToScene(ptSelPtLineP1);
-    ptSelPtLineP2 = pGraphicsItemThis->mapToScene(ptSelPtLineP2);
-    QLineF lineSelPtSceneCoors(ptSelPtLineP1, ptSelPtLineP2);
+    if (parentGroup() != nullptr) {
+        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
+        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
+    }
+    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
     return ZS::Draw::getLineFromPolar(
-        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
+        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSceneCoors);
 }
 
 //------------------------------------------------------------------------------

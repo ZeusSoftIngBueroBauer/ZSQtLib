@@ -1030,13 +1030,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the current bounding rectangle of the object in local coordinates.
-
-    Please note that the boundingRect call of QGraphicsItem als takes the pen width
-    into account. So we cannot call this method to get the real bounding rectangle of
-    the object if only the real shape points should be considered.
-
-    @return Bounding rectangle in local coordinates.
+/*! @brief Reimplements the virtual method of base class CGraphObj.
 */
 QRectF CGraphObjLine::getBoundingRect() const
 //------------------------------------------------------------------------------
@@ -1067,30 +1061,7 @@ QRectF CGraphObjLine::getBoundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the effective (resulting) bounding rectangle of this item
-           on the drawing scene.
-
-    To get the effective bounding rectangle the left most, the right most
-    as well as the top most and bottom most shape points of the transformed
-    (rotated and scaled) object are are taken into account.
-
-    If the object is rotated the effective bounding rectangle is not the
-    bounding rectangle (in item coordinates) mapped to the scene.
-    Before mapping the points to the scene the TopMost, BottomMost, LeftMost
-    and RightMost points of the rotated object have to be calculated and each
-    point has to be mapped to the scene.
-
-    E.g. rotated trapez on the scene:
-
-                             + TopMost
-                            / \
-                           /   \
-                          /     \
-                LeftMost +       + RightMost
-                          \     /
-                           \   /
-                            \ /
-                             + BottomMost
+/*! @brief Reimplements the virtual method of base class CGraphObj.
 */
 QRectF CGraphObjLine::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
@@ -1111,6 +1082,36 @@ QRectF CGraphObjLine::getEffectiveBoundingRectOnScene() const
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotated, physical bounding rectangle.
+*/
+CPhysValRect CGraphObjLine::getPhysValBoundingRect(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectBounding(*m_pDrawingScene, getBoundingRect());
+    if (parentGroup() != nullptr) {
+        physValRectBounding = parentGroup()->convert(physValRectBounding, i_unit);
+    }
+    else {
+        physValRectBounding = m_pDrawingScene->convert(physValRectBounding, i_unit);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValRectBounding.toString(true) + "}");
+    }
+    return physValRectBounding;
 }
 
 /*==============================================================================
@@ -1180,24 +1181,24 @@ CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(
 //------------------------------------------------------------------------------
 {
     CPhysValPoint physValPos(*m_pDrawingScene);
-    CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryOnSceneChangedSignalBlockedCounter);
-    QPointF ptPos = QPointF(i_idxPt == 0 ? line().p1() : line().p2());
-    // Before mapping to parent or scene, the rotation will be reset.
-    // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryChangds signal ..
-    pVThis->QGraphicsItem_setRotation(0.0);
-    ptPos = pGraphicsItemThis->mapToParent(ptPos);
-    pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+    //CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
+    //const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    //CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryOnSceneChangedSignalBlockedCounter);
+    //QPointF ptPos = QPointF(i_idxPt == 0 ? line().p1() : line().p2());
+    //// Before mapping to parent or scene, the rotation will be reset.
+    //// Otherwise transformed coordinates will be returned.
+    //// And itemChange is called but should not emit the geometryChangds signal ..
+    //pVThis->QGraphicsItem_setRotation(0.0);
+    //ptPos = pGraphicsItemThis->mapToParent(ptPos);
+    //pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+    CPhysValPoint physValPoint(i_idxPt == 0 ? m_physValLineScaledAndRotated.p1() : m_physValLineScaledAndRotated.p2());
     if (parentGroup() != nullptr) {
-        ptPos = parentGroup()->mapToTopLeftOfBoundingRect(ptPos);
-        physValPos = parentGroup()->convert(ptPos, i_unit);
+        physValPoint = parentGroup()->convert(physValPoint, i_unit);
     }
     else {
-        physValPos = m_pDrawingScene->convert(ptPos, i_unit);
+        physValPoint = m_pDrawingScene->convert(physValPoint, i_unit);
     }
-    return physValPos;
+    return physValPoint;
 }
 
 //------------------------------------------------------------------------------

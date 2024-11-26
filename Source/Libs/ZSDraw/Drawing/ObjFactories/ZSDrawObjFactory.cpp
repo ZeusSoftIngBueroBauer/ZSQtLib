@@ -406,7 +406,6 @@ QList<SLabelDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStr
 //------------------------------------------------------------------------------
 {
     QList<SLabelDscr> arLabelDscrs;
-
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
@@ -462,10 +461,9 @@ QList<SLabelDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStr
             }
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
-    
-    return arLabelDscrs;
 
-} // loadGraphObjTextLabels
+    return arLabelDscrs;
+}
 
 //------------------------------------------------------------------------------
 void CObjFactory::saveGraphObjGeometryLabels(
@@ -497,7 +495,6 @@ QList<SLabelDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xm
 //------------------------------------------------------------------------------
 {
     QList<SLabelDscr> arLabelDscrs;
-
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
@@ -517,7 +514,7 @@ QList<SLabelDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xm
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
-                        SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, "/", &bConverted);
+                        SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
                         if (bConverted) {
                             labelDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
                         }
@@ -544,5 +541,4 @@ QList<SLabelDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xm
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
     return arLabelDscrs;
-
-} // loadGraphObjGeometryLabels
+}

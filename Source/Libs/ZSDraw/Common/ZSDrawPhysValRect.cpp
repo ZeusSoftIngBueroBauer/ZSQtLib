@@ -827,6 +827,46 @@ CPhysValPoint CPhysValRect::leftCenter() const
     return m_arphysValRectSelectionPoints[static_cast<int>(ESelectionPoint::LeftCenter)];
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the given selection point of the rectangle.
+
+    As the rectangle may be rotated the point must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+CPhysValPoint CPhysValRect::selectionPoint(ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+    CPhysValPoint physValPoint(center());
+    if (i_selPt == ESelectionPoint::TopLeft) {
+        physValPoint = topLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopRight) {
+        physValPoint = topRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        physValPoint = bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        physValPoint = bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopCenter) {
+        physValPoint = topCenter();
+    }
+    else if (i_selPt == ESelectionPoint::RightCenter) {
+        physValPoint = rightCenter();
+    }
+    else if (i_selPt == ESelectionPoint::BottomCenter) {
+        physValPoint = bottomCenter();
+    }
+    else if (i_selPt == ESelectionPoint::LeftCenter) {
+        physValPoint = leftCenter();
+    }
+    else if (i_selPt == ESelectionPoint::Center) {
+        physValPoint = center();
+    }
+    return physValPoint;
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
