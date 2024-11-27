@@ -121,9 +121,9 @@ public: // instance methods
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
-public: // must overridables of base class CGraphObj
-    virtual void setRotationAngle(double i_fAngle_degree) override;
-    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+public: // overridables of base class CGraphObj
+    void setRotationAngle(double i_fAngle_degree) override;
+    void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
     bool isEmpty() const;
     int count() const;
@@ -188,11 +188,14 @@ protected: // auxiliary instance methods
     QPolygonF getPolygonScaled(const QPolygonF& i_polygonOrig) const;
     CPhysValPolygon getPhysValPolygonOrig(const QPolygonF& i_polygonOrig) const;
     CPhysValPolygon getPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygonOrig) const;
-    QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon, ZS::PhysVal::CPhysVal& o_physValAngle) const;
     virtual void normalize(); // removes "unnecessary" points
 protected: // auxiliary instance methods
     int getNumberOfPredefinedPolygonPointLabelNames() const;
     int getNumberOfPolygonPointGeometryLabelNames() const;
+    void updateLabelsOnPolygonPointsAdded();
+    void updateLabelsOnPolygonPointsRemoved();
+    void updateLabelsOnPolygonChanged();
 protected: // auxiliary instance methods (method tracing)
     QPolygonF setPolygonOrig(const QPolygonF& i_polygon);
     QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon);

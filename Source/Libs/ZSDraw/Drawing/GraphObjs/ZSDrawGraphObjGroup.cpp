@@ -279,8 +279,6 @@ public: // dtor
 CGraphObjGroup::~CGraphObjGroup()
 //------------------------------------------------------------------------------
 {
-    m_bDtorInProgress = true;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -288,18 +286,9 @@ CGraphObjGroup::~CGraphObjGroup()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
-
-    //m_divLinesMetricsX;
-    //m_divLinesMetricsY;
-    //m_gridSettings;
-    //m_rectOrig;
-    //m_rectScaled;
-    //m_physValRectOrig;
-    //m_physValRectScaled;
-    //m_physValRectScaledAndRotated;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -346,12 +335,6 @@ CGraphObj* CGraphObjGroup::clone()
 
     QPointF ptPos = pos();
     pGraphObj->setPos(ptPos);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
-    //pGraphObj->setScaleFactors(m_fScaleFacXCurr,m_fScaleFacYCurr);
-    pGraphObj->acceptCurrentAsOriginalCoors();
-#endif
-
     return pGraphObj;
 }
 
@@ -1478,6 +1461,17 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
+           around the Z axis.
+
+    @note This method must be overwritten. Otherwise because of implicit conversion
+          instead of setRotationAngle(double) the overloaded method
+          setRotationAngle(const CPhysVal&) would be called. And the physValAngle
+          value would not contain the unit.
+
+    @param [in] i_fAngle_degree
+        Rotation angle in degree.
+*/
 void CGraphObjGroup::setRotationAngle(double i_fAngle_degree)
 //------------------------------------------------------------------------------
 {
@@ -1513,17 +1507,6 @@ void CGraphObjGroup::setRotationAngle(const CPhysVal& i_physValAngle)
     CPhysValRect physValRect = getRect();
     physValRect.setAngle(i_physValAngle);
     setRect(physValRect);
-
-    //if (m_physValRotationAngle != i_physValAngle) {
-    //    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-    //        m_physValRotationAngle = i_physValAngle;
-    //        CPhysValRect physValRect = m_physValRectScaledAndRotated;
-    //        physValRect.setAngle(i_physValAngle);
-    //        setPhysValRectScaledAndRotated(physValRect);
-    //        QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
-    //    }
-    //    emit_geometryOnSceneChanged();
-    //}
 }
 
 /*==============================================================================
@@ -4044,8 +4027,7 @@ QPointF CGraphObjGroup::getItemPosAndLocalCoors(
 
     // First determine the position of the item in the parent's (scene or group) coordinate system.
     CPhysValRect physValRectTmp(i_physValRect);
-    // For the graphics item the rotation angle of the rectangle is set explicitly applied to
-    // the unrotated rectangle.
+    // For the graphics item the rotation angle is set explicitly applied to the unrotated coordinates.
     o_physValAngle = physValRectTmp.angle();
     physValRectTmp.setAngle(0.0);
     if (parentGroup() != nullptr) {

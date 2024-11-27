@@ -2692,6 +2692,4 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-todo: check why with direct mouse events the childrens are not resized
 }

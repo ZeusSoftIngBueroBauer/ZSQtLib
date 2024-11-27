@@ -217,8 +217,6 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
 CGraphObjLine::~CGraphObjLine()
 //------------------------------------------------------------------------------
 {
-    m_bDtorInProgress = true;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -226,6 +224,7 @@ CGraphObjLine::~CGraphObjLine()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
 }
 
@@ -933,7 +932,22 @@ CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
     return getLine(i_unit).length();
 }
 
+/*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
 //------------------------------------------------------------------------------
+/*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
+           around the Z axis.
+
+    @note This method must be overwritten. Otherwise because of implicit conversion
+          instead of setRotationAngle(double) the overloaded method
+          setRotationAngle(const CPhysVal&) would be called. And the physValAngle
+          value would not contain the unit.
+
+    @param [in] i_fAngle_degree
+        Rotation angle in degree.
+*/
 void CGraphObjLine::setRotationAngle(double i_fAngle_degree)
 //------------------------------------------------------------------------------
 {
@@ -945,7 +959,7 @@ void CGraphObjLine::setRotationAngle(double i_fAngle_degree)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strMethod    */ "setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
 
     setRotationAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
@@ -985,26 +999,12 @@ void CGraphObjLine::setRotationAngle(const CPhysVal& i_physValAngle)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setAngle",
+        /* strMethod    */ "setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValLine physValLine = getLine();
     physValLine.setAngle(i_physValAngle);
     setLine(physValLine);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the item's angle in degrees.
-
-    The return value will be in the range of values from 0.0 up to but not
-    including 360.0.
-
-    @sa setAngle()
-*/
-CPhysVal CGraphObjLine::rotationAngle() const
-//------------------------------------------------------------------------------
-{
-    return rotationAngle(Units.Angle.Degree);
 }
 
 //------------------------------------------------------------------------------

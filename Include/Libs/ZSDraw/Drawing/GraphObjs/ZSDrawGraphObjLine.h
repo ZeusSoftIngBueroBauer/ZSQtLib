@@ -152,7 +152,6 @@ public: // instance methods
 public: // overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
-    ZS::PhysVal::CPhysVal rotationAngle() const override;
     ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;

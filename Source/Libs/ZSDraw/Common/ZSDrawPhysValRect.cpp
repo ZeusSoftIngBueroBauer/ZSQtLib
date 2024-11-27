@@ -59,7 +59,7 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
     m_ptCenter(),
-    m_size(),
+    m_size(0.0, 0.0),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
@@ -75,7 +75,7 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_u
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
     m_ptCenter(),
-    m_size(),
+    m_size(0.0, 0.0),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
@@ -945,9 +945,9 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
     QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
-    if (!sizeF.isValid()) {
-        throw CException(__FILE__, __LINE__, EResultInvalidSize);
-    }
+    //if (!sizeF.isValid()) {
+    //    throw CException(__FILE__, __LINE__, EResultInvalidSize);
+    //}
     setWidth(i_physValSize.width());
     setHeight(i_physValSize.height());
 }

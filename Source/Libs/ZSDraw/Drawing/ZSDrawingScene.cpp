@@ -1144,7 +1144,7 @@ void CDrawingScene::clear()
         before to the drawing scene. The given graph object will be added as a child
         to the parents index tree entry as well as to the parents graphics item.
 */
-void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent )
+void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGraphObjParent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1179,19 +1179,23 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
             __FILE__, __LINE__, EResultInvalidMethodCall, "Labels must be directly added to the graphics scene");
     }
 
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(i_pGraphObjParent);
+    //QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(i_pGraphObjParent);
 
     // On adding the item to the graphics scene the itemChange method of the graphics
-    // item is called with "SceneHasChanged". On initially setting the drawing scene
-    // graphical object has to recalculate the position in pixel coordinates.
-    if (pGraphicsItemParent != nullptr && pGraphicsItem->parentItem() != pGraphicsItemParent) {
-        pGraphicsItem->setParentItem(pGraphicsItemParent);
-    }
-    else {
+    // item is called with "SceneHasChanged". On initially setting the drawing scene,
+    // the graphical object has to recalculate the position in pixel coordinates.
+    //if (pGraphicsItemParent != nullptr && pGraphicsItem->parentItem() != pGraphicsItemParent) {
+    //    pGraphicsItem->setParentItem(pGraphicsItemParent);
+    //}
+    //else {
         QGraphicsScene::addItem(pGraphicsItem);
-    }
-    m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
+    //}
+    //m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
+    m_pGraphObjsIdxTree->add(i_pGraphObj);
 
+    if (i_pGraphObjParent != nullptr && i_pGraphObj->parent() != i_pGraphObjParent) {
+        i_pGraphObjParent->addToGroup(i_pGraphObj);
+    }
     QObject::connect(
         i_pGraphObj, &CGraphObj::aboutToBeDestroyed,
         this, &CDrawingScene::onGraphObjAboutToBeDestroyed);

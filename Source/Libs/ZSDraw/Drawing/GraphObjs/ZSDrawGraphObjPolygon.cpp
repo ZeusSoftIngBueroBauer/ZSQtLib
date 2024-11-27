@@ -106,11 +106,16 @@ CGraphObjPolygon::CGraphObjPolygon(
 CGraphObjPolygon::~CGraphObjPolygon()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "dtor",
+        /* strAddInfo   */ "" );
+
     m_bDtorInProgress = true;
-
     emit_aboutToBeDestroyed();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -133,97 +138,19 @@ public: // must overridables of base class CGraphObj
 CGraphObj* CGraphObjPolygon::clone()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "clone",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_pDrawingScene, m_strName);
     pGraphObj->setDrawSettings(m_drawSettings);
-
     pGraphObj->setPolygon( getPolygon() );
     pGraphObj->setPos( pos() );
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
-    //pGraphObj->setScaleFactors(m_fScaleFacXCurr,m_fScaleFacYCurr);
-    pGraphObj->acceptCurrentAsOriginalCoors();
-#endif
-
     return pGraphObj;
-
-} // clone
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjPolygon::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( m_drawSettings.isPenUsed() )
-    {
-        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
-        {
-            QPen pen;
-
-            pen.setColor( m_drawSettings.getPenColor() );
-            pen.setWidth( m_drawSettings.getPenWidth() );
-            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
-
-            setPen(pen);
-        }
-        else
-        {
-            setPen(Qt::NoPen);
-        }
-    }
-    else
-    {
-        setPen(Qt::NoPen);
-    }
-
-    if( m_drawSettings.isFillUsed() )
-    {
-        if( m_drawSettings.getFillStyle() != EFillStyle::NoFill )
-        {
-            QBrush brsh;
-
-            brsh.setColor( m_drawSettings.getFillColor() );
-            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()) );
-
-            setBrush(brsh);
-        }
-        else
-        {
-            setBrush(Qt::NoBrush);
-        }
-    }
-    else
-    {
-        setBrush(Qt::NoBrush);
-    }
-
-} // onDrawSettingsChanged
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -367,9 +294,9 @@ QRectF CGraphObjPolygon::boundingRect() const
 
 //------------------------------------------------------------------------------
 void CGraphObjPolygon::paint(
-    QPainter*                       i_pPainter,
-    const QStyleOptionGraphicsItem* /*i_pStyleOption*/,
-    QWidget*                        /*i_pWdgt*/ )
+    QPainter* i_pPainter,
+    const QStyleOptionGraphicsItem* i_pStyleOption,
+    QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -382,6 +309,8 @@ void CGraphObjPolygon::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
+
+    //QGraphicsPolygonItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
     QPolygonF polygon = this->polygon();
     if (polygon.size() < 2) {

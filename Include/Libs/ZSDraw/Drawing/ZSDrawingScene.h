@@ -144,7 +144,7 @@ protected: // instance methods
     ZS::System::SErrResultInfo save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter );
 public: // instance methods
     void clear();
-    void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
+    void addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGraphObjParent = nullptr );
     QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
     CGraphObj* findGraphObj( const QString& i_strKeyInTree );
 public: // instance methods (replacing methods of QGraphicScene)

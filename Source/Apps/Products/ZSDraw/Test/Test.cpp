@@ -176,7 +176,6 @@ CTest::~CTest()
 
     delete m_pPhysValPolygonOpenArrow;
     m_pPhysValPolygonOpenArrow = nullptr;
-
     delete m_pPhysValPolygonTriangle;
     m_pPhysValPolygonTriangle = nullptr;
     delete m_pPhysValPolygonStar;
@@ -239,12 +238,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValLineSmallRectBottomLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallRectLeftLine = new CPhysValLine(*m_pDrawingScene);
 
-    // Polylines
-    //----------
-    m_pPhysValPolygonOpenArrow = new CPhysValPolygon(*m_pDrawingScene);
-
     // Polygons
     //----------
+    m_pPhysValPolygonOpenArrow = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonTriangle = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonStar = new CPhysValPolygon(*m_pDrawingScene);
 
@@ -3593,16 +3589,13 @@ void CTest::initObjectCoors()
     m_lineSmallRectLeftLine = QLineF();
     *m_pPhysValLineSmallRectLeftLine = CPhysValLine(*m_pDrawingScene);
 
-    // Polylines
+    // Polygons
     //----------
 
     m_ptPosOpenArrow = QPointF();
     m_polygonOpenArrow = QPolygonF();
     *m_pPhysValPolygonOpenArrow = CPhysValPolygon(*m_pDrawingScene);
     m_physValAngleOpenArrow = CPhysVal(0.0, Units.Angle.Degree, 0.1);
-
-    // Polygons
-    //----------
 
     m_ptPosTriangle = QPointF();
     m_polygonTriangle = QPolygonF();

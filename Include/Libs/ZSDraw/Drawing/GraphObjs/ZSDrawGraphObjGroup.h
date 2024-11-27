@@ -172,8 +172,8 @@ public: // instance methods
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
-    virtual void setRotationAngle(double i_fAngle_degree) override;
-    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+    void setRotationAngle(double i_fAngle_degree) override;
+    void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
     CPhysValPoint convert(const QPointF& i_pt) const;
     CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;

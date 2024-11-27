@@ -397,9 +397,10 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                 physValRect.setCenter(physValPointCenter);
                                 pGraphObj->setRect(physValRect);
                             }
-                            if (physValAngle.isValid()) {
-                                pGraphObj->setRotationAngle(physValAngle);
-                            }
+                            // Apply rotation angle after all childs have been added to the group.
+                            //if (physValAngle.isValid()) {
+                            //    pGraphObj->setRotationAngle(physValAngle);
+                            //}
                         }
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
@@ -426,7 +427,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                         // By adding child objects to the group the group will map the shape point coordinates of the child
                         // to the group coordinates and will try to resize the group so that the newly added object fits into
                         // the group. In order for the group to map the coordinates of the new child object, the group must
-                        // already have gotten its final size.
+                        // already have gotten its final size - but must not have been rotated yet. The rotation angle got
+                        // to be set after all childs have been added to the group.
                         if (!physValPointCenter.isValid() || !physValSize.isValid() || !physValAngle.isValid()) {
                             i_xmlStreamReader.raiseError("Incomplete geometry.");
                         }
@@ -486,6 +488,10 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 else /*if (i_xmlStreamReader.isEndElement())*/ {
                     if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
                         if (iLevel == ELevelThisGraphObj) {
+                            // Apply rotation angle after all childs have been added to the group.
+                            if (physValAngle.isValid()) {
+                                pGraphObj->setRotationAngle(physValAngle);
+                            }
                             break;
                         }
                         else {
@@ -548,7 +554,6 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
-
         // Geometry Labels
         for (const SLabelDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {

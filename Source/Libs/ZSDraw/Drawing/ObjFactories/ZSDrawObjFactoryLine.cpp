@@ -380,7 +380,6 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                 pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
-
         // Geometry Labels
         for (const SLabelDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
