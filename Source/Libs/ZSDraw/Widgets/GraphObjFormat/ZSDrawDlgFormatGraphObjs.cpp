@@ -165,16 +165,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
         QPixmap pxmLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
         iconLine.addPixmap(pxmLine);
 
-        QListWidgetItem* pListWdgtItemLineStyle = nullptr;
-
-        if( m_pGraphObj != nullptr && m_pGraphObj->isPoint() )
-        {
-            pListWdgtItemLineStyle = new QListWidgetItem(iconLine, tr("Pen Style"), m_pListWdgt);
-        }
-        else
-        {
-            pListWdgtItemLineStyle = new QListWidgetItem(iconLine, c_strWdgtLineStyle, m_pListWdgt);
-        }
+        QListWidgetItem* pListWdgtItemLineStyle = new QListWidgetItem(iconLine, c_strWdgtLineStyle, m_pListWdgt);
         m_arpListWdgtItems.insert(c_strWdgtLineStyle,pListWdgtItemLineStyle);
 
         CWdgtFormatGraphObjsLineStyle* pWdgtLineStyle = new CWdgtFormatGraphObjsLineStyle(m_pDrawingScene, m_pGraphObj);

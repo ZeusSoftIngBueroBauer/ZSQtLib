@@ -51,7 +51,6 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryImage.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryLine.h"
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPoint.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryRect.h"
@@ -167,7 +166,6 @@ const QString CMainWindow::c_strActionNameFileQuit                   = c_strMenu
 const QString CMainWindow::c_strActionNameDrawSettingsLine           = c_strMenuNameDrawSettings + ":&Line";
 const QString CMainWindow::c_strActionNameDrawSettingsFill           = c_strMenuNameDrawSettings + ":&Fill";
 const QString CMainWindow::c_strActionNameDrawSettingsText           = c_strMenuNameDrawSettings + ":&Text";
-const QString CMainWindow::c_strActionNameDrawStandardShapePoint     = c_strMenuNameDrawStandardShapes + ":&Point";
 const QString CMainWindow::c_strActionNameDrawStandardShapeLine      = c_strMenuNameDrawStandardShapes + ":&Line";
 const QString CMainWindow::c_strActionNameDrawStandardShapeRect      = c_strMenuNameDrawStandardShapes + ":&Rectangle";
 const QString CMainWindow::c_strActionNameDrawStandardShapeEllipse   = c_strMenuNameDrawStandardShapes + ":&Ellipse";
@@ -238,7 +236,6 @@ CMainWindow::CMainWindow(
     m_strlstObjFactories(i_strlstObjFactories),
     m_pTest(i_pTest),
     // Object Factories
-    m_pObjFactoryPoint(nullptr),
     m_pObjFactoryLine(nullptr),
     m_pObjFactoryRect(nullptr),
     m_pObjFactoryEllipse(nullptr),
@@ -296,7 +293,6 @@ CMainWindow::CMainWindow(
     // Menu - Draw - Standard Shapes
     m_pMenuDrawStandardShapes(nullptr),
     m_pToolBarDrawStandardShapes(nullptr),
-    m_pActDrawStandardShapePoint(nullptr),
     m_pActDrawStandardShapeLine(nullptr),
     m_pActDrawStandardShapeRect(nullptr),
     m_pActDrawStandardShapeEllipse(nullptr),
@@ -545,13 +541,6 @@ CMainWindow::~CMainWindow()
     }
 
     try {
-        delete m_pObjFactoryPoint;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryPoint = nullptr;
-
-    try {
         delete m_pObjFactoryLine;
     }
     catch(...) {
@@ -773,7 +762,6 @@ CMainWindow::~CMainWindow()
     m_pTrcAdminObjMouseEvents = nullptr;
 
     // Object Factories
-    m_pObjFactoryPoint = nullptr;
     m_pObjFactoryLine = nullptr;
     m_pObjFactoryRect = nullptr;
     m_pObjFactoryEllipse = nullptr;
@@ -828,7 +816,6 @@ CMainWindow::~CMainWindow()
     // Menu - Draw - Standard Shapes
     m_pMenuDrawStandardShapes = nullptr;
     m_pToolBarDrawStandardShapes = nullptr;
-    m_pActDrawStandardShapePoint = nullptr;
     m_pActDrawStandardShapeLine = nullptr;
     m_pActDrawStandardShapeRect = nullptr;
     m_pActDrawStandardShapeEllipse = nullptr;
@@ -1029,71 +1016,28 @@ void CMainWindow::createObjFactories()
     //============
 
     // <Menu> Draw::Standard Shapes
-    //---------------------------------------------
-
-    // <MenuItem> Draw::Standard Shapes::Draw Point
-    //---------------------------------------------
-
-    QPixmap pxmDrawStandardShapesPoint16x16(":/ZS/Draw/Pen16x16.png");
-    m_pObjFactoryPoint = new CObjFactoryPoint(pxmDrawStandardShapesPoint16x16);
-
-    // <MenuItem> Draw::Standard Shapes::Draw Line
-    //--------------------------------------------
+    //-----------------------------
 
     QPixmap pxmDrawStandardShapesLine16x16(":/ZS/Draw/GraphObjLine16x16.png");
     m_pObjFactoryLine = new CObjFactoryLine(pxmDrawStandardShapesLine16x16);
-
-    // <MenuItem> Draw::Standard Shapes::Draw Rect
-    //--------------------------------------------
-
     QPixmap pxmDrawStandardShapesRect16x16(":/ZS/Draw/GraphObjRect16x16.png");
     m_pObjFactoryRect = new CObjFactoryRect(pxmDrawStandardShapesRect16x16);
-
-    // <MenuItem> Draw::Standard Shapes::Draw Ellipse
-    //-----------------------------------------------
-
     QPixmap pxmDrawStandardShapesEllipse16x16(":/ZS/Draw/GraphObjEllipse16x16.png");
     m_pObjFactoryEllipse = new CObjFactoryEllipse(pxmDrawStandardShapesEllipse16x16);
-
-    // <MenuItem> Draw::Standard Shapes::Draw Polyline
-    //------------------------------------------------
-
     QPixmap pxmDrawStandardShapesPolyline16x16(":/ZS/Draw/GraphObjPolyline16x16.png");
     m_pObjFactoryPolyline = new CObjFactoryPolyline(pxmDrawStandardShapesPolyline16x16);
-
-    // <MenuItem> Draw::Standard Shapes::Draw Polygon
-    //------------------------------------------------
-
     QPixmap pxmDrawStandardShapesPolygon16x16(":/ZS/Draw/GraphObjPolygon16x16.png");
     m_pObjFactoryPolygon = new CObjFactoryPolygon(pxmDrawStandardShapesPolygon16x16);
-
-    // <MenuItem> Draw::Standard Shapes::Draw Text
-    //------------------------------------------------
-
     QPixmap pxmDrawStandardShapesText16x16(":/ZS/Draw/GraphObjText16x16.png");
     m_pObjFactoryText = new CObjFactoryText(pxmDrawStandardShapesText16x16);
 
     // <Menu> Draw::Graphics
     //----------------------
 
-    // <MenuItem> Draw::Graphics::Image
-    //---------------------------------
-
     QPixmap pxmDrawGraphicsImage16x16(":/ZS/Draw/GraphObjImage16x16.png");
     m_pObjFactoryImage = new CObjFactoryImage(pxmDrawGraphicsImage16x16);
-
-    // <Menu> Draw::Connections
-    //-------------------------
-
-    // <MenuItem> Draw::Connections::Draw Connection Point
-    //----------------------------------------------------
-
     QPixmap pxmDrawConnectionPoint16x16(":/ZS/Draw/GraphObjConnectionPoint16x16.png");
     m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(pxmDrawConnectionPoint16x16);
-
-    // <MenuItem> Draw::Connections::Draw Connection Line
-    //----------------------------------------------------
-
     QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/GraphObjConnectionLine16x16.png");
     m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(pxmDrawConnectionLine16x16);
 
@@ -1102,44 +1046,21 @@ void CMainWindow::createObjFactories()
 
     if( m_strlstObjFactories.contains(c_strObjFactoryQtWidgets) )
     {
-        // <MenuItem> Draw::Widgets::CheckBox
-        //-----------------------------------
-
         QPixmap pxmDrawWdgtCheckBox16x16(":/ZS/Draw/QtWidgets/CheckBox16x16.bmp");
         pxmDrawWdgtCheckBox16x16.setMask(pxmDrawWdgtCheckBox16x16.createHeuristicMask());
         m_pObjFactoryWdgtCheckBox = new CObjFactoryWdgtCheckBox(pxmDrawWdgtCheckBox16x16);
-
-        // <MenuItem> Draw::Widgets::ComboBox
-        //-----------------------------------
-
         QPixmap pxmDrawWdgtComboBox16x16(":/ZS/Draw/QtWidgets/ComboBox16x16.bmp");
         pxmDrawWdgtComboBox16x16.setMask(pxmDrawWdgtComboBox16x16.createHeuristicMask());
         m_pObjFactoryWdgtComboBox = new CObjFactoryWdgtComboBox(pxmDrawWdgtComboBox16x16);
-
-        // <MenuItem> Draw::Widgets::GroupBox
-        //-----------------------------------
-
         QPixmap pxmDrawWdgtGroupBox16x16(":/ZS/Draw/QtWidgets/GroupBox16x16.bmp");
         pxmDrawWdgtGroupBox16x16.setMask(pxmDrawWdgtGroupBox16x16.createHeuristicMask());
         m_pObjFactoryWdgtGroupBox = new CObjFactoryWdgtGroupBox(pxmDrawWdgtGroupBox16x16);
-
-        // <MenuItem> Draw::Widgets::Label
-        //-----------------------------------
-
         QPixmap pxmDrawWdgtLabel16x16(":/ZS/Draw/QtWidgets/Label16x16.bmp");
         pxmDrawWdgtLabel16x16.setMask(pxmDrawWdgtLabel16x16.createHeuristicMask());
         m_pObjFactoryWdgtLabel = new CObjFactoryWdgtLabel(pxmDrawWdgtLabel16x16);
-
-        // <MenuItem> Draw::Widgets::LineEdit
-        //-----------------------------------
-
         QPixmap pxmDrawWdgtLineEdit16x16(":/ZS/Draw/QtWidgets/LineEdit16x16.bmp");
         pxmDrawWdgtLineEdit16x16.setMask(pxmDrawWdgtLineEdit16x16.createHeuristicMask());
         m_pObjFactoryWdgtLineEdit = new CObjFactoryWdgtLineEdit(pxmDrawWdgtLineEdit16x16);
-
-        // <MenuItem> Draw::Widgets::PushButton
-        //-------------------------------------
-
         QPixmap pxmDrawWdgtPushButton16x16(":/ZS/Draw/QtWidgets/PushButton16x16.bmp");
         pxmDrawWdgtPushButton16x16.setMask(pxmDrawWdgtPushButton16x16.createHeuristicMask());
         m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(pxmDrawWdgtPushButton16x16);
@@ -1150,51 +1071,24 @@ void CMainWindow::createObjFactories()
 
     if( m_strlstObjFactories.contains(c_strObjFactoryElectricity) )
     {
-        // <MenuItem> Draw::Electricity::VoltageSource
-        //--------------------------------------------
-
         QPixmap pxmDrawVoltageSource(":/ZS/Draw/Electricity/VoltageSource16x16.bmp");
         pxmDrawVoltageSource.setMask(pxmDrawVoltageSource.createHeuristicMask());
         m_pObjFactoryElectricityVoltageSource = new CObjFactoryVoltageSource(pxmDrawVoltageSource);
-
-        // <MenuItem> Draw::Electricity::Resistor
-        //---------------------------------------
-
         QPixmap pxmDrawResistor(":/ZS/Draw/Electricity/Resistor16x16.bmp");
         pxmDrawResistor.setMask(pxmDrawResistor.createHeuristicMask());
         m_pObjFactoryElectricityResistor = new CObjFactoryResistor(pxmDrawResistor);
-
-        // <MenuItem> Draw::Electricity::Inductor
-        //---------------------------------------
-
         QPixmap pxmDrawInductor(":/ZS/Draw/Electricity/Inductor16x16.bmp");
         pxmDrawInductor.setMask(pxmDrawInductor.createHeuristicMask());
         m_pObjFactoryElectricityInductor = new CObjFactoryInductor(pxmDrawInductor);
-
-        // <MenuItem> Draw::Electricity::Capacitor
-        //---------------------------------------
-
         QPixmap pxmDrawCapacitor(":/ZS/Draw/Electricity/Capacitor16x16.bmp");
         pxmDrawCapacitor.setMask(pxmDrawCapacitor.createHeuristicMask());
         m_pObjFactoryElectricityCapacitor = new CObjFactoryCapacitor(pxmDrawCapacitor);
-
-        // <MenuItem> Draw::Electricity::Switch
-        //---------------------------------------
-
         QPixmap pxmDrawSwitch(":/ZS/Draw/Electricity/Switch16x16.bmp");
         pxmDrawSwitch.setMask(pxmDrawSwitch.createHeuristicMask());
         m_pObjFactoryElectricitySwitch = new CObjFactorySwitch(pxmDrawSwitch);
-
-        // <MenuItem> Draw::Electricity::Diode
-        //-----------------------------------------
-
         QPixmap pxmDrawDiode(":/ZS/Draw/Electricity/Diode16x16.bmp");
         pxmDrawDiode.setMask(pxmDrawDiode.createHeuristicMask());
         m_pObjFactoryElectricityDiode = new CObjFactoryDiode(pxmDrawDiode);
-
-        // <MenuItem> Draw::Electricity::Transistor
-        //-----------------------------------------
-
         QPixmap pxmDrawTransistor(":/ZS/Draw/Electricity/Transistor16x16.bmp");
         pxmDrawTransistor.setMask(pxmDrawTransistor.createHeuristicMask());
         m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(pxmDrawTransistor);
@@ -1202,9 +1096,6 @@ void CMainWindow::createObjFactories()
 
     // <Menu> Edit
     //============
-
-    // <MenuItem> Edit::Group
-    //-----------------------
 
     QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.png");
     m_pObjFactoryGroup = new CObjFactoryGroup(pxmEditGroup16x16);
@@ -1397,22 +1288,6 @@ void CMainWindow::createActions()
 
     // <Menu> Draw::Standard Shapes
     //---------------------------------------------
-
-    // <MenuItem> Draw::Standard Shapes::Draw Point
-    //---------------------------------------------
-
-    QIcon iconDrawPoint;
-    QPixmap pxmDrawPoint(":/ZS/Draw/Pen16x16.png");
-    iconDrawPoint.addPixmap(pxmDrawPoint);
-
-    m_pActDrawStandardShapePoint = new QAction(iconDrawPoint, c_strActionNameDrawStandardShapePoint.section(":",-1,-1), this);
-    m_pActDrawStandardShapePoint->setStatusTip(tr("Draw Points"));
-    m_pActDrawStandardShapePoint->setCheckable(true);
-    m_pActDrawStandardShapePoint->setEnabled(false);
-
-    QObject::connect(
-        m_pActDrawStandardShapePoint, &QAction::triggered,
-        this, &CMainWindow::onActionDrawStandardShapePointToggled );
 
     // <MenuItem> Draw::Standard Shapes::Draw Line
     //--------------------------------------------
@@ -1871,9 +1746,6 @@ void CMainWindow::createMenus()
 
     m_pMenuDrawStandardShapes = m_pMenuDraw->addMenu(c_strMenuNameDrawStandardShapes.section(":",-1,-1));
 
-    if( m_pActDrawStandardShapePoint != nullptr ) {
-        m_pMenuDrawStandardShapes->addAction(m_pActDrawStandardShapePoint);
-    }
     if( m_pActDrawStandardShapeLine != nullptr ) {
         m_pMenuDrawStandardShapes->addAction(m_pActDrawStandardShapeLine);
     }
@@ -2164,9 +2036,6 @@ void CMainWindow::createToolBars()
     //m_pToolBarDrawStandardShapes->setMaximumHeight(24);
     m_pToolBarDrawStandardShapes->setIconSize( QSize(16,16) );
 
-    if( m_pActDrawStandardShapePoint != nullptr ) {
-        m_pToolBarDrawStandardShapes->addAction(m_pActDrawStandardShapePoint);
-    }
     if( m_pActDrawStandardShapeLine != nullptr ) {
         m_pToolBarDrawStandardShapes->addAction(m_pActDrawStandardShapeLine);
     }
@@ -2562,25 +2431,6 @@ public: // instance methods
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapePoint(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapePoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_pActDrawStandardShapePoint != nullptr) {
-        m_pActDrawStandardShapePoint->setChecked(i_bChecked);
-    }
-}
 
 //------------------------------------------------------------------------------
 void CMainWindow::setCheckedActionDrawStandardShapeLine(bool i_bChecked)
@@ -3253,38 +3103,6 @@ void CMainWindow::onActionDrawSettingsTextTriggered(bool i_bChecked)
 /*==============================================================================
 public slots: // Menu - Draw - Standard Shapes
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionDrawStandardShapePointToggled(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionDrawStandardShapePointToggled",
-        /* strAddInfo   */ strMthInArgs );
-
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    if( i_bChecked ) {
-        if( m_pActDrawChecked != nullptr && m_pActDrawChecked != m_pActDrawStandardShapePoint ) {
-            m_pActDrawChecked->setChecked(false);
-        }
-        m_pActDrawChecked = m_pActDrawStandardShapePoint;
-        pDrawingScene->setCurrentDrawingTool(m_pObjFactoryPoint);
-    }
-    else {
-        if( m_pActDrawChecked == m_pActDrawStandardShapePoint ) {
-            m_pActDrawChecked = nullptr;
-        }
-        if( pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPoint ) {
-            pDrawingScene->setCurrentDrawingTool(nullptr);
-        }
-    }
-}
 
 //------------------------------------------------------------------------------
 void CMainWindow::onActionDrawStandardShapeLineToggled(bool i_bChecked)
@@ -4785,21 +4603,6 @@ void CMainWindow::updateActions()
         // Menu - Draw - Standard Shapes
         //------------------------------
 
-        if (m_pActDrawStandardShapePoint != nullptr) {
-            if (mode == EMode::View) {
-                m_pActDrawStandardShapePoint->setEnabled(false);
-                m_pActDrawStandardShapePoint->setChecked(false);
-            }
-            else {
-                m_pActDrawStandardShapePoint->setEnabled(false);
-                if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPoint) {
-                    m_pActDrawStandardShapePoint->setChecked(true);
-                }
-                else {
-                    m_pActDrawStandardShapePoint->setChecked(false);
-                }
-            }
-        }
         if (m_pActDrawStandardShapeLine != nullptr) {
             if (mode == EMode::View) {
                 m_pActDrawStandardShapeLine->setEnabled(false);

@@ -53,17 +53,17 @@ public: // class methods
     static QString ClassName() { return "CDlgGraphObjPolygonProperties"; }
 public: // class methods
     static CDlgGraphObjPolygonProperties* CreateInstance(
-        const QString&     i_strDlgTitle,
-        CGraphObjPolyline* i_pGraphObjPolyline,
-        QWidget*           i_pWdgtParent = nullptr,
-        Qt::WindowFlags    i_wflags = Qt::WindowFlags());
-    static CDlgGraphObjPolygonProperties* GetInstance(CGraphObjPolyline* i_pGraphObjPolyline);
+        const QString& i_strDlgTitle,
+        CGraphObjPolygon* i_pGraphObjPolygon,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags());
+    static CDlgGraphObjPolygonProperties* GetInstance(CGraphObjPolygon* i_pGraphObjPolygon);
 protected: // ctor
     CDlgGraphObjPolygonProperties(
-        const QString&     i_strDlgTitle,
-        CGraphObjPolyline* i_pGraphObjPolyline,
-        QWidget*           i_pWdgtParent = nullptr,
-        Qt::WindowFlags    i_wFlags = Qt::WindowFlags());
+        const QString& i_strDlgTitle,
+        CGraphObjPolygon* i_pGraphObjPolygon,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
     virtual ~CDlgGraphObjPolygonProperties();
 public: // instance methods
@@ -77,7 +77,7 @@ protected slots:
     void onWdgtPolygonSettingsContentChanged();
     void onGraphObjDestroyed(QObject*);
 private: // instance members
-    CGraphObjPolyline* m_pGraphObjPolyline;
+    CGraphObjPolygon* m_pGraphObjPolygon;
     QVBoxLayout* m_pLyt;
     QScrollArea* m_pScrollArea;
     CWdgtGraphObjPolygonProperties* m_pWdgtPolygonSettings;

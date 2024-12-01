@@ -28,14 +28,14 @@ may result in using the software modules.
 #define ZSDraw_ObjFactoryPolyline_h
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h"
 
 namespace ZS
 {
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CObjFactoryPolyline : public CObjFactory
+class ZSDRAWDLL_API CObjFactoryPolyline : public CObjFactoryPolygon
 //******************************************************************************
 {
 public: // class methods
@@ -43,17 +43,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryPolyline"; }
-public: // class methods
-    static ZS::System::SErrResultInfo saveGraphObj(
-        CGraphObj* i_pGraphObj,
-        EGraphObjType i_graphObjType,
-        QXmlStreamWriter& i_xmlStreamWriter);
-    static CGraphObj* loadGraphObj(
-        CDrawingScene* i_pDrawingScene,
-        CGraphObjGroup* i_pGraphObjGroupParent,
-        const QString& i_strObjName,
-        EGraphObjType i_graphObjType,
-        QXmlStreamReader& i_xmlStreamReader);
 public: // ctors and dtor
     CObjFactoryPolyline( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryPolyline();
@@ -65,14 +54,6 @@ public: // interface methods of base class CObjFactory
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings) override;
-    virtual ZS::System::SErrResultInfo saveGraphObj(
-        CGraphObj* i_pGraphObj,
-        QXmlStreamWriter& i_xmlStreamWriter) const override;
-    virtual CGraphObj* loadGraphObj(
-        CDrawingScene* i_pDrawingScene,
-        CGraphObjGroup* i_pGraphObjGroupParent,
-        const QString& i_strObjName,
-        QXmlStreamReader& i_xmlStreamReader) override;
 
 }; // class CObjFactoryPolyline
 

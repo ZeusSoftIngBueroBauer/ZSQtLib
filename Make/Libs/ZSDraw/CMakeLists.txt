@@ -66,9 +66,7 @@ list(APPEND _HeadersDrawingGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjText.h
@@ -82,7 +80,6 @@ list(APPEND _HeadersDrawingObjFactories
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryImage.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryLine.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryRect.h
@@ -191,9 +188,7 @@ list(APPEND _SourcesDrawingGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolyline.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjText.cpp
@@ -207,7 +202,6 @@ list(APPEND _SourcesDrawingObjFactories
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryGroup.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryImage.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryLine.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryRect.cpp

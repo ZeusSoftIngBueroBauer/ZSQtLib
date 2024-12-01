@@ -33,7 +33,7 @@ namespace ZS
 {
 namespace Draw
 {
-class CGraphObjPolyline;
+class CGraphObjPolygon;
 class CGraphObjConnectionPoint;
 
 namespace Electricity
@@ -78,10 +78,10 @@ protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
 protected: // instance members
-    CGraphObjPolyline*        m_pLinBody;
+    CGraphObjPolygon* m_pLinBody;
     CGraphObjConnectionPoint* m_pCnctPt1;
     CGraphObjConnectionPoint* m_pCnctPt2;
-    double                    m_fInductance_H; // Henries
+    double m_fInductance_H; // Henries
 
 }; // class CGraphObjInductor
 

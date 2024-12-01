@@ -373,176 +373,164 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     // <Line> Width Visibilities
     //--------------------------
 
-    if( graphObjType != EGraphObjTypePoint )
+    m_pLytLineDimensionWidthLabelVisibilities = new QHBoxLayout();
+    m_pLytWdgtDimensionLabelVisibilities->addLayout(m_pLytLineDimensionWidthLabelVisibilities);
+    m_pLblDimensionWidthLabel = new QLabel("Width:");
+    m_pLblDimensionWidthLabel->setFixedWidth(cxLblWidthClm0);
+    m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pLblDimensionWidthLabel);
+
+    // <ComboBox> Anchor Selection Point
+    //----------------------------------
+
+    m_pCmbDimensionWidthLabelAnchorSelPt = new QComboBox();
+    m_pCmbDimensionWidthLabelAnchorSelPt->setObjectName("DimensionWidth"); // needed in "updateVisibilityCheckStates"
+    fillComboAnchorSelPt(m_pCmbDimensionWidthLabelAnchorSelPt);
+    m_pCmbDimensionWidthLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+    m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pCmbDimensionWidthLabelAnchorSelPt);
+    m_pLytLineDimensionWidthLabelVisibilities->addSpacing(cxSpacingClm1Cml2);
+
+    if( !connect(
+        /* pObjSender   */ m_pCmbDimensionWidthLabelAnchorSelPt,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onCmbDimensionWidthLabelAnchorSelPtCurrentIndexChanged(int)) ) )
     {
-        m_pLytLineDimensionWidthLabelVisibilities = new QHBoxLayout();
-        m_pLytWdgtDimensionLabelVisibilities->addLayout(m_pLytLineDimensionWidthLabelVisibilities);
-        m_pLblDimensionWidthLabel = new QLabel("Width:");
-        m_pLblDimensionWidthLabel->setFixedWidth(cxLblWidthClm0);
-        m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pLblDimensionWidthLabel);
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
-        // <ComboBox> Anchor Selection Point
-        //----------------------------------
+    // <CheckBox> Show Width
+    //----------------------
 
-        m_pCmbDimensionWidthLabelAnchorSelPt = new QComboBox();
-        m_pCmbDimensionWidthLabelAnchorSelPt->setObjectName("DimensionWidth"); // needed in "updateVisibilityCheckStates"
-        fillComboAnchorSelPt(m_pCmbDimensionWidthLabelAnchorSelPt);
-        m_pCmbDimensionWidthLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
-        m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pCmbDimensionWidthLabelAnchorSelPt);
-        m_pLytLineDimensionWidthLabelVisibilities->addSpacing(cxSpacingClm1Cml2);
+    m_pChkDimensionWidthLabelVisible = new QCheckBox("");
+    m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pChkDimensionWidthLabelVisible);
+    m_pLytLineDimensionWidthLabelVisibilities->addSpacing(cxSpacingClm2Cml3);
 
-        if( !connect(
-            /* pObjSender   */ m_pCmbDimensionWidthLabelAnchorSelPt,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbDimensionWidthLabelAnchorSelPtCurrentIndexChanged(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+    if( !connect(
+        /* pObjSender   */ m_pChkDimensionWidthLabelVisible,
+        /* szSignal     */ SIGNAL(stateChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkDimensionWidthLabelVisibleStateChanged(int)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
-        // <CheckBox> Show Width
-        //----------------------
+    // <CheckBox> Show Anchor Line
+    //----------------------------
 
-        m_pChkDimensionWidthLabelVisible = new QCheckBox("");
-        m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pChkDimensionWidthLabelVisible);
-        m_pLytLineDimensionWidthLabelVisibilities->addSpacing(cxSpacingClm2Cml3);
-
-        if( !connect(
-            /* pObjSender   */ m_pChkDimensionWidthLabelVisible,
-            /* szSignal     */ SIGNAL(stateChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onChkDimensionWidthLabelVisibleStateChanged(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        // <CheckBox> Show Anchor Line
-        //----------------------------
-
-        m_pLblDimensionWidthLabelAnchorLineVisible = new QLabel("Line:");
-        m_pLblDimensionWidthLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
-        m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pLblDimensionWidthLabelAnchorLineVisible);
-        m_pChkDimensionWidthLabelAnchorLineVisible = new QCheckBox();
-        m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pChkDimensionWidthLabelAnchorLineVisible);
-        m_pLytLineDimensionWidthLabelVisibilities->addStretch();
-
-    } // if( graphObjType != EGraphObjTypePoint )
+    m_pLblDimensionWidthLabelAnchorLineVisible = new QLabel("Line:");
+    m_pLblDimensionWidthLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+    m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pLblDimensionWidthLabelAnchorLineVisible);
+    m_pChkDimensionWidthLabelAnchorLineVisible = new QCheckBox();
+    m_pLytLineDimensionWidthLabelVisibilities->addWidget(m_pChkDimensionWidthLabelAnchorLineVisible);
+    m_pLytLineDimensionWidthLabelVisibilities->addStretch();
 
     // <Line> Height Visiblilities
     //----------------------------
 
-    if( graphObjType != EGraphObjTypePoint )
+    m_pLytLineDimensionHeightLabelVisibilities = new QHBoxLayout();
+    m_pLytWdgtDimensionLabelVisibilities->addLayout(m_pLytLineDimensionHeightLabelVisibilities);
+    m_pLblDimensionHeightLabel = new QLabel("Height:");
+    m_pLblDimensionHeightLabel->setFixedWidth(cxLblWidthClm0);
+    m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pLblDimensionHeightLabel);
+
+    // <ComboBox> Anchor Selection Point
+    //----------------------------------
+
+    m_pCmbDimensionHeightLabelAnchorSelPt = new QComboBox();
+    m_pCmbDimensionHeightLabelAnchorSelPt->setObjectName("DimensionHeight"); // needed in "updateVisibilityCheckStates"
+    fillComboAnchorSelPt(m_pCmbDimensionHeightLabelAnchorSelPt);
+    m_pCmbDimensionHeightLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+    m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pCmbDimensionHeightLabelAnchorSelPt);
+    m_pLytLineDimensionHeightLabelVisibilities->addSpacing(cxSpacingClm1Cml2);
+
+    if( !connect(
+        /* pObjSender   */ m_pCmbDimensionHeightLabelAnchorSelPt,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onCmbDimensionHeightLabelAnchorSelPtCurrentIndexChanged(int)) ) )
     {
-        m_pLytLineDimensionHeightLabelVisibilities = new QHBoxLayout();
-        m_pLytWdgtDimensionLabelVisibilities->addLayout(m_pLytLineDimensionHeightLabelVisibilities);
-        m_pLblDimensionHeightLabel = new QLabel("Height:");
-        m_pLblDimensionHeightLabel->setFixedWidth(cxLblWidthClm0);
-        m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pLblDimensionHeightLabel);
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
-        // <ComboBox> Anchor Selection Point
-        //----------------------------------
+    // <CheckBox> Show Height
+    //-------------------------
 
-        m_pCmbDimensionHeightLabelAnchorSelPt = new QComboBox();
-        m_pCmbDimensionHeightLabelAnchorSelPt->setObjectName("DimensionHeight"); // needed in "updateVisibilityCheckStates"
-        fillComboAnchorSelPt(m_pCmbDimensionHeightLabelAnchorSelPt);
-        m_pCmbDimensionHeightLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
-        m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pCmbDimensionHeightLabelAnchorSelPt);
-        m_pLytLineDimensionHeightLabelVisibilities->addSpacing(cxSpacingClm1Cml2);
+    m_pChkDimensionHeightLabelVisible = new QCheckBox();
+    m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pChkDimensionHeightLabelVisible);
+    m_pLytLineDimensionHeightLabelVisibilities->addSpacing(cxSpacingClm2Cml3);
 
-        if( !connect(
-            /* pObjSender   */ m_pCmbDimensionHeightLabelAnchorSelPt,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbDimensionHeightLabelAnchorSelPtCurrentIndexChanged(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+    if( !connect(
+        /* pObjSender   */ m_pChkDimensionHeightLabelVisible,
+        /* szSignal     */ SIGNAL(stateChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkDimensionHeightLabelVisibleStateChanged(int)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
-        // <CheckBox> Show Height
-        //-------------------------
+    // <CheckBox> Show Anchor Line
+    //----------------------------
 
-        m_pChkDimensionHeightLabelVisible = new QCheckBox();
-        m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pChkDimensionHeightLabelVisible);
-        m_pLytLineDimensionHeightLabelVisibilities->addSpacing(cxSpacingClm2Cml3);
-
-        if( !connect(
-            /* pObjSender   */ m_pChkDimensionHeightLabelVisible,
-            /* szSignal     */ SIGNAL(stateChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onChkDimensionHeightLabelVisibleStateChanged(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        // <CheckBox> Show Anchor Line
-        //----------------------------
-
-        m_pLblDimensionHeightLabelAnchorLineVisible = new QLabel("Line:");
-        m_pLblDimensionHeightLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
-        m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pLblDimensionHeightLabelAnchorLineVisible);
-        m_pChkDimensionHeightLabelAnchorLineVisible = new QCheckBox();
-        m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pChkDimensionHeightLabelAnchorLineVisible);
-        m_pLytLineDimensionHeightLabelVisibilities->addStretch();
-
-    } // if( graphObjType != EGraphObjTypePoint )
+    m_pLblDimensionHeightLabelAnchorLineVisible = new QLabel("Line:");
+    m_pLblDimensionHeightLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+    m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pLblDimensionHeightLabelAnchorLineVisible);
+    m_pChkDimensionHeightLabelAnchorLineVisible = new QCheckBox();
+    m_pLytLineDimensionHeightLabelVisibilities->addWidget(m_pChkDimensionHeightLabelAnchorLineVisible);
+    m_pLytLineDimensionHeightLabelVisibilities->addStretch();
 
     // <Line> Rotation Angle Visibilities
     //-----------------------------------
 
-    if( graphObjType != EGraphObjTypePoint )
+    m_pLytLineDimensionRotationAngleLabelVisible = new QHBoxLayout();
+    m_pLytWdgtDimensionLabelVisibilities->addLayout(m_pLytLineDimensionRotationAngleLabelVisible);
+    m_pLblDimensionRotationAngleLabel = new QLabel("Rotation Angle:");
+    m_pLblDimensionRotationAngleLabel->setFixedWidth(cxLblWidthClm0);
+    m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pLblDimensionRotationAngleLabel);
+
+    // <ComboBox> Anchor Selection Point
+    //----------------------------------
+
+    m_pCmbDimensionRotationAngleLabelAnchorSelPt = new QComboBox();
+    m_pCmbDimensionRotationAngleLabelAnchorSelPt->setObjectName("DimensionRotationAngle"); // needed in "updateVisibilityCheckStates"
+    fillComboAnchorSelPt(m_pCmbDimensionRotationAngleLabelAnchorSelPt);
+    m_pCmbDimensionRotationAngleLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
+    m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pCmbDimensionRotationAngleLabelAnchorSelPt);
+    m_pLytLineDimensionRotationAngleLabelVisible->addSpacing(cxSpacingClm1Cml2);
+
+    if( !connect(
+        /* pObjSender   */ m_pCmbDimensionRotationAngleLabelAnchorSelPt,
+        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onCmbDimensionRotationAngleLabelAnchorSelPtCurrentIndexChanged(int)) ) )
     {
-        m_pLytLineDimensionRotationAngleLabelVisible = new QHBoxLayout();
-        m_pLytWdgtDimensionLabelVisibilities->addLayout(m_pLytLineDimensionRotationAngleLabelVisible);
-        m_pLblDimensionRotationAngleLabel = new QLabel("Rotation Angle:");
-        m_pLblDimensionRotationAngleLabel->setFixedWidth(cxLblWidthClm0);
-        m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pLblDimensionRotationAngleLabel);
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
-        // <ComboBox> Anchor Selection Point
-        //----------------------------------
+    // <CheckBox> Show Rotation Angle
+    //-------------------------------
 
-        m_pCmbDimensionRotationAngleLabelAnchorSelPt = new QComboBox();
-        m_pCmbDimensionRotationAngleLabelAnchorSelPt->setObjectName("DimensionRotationAngle"); // needed in "updateVisibilityCheckStates"
-        fillComboAnchorSelPt(m_pCmbDimensionRotationAngleLabelAnchorSelPt);
-        m_pCmbDimensionRotationAngleLabelAnchorSelPt->setFixedWidth(cxEdtWidthClm1);
-        m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pCmbDimensionRotationAngleLabelAnchorSelPt);
-        m_pLytLineDimensionRotationAngleLabelVisible->addSpacing(cxSpacingClm1Cml2);
+    m_pChkDimensionRotationAngleLabelVisible = new QCheckBox();
+    m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pChkDimensionRotationAngleLabelVisible);
+    m_pLytLineDimensionRotationAngleLabelVisible->addSpacing(cxSpacingClm2Cml3);
 
-        if( !connect(
-            /* pObjSender   */ m_pCmbDimensionRotationAngleLabelAnchorSelPt,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbDimensionRotationAngleLabelAnchorSelPtCurrentIndexChanged(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+    if( !connect(
+        /* pObjSender   */ m_pChkDimensionRotationAngleLabelVisible,
+        /* szSignal     */ SIGNAL(stateChanged(int)),
+        /* pObjReceiver */ this,
+        /* szSlot       */ SLOT(onChkDimensionRotationAngleLabelVisibleStateChanged(int)) ) )
+    {
+        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+    }
 
-        // <CheckBox> Show Rotation Angle
-        //-------------------------------
+    // <CheckBox> Show Anchor Line
+    //----------------------------
 
-        m_pChkDimensionRotationAngleLabelVisible = new QCheckBox();
-        m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pChkDimensionRotationAngleLabelVisible);
-        m_pLytLineDimensionRotationAngleLabelVisible->addSpacing(cxSpacingClm2Cml3);
-
-        if( !connect(
-            /* pObjSender   */ m_pChkDimensionRotationAngleLabelVisible,
-            /* szSignal     */ SIGNAL(stateChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onChkDimensionRotationAngleLabelVisibleStateChanged(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
-
-        // <CheckBox> Show Anchor Line
-        //----------------------------
-
-        m_pLblDimensionRotationAngleLabelAnchorLineVisible = new QLabel("Line:");
-        m_pLblDimensionRotationAngleLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
-        m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pLblDimensionRotationAngleLabelAnchorLineVisible);
-        m_pChkDimensionRotationAngleLabelAnchorLineVisible = new QCheckBox();
-        m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pChkDimensionRotationAngleLabelAnchorLineVisible);
-        m_pLytLineDimensionRotationAngleLabelVisible->addStretch();
-
-    } // if( graphObjType != EGraphObjTypePoint )
+    m_pLblDimensionRotationAngleLabelAnchorLineVisible = new QLabel("Line:");
+    m_pLblDimensionRotationAngleLabelAnchorLineVisible->setFixedWidth(cxLblWidthClm3);
+    m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pLblDimensionRotationAngleLabelAnchorLineVisible);
+    m_pChkDimensionRotationAngleLabelAnchorLineVisible = new QCheckBox();
+    m_pLytLineDimensionRotationAngleLabelVisible->addWidget(m_pChkDimensionRotationAngleLabelAnchorLineVisible);
+    m_pLytLineDimensionRotationAngleLabelVisible->addStretch();
 
     // <Widget> Dimension Lines
     //=========================
@@ -1470,14 +1458,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::fillComboAnchorSelPt( QComboBox* i_p
 
     EGraphObjType graphObjType = m_pGraphObj == nullptr ? EGraphObjTypeUndefined : m_pGraphObj->type();
 
-    if( graphObjType == EGraphObjTypePoint )
-    {
-        CEnumSelectionPoint eSelPt = ESelectionPoint::Center;
-        i_pCmb->addItem(eSelPt.toString(EEnumEntryAliasStrText), eSelPt.enumeratorAsInt());
-        i_pCmb->setCurrentText( eSelPt.toString(EEnumEntryAliasStrText) );
-        i_pCmb->setEnabled(false);
-    }
-    else if( graphObjType == EGraphObjTypeLine )
+    if( graphObjType == EGraphObjTypeLine )
     {
         CEnumSelectionPoint eSelPt = ESelectionPoint::Center;
         i_pCmb->addItem(eSelPt.toString(EEnumEntryAliasStrText), eSelPt.enumeratorAsInt());

@@ -51,9 +51,7 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSTest/ZSTestStepGroup.h"
@@ -98,7 +96,6 @@ class CTest : public Test::CTest
 *******************************************************************************/
 
 QHash<QString, int> CTest::s_hshGraphObjsInstCounts = {
-    { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypePoint), 0},
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypeLine), 0},
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypeRect), 0},
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypeEllipse), 0},
@@ -1245,7 +1242,6 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
     //CGraphObjRect::resetPainterRenderHints();
     //CGraphObjEllipse::resetPainterRenderHints();
     //CGraphObjPolygon::resetPainterRenderHints();
-    //CGraphObjPolyline::resetPainterRenderHints();
     //CGraphObjText::resetPainterRenderHints();
     //CGraphObjImage::resetPainterRenderHints();
     //CGraphObjConnectionPoint::resetPainterRenderHints();
@@ -1264,10 +1260,7 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
         QString strGraphObjType = dataRow["GraphObjType"].toString();
         EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
         QPainter::RenderHints uPainterRenderHints = dataRow["PainterRenderHints"].value<QPainter::RenderHints>();
-        if (graphObjType == EGraphObjTypePoint) {
-            //CGraphObjPoint::setPainterRenderHints(uPainterRenderHints);
-        }
-        else if (graphObjType == EGraphObjTypeLine) {
+        if (graphObjType == EGraphObjTypeLine) {
             CGraphObjLine::setPainterRenderHints(uPainterRenderHints);
         }
         else if (graphObjType == EGraphObjTypeRect) {
@@ -1280,7 +1273,7 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
             //CGraphObjPolygon::setPainterRenderHints(uPainterRenderHints);
         }
         else if (graphObjType == EGraphObjTypePolyline) {
-            //CGraphObjPolyline::setPainterRenderHints(uPainterRenderHints);
+            //CGraphObjPolygon::setPainterRenderHints(uPainterRenderHints);
         }
         else if (graphObjType == EGraphObjTypeText) {
             //CGraphObjText::setPainterRenderHints(uPainterRenderHints);
@@ -2451,11 +2444,11 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
-        CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(pGraphObj);
-        if (pGraphObjPolyline != nullptr) {
-            pGraphObjPolyline->setPolygon(polygon, drawingSize.unit());
+        CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(pGraphObj);
+        if (pGraphObjPolygon != nullptr) {
+            pGraphObjPolygon->setPolygon(polygon, drawingSize.unit());
         }
-        pGraphObjPolyline->rename(strGraphObjName);
+        pGraphObjPolygon->rename(strGraphObjName);
     }
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
@@ -2887,7 +2880,7 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
     CPhysValPoint physValPointTaken(*m_pDrawingScene);
 
-    CGraphObjPolyline* pGraphObj = dynamic_cast<CGraphObjPolyline*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjPolygon* pGraphObj = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setPolygon", Qt::CaseInsensitive) == 0) {
             if (i_pTestStep->hasConfigValue("polygon")) {
@@ -3533,12 +3526,10 @@ protected: // auxiliary instance methods
 void CTest::initInstCounts()
 //------------------------------------------------------------------------------
 {
-    CGraphObjPoint::s_iInstCount = 0;
     CGraphObjLine::s_iInstCount = 0;
     CGraphObjRect::s_iInstCount = 0;
     CGraphObjEllipse::s_iInstCount = 0;
     CGraphObjPolygon::s_iInstCount = 0;
-    CGraphObjPolyline::s_iInstCount = 0;
     CGraphObjText::s_iInstCount = 0;
     CGraphObjImage::s_iInstCount = 0;
     CGraphObjConnectionPoint::s_iInstCount = 0;
@@ -3849,11 +3840,11 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_
             }
         }
         else if (i_pGraphObj->isPolyline() || i_pGraphObj->isPolygon()) {
-            const CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<const CGraphObjPolyline*>(i_pGraphObj);
-            if (pGraphObjPolyline != nullptr) {
+            const CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<const CGraphObjPolygon*>(i_pGraphObj);
+            if (pGraphObjPolygon != nullptr) {
                 strlstResultValues = resultValuesForPolygon(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjPolyline->polygon(), pGraphObjPolyline->getPolygon(), i_iPrecision);
+                    pGraphObjPolygon->polygon(), pGraphObjPolygon->getPolygon(), i_iPrecision);
             }
         }
         if (i_bAddLabelResultValues) {

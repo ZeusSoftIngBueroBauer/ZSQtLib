@@ -34,7 +34,7 @@ namespace ZS
 namespace Draw
 {
 class CDrawingScene;
-class CGraphObjPolyline;
+class CGraphObjPolygon;
 class CWdgtGraphObjPolygonGeometryProperties;
 class CWdgtGraphObjFillStyleProperties;
 class CWdgtGraphObjLineStyleProperties;

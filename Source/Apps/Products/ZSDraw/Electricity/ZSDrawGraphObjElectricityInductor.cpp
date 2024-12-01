@@ -42,7 +42,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -184,7 +184,7 @@ CGraphObjInductor::CGraphObjInductor(
     plgBody.append( QPointF(rctBody.right(),rctBounding.center().y()) );
     plgBody.append( QPointF(rctBounding.right(),rctBounding.center().y()) );
 
-    m_pLinBody = new CGraphObjPolyline(
+    m_pLinBody = new CGraphObjPolygon(
         /* pDrawingScene */ m_pDrawingScene,
         /* drawSettings  */ drawSettingsLine,
         /* strObjName    */ "CnctLine" );

@@ -449,7 +449,6 @@ public: // must overridables
 public: // instance methods
     EGraphObjType type() const;
     QString typeAsString() const;
-    bool isPoint() const;
     bool isLine() const;
     bool isRect() const;
     bool isEllipse() const;

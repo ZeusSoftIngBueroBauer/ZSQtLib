@@ -574,15 +574,6 @@ QString CGraphObj::typeAsString() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Convenience method to returning true if this object is a point.
-*/
-bool CGraphObj::isPoint() const
-//------------------------------------------------------------------------------
-{
-    return m_type == EGraphObjTypePoint;
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Convenience method to returning true if this object is a line.
 */
 bool CGraphObj::isLine() const

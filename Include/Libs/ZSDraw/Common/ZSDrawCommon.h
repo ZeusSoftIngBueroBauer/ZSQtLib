@@ -242,18 +242,17 @@ namespace Draw {
 //==============================================================================
 typedef enum {
     EGraphObjTypeMin             = QGraphicsItem::UserType +  0,  // not a SVG element
-    EGraphObjTypePoint           = QGraphicsItem::UserType +  0,  // not a SVG element
-    EGraphObjTypeLine            = QGraphicsItem::UserType +  1,
-    EGraphObjTypeRect            = QGraphicsItem::UserType +  2,
-    EGraphObjTypeEllipse         = QGraphicsItem::UserType +  3,
-    EGraphObjTypePolygon         = QGraphicsItem::UserType +  4,
-    EGraphObjTypePolyline        = QGraphicsItem::UserType +  5,
-    EGraphObjTypeText            = QGraphicsItem::UserType +  6,
-    EGraphObjTypeImage           = QGraphicsItem::UserType +  7,
-    EGraphObjTypeConnectionPoint = QGraphicsItem::UserType +  8,  // not a SVG element
-    EGraphObjTypeConnectionLine  = QGraphicsItem::UserType +  9,  // not a SVG element
-    EGraphObjTypeGroup           = QGraphicsItem::UserType + 10,  // not a SVG element
-    EGraphObjTypeMax             = QGraphicsItem::UserType + 10,  // not a SVG element
+    EGraphObjTypeLine            = QGraphicsItem::UserType +  0,
+    EGraphObjTypeRect            = QGraphicsItem::UserType +  1,
+    EGraphObjTypeEllipse         = QGraphicsItem::UserType +  2,
+    EGraphObjTypePolygon         = QGraphicsItem::UserType +  3,
+    EGraphObjTypePolyline        = QGraphicsItem::UserType +  4,
+    EGraphObjTypeText            = QGraphicsItem::UserType +  5,
+    EGraphObjTypeImage           = QGraphicsItem::UserType +  6,
+    EGraphObjTypeConnectionPoint = QGraphicsItem::UserType +  7,  // not a SVG element
+    EGraphObjTypeConnectionLine  = QGraphicsItem::UserType +  8,  // not a SVG element
+    EGraphObjTypeGroup           = QGraphicsItem::UserType +  9,  // not a SVG element
+    EGraphObjTypeMax             = QGraphicsItem::UserType +  9,  // not a SVG element
     EGraphObjTypeCount           = (EGraphObjTypeMax - EGraphObjTypeMin + 1),
     EGraphObjTypeSelectionPoint,
     EGraphObjTypeLabelMin,

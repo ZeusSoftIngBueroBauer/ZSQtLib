@@ -64,9 +64,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -777,10 +775,10 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
         }
         else
         {
-            CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pGraphObj);
-            if( pGraphObjPolyline != nullptr )
+            CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pGraphObj);
+            if( pGraphObjPolygon != nullptr )
             {
-                //pGraphObjPolyline->setPolygon(m_plg);
+                //pGraphObjPolygon->setPolygon(m_plg);
             }
             else
             {
@@ -890,10 +888,10 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
             }
             else
             {
-                CGraphObjPolyline* pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pGraphObj);
-                if( pGraphObjPolyline != nullptr )
+                CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pGraphObj);
+                if( pGraphObjPolygon != nullptr )
                 {
-                    plg = pGraphObjPolyline->polygon();
+                    plg = pGraphObjPolygon->polygon();
                 }
                 else
                 {
@@ -1050,7 +1048,7 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
         QStandardItem* pItemClmY;
         QPointF        pt;
 
-        CGraphObjPolyline* pGraphObjPolyline = nullptr;
+        CGraphObjPolygon* pGraphObjPolygon = nullptr;
         CGraphObjConnectionLine* pGraphObjCnctLine = nullptr;
 
         CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
@@ -1071,10 +1069,10 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
         }
         else
         {
-            pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pGraphObj);
-            if( pGraphObjPolyline != nullptr )
+            pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pGraphObj);
+            if( pGraphObjPolygon != nullptr )
             {
-                m_plg = pGraphObjPolyline->polygon();
+                m_plg = pGraphObjPolygon->polygon();
             }
             else
             {

@@ -178,7 +178,7 @@ protected: // instance members
     QString m_strKeyInTree;
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
          the graphical object which should be edited. */
-    CGraphObjPolyline* m_pGraphObjPolyline;
+    CGraphObjPolygon* m_pGraphObjPolygon;
     /*!< Cached drawing size.
          If the scale dimension or the unit changes, all indicated geometry values need to be updated. */
     CDrawingSize m_drawingSize;

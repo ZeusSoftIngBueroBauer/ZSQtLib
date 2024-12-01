@@ -163,14 +163,7 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
     QFont fntHeadLine;
 
-    if( m_pGraphObj != nullptr && m_pGraphObj->isPoint() )
-    {
-        m_pLblHeadLine = new QLabel("Pen Style");
-    }
-    else
-    {
-        m_pLblHeadLine = new QLabel("Line Style");
-    }
+    m_pLblHeadLine = new QLabel("Line Style");
 
     fntHeadLine = m_pLblHeadLine->font();
     fntHeadLine.setPointSize(fntHeadLine.pointSize()+4);

@@ -46,6 +46,13 @@ public: // class methods
 public: // ctors and dtor
     CObjFactoryPolygon( const QPixmap& i_pxmToolIcon = QPixmap() );
     virtual ~CObjFactoryPolygon();
+protected: // ctor (used by derived classes, e.g. CObjFactoryPolyline)
+    CObjFactoryPolygon(
+        const QString& i_strGroupName,
+        const QString& i_strClassName,
+        EGraphObjType i_eGraphObjType,
+        const QString& i_strGraphObjType,
+        const QPixmap& i_pxmToolIcon = QPixmap() );
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,

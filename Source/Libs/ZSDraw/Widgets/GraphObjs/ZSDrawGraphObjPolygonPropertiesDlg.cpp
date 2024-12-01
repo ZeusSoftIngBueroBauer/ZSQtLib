@@ -58,31 +58,31 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::CreateInstance(
-    const QString&     i_strDlgTitle,
-    CGraphObjPolyline* i_pGraphObjPolyline,
-    QWidget*           i_pWdgtParent,
-    Qt::WindowFlags    i_wFlags )
+    const QString& i_strDlgTitle,
+    CGraphObjPolygon* i_pGraphObjPolygon,
+    QWidget* i_pWdgtParent,
+    Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if (GetInstance(i_pGraphObjPolyline) != nullptr )
+    if (GetInstance(i_pGraphObjPolygon) != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs", ClassName(), i_pGraphObjPolyline->keyInTree());
+        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs", ClassName(), i_pGraphObjPolygon->keyInTree());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
     return new CDlgGraphObjPolygonProperties(
         /* strDlgTitle   */ i_strDlgTitle,
-        /* pGraphObjLine */ i_pGraphObjPolyline,
+        /* pGraphObjLine */ i_pGraphObjPolygon,
         /* pWdgtParent   */ i_pWdgtParent,
         /* wFlags        */ i_wFlags );
 }
 
 //------------------------------------------------------------------------------
-CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::GetInstance( CGraphObjPolyline* i_pGraphObjPolyline )
+CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::GetInstance(CGraphObjPolygon* i_pGraphObjPolygon)
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CDlgGraphObjPolygonProperties*>(
-        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs", ClassName(), i_pGraphObjPolyline->keyInTree()));
+        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs", ClassName(), i_pGraphObjPolygon->keyInTree()));
 }
 
 /*==============================================================================
@@ -91,19 +91,19 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CDlgGraphObjPolygonProperties::CDlgGraphObjPolygonProperties(
-    const QString&     i_strDlgTitle,
-    CGraphObjPolyline* i_pGraphObjPolyline,
-    QWidget*           i_pWdgtParent,
-    Qt::WindowFlags    i_wFlags ) :
+    const QString& i_strDlgTitle,
+    CGraphObjPolygon* i_pGraphObjPolygon,
+    QWidget* i_pWdgtParent,
+    Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes::Line",
+        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes::Polygon",
         /* strClassName */ ClassName(),
         /* strObjName   */ "theInst",
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
-    m_pGraphObjPolyline(i_pGraphObjPolyline),
+    m_pGraphObjPolygon(i_pGraphObjPolygon),
     m_pLyt(nullptr),
     m_pScrollArea(nullptr),
     m_pWdgtPolygonSettings(nullptr),
@@ -117,7 +117,7 @@ CDlgGraphObjPolygonProperties::CDlgGraphObjPolygonProperties(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Title: " + i_strDlgTitle
-            + ", View: " + QString(i_pGraphObjPolyline == nullptr ? "null" : i_pGraphObjPolyline->objectName());
+            + ", GraphObj: " + QString(i_pGraphObjPolygon == nullptr ? "null" : i_pGraphObjPolygon->objectName());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -127,7 +127,7 @@ CDlgGraphObjPolygonProperties::CDlgGraphObjPolygonProperties(
         /* strAddInfo   */ strMthInArgs );
 
     QObject::connect(
-        m_pGraphObjPolyline, &CGraphObj::destroyed,
+        m_pGraphObjPolygon, &CGraphObj::destroyed,
         this, &CDlgGraphObjPolygonProperties::onGraphObjDestroyed);
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
@@ -136,14 +136,14 @@ CDlgGraphObjPolygonProperties::CDlgGraphObjPolygonProperties(
     // Style Widgets
     //==============
 
-    CDrawingScene* pDrawingScene = m_pGraphObjPolyline->drawingScene();
+    CDrawingScene* pDrawingScene = m_pGraphObjPolygon->drawingScene();
 
     m_pScrollArea = new QScrollArea();
     m_pScrollArea->setWidgetResizable(true);
     m_pLyt->addWidget(m_pScrollArea, 1);
 
     m_pWdgtPolygonSettings = new CWdgtGraphObjPolygonProperties(pDrawingScene, "DlgGraphObjPolygonProperties", false);
-    m_pWdgtPolygonSettings->setKeyInTree(m_pGraphObjPolyline->keyInTree());
+    m_pWdgtPolygonSettings->setKeyInTree(m_pGraphObjPolygon->keyInTree());
     m_pScrollArea->setWidget(m_pWdgtPolygonSettings);
     QObject::connect(
         m_pWdgtPolygonSettings, &CWdgtGraphObjPolygonProperties::contentChanged,
@@ -204,7 +204,7 @@ CDlgGraphObjPolygonProperties::~CDlgGraphObjPolygonProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjPolyline = nullptr;
+    m_pGraphObjPolygon = nullptr;
     m_pLyt = nullptr;
     m_pScrollArea = nullptr;
     m_pWdgtPolygonSettings = nullptr;
@@ -344,7 +344,7 @@ void CDlgGraphObjPolygonProperties::onGraphObjDestroyed(QObject*)
         /* strMethod    */ "onGraphObjDestroyed",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjPolyline = nullptr;
+    m_pGraphObjPolygon = nullptr;
 
     QDialog::reject();
 }

@@ -202,7 +202,7 @@ CModelGraphObjPolygonGeometry::CModelGraphObjPolygonGeometry(
     m_font(),
     m_fontMetrics(m_font),
     m_strKeyInTree(),
-    m_pGraphObjPolyline(nullptr),
+    m_pGraphObjPolygon(nullptr),
     m_drawingSize(i_pDrawingScene->drawingSize()),
     m_physValPolygon(*i_pDrawingScene),
     m_arLabelSettings(),
@@ -258,7 +258,7 @@ CModelGraphObjPolygonGeometry::~CModelGraphObjPolygonGeometry()
     //m_font;
     //m_fontMetrics;
     //m_strKeyInTree;
-    m_pGraphObjPolyline = nullptr;
+    m_pGraphObjPolygon = nullptr;
     //m_drawingSize;
     //m_physValPolygon;
     //m_arLabelSettings;
@@ -336,42 +336,42 @@ bool CModelGraphObjPolygonGeometry::setKeyInTree(const QString& i_strKeyInTree)
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
 
-        if (m_pGraphObjPolyline != nullptr) {
+        if (m_pGraphObjPolygon != nullptr) {
             QObject::disconnect(
-                m_pGraphObjPolyline, &CGraphObj::geometryOnSceneChanged,
+                m_pGraphObjPolygon, &CGraphObj::geometryOnSceneChanged,
                 this, &CModelGraphObjPolygonGeometry::onGraphObjGeometryOnSceneChanged);
             //QObject::disconnect(
-            //    m_pGraphObjPolyline, &CGraphObj::geometryValuesUnitChanged,
+            //    m_pGraphObjPolygon, &CGraphObj::geometryValuesUnitChanged,
             //    this, &CModelGraphObjPolygonGeometry::onGraphObjGeometryValuesUnitChanged);
             QObject::disconnect(
-                m_pGraphObjPolyline, &CGraphObj::geometryLabelChanged,
+                m_pGraphObjPolygon, &CGraphObj::geometryLabelChanged,
                 this, &CModelGraphObjPolygonGeometry::onGraphObjGeometryLabelChanged);
             QObject::disconnect(
-                m_pGraphObjPolyline, &CGraphObj::aboutToBeDestroyed,
+                m_pGraphObjPolygon, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjPolygonGeometry::onGraphObjAboutToBeDestroyed);
         }
 
         m_strKeyInTree = i_strKeyInTree;
 
         if (m_strKeyInTree.isEmpty()) {
-            m_pGraphObjPolyline = nullptr;
+            m_pGraphObjPolygon = nullptr;
         }
         else {
-            m_pGraphObjPolyline = dynamic_cast<CGraphObjPolyline*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
+            m_pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
         }
 
-        if (m_pGraphObjPolyline != nullptr) {
+        if (m_pGraphObjPolygon != nullptr) {
             QObject::connect(
-                m_pGraphObjPolyline, &CGraphObj::geometryOnSceneChanged,
+                m_pGraphObjPolygon, &CGraphObj::geometryOnSceneChanged,
                 this, &CModelGraphObjPolygonGeometry::onGraphObjGeometryOnSceneChanged);
             //QObject::connect(
-            //    m_pGraphObjPolyline, &CGraphObj::geometryValuesUnitChanged,
+            //    m_pGraphObjPolygon, &CGraphObj::geometryValuesUnitChanged,
             //    this, &CModelGraphObjPolygonGeometry::onGraphObjGeometryValuesUnitChanged);
             QObject::connect(
-                m_pGraphObjPolyline, &CGraphObj::geometryLabelChanged,
+                m_pGraphObjPolygon, &CGraphObj::geometryLabelChanged,
                 this, &CModelGraphObjPolygonGeometry::onGraphObjGeometryLabelChanged);
             QObject::connect(
-                m_pGraphObjPolyline, &CGraphObj::aboutToBeDestroyed,
+                m_pGraphObjPolygon, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjPolygonGeometry::onGraphObjAboutToBeDestroyed);
         }
 
@@ -444,12 +444,12 @@ bool CModelGraphObjPolygonGeometry::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
-    if (m_pGraphObjPolyline != nullptr) {
+    if (m_pGraphObjPolygon != nullptr) {
         const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-        CPhysValPolygon physValPolygon = m_pGraphObjPolyline->getPolygon(drawingSize.unit());
+        CPhysValPolygon physValPolygon = m_pGraphObjPolygon->getPolygon(drawingSize.unit());
         bHasChanges = (m_physValPolygon != physValPolygon);
         if (!bHasChanges) {
-            QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObjPolyline);
+            QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObjPolygon);
             bHasChanges = (arLabelSettings != m_arLabelSettings);
         }
     }
@@ -481,19 +481,19 @@ void CModelGraphObjPolygonGeometry::acceptChanges()
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObjPolyline != nullptr && !hasErrors())
+    if (m_pGraphObjPolygon != nullptr && !hasErrors())
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (m_pGraphObjPolyline != nullptr) {
-                m_pGraphObjPolyline->setPolygon(m_physValPolygon);
+            if (m_pGraphObjPolygon != nullptr) {
+                m_pGraphObjPolygon->setPolygon(m_physValPolygon);
                 for (const SLabelSettings& labelSettings : m_arLabelSettings) {
                     labelSettings.m_bVisible ?
-                        m_pGraphObjPolyline->showGeometryLabel(labelSettings.m_strValueName) :
-                        m_pGraphObjPolyline->hideGeometryLabel(labelSettings.m_strValueName);
+                        m_pGraphObjPolygon->showGeometryLabel(labelSettings.m_strValueName) :
+                        m_pGraphObjPolygon->hideGeometryLabel(labelSettings.m_strValueName);
                     labelSettings.m_bLineVisible ?
-                        m_pGraphObjPolyline->showGeometryLabelAnchorLine(labelSettings.m_strValueName) :
-                        m_pGraphObjPolyline->hideGeometryLabelAnchorLine(labelSettings.m_strValueName);
+                        m_pGraphObjPolygon->showGeometryLabelAnchorLine(labelSettings.m_strValueName) :
+                        m_pGraphObjPolygon->hideGeometryLabelAnchorLine(labelSettings.m_strValueName);
                 }
                 m_bContentChanged = true;
             }
@@ -602,7 +602,7 @@ QString CModelGraphObjPolygonGeometry::getLabelName(int i_iRow) const
 bool CModelGraphObjPolygonGeometry::isPointRow(int i_iRow) const
 //------------------------------------------------------------------------------
 {
-    return CGraphObjPolyline::isPolygonPointLabelName(m_arLabelSettings[i_iRow].m_strValueName);
+    return CGraphObjPolygon::isPolygonPointLabelName(m_arLabelSettings[i_iRow].m_strValueName);
 }
 
 //------------------------------------------------------------------------------
@@ -619,7 +619,7 @@ void CModelGraphObjPolygonGeometry::removePoint(const QString& i_strLabelName)
         /* strMethod          */ "removePoint",
         /* strMethodInArgs    */ strMthInArgs );
 
-    int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(i_strLabelName);
+    int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(i_strLabelName);
     int iRow = getLabelRowIndex(i_strLabelName);
     _beginRemoveRows(QModelIndex(), iRow, iRow);
     m_physValPolygon.removeAt(idxPt);
@@ -627,7 +627,7 @@ void CModelGraphObjPolygonGeometry::removePoint(const QString& i_strLabelName)
     _endRemoveRows();
     for (; iRow < m_arLabelSettings.size(); ++iRow, ++idxPt) {
         m_arLabelSettings[iRow].m_iRowIdx = iRow;
-        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolygon::createPolygonPointLabelName(idxPt);
         QModelIndex modelIdxTL = index(iRow, 0);
         QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
         emit_dataChanged(modelIdxTL, modelIdxBR);
@@ -649,17 +649,17 @@ void CModelGraphObjPolygonGeometry::insertPointBefore(const QString& i_strLabelN
         /* strMethod          */ "insertPointBefore",
         /* strMethodInArgs    */ strMthInArgs );
 
-    int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(i_strLabelName);
+    int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(i_strLabelName);
     int iRow = getLabelRowIndex(i_strLabelName);
     _beginInsertRows(QModelIndex(), iRow, iRow);
     m_physValPolygon.insert(idxPt, CPhysValPoint(*m_pDrawingScene));
     m_arLabelSettings.insert(iRow, SLabelSettings());
     m_arLabelSettings[iRow].m_iRowIdx = iRow;
-    m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+    m_arLabelSettings[iRow].m_strValueName = CGraphObjPolygon::createPolygonPointLabelName(idxPt);
     _endInsertRows();
     for (++iRow, ++idxPt; iRow < m_arLabelSettings.size(); ++iRow, ++idxPt) {
         m_arLabelSettings[iRow].m_iRowIdx = iRow;
-        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolygon::createPolygonPointLabelName(idxPt);
         QModelIndex modelIdxTL = index(iRow, 0);
         QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
         emit_dataChanged(modelIdxTL, modelIdxBR);
@@ -681,16 +681,16 @@ void CModelGraphObjPolygonGeometry::insertPointAfter(const QString& i_strLabelNa
         /* strMethod          */ "insertPointAfter",
         /* strMethodInArgs    */ strMthInArgs );
 
-    int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(i_strLabelName) + 1;
+    int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(i_strLabelName) + 1;
     int iRow = getLabelRowIndex(i_strLabelName) + 1;
     _beginInsertRows(QModelIndex(), iRow, iRow);
     m_physValPolygon.insert(idxPt, CPhysValPoint(*m_pDrawingScene));
     m_arLabelSettings[iRow].m_iRowIdx = iRow;
-    m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+    m_arLabelSettings[iRow].m_strValueName = CGraphObjPolygon::createPolygonPointLabelName(idxPt);
     _endInsertRows();
     for (++iRow, ++idxPt; iRow < m_arLabelSettings.size(); ++iRow, ++idxPt) {
         m_arLabelSettings[iRow].m_iRowIdx = iRow;
-        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolyline::createPolygonPointLabelName(idxPt);
+        m_arLabelSettings[iRow].m_strValueName = CGraphObjPolygon::createPolygonPointLabelName(idxPt);
         QModelIndex modelIdxTL = index(iRow, 0);
         QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
         emit_dataChanged(modelIdxTL, modelIdxBR);
@@ -759,7 +759,7 @@ QVariant CModelGraphObjPolygonGeometry::data(const QModelIndex& i_modelIdx, int 
 
     QVariant varData;
 
-    if (m_pGraphObjPolyline != nullptr && i_modelIdx.isValid()) {
+    if (m_pGraphObjPolygon != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
@@ -777,38 +777,38 @@ QVariant CModelGraphObjPolygonGeometry::data(const QModelIndex& i_modelIdx, int 
                 }
                 case EColumnXVal: {
                     if (i_iRole == Qt::DisplayRole) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                             varData = m_physValPolygon.center().x().toString();
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameWidth) {
                             varData = m_physValPolygon.width().toString();
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameHeight) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameHeight) {
                             varData = m_physValPolygon.height().toString();
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameAngle) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameAngle) {
                             varData = m_physValPolygon.angle().toString();
                         }
-                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
-                            int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
+                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
+                            int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
                             varData = m_physValPolygon.at(idxPt).x().toString();
                         }
                     }
                     else if (i_iRole == Qt::EditRole) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                             varData = QVariant::fromValue(m_physValPolygon.center().x());
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameWidth) {
                             varData = QVariant::fromValue(m_physValPolygon.width());
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameHeight) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameHeight) {
                             varData = QVariant::fromValue(m_physValPolygon.height());
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameAngle) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameAngle) {
                             varData = QVariant::fromValue(m_physValPolygon.angle());
                         }
-                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
-                            int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
+                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
+                            int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
                             varData = QVariant::fromValue(m_physValPolygon.at(idxPt).x());
                         }
                     }
@@ -819,10 +819,10 @@ QVariant CModelGraphObjPolygonGeometry::data(const QModelIndex& i_modelIdx, int 
                         varData = m_sizeXYValSizeHint;
                     }
                     else if (i_iRole == ERoleMinimumValue) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameAngle) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameAngle) {
                             varData = 0.0;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameWidth) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
                                 varData = -drawingSize.metricImageWidth().getVal();
                             }
@@ -837,7 +837,7 @@ QVariant CModelGraphObjPolygonGeometry::data(const QModelIndex& i_modelIdx, int 
                                 varData = -drawingSize.imageWidthInPixels();
                             }
                         }
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameHeight) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameHeight) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
                                 varData = -drawingSize.metricImageHeight().getVal();
                             }
@@ -869,7 +869,7 @@ QVariant CModelGraphObjPolygonGeometry::data(const QModelIndex& i_modelIdx, int 
                         }
                     }
                     else if (i_iRole == ERoleMaximumValue) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameAngle) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameAngle) {
                             varData = 360.0;
                         }
                         else {
@@ -892,20 +892,20 @@ QVariant CModelGraphObjPolygonGeometry::data(const QModelIndex& i_modelIdx, int 
                 }
                 case EColumnYVal: {
                     if (i_iRole == Qt::DisplayRole) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                             varData = m_physValPolygon.center().y().toString();
                         }
-                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
-                            int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
+                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
+                            int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
                             varData = m_physValPolygon.at(idxPt).y().toString();
                         }
                     }
                     else if (i_iRole == Qt::EditRole) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                             varData = QVariant::fromValue(m_physValPolygon.center().y());
                         }
-                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
-                            int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
+                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
+                            int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
                             varData = QVariant::fromValue(m_physValPolygon.at(idxPt).y());
                         }
                     }
@@ -1014,7 +1014,7 @@ bool CModelGraphObjPolygonGeometry::setData(
 
     bool bDataSet = false;
 
-    if (m_pGraphObjPolyline != nullptr && i_modelIdx.isValid()) {
+    if (m_pGraphObjPolygon != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
@@ -1027,7 +1027,7 @@ bool CModelGraphObjPolygonGeometry::setData(
                 }
                 case EColumnXVal: {
                     if (i_iRole == Qt::EditRole) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                             CPhysValPoint physValPtCenter = physValPolygon.center();
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPtCenter.setX(physVal);
@@ -1035,26 +1035,26 @@ bool CModelGraphObjPolygonGeometry::setData(
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameWidth) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPolygon.setWidth(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameHeight) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameHeight) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPolygon.setHeight(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameAngle) {
+                        else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameAngle) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPolygon.setAngle(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
-                            int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
+                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
+                            int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
                             CPhysValPoint physValPt = physValPolygon.at(idxPt);
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPt.setX(physVal);
@@ -1068,7 +1068,7 @@ bool CModelGraphObjPolygonGeometry::setData(
                 }
                 case EColumnYVal: {
                     if (i_iRole == Qt::EditRole) {
-                        if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                        if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                             CPhysValPoint physValPtCenter = physValPolygon.center();
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPtCenter.setY(physVal);
@@ -1076,8 +1076,8 @@ bool CModelGraphObjPolygonGeometry::setData(
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
-                            int idxPt = CGraphObjPolyline::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
+                        else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
+                            int idxPt = CGraphObjPolygon::extractIndexFromPolygonPointLabelName(labelSettings.m_strValueName);
                             CPhysValPoint physValPt = physValPolygon.at(idxPt);
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPt.setY(physVal);
@@ -1221,7 +1221,7 @@ Qt::ItemFlags CModelGraphObjPolygonGeometry::flags(const QModelIndex& i_modelIdx
     // The base class implementation returns a combination of flags that enables
     // the item (ItemIsEnabled) and allows it to be selected (ItemIsSelectable).
     Qt::ItemFlags uFlags = uFlags = QAbstractItemModel::flags(i_modelIdx);
-    if (m_pGraphObjPolyline != nullptr && i_modelIdx.isValid()) {
+    if (m_pGraphObjPolygon != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
@@ -1232,28 +1232,28 @@ Qt::ItemFlags CModelGraphObjPolygonGeometry::flags(const QModelIndex& i_modelIdx
                     break;
                 }
                 case EColumnXVal: {
-                    if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                    if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameWidth) {
+                    else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameWidth) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameHeight) {
+                    else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameHeight) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameAngle) {
+                    else if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameAngle) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
+                    else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
                     break;
                 }
                 case EColumnYVal: {
-                    if (labelSettings.m_strValueName == CGraphObjPolyline::c_strGeometryLabelNameCenter) {
+                    if (labelSettings.m_strValueName == CGraphObjPolygon::c_strGeometryLabelNameCenter) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName.startsWith(CGraphObjPolyline::c_strGeometryLabelNameP)) {
+                    else if (labelSettings.m_strValueName.startsWith(CGraphObjPolygon::c_strGeometryLabelNameP)) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
                     break;
@@ -1330,19 +1330,19 @@ void CModelGraphObjPolygonGeometry::onDrawingSceneDrawingSizeChanged(const CDraw
 //
 //        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 //
-//            if (m_pGraphObjPolyline != nullptr) {
+//            if (m_pGraphObjPolygon != nullptr) {
 //                // The strings to indicate pixel values are always the same.
 //                // When changing from pixel to metric dimension or if the metric dimension unit changes,
 //                // the indicated value strings need to be updated to show the values in the new unit.
 //                if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-//                    CPhysValPolygon physValPolygon = m_pGraphObjPolyline->getPolygon(Units.Length.px);
+//                    CPhysValPolygon physValPolygon = m_pGraphObjPolygon->getPolygon(Units.Length.px);
 //                    if (physValPolygon != m_physValPolygon) {
 //                        bContentChanged = true;
 //                        m_physValPolygon = physValPolygon;
 //                    }
 //                }
 //                else {
-//                    CPhysValPolygon physValPolygon = m_pGraphObjPolyline->getPolygon();
+//                    CPhysValPolygon physValPolygon = m_pGraphObjPolygon->getPolygon();
 //                    if (physValPolygon != m_physValPolygon) {
 //                        bContentChanged = true;
 //                        m_physValPolygon = physValPolygon;
@@ -1391,9 +1391,9 @@ void CModelGraphObjPolygonGeometry::onGraphObjGeometryOnSceneChanged(CGraphObj* 
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (m_pGraphObjPolyline != nullptr) {
+            if (m_pGraphObjPolygon != nullptr) {
                 const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-                CPhysValPolygon physValPolygon = m_pGraphObjPolyline->getPolygon(drawingSize.unit());
+                CPhysValPolygon physValPolygon = m_pGraphObjPolygon->getPolygon(drawingSize.unit());
                 if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
                     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
                         // No simple unit conversion is possible here. The Y Scale Axis may
@@ -1457,7 +1457,7 @@ void CModelGraphObjPolygonGeometry::onGraphObjGeometryLabelChanged(
 
             int iRow = getLabelRowIndex(i_strName);
             if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
-                SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObjPolyline, i_strName, iRow);
+                SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObjPolygon, i_strName, iRow);
                 if (m_arLabelSettings[iRow] != labelSettings) {
                     m_arLabelSettings[iRow] = labelSettings;
                     QModelIndex modelIdxTL = index(iRow, EColumnShowVals);
@@ -1488,7 +1488,7 @@ void CModelGraphObjPolygonGeometry::onGraphObjAboutToBeDestroyed(CGraphObj*)
         /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjPolyline = nullptr;
+    m_pGraphObjPolygon = nullptr;
 
     clearModel();
 }
@@ -1532,11 +1532,11 @@ void CModelGraphObjPolygonGeometry::fillModel()
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
-    if (m_pGraphObjPolyline == nullptr) {
+    if (m_pGraphObjPolygon == nullptr) {
         m_physValPolygon = CPhysValPolygon(*m_pDrawingScene);
     }
     else {
-        m_physValPolygon = m_pGraphObjPolyline->getPolygon(drawingSize.unit());
+        m_physValPolygon = m_pGraphObjPolygon->getPolygon(drawingSize.unit());
     }
     if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
@@ -1551,8 +1551,8 @@ void CModelGraphObjPolygonGeometry::fillModel()
     if (m_arLabelSettings.size() > 0) {
         clearModel();
     }
-    if (m_pGraphObjPolyline != nullptr) {
-        m_arLabelSettings = getLabelSettings(m_pGraphObjPolyline);
+    if (m_pGraphObjPolygon != nullptr) {
+        m_arLabelSettings = getLabelSettings(m_pGraphObjPolygon);
         if (m_arLabelSettings.size() > 0) {
             _beginInsertRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
             _endInsertRows();

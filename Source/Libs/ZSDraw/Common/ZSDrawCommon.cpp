@@ -115,7 +115,6 @@ Enum EGraphObjType
 const SEnumEntry s_arEnumStrGraphObjType[EGraphObjTypeCount] =
 //------------------------------------------------------------------------------
 {
-    /* 65536 */ SEnumEntry( EGraphObjTypePoint,           "Point",           "Point"            ),
     /* 65537 */ SEnumEntry( EGraphObjTypeLine,            "Line",            "Line"             ),
     /* 65538 */ SEnumEntry( EGraphObjTypeRect,            "Rect",            "Rectangle"        ),
     /* 65539 */ SEnumEntry( EGraphObjTypeEllipse,         "Ellipse",         "Ellipse"          ),
@@ -132,12 +131,11 @@ const SEnumEntry s_arEnumStrGraphObjType[EGraphObjTypeCount] =
 const SEnumEntry s_arEnumStrGraphObjClassName[EGraphObjTypeCount] =
 //------------------------------------------------------------------------------
 {
-    /*  0 */ SEnumEntry( EGraphObjTypePoint,           "CGraphObjPoint"           ),
     /*  1 */ SEnumEntry( EGraphObjTypeLine,            "CGraphObjLine"            ),
     /*  2 */ SEnumEntry( EGraphObjTypeRect,            "CGraphObjRect"            ),
     /*  3 */ SEnumEntry( EGraphObjTypeEllipse,         "CGraphObjEllipse"         ),
     /*  4 */ SEnumEntry( EGraphObjTypePolygon,         "CGraphObjPolygon"         ),
-    /*  5 */ SEnumEntry( EGraphObjTypePolyline,        "CGraphObjPolyline"        ),
+    /*  5 */ SEnumEntry( EGraphObjTypePolyline,        "CGraphObjPolygon"         ),
     /*  6 */ SEnumEntry( EGraphObjTypeText,            "CGraphObjText"            ),
     /*  7 */ SEnumEntry( EGraphObjTypeImage,           "CGraphObjImage"           ),
     /*  8 */ SEnumEntry( EGraphObjTypeConnectionPoint, "CGraphObjConnectionPoint" ),

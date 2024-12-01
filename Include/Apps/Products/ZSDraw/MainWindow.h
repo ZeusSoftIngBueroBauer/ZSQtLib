@@ -92,7 +92,6 @@ class CObjFactory;
 class CObjFactoryEllipse;
 class CObjFactoryImage;
 class CObjFactoryLine;
-class CObjFactoryPoint;
 class CObjFactoryPolygon;
 class CObjFactoryPolyline;
 class CObjFactoryRect;
@@ -177,7 +176,6 @@ public: // class members
     static const QString c_strActionNameDrawSettingsLine;
     static const QString c_strActionNameDrawSettingsFill;
     static const QString c_strActionNameDrawSettingsText;
-    static const QString c_strActionNameDrawStandardShapePoint;
     static const QString c_strActionNameDrawStandardShapeLine;
     static const QString c_strActionNameDrawStandardShapeRect;
     static const QString c_strActionNameDrawStandardShapeEllipse;
@@ -244,7 +242,6 @@ public: // instance methods
 //    void setCheckedActionModeEdit(bool i_bChecked);
 //    void setCheckedActionModeView(bool i_bChecked);
 public: // instance methods
-    void setCheckedActionDrawStandardShapePoint(bool i_bChecked);
     void setCheckedActionDrawStandardShapeLine(bool i_bChecked);
     void setCheckedActionDrawStandardShapeRect(bool i_bChecked);
     void setCheckedActionDrawStandardShapeEllipse(bool i_bChecked);
@@ -278,7 +275,6 @@ public slots: // Menu - Draw - Settings
     void onActionDrawSettingsFillTriggered(bool i_bChecked = false);
     void onActionDrawSettingsTextTriggered(bool i_bChecked = false);
 public slots: // Menu - Draw - Standard Shapes
-    void onActionDrawStandardShapePointToggled(bool i_bChecked = false);
     void onActionDrawStandardShapeLineToggled(bool i_bChecked = false);
     void onActionDrawStandardShapeRectToggled(bool i_bChecked = false);
     void onActionDrawStandardShapeEllipseToggled(bool i_bChecked = false);
@@ -353,36 +349,35 @@ protected: // instance members
     QStringList m_strlstObjFactories;
     ZS::Test::CTest* m_pTest;
     // Object Factories (Standard Shapes)
-    ZS::Draw::CObjFactoryPoint*           m_pObjFactoryPoint;
-    ZS::Draw::CObjFactoryLine*            m_pObjFactoryLine;
-    ZS::Draw::CObjFactoryRect*            m_pObjFactoryRect;
-    ZS::Draw::CObjFactoryEllipse*         m_pObjFactoryEllipse;
-    ZS::Draw::CObjFactoryPolygon*         m_pObjFactoryPolygon;
-    ZS::Draw::CObjFactoryPolyline*        m_pObjFactoryPolyline;
-    ZS::Draw::CObjFactoryText*            m_pObjFactoryText;
-    ZS::Draw::CObjFactoryImage*           m_pObjFactoryImage;
+    ZS::Draw::CObjFactoryLine* m_pObjFactoryLine;
+    ZS::Draw::CObjFactoryRect* m_pObjFactoryRect;
+    ZS::Draw::CObjFactoryEllipse* m_pObjFactoryEllipse;
+    ZS::Draw::CObjFactoryPolygon* m_pObjFactoryPolygon;
+    ZS::Draw::CObjFactoryPolyline* m_pObjFactoryPolyline;
+    ZS::Draw::CObjFactoryText* m_pObjFactoryText;
+    ZS::Draw::CObjFactoryImage* m_pObjFactoryImage;
     ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;
-    ZS::Draw::CObjFactoryConnectionLine*  m_pObjFactoryConnectionLine;
-    ZS::Draw::CObjFactoryGroup*           m_pObjFactoryGroup;
+    ZS::Draw::CObjFactoryConnectionLine* m_pObjFactoryConnectionLine;
+    ZS::Draw::CObjFactoryGroup* m_pObjFactoryGroup;
     // Object Factories (User Defined)
-    ZS::Draw::QtWidgets::CObjFactoryWdgtCheckBox*    m_pObjFactoryWdgtCheckBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtComboBox*    m_pObjFactoryWdgtComboBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtGroupBox*    m_pObjFactoryWdgtGroupBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtLabel*       m_pObjFactoryWdgtLabel;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtLineEdit*    m_pObjFactoryWdgtLineEdit;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtPushButton*  m_pObjFactoryWdgtPushButton;
-    ZS::Draw::Electricity::CObjFactoryCapacitor*     m_pObjFactoryElectricityCapacitor;
-    ZS::Draw::Electricity::CObjFactoryDiode*         m_pObjFactoryElectricityDiode;
-    ZS::Draw::Electricity::CObjFactoryInductor*      m_pObjFactoryElectricityInductor;
-    ZS::Draw::Electricity::CObjFactoryResistor*      m_pObjFactoryElectricityResistor;
-    ZS::Draw::Electricity::CObjFactorySwitch*        m_pObjFactoryElectricitySwitch;
-    ZS::Draw::Electricity::CObjFactoryTransistor*    m_pObjFactoryElectricityTransistor;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtCheckBox* m_pObjFactoryWdgtCheckBox;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtComboBox* m_pObjFactoryWdgtComboBox;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtGroupBox* m_pObjFactoryWdgtGroupBox;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtLabel* m_pObjFactoryWdgtLabel;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtLineEdit* m_pObjFactoryWdgtLineEdit;
+    ZS::Draw::QtWidgets::CObjFactoryWdgtPushButton* m_pObjFactoryWdgtPushButton;
+    ZS::Draw::Electricity::CObjFactoryCapacitor* m_pObjFactoryElectricityCapacitor;
+    ZS::Draw::Electricity::CObjFactoryDiode* m_pObjFactoryElectricityDiode;
+    ZS::Draw::Electricity::CObjFactoryInductor* m_pObjFactoryElectricityInductor;
+    ZS::Draw::Electricity::CObjFactoryResistor* m_pObjFactoryElectricityResistor;
+    ZS::Draw::Electricity::CObjFactorySwitch* m_pObjFactoryElectricitySwitch;
+    ZS::Draw::Electricity::CObjFactoryTransistor* m_pObjFactoryElectricityTransistor;
     ZS::Draw::Electricity::CObjFactoryVoltageSource* m_pObjFactoryElectricityVoltageSource;
     // Menus and Actions
     QMenuBar* m_pMenuBar;
     // Menu - File
-    QMenu*    m_pMenuFile;
-    QMenu*    m_pMenuLastUsedFiles;
+    QMenu* m_pMenuFile;
+    QMenu* m_pMenuLastUsedFiles;
     QToolBar* m_pToolBarFile;
     QAction*  m_pActFileNew;
     QAction*  m_pActFileOpen;
@@ -397,12 +392,12 @@ protected: // instance members
     QDateTime m_dtCurrentFileLastUsed;
     QAction*  m_pActFileQuit;
     // Menu - Mode
-    //QMenu*    m_pMenuMode;
+    //QMenu* m_pMenuMode;
     //QToolBar* m_pToolBarMode;
     //QAction*  m_pActModeEdit;
     //QAction*  m_pActModeView;
     // Menu - Draw
-    QMenu*    m_pMenuDraw;
+    QMenu* m_pMenuDraw;
     /*!< Currently active (checked) draw action */
     QAction*  m_pActDrawChecked;
     // Menu - Draw - Settings
@@ -414,7 +409,6 @@ protected: // instance members
     // Menu - Draw - Standard Shapes
     QMenu*    m_pMenuDrawStandardShapes;
     QToolBar* m_pToolBarDrawStandardShapes;
-    QAction*  m_pActDrawStandardShapePoint;
     QAction*  m_pActDrawStandardShapeLine;
     QAction*  m_pActDrawStandardShapeRect;
     QAction*  m_pActDrawStandardShapeEllipse;
