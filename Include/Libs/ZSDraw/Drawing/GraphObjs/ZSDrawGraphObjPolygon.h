@@ -61,6 +61,8 @@ public: // ctors
     CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType i_type, const QString& i_strObjName = "");
 public: // dtor
     virtual ~CGraphObjPolygon();
+public: // instance methods
+    void setType(EGraphObjType i_graphObjType);
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj

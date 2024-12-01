@@ -113,12 +113,13 @@ protected slots: // overridables
     virtual void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings);
 protected slots: // overridables
-    virtual void onGraphObjSelectedChanged();
-    virtual void onGraphObjGeometryOnSceneChanged();
-    virtual void onGraphObjDrawSettingsChanged();
+    virtual void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
+    virtual void onGraphObjTypeChanged(CGraphObj* i_pGraphObj, EGraphObjType i_graphObjType);
+    virtual void onGraphObjSelectedChanged(CGraphObj* i_pGraphObj, bool i_bIsSelected);
+    virtual void onGraphObjGeometryOnSceneChanged(CGraphObj* i_pGraphObj, bool i_bParentOfParentChanged = false);
+    virtual void onGraphObjDrawSettingsChanged(CGraphObj* i_pGraphObj);
     //virtual void onGraphObjMoved();
     //virtual void onGraphObjRenamed();
-    virtual void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 private slots:
     //void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
     //void onDrawingSceneGraphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);

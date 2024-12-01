@@ -71,12 +71,19 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void fillEditControls() override;
 protected slots:
+    void onCmbGraphObjTypeCurrentIndexChanged(int i_idx);
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
     void onWdgtFillStyleContentChanged();
 protected: // instance members
+    QWidget* m_pWdgtGraphObjType;
+    QHBoxLayout* m_pLytWdgtGraphObjType;
+    QLabel* m_pLblGraphObjType;
+    QComboBox* m_pCmbGraphObjType;
     CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
     CWdgtGraphObjPolygonGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;

@@ -38,11 +38,13 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qmessagebox.h>
 #include <QtGui/qpushbutton.h>
 #else
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qmessagebox.h>
@@ -99,6 +101,10 @@ CWdgtGraphObjPolygonProperties::CWdgtGraphObjPolygonProperties(
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Polygon",
         ClassName(), i_strObjName, i_pWdgtParent),
+    m_pWdgtGraphObjType(nullptr),
+    m_pLytWdgtGraphObjType(nullptr),
+    m_pLblGraphObjType(nullptr),
+    m_pCmbGraphObjType(nullptr),
     m_pWdgtLabels(nullptr),
     m_pWdgtGeometry(nullptr),
     m_pWdgtLineStyle(nullptr),
@@ -116,6 +122,22 @@ CWdgtGraphObjPolygonProperties::CWdgtGraphObjPolygonProperties(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
+
+    m_pWdgtGraphObjType = new QWidget();
+    m_pLytWdgtGraphObjType = new QHBoxLayout();
+    //m_pLytWdgtGraphObjType->setContentsMargins(0, 0, 0, 0);
+    m_pWdgtGraphObjType->setLayout(m_pLytWdgtGraphObjType);
+    m_pLblGraphObjType = new QLabel("Type:");
+    m_pLytWdgtGraphObjType->addWidget(m_pLblGraphObjType);
+    m_pCmbGraphObjType = new QComboBox();
+    m_pCmbGraphObjType->addItem(QPixmap(":/ZS/Draw/GraphObjPolyline16x16.png"), graphObjType2Str(EGraphObjTypePolyline));
+    m_pCmbGraphObjType->addItem(QPixmap(":/ZS/Draw/GraphObjPolygon16x16.png"), graphObjType2Str(EGraphObjTypePolygon));
+    QObject::connect(
+        m_pCmbGraphObjType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtGraphObjPolygonProperties::onCmbGraphObjTypeCurrentIndexChanged);
+    m_pLytWdgtGraphObjType->addWidget(m_pCmbGraphObjType);
+    m_pLytWdgtGraphObjType->addStretch();
+    m_pLyt->addWidget(m_pWdgtGraphObjType);
 
     m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
@@ -170,6 +192,10 @@ CWdgtGraphObjPolygonProperties::~CWdgtGraphObjPolygonProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_pWdgtGraphObjType = nullptr;
+    m_pLytWdgtGraphObjType = nullptr;
+    m_pLblGraphObjType = nullptr;
+    m_pCmbGraphObjType = nullptr;
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
@@ -248,6 +274,7 @@ bool CWdgtGraphObjPolygonProperties::setKeyInTree(const QString& i_strKeyInTree)
                 m_pWdgtFillStyle->hide();
             }
         }
+        updateButtonsEnabled();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bObjectChanged);
@@ -304,7 +331,10 @@ bool CWdgtGraphObjPolygonProperties::hasChanges() const
 
     bool bHasChanges = false;
     if (m_pGraphObj != nullptr) {
-        bHasChanges = m_pWdgtLabels->hasChanges();
+        bHasChanges = m_pCmbGraphObjType->currentText() != m_pGraphObj->typeAsString();
+        if (!bHasChanges) {
+            bHasChanges = m_pWdgtLabels->hasChanges();
+        }
         if (!bHasChanges) {
             bHasChanges = m_pWdgtGeometry->hasChanges();
         }
@@ -344,12 +374,20 @@ void CWdgtGraphObjPolygonProperties::acceptChanges()
         else if (hasChanges()) {
             {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-                // When applying changes onGraphObjChanged is called.
+                // When applying changes, the slot onGraphObjChanged is called.
                 // If the ContentChangedSignalBlockedCounter would not be incremented
                 // the abstract base class would call fillEditControls of the base class.
                 // This is not a problem as the method does nothing. But the method is not
                 // expected to be called so we avoid it for the sake of clarification
                 // (and to have a clear method trace output where the unexpected call is not listed).
+
+                CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pGraphObj);
+                if (pGraphObjPolygon != nullptr) {
+                    QString strGraphObjType = m_pCmbGraphObjType->currentText();
+                    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+                    pGraphObjPolygon->setType(graphObjType);
+                }
+
                 m_pWdgtLabels->acceptChanges();
                 m_pWdgtGeometry->acceptChanges();
                 m_pWdgtLineStyle->acceptChanges();
@@ -380,6 +418,8 @@ void CWdgtGraphObjPolygonProperties::rejectChanges()
 
     {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
+        fillEditControls();
+
         m_pWdgtLabels->rejectChanges();
         m_pWdgtGeometry->rejectChanges();
         m_pWdgtLineStyle->rejectChanges();
@@ -397,8 +437,58 @@ void CWdgtGraphObjPolygonProperties::rejectChanges()
 }
 
 /*==============================================================================
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPolygonProperties::fillEditControls()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "fillEditControls",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj != nullptr) {
+        m_pCmbGraphObjType->setCurrentText(m_pGraphObj->typeAsString());
+    }
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPolygonProperties::onCmbGraphObjTypeCurrentIndexChanged(int i_idx)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_idx);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onCmbGraphObjTypeCurrentIndexChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        QString strGraphObjType = m_pCmbGraphObjType->currentText();
+        EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+        if (graphObjType == EGraphObjTypePolygon) {
+            m_pWdgtFillStyle->show();
+        }
+        else {
+            m_pWdgtFillStyle->hide();
+        }
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
 
 //------------------------------------------------------------------------------
 void CWdgtGraphObjPolygonProperties::onWdgtLabelsContentChanged()
@@ -475,4 +565,3 @@ void CWdgtGraphObjPolygonProperties::onWdgtFillStyleContentChanged()
         m_bContentChanged = true;
     }
 }
-

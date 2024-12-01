@@ -400,6 +400,8 @@ signals:
          For this the signal may not be emitted "directly" by the derived classes but the class
          must call "emit_aboutToBeDestroyed" in their destructors. */
     void aboutToBeDestroyed(CGraphObj* i_pGraphObj);
+    /*!< This signal is emitted if the type of the graphic object has been changed. */
+    void typeChanged(CGraphObj* i_pGraphObj, EGraphObjType i_graphObjType);
     /*!< This signal is emitted if the edit mode of the object has been changed. */
     void editModeChanged(CGraphObj* i_pGraphObj, const CEnumEditMode& i_eMode);
     /*!< This signal is emitted if the selected state of the object has been changed. */
@@ -702,6 +704,7 @@ protected: // overridables
     //virtual void updateEditInfo();
 protected: // auxiliary instance methods (method tracing)
     void emit_aboutToBeDestroyed();
+    void emit_typeChanged(EGraphObjType i_graphObjType);
     void emit_editModeChanged(const CEnumEditMode& i_eMode);
     void emit_selectedChanged(bool i_bIsSelected);
     //void emit_scenePosChanged();

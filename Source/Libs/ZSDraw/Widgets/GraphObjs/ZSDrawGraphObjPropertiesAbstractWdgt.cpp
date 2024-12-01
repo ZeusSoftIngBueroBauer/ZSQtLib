@@ -265,6 +265,9 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
             QObject::disconnect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed);
+            QObject::disconnect(
+                m_pGraphObj, &CGraphObj::typeChanged,
+                this, &CWdgtGraphObjPropertiesAbstract::onGraphObjTypeChanged);
         }
         if (m_bContentUpdateOnSelectedChanged) {
             if (m_pGraphObj != nullptr) {
@@ -319,6 +322,9 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
             QObject::connect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed);
+            QObject::connect(
+                m_pGraphObj, &CGraphObj::typeChanged,
+                this, &CWdgtGraphObjPropertiesAbstract::onGraphObjTypeChanged);
         }
         if (m_bContentUpdateOnSelectedChanged) {
             if (m_pGraphObj != nullptr) {
@@ -802,6 +808,58 @@ protected slots: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed(CGraphObj*)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed",
+        /* strAddInfo   */ "" );
+
+    m_pGraphObj = nullptr;
+
+    fillEditControls();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesAbstract::onGraphObjTypeChanged(CGraphObj*, EGraphObjType)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjTypeChanged",
+        /* strAddInfo   */ "" );
+
+    // When applying the changes from the edit controls by invoking "acceptChanges"
+    // the ContentChangedSignalBlockedCounter is incremented to avoid that
+    // "onGraphObjChanged" overwrites settings in edit controls which haven't been
+    // applied yet. E.g. if the line width and the pen color are changed, both values
+    // will be set one after another at the graphical object. When applying line width
+    // "onGraphObjChanged" is called and the current pen color setting of the user
+    // control would be overwritten with the current pen color of the graphical object.
+    if (m_iContentChangedSignalBlockedCounter == 0)
+    {
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            // Here the derived class should apply the properties from the graphical
+            // object to the edit controls.
+            fillEditControls();
+        }
+
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
+        if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
+            updateButtonsEnabled();
+            emit_contentChanged();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Slot method connected to the selectedChanged signal of the graphical object.
 
     The method calls fillEditControls. Derived classes should overwrite the
@@ -821,7 +879,7 @@ protected slots: // overridables
     After invoking fillEditControls the method onGraphObjSelectedChanged checks the
     "contentChanged" flag and emits the contentChanged signal if needed.
 */
-void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
+void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged(CGraphObj*, bool)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -864,7 +922,7 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
     should handle the content changed flag and the content changed signal blocked
     counter in method fillEditControls.
 */
-void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged()
+void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged(CGraphObj*, bool)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -907,7 +965,7 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged()
     should handle the content changed flag and the content changed signal blocked
     counter in method fillEditControls.
 */
-void CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged()
+void CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged(CGraphObj*)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -941,21 +999,6 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged()
             emit_contentChanged();
         }
     }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed(CGraphObj*)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed",
-        /* strAddInfo   */ "" );
-
-    m_pGraphObj = nullptr;
-
-    fillEditControls();
 }
 
 /*==============================================================================

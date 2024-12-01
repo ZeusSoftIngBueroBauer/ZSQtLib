@@ -158,7 +158,7 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ i_graphObjType,
-        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
+        /* strType             */ ZS::Draw::graphObjType2Str(i_graphObjType),
         /* strObjName          */ i_strObjName.isEmpty() ? "Polygon" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
     m_polygonOrig(),
@@ -231,6 +231,47 @@ CGraphObjPolygon::~CGraphObjPolygon()
 
     m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Changes the type of the graphical object to be either a polygon
+           or a polyline.
+
+    For polygons the last and first end points are connected.
+
+    @param [in] i_graphObjType
+        Range [EGraphObjTypePolyline, EGraphObjTypePolygon]
+*/
+void CGraphObjPolygon::setType(EGraphObjType i_graphObjType)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = graphObjType2Str(i_graphObjType);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setType",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_graphObjType != EGraphObjTypePolygon && i_graphObjType != EGraphObjTypePolyline) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, graphObjType2Str(i_graphObjType));
+    }
+    if (m_type != i_graphObjType) {
+        m_type = i_graphObjType;
+        m_strType = graphObjType2Str(m_type);
+        update();
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+        emit_typeChanged(m_type);
+    }
 }
 
 /*==============================================================================

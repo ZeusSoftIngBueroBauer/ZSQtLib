@@ -7881,6 +7881,23 @@ protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObj::emit_typeChanged(EGraphObjType i_graphObjType)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = graphObjType2Str(i_graphObjType);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_typeChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit typeChanged(this, i_graphObjType);
+}
+
+//------------------------------------------------------------------------------
 void CGraphObj::emit_editModeChanged(const CEnumEditMode& i_eMode)
 //------------------------------------------------------------------------------
 {
