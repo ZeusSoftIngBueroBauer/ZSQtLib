@@ -1695,11 +1695,8 @@ QPointF CGraphObjPolyline::getPositionOfSelectionPointInSceneCoors(
         }
         if (parentGroup() != nullptr) {
             physValPoint = parentGroup()->mapToScene(physValPoint);
-            physValPoint = parentGroup()->convert(physValPoint, Units.Length.px);
         }
-        else {
-            physValPoint = m_pDrawingScene->convert(physValPoint, Units.Length.px);
-        }
+        physValPoint = m_pDrawingScene->convert(physValPoint, Units.Length.px);
     }
     return physValPoint.toQPointF();
 }
@@ -3727,7 +3724,7 @@ CPhysValPolygon CGraphObjPolyline::getPhysValPolygonScaled(const CPhysValPolygon
     QPointF ptCenterOrig = i_physValPolygonOrig.center().toQPointF(m_pDrawingScene->drawingSize().unit());
     QPointF ptCenterScaled = ptCenterOrig;
     ptCenterScaled.setX(m_fParentGroupScaleX * ptCenterOrig.x());
-    ptCenterScaled.setY(m_fParentGroupScaleX * ptCenterOrig.y());
+    ptCenterScaled.setY(m_fParentGroupScaleY * ptCenterOrig.y());
 
     CPhysValPolygon physValPolygon(i_physValPolygonOrig);
     for (int idxPt = 0; idxPt < i_physValPolygonOrig.count(); ++idxPt) {

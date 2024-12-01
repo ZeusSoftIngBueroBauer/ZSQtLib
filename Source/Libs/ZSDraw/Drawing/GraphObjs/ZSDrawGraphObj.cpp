@@ -4921,6 +4921,8 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
         physValPointP1 = parentGroup()->mapToScene(physValPointP1);
         physValPointP2 = parentGroup()->mapToScene(physValPointP2);
     }
+    physValPointP1 = m_pDrawingScene->convert(physValPointP1, Units.Length.px);
+    physValPointP2 = m_pDrawingScene->convert(physValPointP2, Units.Length.px);
     QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSceneCoors);
