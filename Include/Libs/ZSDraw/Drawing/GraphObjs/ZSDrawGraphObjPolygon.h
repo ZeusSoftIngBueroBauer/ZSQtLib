@@ -190,7 +190,6 @@ protected: // auxiliary instance methods
     int getNumberOfPolygonPointGeometryLabelNames() const;
     void updateLabelsOnPolygonPointsAdded();
     void updateLabelsOnPolygonPointsRemoved();
-    void updateLabelsOnPolygonChanged();
 protected: // auxiliary instance methods (method tracing)
     QPolygonF setPolygonOrig(const QPolygonF& i_polygon);
     QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon);

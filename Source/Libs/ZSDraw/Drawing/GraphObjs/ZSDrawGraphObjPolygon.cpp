@@ -399,6 +399,11 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
+    if (i_physValPolygon.count() < 2) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange,
+            "Polygon size " + QString::number(i_physValPolygon.count()) + " is less than 2");
+    }
+
     QPointF ptPosPrev = pos();
 
     // Depending on the Y scale orientation of the drawing scene the polygon coordinates
@@ -417,6 +422,18 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
     // or if the coordinates have been changed ...
     if (m_physValPolygonOrig.isNull() || this->polygon() != polygon || m_physValPolygonOrig != i_physValPolygon)
     {
+        // If the added or removed indices are unknown, we must assume something.
+        if ((i_physValPolygon.count() > m_physValPolygonOrig.count()) && (m_idxsAdded.second <= 0)) {
+            // In case the number of points have been increased, labels will be added at the end.
+            m_idxsAdded.first = m_physValPolygonOrig.count();
+            m_idxsAdded.second = i_physValPolygon.count() - m_physValPolygonOrig.count();
+        }
+        else if ((i_physValPolygon.count() < m_physValPolygonOrig.count()) && (m_idxsRemoved.second <= 0)) {
+            // In case the number of points have been decreased, labels will be removed at the end.
+            m_idxsRemoved.first = i_physValPolygon.count();
+            m_idxsRemoved.second = m_physValPolygonOrig.count() - i_physValPolygon.count();
+        }
+
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
@@ -463,18 +480,11 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
         // on the scene of this item is changed.
         bGeometryOnSceneChanged = true;
 
-        if (!m_strlstPredefinedLabelNames.contains(c_strLabelName)) {
-            m_strlstPredefinedLabelNames.append(c_strLabelName);
-            addLabel(c_strLabelName, c_strLabelName, ESelectionPointType::LineCenterPoint, 0);
-        }
         if (m_idxsAdded.second > 0) {
             updateLabelsOnPolygonPointsAdded();
         }
         else if (m_idxsRemoved.second > 0) {
             updateLabelsOnPolygonPointsRemoved();
-        }
-        else {
-            updateLabelsOnPolygonChanged();
         }
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -3883,17 +3893,21 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
         traceThisPositionInfo(mthTracer, EMethodDir::Enter);
     }
     if (m_idxsAdded.second > 0) {
-        int iCount = getNumberOfPredefinedPolygonPointLabelNames();
-        for (int idxPt = iCount; idxPt < iCount + m_idxsAdded.second; ++idxPt) {
+        if (!m_strlstPredefinedLabelNames.contains(c_strLabelName)) {
+            m_strlstPredefinedLabelNames.append(c_strLabelName);
+            addLabel(c_strLabelName, c_strLabelName, ESelectionPointType::LineCenterPoint, 0);
+        }
+        int iCountPrev = getNumberOfPredefinedPolygonPointLabelNames();
+        for (int idxPt = iCountPrev; idxPt < iCountPrev + m_idxsAdded.second; ++idxPt) {
             const QString strLabelName = createPolygonPointLabelName(idxPt);
             m_strlstPredefinedLabelNames.append(strLabelName);
             addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, idxPt);
         }
-        iCount = getNumberOfPredefinedPolygonPointLabelNames();
+        int iCountNew = getNumberOfPredefinedPolygonPointLabelNames();
         // Update the indicated point labels. E.g. if inserting a point at the beginning,
         // previously the label P1 pointed to index 0. After inserting a point at index 0,
         // the label P1 must be renamed to P2 pointing to index 1.
-        for (int idxPt = (iCount - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
+        for (int idxPt = (iCountNew - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt - m_idxsAdded.second);
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             SLabelDscr& labelDscrOld = m_hshLabelDscrs[strLabelNameOld];
@@ -3915,44 +3929,47 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
             labelDscrOld.m_polarCoorsToLinkedSelPt = SPolarCoors();
         }
         // Update the position of the indicated name and user defined labels.
-        for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
-            if (!isPolygonPointLabelName(strLabelName)) {
-                CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
-                SLabelDscr& labelDscr = m_hshLabelDscrs[strLabelName];
-                if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
-                    || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
-                {
-                    if (labelDscr.m_selPt1.m_idxPt >= m_idxsAdded.first) {
-                        labelDscr.m_selPt1.m_idxPt += m_idxsAdded.second;
+        // But only if previously a polygon was set ..
+        if (iCountPrev > 1) {
+            for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
+                if (!isPolygonPointLabelName(strLabelName)) {
+                    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
+                    SLabelDscr& labelDscr = m_hshLabelDscrs[strLabelName];
+                    if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt1.m_idxPt >= m_idxsAdded.first) {
+                            labelDscr.m_selPt1.m_idxPt += m_idxsAdded.second;
+                        }
                     }
-                }
-                if (pGraphObjLabel != nullptr) {
-                    pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
-                }
-                if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
-                    || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
-                {
-                    if (labelDscr.m_selPt2.m_idxPt >= m_idxsAdded.first) {
-                        labelDscr.m_selPt2.m_idxPt += m_idxsAdded.second;
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
                     }
-                }
-                if (pGraphObjLabel != nullptr) {
-                    pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                    if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt2.m_idxPt >= m_idxsAdded.first) {
+                            labelDscr.m_selPt2.m_idxPt += m_idxsAdded.second;
+                        }
+                    }
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                    }
                 }
             }
         }
         // Update geometry labels.
-        iCount = getNumberOfPolygonPointGeometryLabelNames();
-        for (int idxPt = iCount; idxPt < iCount + m_idxsAdded.second; ++idxPt) {
+        iCountPrev = getNumberOfPolygonPointGeometryLabelNames();
+        for (int idxPt = iCountPrev; idxPt < iCountPrev + m_idxsAdded.second; ++idxPt) {
             const QString strLabelName = createPolygonPointLabelName(idxPt);
             m_strlstGeometryLabelNames.append(strLabelName);
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, idxPt);
         }
-        iCount = getNumberOfPolygonPointGeometryLabelNames();
+        iCountNew = getNumberOfPolygonPointGeometryLabelNames();
         // Update the indicated position labels. E.g. if inserting a point at the beginning,
         // previously the label P1 pointed to index 0. After inserting a point at index 0,
         // the label P1 must be renamed to P2 pointing to index 1.
-        for (int idxPt = (iCount - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
+        for (int idxPt = (iCountNew - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt - m_idxsAdded.second);
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             SLabelDscr& labelDscrOld = m_hshGeometryLabelDscrs[strLabelNameOld];
@@ -3995,17 +4012,18 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
     }
     if (m_idxsRemoved.second > 0) {
         // Update text, position and user defined labels.
-        int iCount = m_idxsRemoved.first + m_idxsRemoved.second;
-        for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+        int iCountPrev = m_idxsRemoved.first + m_idxsRemoved.second;
+        for (int idxPt = m_idxsRemoved.first; idxPt < iCountPrev; ++idxPt) {
             const QString strLabelName = createPolygonPointLabelName(idxPt);
             m_strlstPredefinedLabelNames.removeOne(strLabelName);
             removeLabel(strLabelName);
         }
-        iCount = getNumberOfPredefinedPolygonPointLabelNames();
+        int iCountNew = getNumberOfPredefinedPolygonPointLabelNames();
         // Update the indicated point labels. E.g. if removing the first point, previously
         // the label P2 pointed to index 1. After removing the point at index 0, the label
         // P2 must be renamed to P1 pointing to index 0.
-        for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+        // But only if previously a polygon was set ..
+        for (int idxPt = m_idxsRemoved.first; idxPt < iCountNew; ++idxPt) {
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
             SLabelDscr labelDscr = m_hshLabelDscrs[strLabelNameOld];
@@ -4027,44 +4045,47 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
             }
         }
         // Update the position of the indicated name and user defined labels.
-        for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
-            if (!isPolygonPointLabelName(strLabelName)) {
-                CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
-                SLabelDscr& labelDscr = m_hshLabelDscrs[strLabelName];
-                if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
-                    || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
-                {
-                    if (labelDscr.m_selPt1.m_idxPt >= m_idxsRemoved.first) {
-                        labelDscr.m_selPt1.m_idxPt -= m_idxsRemoved.second;
+        // But only if previously a polygon was set ..
+        if (iCountPrev > 1) {
+            for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
+                if (!isPolygonPointLabelName(strLabelName)) {
+                    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
+                    SLabelDscr& labelDscr = m_hshLabelDscrs[strLabelName];
+                    if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt1.m_idxPt >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt1.m_idxPt -= m_idxsRemoved.second;
+                        }
                     }
-                }
-                if (pGraphObjLabel != nullptr) {
-                    pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
-                }
-                if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
-                    || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
-                {
-                    if (labelDscr.m_selPt2.m_idxPt >= m_idxsRemoved.first) {
-                        labelDscr.m_selPt2.m_idxPt -= m_idxsRemoved.second;
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
                     }
-                }
-                if (pGraphObjLabel != nullptr) {
-                    pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                    if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    {
+                        if (labelDscr.m_selPt2.m_idxPt >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt2.m_idxPt -= m_idxsRemoved.second;
+                        }
+                    }
+                    if (pGraphObjLabel != nullptr) {
+                        pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                    }
                 }
             }
         }
         // Update geometry labels.
-        iCount = m_idxsRemoved.first + m_idxsRemoved.second;
-        for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+        iCountPrev = m_idxsRemoved.first + m_idxsRemoved.second;
+        for (int idxPt = m_idxsRemoved.first; idxPt < iCountPrev; ++idxPt) {
             const QString strLabelName = createPolygonPointLabelName(idxPt);
             m_strlstGeometryLabelNames.removeOne(strLabelName);
             removeGeometryLabel(strLabelName);
         }
-        iCount = getNumberOfPolygonPointGeometryLabelNames();
+        iCountNew = getNumberOfPolygonPointGeometryLabelNames();
         // Update the indicated point labels. E.g. if removing the first point, previously
         // the label P2 pointed to index 1. After removing the point at index 0, the label
         // P2 must be renamed to P1 pointing to index 0.
-        for (int idxPt = m_idxsRemoved.first; idxPt < iCount; ++idxPt) {
+        for (int idxPt = m_idxsRemoved.first; idxPt < iCountNew; ++idxPt) {
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
             SLabelDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
@@ -4086,58 +4107,6 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
             }
         }
         m_idxsRemoved = qMakePair(-1, 0);
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Internal auxiliaray method to update text, position, user defined labels
-           as well as geometry labels if polygon points have been removed.
-*/
-void CGraphObjPolygon::updateLabelsOnPolygonChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "updateLabelsOnPolygonChanged",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
-    }
-    const QPolygonF& polygon = this->polygon();
-    // Update list of predefined label names.
-    int iNumberOfPredefinedPointLabelsPrev = getNumberOfPredefinedPolygonPointLabelNames();
-    if (iNumberOfPredefinedPointLabelsPrev < polygon.size()) {
-        for (int idxPt = iNumberOfPredefinedPointLabelsPrev; idxPt < polygon.count(); ++idxPt) {
-            const QString strLabelName = createPolygonPointLabelName(idxPt);
-            m_strlstPredefinedLabelNames.append(strLabelName);
-            addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, idxPt);
-        }
-    }
-    else if (iNumberOfPredefinedPointLabelsPrev > polygon.count()) {
-        for (int idxPt = polygon.size() - 1; idxPt >= iNumberOfPredefinedPointLabelsPrev; --idxPt) {
-            const QString strLabelName = createPolygonPointLabelName(idxPt);
-            // isPredefinedLabelName must return false when calling removeLabel
-            m_strlstPredefinedLabelNames.removeOne(strLabelName);
-            removeLabel(strLabelName);
-        }
-    }
-    int iNumberOfPointGeometryLabelsPrev = getNumberOfPolygonPointGeometryLabelNames();
-    if (iNumberOfPointGeometryLabelsPrev < polygon.count()) {
-        for (int idxPt = iNumberOfPointGeometryLabelsPrev; idxPt < polygon.count(); ++idxPt) {
-            const QString strLabelName = createPolygonPointLabelName(idxPt);
-            m_strlstGeometryLabelNames.append(strLabelName);
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, idxPt);
-        }
-    }
-    else if (iNumberOfPointGeometryLabelsPrev > polygon.count()) {
-        for (int idxPt = polygon.count() - 1; idxPt >= iNumberOfPointGeometryLabelsPrev; --idxPt) {
-            const QString strLabelName = createPolygonPointLabelName(idxPt);
-            // isPredefinedLabelName must return false when calling removeLabel
-            m_strlstGeometryLabelNames.removeOne(strLabelName);
-            removeGeometryLabel(strLabelName);
-        }
     }
 }
 
