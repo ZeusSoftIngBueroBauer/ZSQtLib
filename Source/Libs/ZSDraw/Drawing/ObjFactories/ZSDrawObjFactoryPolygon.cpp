@@ -158,7 +158,7 @@ CGraphObj* CObjFactoryPolygon::createGraphObj(
     CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene, EGraphObjTypePolygon);
     pGraphObj->setDrawSettings(drawSettings);
 
-    QPolygonF polygon({i_physValPoint.toQPointF()});
+    QPolygonF polygon({i_physValPoint.toQPointF(), i_physValPoint.toQPointF()});
     CPhysValPolygon physValPolygon(*i_pDrawingScene, polygon, i_physValPoint.unit());
     pGraphObj->setPolygon(physValPolygon);
 

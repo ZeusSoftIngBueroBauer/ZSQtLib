@@ -59,18 +59,18 @@ class QPainterPath;
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
 
-#define TEST_ADD_OBJECTS_STANDARDSHAPES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 0
@@ -79,9 +79,9 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 0
@@ -251,6 +251,9 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupDrawStandardShapesPolygonOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    //void createTestGroupDrawStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -280,6 +283,7 @@ protected slots:
     void doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);

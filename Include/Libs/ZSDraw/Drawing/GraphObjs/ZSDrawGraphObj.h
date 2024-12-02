@@ -702,6 +702,10 @@ protected: // overridables
     //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
+protected: // overridable auxiliary instance methods (method tracing)
+    CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
+    double setParentGroupScaleX(double i_fScaleX);
+    double setParentGroupScaleY(double i_fScaleY);
 protected: // auxiliary instance methods (method tracing)
     void emit_aboutToBeDestroyed();
     void emit_typeChanged(EGraphObjType i_graphObjType);
@@ -719,11 +723,8 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelAdded(const QString& i_strName);
     void emit_geometryLabelRemoved(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
-    CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
-    double setParentGroupScaleX(double i_fScaleX);
-    double setParentGroupScaleY(double i_fScaleY);
-    virtual void QGraphicsItem_prepareGeometryChange();
 protected: // overridable auxiliary instance methods (method tracing)
+    virtual void QGraphicsItem_prepareGeometryChange();
     virtual QPointF QGraphicsItem_setPos(const QPointF& i_pos);
     virtual double QGraphicsItem_setScale(double i_fFactor);
     virtual double QGraphicsItem_setRotation(double i_fAngle_degree);

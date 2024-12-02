@@ -3505,9 +3505,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
 
     //bool bEventHandled = false;
 
@@ -3668,12 +3668,185 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     //    //forwardMouseEventToObjectsHit(i_pEv);
     //}
 
-    //traceItemsStates(mthTracer, EMethodDir::Leave);
-
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
 } // mousePressEvent
+
+//------------------------------------------------------------------------------
+/*! @brief Handles the mouse release event.
+*/
+void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "mouseReleaseEvent",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
+
+    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    if (m_pObjFactory != nullptr) {
+        iObjFactoryType = m_pObjFactory->getGraphObjType();
+    }
+
+    //if (m_mode != EMode::Edit) {
+    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //    }
+    //}
+
+    QPointF ptScenePosMouseEvent = i_pEv->scenePos();
+
+    emit_mousePosChanged(ptScenePosMouseEvent);
+
+    if (m_mode == EMode::Edit) {
+        // If currently an object is "under construction" ...
+        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr)
+        //{
+        //    // ... forward mouse event to object "under construction".
+        //    if (m_pGraphObjCreating != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
+        //    }
+        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
+        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
+        //    }
+        //}
+        // If currently no object is "under construction" ...
+        {
+            if (m_pGraphicsItemSelectionArea != nullptr) {
+                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+                delete m_pGraphicsItemSelectionArea;
+                m_pGraphicsItemSelectionArea = nullptr;
+                QRectF rctSelectionArea(
+                    /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
+                    /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
+                    /* width  */ ptScenePosMouseEvent.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
+                    /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
+
+                QPainterPath path;
+                path.addRect(rctSelectionArea);
+                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                setSelectionArea(path, Qt::ContainsItemShape);
+                #else
+                setSelectionArea(path, Qt::ReplaceSelection, Qt::ContainsItemShape);
+                #endif
+            }
+            else {
+                // Dispatch mouse event to objects "under cursor".
+                QGraphicsScene::mouseReleaseEvent(i_pEv);
+            }
+        } // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
+    }
+    else if (m_mode == EMode::View) {
+        // Dispatch mouse event to objects "under cursor".
+        QGraphicsScene::mouseReleaseEvent(i_pEv);
+    }
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+} // mouseReleaseEvent
+
+//------------------------------------------------------------------------------
+/*! @brief Handles the mouse double click event.
+*/
+void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "mouseDoubleClickEvent",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
+
+    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    if (m_pObjFactory != nullptr) {
+        iObjFactoryType = m_pObjFactory->getGraphObjType();
+    }
+
+    //if (m_mode != EMode::Edit) {
+    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //    }
+    //}
+
+    QPointF ptScenePosMouseEvent = i_pEv->scenePos();
+
+    emit_mousePosChanged(ptScenePosMouseEvent);
+
+    if (m_mode == EMode::Edit) {
+        // If currently an object is "under construction" ...
+        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
+        //    // If currently a connection line is "under construction" ...
+        //    if (m_pGraphicsItemCreating != nullptr && m_pGraphObjCreating->isConnectionLine()) {
+        //        bool bIsValidEndPoint = true;
+        //        CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
+        //        CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
+        //        if (pGraphObjCnctLine != nullptr) {
+        //            pGraphObjCnctPt = getConnectionPoint(i_pEv->scenePos());
+        //            if (pGraphObjCnctPt != nullptr) {
+        //                bIsValidEndPoint = true;
+        //            }
+        //        }
+        //        if (bIsValidEndPoint) {
+        //            bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End, pGraphObjCnctPt);
+        //        }
+        //        if (!bIsValidEndPoint) {
+        //            delete m_pGraphicsItemCreating;
+        //            m_pGraphicsItemCreating = nullptr;
+        //            m_pGraphObjCreating = nullptr;
+        //            m_pGraphicsItemAddingShapePoints = nullptr;
+        //            m_pGraphObjAddingShapePoints = nullptr;
+        //            pGraphObjCnctLine = nullptr;
+        //        }
+        //    }
+        //    // ... dispatch mouse event to object "under construction".
+        //    if (m_pGraphicsItemCreating != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
+        //    }
+        //    else if (m_pGraphicsItemAddingShapePoints != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
+        //    }
+        //}
+        // If currently no object is "under construction" ...
+        {
+            // Dispatch mouse event to objects "under cursor".
+            QGraphicsScene::mouseDoubleClickEvent(i_pEv);
+        }
+    }
+    else if (m_mode == EMode::View) {
+        // Dispatch mouse event to objects "under cursor".
+        QGraphicsScene::mouseDoubleClickEvent(i_pEv);
+    }
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+} // mouseDoubleClickEvent
 
 //------------------------------------------------------------------------------
 /*! @brief Handles the mouse move event.
@@ -3713,8 +3886,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-
-    //traceItemsStates(mthTracer, EMethodDir::Enter);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
 
     emit_mousePosChanged(i_pEv->scenePos());
 
@@ -3903,180 +4077,13 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
 
-    //traceItemsStates(mthTracer, EMethodDir::Leave);
-
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
 } // mouseMoveEvent
-
-//------------------------------------------------------------------------------
-/*! @brief Handles the mouse release event.
-*/
-void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "mouseReleaseEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    //traceItemsStates(mthTracer, EMethodDir::Enter);
-
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
-    if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
-    }
-
-    //if (m_mode != EMode::Edit) {
-    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-    //    }
-    //}
-
-    QPointF ptScenePosMouseEvent = i_pEv->scenePos();
-
-    emit_mousePosChanged(ptScenePosMouseEvent);
-
-    if (m_mode == EMode::Edit) {
-        // If currently an object is "under construction" ...
-        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr)
-        //{
-        //    // ... forward mouse event to object "under construction".
-        //    if (m_pGraphObjCreating != nullptr) {
-        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
-        //    }
-        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
-        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-        //    }
-        //}
-        // If currently no object is "under construction" ...
-        {
-            if (m_pGraphicsItemSelectionArea != nullptr) {
-                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
-                delete m_pGraphicsItemSelectionArea;
-                m_pGraphicsItemSelectionArea = nullptr;
-                QRectF rctSelectionArea(
-                    /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
-                    /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
-                    /* width  */ ptScenePosMouseEvent.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
-                    /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
-
-                QPainterPath path;
-                path.addRect(rctSelectionArea);
-                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-                setSelectionArea(path, Qt::ContainsItemShape);
-                #else
-                setSelectionArea(path, Qt::ReplaceSelection, Qt::ContainsItemShape);
-                #endif
-            }
-            else {
-                // Dispatch mouse event to objects "under cursor".
-                QGraphicsScene::mouseReleaseEvent(i_pEv);
-            }
-        } // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
-    }
-    else if (m_mode == EMode::View) {
-        // Dispatch mouse event to objects "under cursor".
-        QGraphicsScene::mouseReleaseEvent(i_pEv);
-    }
-
-    //traceItemsStates(mthTracer, EMethodDir::Leave);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
-    }
-} // mouseReleaseEvent
-
-//------------------------------------------------------------------------------
-/*! @brief Handles the mouse double click event.
-*/
-void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "mouseDoubleClickEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    //traceItemsStates(mthTracer, EMethodDir::Enter);
-
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
-    if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
-    }
-
-    //if (m_mode != EMode::Edit) {
-    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-    //    }
-    //}
-
-    QPointF ptScenePosMouseEvent = i_pEv->scenePos();
-
-    emit_mousePosChanged(ptScenePosMouseEvent);
-
-    if (m_mode == EMode::Edit) {
-        // If currently an object is "under construction" ...
-        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
-        //    // If currently a connection line is "under construction" ...
-        //    if (m_pGraphicsItemCreating != nullptr && m_pGraphObjCreating->isConnectionLine()) {
-        //        bool bIsValidEndPoint = true;
-        //        CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-        //        CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
-        //        if (pGraphObjCnctLine != nullptr) {
-        //            pGraphObjCnctPt = getConnectionPoint(i_pEv->scenePos());
-        //            if (pGraphObjCnctPt != nullptr) {
-        //                bIsValidEndPoint = true;
-        //            }
-        //        }
-        //        if (bIsValidEndPoint) {
-        //            bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End, pGraphObjCnctPt);
-        //        }
-        //        if (!bIsValidEndPoint) {
-        //            delete m_pGraphicsItemCreating;
-        //            m_pGraphicsItemCreating = nullptr;
-        //            m_pGraphObjCreating = nullptr;
-        //            m_pGraphicsItemAddingShapePoints = nullptr;
-        //            m_pGraphObjAddingShapePoints = nullptr;
-        //            pGraphObjCnctLine = nullptr;
-        //        }
-        //    }
-        //    // ... dispatch mouse event to object "under construction".
-        //    if (m_pGraphicsItemCreating != nullptr) {
-        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
-        //    }
-        //    else if (m_pGraphicsItemAddingShapePoints != nullptr) {
-        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-        //    }
-        //}
-        // If currently no object is "under construction" ...
-        {
-            // Dispatch mouse event to objects "under cursor".
-            QGraphicsScene::mouseDoubleClickEvent(i_pEv);
-        }
-    }
-    else if (m_mode == EMode::View) {
-        // Dispatch mouse event to objects "under cursor".
-        QGraphicsScene::mouseDoubleClickEvent(i_pEv);
-    }
-
-    //traceItemsStates(mthTracer, EMethodDir::Leave);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
-    }
-} // mouseDoubleClickEvent
 
 /*==============================================================================
 public: // overridables of base class QGraphicsScene
@@ -4097,9 +4104,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
 
     QGraphicsScene::keyPressEvent(i_pEv);
 
@@ -4528,10 +4535,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         }
     } // if( !i_pEv->isAccepted() )
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -4552,17 +4558,15 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
 
     QGraphicsScene::keyReleaseEvent(i_pEv);
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -5385,73 +5389,67 @@ void CDrawingScene::emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_d
 public: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CDrawingScene::traceInternalStates(
-//    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel)
-////------------------------------------------------------------------------------
-//{
-//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-//        QString strRuntimeInfo;
-//        if (i_mthDir == EMethodDir::Enter) {
-//            strMthInArgs = "-+ ";
-//        } else if (i_mthDir == EMethodDir::Leave) {
-//            strMthInArgs = "+- ";
-//        } else {
-//            strMthInArgs = "   ";
-//        }
-//        strMthInArgs = "SceneRect {" + qRect2Str(sceneRect()) + "}";
-//        i_mthTracer.trace(strMthInArgs);
-//        if (i_mthDir == EMethodDir::Enter) {
-//            strMthInArgs = "-+ ";
-//        } else if (i_mthDir == EMethodDir::Leave) {
-//            strMthInArgs = "+- ";
-//        } else {
-//            strMthInArgs = "   ";
-//        }
-//        strMthInArgs += "Mode: " + m_mode.toString() +
-//            ", EditTool: " + m_editTool.toString() +
-//            ", EditMode: " + m_editMode.toString() +
-//            ", ResizeMode: " + m_editResizeMode.toString() +
-//            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
-//            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-//        i_mthTracer.trace(strMthInArgs);
-//    }
-//}
-
 //------------------------------------------------------------------------------
-void CDrawingScene::traceItemsStates(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel)
+void CDrawingScene::traceInternalStates(
+    CMethodTracer& i_mthTracer,
+    EMethodDir i_mthDir,
+    const QString& i_strFilter,
+    ELogDetailLevel i_detailLevel)
 //------------------------------------------------------------------------------
 {
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+    if (i_strFilter.isEmpty() || i_strFilter.contains("States", Qt::CaseInsensitive)) {
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
+        strRuntimeInfo += "Mode: " + m_mode.toString() +
+            //", EditTool: " + m_editTool.toString() +
+            //", EditMode: " + m_editMode.toString() +
+            //", ResizeMode: " + m_editResizeMode.toString() +
+            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
+            //", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name()) +
+            ", HitTol: " + QString::number(m_fHitTolerance_px) + " px";
         QGraphicsItem* pGraphicsItemMouseGrabber = mouseGrabberItem();
         CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
         if (pGraphObjMouseGrabber == nullptr) {
-            strRuntimeInfo += "MouseGrabberItem: null";
+            strRuntimeInfo += ", MouseGrabber: null";
         }
         else {
-            strRuntimeInfo += "MouseGrabberItem: " + pGraphObjMouseGrabber->path();
+            strRuntimeInfo += ", MouseGrabber: " + pGraphObjMouseGrabber->path();
         }
         i_mthTracer.trace(strRuntimeInfo);
-
-        QList<QGraphicsItem*> arpGraphicsItems = items();
-        for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            if (pGraphObj != nullptr) {
-
-                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-                else strRuntimeInfo = "   ";
-                strRuntimeInfo += "--- " + pGraphObj->typeAsString() + ": " + pGraphObj->path();
-                i_mthTracer.trace(strRuntimeInfo);
-                pGraphObj->traceGraphObjStates(i_mthTracer, i_mthDir, i_detailLevel);
-                pGraphObj->traceGraphicsItemStates(i_mthTracer, i_mthDir, i_detailLevel);
-                pGraphObj->tracePositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
-            }
-        }
+    }
+    if (i_strFilter.isEmpty() || i_strFilter.contains("DrawingSize", Qt::CaseInsensitive)) {
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "DrawingSize {" + m_drawingSize.toString() + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+    }
+    //if (i_strFilter.isEmpty() || i_strFilter.contains("DivLineMetrics", Qt::CaseInsensitive)) {
+    //    QString strRuntimeInfo;
+    //    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    //    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    //    else strRuntimeInfo = "   ";
+    //    strRuntimeInfo += "DivLineMetrics {X {" + m_divLinesMetricsX.toString() + "}" +
+    //        ", Y {" + m_divLinesMetricsY.toString() + "}}";
+    //    i_mthTracer.trace(strRuntimeInfo);
+    //}
+    if (i_strFilter.isEmpty() || i_strFilter.contains("GridSettings", Qt::CaseInsensitive)) {
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "GridSettings {" + m_gridSettings.toString() + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+    }
+    if (i_strFilter.isEmpty() || i_strFilter.contains("DrawSettings", Qt::CaseInsensitive)) {
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "DrawSettings {" + m_drawSettings.toString() + "}";
+        i_mthTracer.trace(strRuntimeInfo);
     }
 }

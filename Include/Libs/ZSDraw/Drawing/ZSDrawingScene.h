@@ -247,9 +247,9 @@ public: // overridables of base class QGraphicsScene
     virtual void dropEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
 public: // overridables of base class QGraphicsScene
     virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 public: // overridables of base class QGraphicsScene
     virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
@@ -281,8 +281,11 @@ protected: // auxiliary instance methods (trace emitting signals)
     void emit_drawingToolChanged(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     void emit_drawSettingsChanged(const ZS::Draw::CDrawSettings& i_drawSettings);
 public: // auxiliary instance methods (method tracing)
-    //void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
-    void traceItemsStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
+    void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir,
+        const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
 protected: // instance members

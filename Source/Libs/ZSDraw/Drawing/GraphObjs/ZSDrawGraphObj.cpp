@@ -7850,6 +7850,167 @@ protected: // overridables
 //}
 
 /*==============================================================================
+protected: // overridable auxiliary instance methods (method tracing)
+==============================================================================*/
+
+////------------------------------------------------------------------------------
+///*! @brief Internal method to calculate and set the current scene position of the object.
+//*/
+//void CGraphObj::updateInternalScenePos()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::updateInternalScenePos",
+//        /* strAddInfo   */ "" );
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr) {
+//        QPointF ptScenePos = pGraphicsItem->scenePos();
+//        setInternalScenePos(ptScenePos);
+//    }
+//}
+
+////------------------------------------------------------------------------------
+///*! @brief Internal method to set the current scene position of the object.
+//
+//    If the current scene position has been changed the scenePosChanged signal
+//    is emitted.
+//
+//    @param [in] i_pos
+//        New scene position of the object.
+//*/
+//void CGraphObj::setInternalScenePos(const QPointF& i_pos)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = point2Str(i_pos);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::setInternalScenePos",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_ptScenePos != i_pos) {
+//        m_ptScenePos = i_pos;
+//        emit_scenePosChanged();
+//    }
+//}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method to trace setting the parent group's physical rectangle.
+
+    The original parent group's physical rectangle is invalid as long as the item is not
+    added to a parent group or the parents physical rectangle at the time the item is
+    added to a parent.
+
+    @param [in] i_physValRect
+        The parent's physical rectangle.
+
+    @return Previous original parent's physical rectangle.
+*/
+CPhysValRect CGraphObj::setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setPhysValRectParentGroupOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectPrev = m_physValRectParentGroupOrig;
+    m_physValRectParentGroupOrig = i_physValRect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
+    }
+    return physValRectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method to trace setting the current scale factor of the parent group.
+
+    The scale factor is set each time the parent is resized. The geometry of the child
+    has to be updated to the scale factors by keeping their relative distance to the
+    center point of the parent's bounding rectangle. Without scale factors it would not
+    be possible to resize groups by moving corner points beyond their opposite corners
+    as this may temporarily result in width and height of 0 pixels. Afterwards the child
+    may not resize themselves if the parent is resized (division by zero).
+
+    @param [in] i_fScaleX
+        The parent's X scale factor.
+
+    @return Previous scale factor.
+*/
+double CGraphObj::setParentGroupScaleX(double i_fScaleX)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New: " + QString::number(i_fScaleX, 'f', 3);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setParentGroupScaleX",
+        /* strAddInfo   */ strMthInArgs );
+
+    double fScaleXPrev = m_fParentGroupScaleX;
+    m_fParentGroupScaleX = i_fScaleX;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev: " + QString::number(fScaleXPrev, 'f', 3));
+    }
+    return fScaleXPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method to trace setting the current scale factor of the parent group.
+
+    The scale factor is set each time the parent is resized. The geometry of the child
+    has to be updated to the scale factors by keeping their relative distance to the
+    center point of the parent's bounding rectangle. Without scale factors it would not
+    be possible to resize groups by moving corner points beyond their opposite corners
+    as this may temporarily result in width and height of 0 pixels. Afterwards the child
+    may not resize themselves if the parent is resized (division by zero).
+
+    @param [in] i_fScaleY
+        The parent's Y scale factor.
+
+    @return Previous scale factor.
+*/
+double CGraphObj::setParentGroupScaleY(double i_fScaleY)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New: " + QString::number(i_fScaleY, 'f', 3);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setParentGroupScaleY",
+        /* strAddInfo   */ strMthInArgs );
+
+    double fScaleYPrev = m_fParentGroupScaleY;
+    m_fParentGroupScaleY = i_fScaleY;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev: " + QString::number(fScaleYPrev, 'f', 3));
+    }
+    return fScaleYPrev;
+}
+
+/*==============================================================================
 protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
@@ -7875,10 +8036,6 @@ void CGraphObj::emit_aboutToBeDestroyed()
         m_bAboutToBeDestroyedEmitted = true;
     }
 }
-
-/*==============================================================================
-protected: // auxiliary instance methods (method tracing)
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CGraphObj::emit_typeChanged(EGraphObjType i_graphObjType)
@@ -8133,163 +8290,6 @@ void CGraphObj::emit_geometryLabelChanged(const QString& i_strName)
 /*==============================================================================
 protected: // overridable auxiliary instance methods (method tracing)
 ==============================================================================*/
-
-////------------------------------------------------------------------------------
-///*! @brief Internal method to calculate and set the current scene position of the object.
-//*/
-//void CGraphObj::updateInternalScenePos()
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::updateInternalScenePos",
-//        /* strAddInfo   */ "" );
-//
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-//    if (pGraphicsItem != nullptr) {
-//        QPointF ptScenePos = pGraphicsItem->scenePos();
-//        setInternalScenePos(ptScenePos);
-//    }
-//}
-
-////------------------------------------------------------------------------------
-///*! @brief Internal method to set the current scene position of the object.
-//
-//    If the current scene position has been changed the scenePosChanged signal
-//    is emitted.
-//
-//    @param [in] i_pos
-//        New scene position of the object.
-//*/
-//void CGraphObj::setInternalScenePos(const QPointF& i_pos)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = point2Str(i_pos);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::setInternalScenePos",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if (m_ptScenePos != i_pos) {
-//        m_ptScenePos = i_pos;
-//        emit_scenePosChanged();
-//    }
-//}
-
-//------------------------------------------------------------------------------
-/*! @brief Internal method to trace setting the parent group's physical rectangle.
-
-    The original parent group's physical rectangle is invalid as long as the item is not
-    added to a parent group or the parents physical rectangle at the time the item is
-    added to a parent.
-
-    @param [in] i_physValRect
-        The parent's physical rectangle.
-
-    @return Previous original parent's physical rectangle.
-*/
-CPhysValRect CGraphObj::setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setPhysValRectParentGroupOrig",
-        /* strAddInfo   */ strMthInArgs );
-
-    CPhysValRect physValRectPrev = m_physValRectParentGroupOrig;
-    m_physValRectParentGroupOrig = i_physValRect;
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
-    }
-    return physValRectPrev;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Internal method to trace setting the current scale factor of the parent group.
-
-    The scale factor is set each time the parent is resized. The geometry of the child
-    has to be updated to the scale factors by keeping their relative distance to the
-    center point of the parent's bounding rectangle. Without scale factors it would not
-    be possible to resize groups by moving corner points beyond their opposite corners
-    as this may temporarily result in width and height of 0 pixels. Afterwards the child
-    may not resize themselves if the parent is resized (division by zero).
-
-    @param [in] i_fScaleX
-        The parent's X scale factor.
-
-    @return Previous scale factor.
-*/
-double CGraphObj::setParentGroupScaleX(double i_fScaleX)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New: " + QString::number(i_fScaleX, 'f', 3);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setParentGroupScaleX",
-        /* strAddInfo   */ strMthInArgs );
-
-    double fScaleXPrev = m_fParentGroupScaleX;
-    m_fParentGroupScaleX = i_fScaleX;
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev: " + QString::number(fScaleXPrev, 'f', 3));
-    }
-    return fScaleXPrev;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Internal method to trace setting the current scale factor of the parent group.
-
-    The scale factor is set each time the parent is resized. The geometry of the child
-    has to be updated to the scale factors by keeping their relative distance to the
-    center point of the parent's bounding rectangle. Without scale factors it would not
-    be possible to resize groups by moving corner points beyond their opposite corners
-    as this may temporarily result in width and height of 0 pixels. Afterwards the child
-    may not resize themselves if the parent is resized (division by zero).
-
-    @param [in] i_fScaleY
-        The parent's Y scale factor.
-
-    @return Previous scale factor.
-*/
-double CGraphObj::setParentGroupScaleY(double i_fScaleY)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New: " + QString::number(i_fScaleY, 'f', 3);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setParentGroupScaleY",
-        /* strAddInfo   */ strMthInArgs );
-
-    double fScaleYPrev = m_fParentGroupScaleY;
-    m_fParentGroupScaleY = i_fScaleY;
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev: " + QString::number(fScaleYPrev, 'f', 3));
-    }
-    return fScaleYPrev;
-}
 
 //------------------------------------------------------------------------------
 /*! @brief Internal method reimplementing the prepareGeometryChange method of

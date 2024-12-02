@@ -3234,6 +3234,8 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
 
     else if (i_change == ItemSelectedHasChanged) {
         QGraphicsItem_prepareGeometryChange();
+        todo: traceInternalStates("States");
+        showSelectionPoints of boundingRect not if EditMode = CreatingByMouseEvents
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
             showSelectionPoints();

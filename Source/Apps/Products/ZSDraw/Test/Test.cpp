@@ -2655,6 +2655,201 @@ void CTest::doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepDrawGraphObjPolygon",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    QPolygon points = i_pTestStep->getConfigValue("Points").value<QPolygon>();
+    QString strMethod = "setCurrentDrawingTool";
+    if (i_pTestStep->hasConfigValue("Method")) {
+        strMethod = i_pTestStep->getConfigValue("Method").toString();
+    }
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "Method: " + strMethod;
+        if (i_pTestStep->hasConfigValue("Points.Idx")) {
+            strRuntimeInfo += ", PointsIdx: " + QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt());
+        }
+        mthTracer.trace(strRuntimeInfo);
+    }
+
+    if (strMethod == "setCurrentDrawingTool") {
+        m_pDrawingScene->setCurrentDrawingTool(strFactoryGroupName, strGraphObjType);
+        i_pTestStep->setConfigValue("Method", "mousePressEvent");
+        if (points.size() >= 1) {
+            i_pTestStep->setConfigValue("Points.Idx", 0);
+        }
+        else {
+            i_pTestStep->setConfigValue("Method", "setResultValues");
+        }
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mousePressEvent") {
+        int idxPt = i_pTestStep->getConfigValue("Points.Idx").toInt();
+        if (idxPt < points.size()) {
+            QPoint ptMousePos = points.at(idxPt);
+            Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+            if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+            }
+            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
+            QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+            ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+            ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+            QMouseEvent* pMouseEv = new QMouseEvent(
+                /* type      */ QEvent::MouseButtonPress,
+                /* pos       */ ptDrawingViewMousePos,
+                /* globalPos */ ptMousePosGlobal,
+                /* button    */ Qt::LeftButton,
+                /* button    */ Qt::LeftButton,
+                /* modifiers */ keyboardModifiers );
+            m_pDrawingView->mousePressEvent(pMouseEv);
+            delete pMouseEv;
+            pMouseEv = nullptr;
+            i_pTestStep->setConfigValue("Method", "mouseReleaseEvent");
+        }
+        else {
+            i_pTestStep->setConfigValue("Method", "setResultValues");
+        }
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mouseReleaseEvent") {
+        int idxPt = i_pTestStep->getConfigValue("Points.Idx").toInt();
+        if (idxPt < points.size()) {
+            QPoint ptMousePos = points.at(idxPt);
+            Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+            if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+            }
+            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
+            QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+            ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+            ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+            QMouseEvent* pMouseEv = new QMouseEvent(
+                /* type      */ QEvent::MouseButtonRelease,
+                /* pos       */ ptDrawingViewMousePos,
+                /* globalPos */ ptMousePosGlobal,
+                /* button    */ Qt::LeftButton,
+                /* buttons   */ Qt::NoButton,
+                /* modifiers */ keyboardModifiers );
+            m_pDrawingView->mouseReleaseEvent(pMouseEv);
+            delete pMouseEv;
+            pMouseEv = nullptr;
+            if (idxPt < points.size() - 1) {
+                QPoint ptMousePosStop = points.at(idxPt+1);
+                addMouseMoveEventDataRows(i_pTestStep, ptMousePos, ptMousePosStop);
+                i_pTestStep->setConfigValue("Method", "mouseMoveEvent");
+            }
+            else {
+                i_pTestStep->setConfigValue("Method", "setResultValues");
+            }
+        }
+        else {
+            i_pTestStep->setConfigValue("Method", "setResultValues");
+        }
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mouseMoveEvent") {
+        int iMouseMovesRemaining = i_pTestStep->getDataRowCount();
+        if (iMouseMovesRemaining > 0) {
+            Qt::MouseButton mouseBtn = Qt::LeftButton;
+            if (i_pTestStep->hasConfigValue("MouseButtons")) {
+                mouseBtn = static_cast<Qt::MouseButton>(i_pTestStep->getConfigValue("MouseButtons").toInt());
+            }
+            QHash<QString, QVariant> dataRow = i_pTestStep->takeDataRow(0);
+            QPoint ptMouseMovePos = dataRow["MousePos"].toPoint();
+            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMouseMovePos);
+            QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+            QMouseEvent* pMouseEv = new QMouseEvent(
+                /* type      */ QEvent::MouseMove,
+                /* pos       */ ptDrawingViewMousePos,
+                /* globalPos */ ptMousePosGlobal,
+                /* button    */ Qt::NoButton,
+                /* buttons   */ mouseBtn,
+                /* modifiers */ Qt::NoModifier );
+            m_pDrawingView->mouseMoveEvent(pMouseEv);
+            delete pMouseEv;
+            pMouseEv = nullptr;
+        }
+        else {
+            int idxPt = i_pTestStep->getConfigValue("Points.Idx").toInt();
+            if (idxPt < points.size() - 1) {
+                i_pTestStep->setConfigValue("Method", "mousePressEvent");
+                i_pTestStep->setConfigValue("Points.Idx", idxPt + 1);
+            }
+            else if (idxPt == points.size() - 1) {
+                i_pTestStep->setConfigValue("Method", "mouseDoubleClickEvent");
+                i_pTestStep->setConfigValue("Points.Idx", idxPt + 1);
+            }
+            else {
+                i_pTestStep->setConfigValue("Method", "setResultValues");
+            }
+        }
+        triggerDoTestStep();
+    }
+    else if (strMethod == "mouseDoubleClickEvent") {
+        int idxPt = i_pTestStep->getConfigValue("Points.Idx").toInt();
+        if (idxPt < points.size()) {
+            QPoint ptMousePos = points.at(idxPt);
+            Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+            if (i_pTestStep->hasConfigValue("KeyboardModifiers")) {
+                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+            }
+            QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
+            QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
+            ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+            ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+            QMouseEvent* pMouseEv = new QMouseEvent(
+                /* type      */ QEvent::MouseButtonDblClick,
+                /* pos       */ ptDrawingViewMousePos,
+                /* globalPos */ ptMousePosGlobal,
+                /* button    */ Qt::LeftButton,
+                /* button    */ Qt::LeftButton,
+                /* modifiers */ keyboardModifiers );
+            m_pDrawingView->mouseDoubleClickEvent(pMouseEv);
+            delete pMouseEv;
+            pMouseEv = nullptr;
+        }
+        i_pTestStep->setConfigValue("Method", "setResultValues");
+        i_pTestStep->removeConfigValue("Points.Idx");
+        triggerDoTestStep();
+    }
+    else if (strMethod == "setResultValues") {
+        int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+            i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+        QStringList strlstResultValues;
+        QString strKeyInTreeLineCreated = pIdxTree->buildKeyInTreeStr(strEntryType, "Line" + QString::number(CGraphObjLine::s_iInstCount-1));
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strKeyInTreeLineCreated));
+        if (pGraphObjLine != nullptr) {
+            pGraphObjLine->rename(strGraphObjName);
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObjLine, false, iResultValuesPrecision));
+        }
+        i_pTestStep->setResultValues(strlstResultValues);
+        i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
+        i_pTestStep->removeConfigValue("Points.Idx");
+    }
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
