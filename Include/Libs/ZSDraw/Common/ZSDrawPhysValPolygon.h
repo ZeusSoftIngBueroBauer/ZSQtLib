@@ -127,6 +127,8 @@ public: // instance methods
     bool isEmpty() const;
     int count() const;
     CPhysValPoint at(int i_idx) const;
+    CPhysValPoint first() const;
+    CPhysValPoint last() const;
     void replace(int i_idx, const CPhysValPoint& i_physValPoint);
     void append(const CPhysValPoint& i_physValPoint);
     void insert(int i_idx, const CPhysValPoint& i_physValPoint);

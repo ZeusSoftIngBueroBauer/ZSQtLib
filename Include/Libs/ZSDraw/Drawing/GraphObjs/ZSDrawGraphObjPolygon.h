@@ -123,6 +123,8 @@ public: // instance methods
     bool isEmpty() const;
     int count() const;
     CPhysValPoint at(int i_idx) const;
+    CPhysValPoint first() const;
+    CPhysValPoint last() const;
     void replace(int i_idx, const CPhysValPoint& i_physValPoint);
     void append(const CPhysValPoint& i_physValPoint);
     void insert(int i_idx, const CPhysValPoint& i_physValPoint);
@@ -164,9 +166,9 @@ protected: // overridables of base class QGraphicsItem
     virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable slots of base class CGraphObj
@@ -194,7 +196,6 @@ protected: // auxiliary instance methods (method tracing)
     QPolygonF setPolygonOrig(const QPolygonF& i_polygon);
     QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon);
     CPhysValPolygon setPhysValPolygonOrig(const CPhysValPolygon& i_physValPolygon);
-    CPhysValPolygon setPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygon);
     CPhysValPolygon setPhysValPolygonScaledAndRotated(const CPhysValPolygon& i_physValPolygon);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
@@ -213,7 +214,6 @@ protected: // class members
 protected: // instance members
     QPolygonF m_polygonOrig;
     CPhysValPolygon m_physValPolygonOrig;
-    CPhysValPolygon m_physValPolygonScaled;
     CPhysValPolygon m_physValPolygonScaledAndRotated;
     QPolygonF m_plgLineStartArrowHead;
     QPolygonF m_plgLineEndArrowHead;

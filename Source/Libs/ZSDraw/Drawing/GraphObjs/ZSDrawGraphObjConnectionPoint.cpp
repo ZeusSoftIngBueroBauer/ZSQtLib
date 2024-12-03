@@ -1374,32 +1374,6 @@ void CGraphObjConnectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv 
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mouseMoveEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    //if( m_editMode == EEditMode::Move )
-    //{
-    //    QGraphicsEllipseItem::mouseMoveEvent(i_pEv);
-
-    //    //updateEditInfo();
-    //    //updateToolTip();
-
-    //} // if( m_editMode == EEditMode::Move )
-
-} // mouseMoveEvent
-
-//------------------------------------------------------------------------------
 void CGraphObjConnectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -1485,6 +1459,32 @@ void CGraphObjConnectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* 
     //} // if( modeDrawing == EMode::Edit )
 
 } // mouseDoubleClickEvent
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "mouseMoveEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    //if( m_editMode == EEditMode::Move )
+    //{
+    //    QGraphicsEllipseItem::mouseMoveEvent(i_pEv);
+
+    //    //updateEditInfo();
+    //    //updateToolTip();
+
+    //} // if( m_editMode == EEditMode::Move )
+
+} // mouseMoveEvent
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem

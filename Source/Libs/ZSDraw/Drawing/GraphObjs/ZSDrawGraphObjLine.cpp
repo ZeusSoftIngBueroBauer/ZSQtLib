@@ -1935,35 +1935,19 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     // Forward the mouse event to the base implementation.
     // This will select the item, creating selection points if not yet created.
     QGraphicsLineItem::mousePressEvent(i_pEv);
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
     }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mouseMoveEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Forward the mouse event to the LineItems base implementation.
-    // This will move the item resulting in an itemChange call with PositionHasChanged.
-    QGraphicsLineItem::mouseMoveEvent(i_pEv);
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
@@ -1983,6 +1967,10 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     //// The mouse release event would select the object.
     //// This is not wanted if the selection tool is not active.
@@ -2001,10 +1989,14 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     //    setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
     //}
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
-} // mouseReleaseEvent
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
@@ -2020,6 +2012,10 @@ void CGraphObjLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     // When double clicking an item, the item will first receive a mouse
     // press event, followed by a release event (i.e., a click), then a
@@ -2033,10 +2029,46 @@ void CGraphObjLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
             onCreateAndExecDlgFormatGraphObjs();
         }
     }
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
-} // mouseDoubleClickEvent
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "mouseMoveEvent",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+
+    // Forward the mouse event to the LineItems base implementation.
+    // This will move the item resulting in an itemChange call with PositionHasChanged.
+    QGraphicsLineItem::mouseMoveEvent(i_pEv);
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
@@ -2129,7 +2161,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // Not necessary to bring selection points to front as item has been already brought
             // to front and "showSelectionPoints" sets zValue of selection points above item.
             //bringSelectionPointsToFront();
-            //setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else {
             hideSelectionPoints();
@@ -2322,8 +2353,8 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     else {
         physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         if (selPt.m_idxPt == 0) {
             setP1(physValParentSelPt);

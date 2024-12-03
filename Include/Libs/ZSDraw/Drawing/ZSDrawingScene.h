@@ -280,11 +280,21 @@ protected: // auxiliary instance methods (trace emitting signals)
     void emit_modeChanged(const ZS::System::CEnumMode& i_eMode);
     void emit_drawingToolChanged(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     void emit_drawSettingsChanged(const ZS::Draw::CDrawSettings& i_drawSettings);
+protected: // auxiliary instance methods (method tracing)
+    void QGraphicsScene_mousePressEvent( QGraphicsSceneMouseEvent* i_pEv );
+    void QGraphicsScene_mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv );
+    void QGraphicsScene_mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
+    void QGraphicsScene_mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv );
 public: // auxiliary instance methods (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
         const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
+    void traceVisibleItems(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir,
+        const QPointF& i_ptScenePos,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
@@ -326,8 +336,11 @@ protected: // instance members
     CObjFactory* m_pObjFactory;
     /*!< Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     //QGraphicsItem* m_pGraphicsItemCreating;
-    /*! Same object as GraphicsItemCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    //CGraphObj* m_pGraphObjCreating;
+    /*! Points to the object currently beeing created by mouse events.
+        If an obect is under construction the mouse grabber item is a selection point
+        and mouse release events should not invalidate the mouse grabber item but
+        the selection point should be kept as the mouse grabber item. */
+    CGraphObj* m_pGraphObjUnderConstruction;
     /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     //QGraphicsItem* m_pGraphicsItemAddingShapePoints;
     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */

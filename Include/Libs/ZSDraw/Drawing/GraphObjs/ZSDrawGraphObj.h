@@ -463,6 +463,7 @@ public: // instance methods
     bool isGroup() const;
     bool isSelectionPoint() const;
     bool isLabel() const;
+    bool mouseReleaseEventFinishesObjectCreation() const;
 public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
@@ -820,6 +821,11 @@ protected: // instance members
     ///*!< If the graphical object is currently being resized this member defines how the object
     //     will be resized. */
     //CEnumEditResizeMode m_editResizeMode;
+    /*!< Flag indicating whether a mouse release event finishes the object creation.
+         Default value is true but for polygons the object creation is not finished if
+         the mouse is released but instead a mouse double click is used to add the last
+         polygon point which finishes creation of the object. */
+    bool m_bMouseReleaseEventFinishesObjectCreation;
     /*!< Defines the Z-Value which again defines the drawing order within the list of graphics item
          of the drawing scene.
          Two values are stored. The original version is the ZValue which will be initially used

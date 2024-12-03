@@ -187,9 +187,9 @@ protected: // overridables of base class QGraphicsItem
     virtual void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj

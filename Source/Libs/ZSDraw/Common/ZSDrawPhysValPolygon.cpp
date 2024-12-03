@@ -1018,8 +1018,6 @@ int CPhysValPolygon::count() const
 //------------------------------------------------------------------------------
 /*! @brief Returns the point at index position as a copy.
 
-    Same as method "at(i_idx)".
-
     @note An operator or method returning a modifiable reference is not provided
           as on modifying the point, some further calculations as updating the
           bounding rectangle must be triggered.
@@ -1031,6 +1029,32 @@ CPhysValPoint CPhysValPolygon::at(int i_idx) const
 //------------------------------------------------------------------------------
 {
     return CPhysValPoint(*m_pDrawingScene, m_polygonScaledAndRotated[i_idx]);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the first point of the polygon as a copy.
+
+    @note An operator or method returning a modifiable reference is not provided
+          as on modifying the point, some further calculations as updating the
+          bounding rectangle must be triggered.
+*/
+CPhysValPoint CPhysValPolygon::first() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene, m_polygonScaledAndRotated.first());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the last point of the polygon as a copy.
+
+    @note An operator or method returning a modifiable reference is not provided
+          as on modifying the point, some further calculations as updating the
+          bounding rectangle must be triggered.
+*/
+CPhysValPoint CPhysValPolygon::last() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene, m_polygonScaledAndRotated.last());
 }
 
 //------------------------------------------------------------------------------
@@ -1266,8 +1290,15 @@ void CPhysValPolygon::updateScaledAndRotatedPolygon()
 {
     QSizeF sizeModified = m_physValRectScaledAndRotated.size().toQSizeF();
     QPointF ptCenterModified = m_physValRectScaledAndRotated.center().toQPointF();
-    double fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
-    double fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
+    double fXScaleFactor = 1.0;
+    double fYScaleFactor = 1.0;
+    // Width and height might be zero.
+    if (sizeModified.width() != m_sizeOrig.width() && m_sizeOrig.width() > 0.0) {
+        fXScaleFactor = sizeModified.width() / m_sizeOrig.width();
+    }
+    if (sizeModified.height() != m_sizeOrig.height() && m_sizeOrig.height() > 0.0) {
+        fYScaleFactor = sizeModified.height() / m_sizeOrig.height();
+    }
     for (int idxPt = 0; idxPt < m_polygonScaledAndRotated.size(); ++idxPt) {
         double fdxOrig = m_polygonOrig[idxPt].x() - m_ptCenterOrig.x();
         double fdyOrig = m_polygonOrig[idxPt].y() - m_ptCenterOrig.y();

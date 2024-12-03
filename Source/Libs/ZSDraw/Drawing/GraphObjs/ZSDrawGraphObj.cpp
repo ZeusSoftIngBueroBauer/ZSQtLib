@@ -146,6 +146,7 @@ CGraphObj::CGraphObj(
     m_bIsHighlighted(false),
     m_editMode(EEditMode::None),
     //m_editResizeMode(EEditResizeMode::None),
+    m_bMouseReleaseEventFinishesObjectCreation(true),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
     m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
     m_pGraphObjGroupParent(nullptr),
@@ -388,6 +389,7 @@ CGraphObj::~CGraphObj()
     m_bIsHighlighted = false;
     m_editMode = static_cast<EEditMode>(0);
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
+    m_bMouseReleaseEventFinishesObjectCreation = false;
     //m_arfZValues.clear();
     //m_physValRotationAngle;
     m_pGraphObjGroupParent = nullptr;
@@ -679,6 +681,19 @@ bool CGraphObj::isLabel() const
 //------------------------------------------------------------------------------
 {
     return ((m_type >= EGraphObjTypeLabelMin) && (m_type <= EGraphObjTypeLabelMax));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether a mouse release event finishes the object creation.
+
+    For polygons the object creation is not finished if the mouse is released but
+    instead a mouse double click is used to add the last polygon point and which
+    finishes creation of the object.
+*/
+bool CGraphObj::mouseReleaseEventFinishesObjectCreation() const
+//------------------------------------------------------------------------------
+{
+    return m_bMouseReleaseEventFinishesObjectCreation;
 }
 
 /*==============================================================================
@@ -5327,21 +5342,21 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
         QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
-        if (m_arpSelPtsPolygon.size() != i_plg.size()) {
-            if (m_arpSelPtsPolygon.size() > 0) {
-                for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
-                    // Deleting child objects leads to itemChange and an updateToolTip call
-                    // accessing the array of selection points.
-                    CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-                    m_arpSelPtsPolygon[idxSelPt] = nullptr;
-                    // The dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene.
-                    //m_pDrawingScene->removeGraphObj(pGraphObjSelPt);
-                    delete pGraphObjSelPt;
-                    pGraphObjSelPt = nullptr;
-                }
-                m_arpSelPtsPolygon.clear();
+        if (m_arpSelPtsPolygon.size() > i_plg.size()) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
+                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+                m_arpSelPtsPolygon[idxSelPt] = nullptr;
+                // The dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene.
+                //m_pDrawingScene->removeGraphObj(pGraphObjSelPt);
+                delete pGraphObjSelPt;
+                pGraphObjSelPt = nullptr;
             }
-            for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
+                m_arpSelPtsPolygon.removeAt(idxSelPt);
+            }
+        }
+        else if (m_arpSelPtsPolygon.size() < i_plg.size()) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size(); idxSelPt < i_plg.size(); ++idxSelPt) {
                 m_arpSelPtsPolygon.append(nullptr);
             }
         }
@@ -8557,7 +8572,6 @@ void CGraphObj::traceGraphicsItemStates(
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItemThis != nullptr) {
             QString strRuntimeInfo;
-
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
@@ -8566,13 +8580,11 @@ void CGraphObj::traceGraphicsItemStates(
                              ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
                              ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled());
             i_mthTracer.trace(strRuntimeInfo);
-
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
             strRuntimeInfo += "AcceptedMouseButtons {" + qMouseButtons2Str(pGraphicsItemThis->acceptedMouseButtons()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
-
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
@@ -8592,13 +8604,14 @@ void CGraphObj::traceGraphObjStates(
     }
     if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         QString strRuntimeInfo;
-
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
-        strRuntimeInfo += "IsHit: " + bool2Str(m_bIsHit) + ", IsHighlighted: " + bool2Str(m_bIsHighlighted);
+        strRuntimeInfo += "EditMode: " + m_editMode.toString() +
+            ", IsHit: " + bool2Str(m_bIsHit) +
+            ", IsHighlighted: " + bool2Str(m_bIsHighlighted) +
+            ", ForceConversion: " + bool2Str(m_bForceConversionToSceneCoors);
         i_mthTracer.trace(strRuntimeInfo);
-
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";

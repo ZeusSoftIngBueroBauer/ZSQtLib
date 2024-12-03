@@ -1106,119 +1106,6 @@ void CGraphObjRect::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
-void CGraphObjRect::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mouseMoveEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-//
-//    if( modeDrawing == EMode::Edit )
-//    {
-//        if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::Resize )
-//        {
-//            QPointF ptMouseItemPos = i_pEv->pos();
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, nullptr );
-//
-//            // Don't change the position of the object as the position of further
-//            // mouse events should be received relative to the object's position
-//            // on starting the edit process on pressing the mouse.
-//            //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-//
-//            QGraphicsRectItem::setRect(m_rctCurr); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-//
-//            updateSelectionPointsOfBoundingRect(m_rctCurr);
-//#endif
-//
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::Resize )
-//
-//        else if( m_editMode == EEditMode::Move )
-//        {
-//            QGraphicsRectItem::mouseMoveEvent(i_pEv);
-//
-//        } // if( m_editMode == EEditMode::Move )
-//
-//        else if( m_editMode == EEditMode::Resize )
-//        {
-//            // Handled together with EEditMode::Creating above.
-//
-//        } // if( m_editMode == EEditMode::Resize )
-//
-//        else if( m_editMode == EEditMode::Rotate )
-//        {
-//            QPointF ptMouseScenePos = i_pEv->scenePos();
-//
-//            double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_fRotAngleCurr_deg = Math::rad2Degree(fRotAngle_rad);
-//
-//            switch( m_selPtSelectedBoundingRect.enumerator() )
-//            {
-//                case ESelectionPoint::RotateTop:
-//                {
-//                    m_fRotAngleCurr_deg -= 90.0;
-//                    break;
-//                }
-//                case ESelectionPoint::RotateBottom:
-//                {
-//                    m_fRotAngleCurr_deg -= 270.0;
-//                    break;
-//                }
-//                default:
-//                {
-//                    break;
-//                }
-//            }
-//
-//            m_fRotAngleCurr_deg = Math::round2Resolution( m_fRotAngleCurr_deg, m_pDrawingScene->getRotationAngleResolutionInDegree() );
-//
-//            while( m_fRotAngleCurr_deg >= 360.0 )
-//            {
-//                m_fRotAngleCurr_deg -= 360.0;
-//            }
-//            while( m_fRotAngleCurr_deg < 0.0 )
-//            {
-//                m_fRotAngleCurr_deg += 360.0;
-//            }
-//#endif
-//
-//            updateTransform();
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( m_editMode == EEditMode::Rotate )
-//
-//    } // if( modeDrawing == EMode::Edit )
-//
-//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-//    {
-//        strMthInArgs  = "Selected:" + bool2Str(isSelected());
-//        strMthInArgs += ", EditMode:" + m_editMode.toString();
-//        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-//        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-//        strMthInArgs += ", Rect(x,y,w,h):(" + QString::number(rect().x()) + "," + QString::number(rect().y());
-//        strMthInArgs += "," + QString::number(rect().width()) + "," + QString::number(rect().height()) + ")";
-//        mthTracer.trace(strMthInArgs);
-//    }
-
-} // mouseMoveEvent
-
-//------------------------------------------------------------------------------
 void CGraphObjRect::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -1398,6 +1285,119 @@ void CGraphObjRect::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     //}
 
 } // mouseDoubleClickEvent
+
+//------------------------------------------------------------------------------
+void CGraphObjRect::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "mouseMoveEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+//
+//    if( modeDrawing == EMode::Edit )
+//    {
+//        if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::Resize )
+//        {
+//            QPointF ptMouseItemPos = i_pEv->pos();
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, nullptr );
+//
+//            // Don't change the position of the object as the position of further
+//            // mouse events should be received relative to the object's position
+//            // on starting the edit process on pressing the mouse.
+//            //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
+//
+//            QGraphicsRectItem::setRect(m_rctCurr); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
+//
+//            updateSelectionPointsOfBoundingRect(m_rctCurr);
+//#endif
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::Resize )
+//
+//        else if( m_editMode == EEditMode::Move )
+//        {
+//            QGraphicsRectItem::mouseMoveEvent(i_pEv);
+//
+//        } // if( m_editMode == EEditMode::Move )
+//
+//        else if( m_editMode == EEditMode::Resize )
+//        {
+//            // Handled together with EEditMode::Creating above.
+//
+//        } // if( m_editMode == EEditMode::Resize )
+//
+//        else if( m_editMode == EEditMode::Rotate )
+//        {
+//            QPointF ptMouseScenePos = i_pEv->scenePos();
+//
+//            double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            m_fRotAngleCurr_deg = Math::rad2Degree(fRotAngle_rad);
+//
+//            switch( m_selPtSelectedBoundingRect.enumerator() )
+//            {
+//                case ESelectionPoint::RotateTop:
+//                {
+//                    m_fRotAngleCurr_deg -= 90.0;
+//                    break;
+//                }
+//                case ESelectionPoint::RotateBottom:
+//                {
+//                    m_fRotAngleCurr_deg -= 270.0;
+//                    break;
+//                }
+//                default:
+//                {
+//                    break;
+//                }
+//            }
+//
+//            m_fRotAngleCurr_deg = Math::round2Resolution( m_fRotAngleCurr_deg, m_pDrawingScene->getRotationAngleResolutionInDegree() );
+//
+//            while( m_fRotAngleCurr_deg >= 360.0 )
+//            {
+//                m_fRotAngleCurr_deg -= 360.0;
+//            }
+//            while( m_fRotAngleCurr_deg < 0.0 )
+//            {
+//                m_fRotAngleCurr_deg += 360.0;
+//            }
+//#endif
+//
+//            updateTransform();
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( m_editMode == EEditMode::Rotate )
+//
+//    } // if( modeDrawing == EMode::Edit )
+//
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+//    {
+//        strMthInArgs  = "Selected:" + bool2Str(isSelected());
+//        strMthInArgs += ", EditMode:" + m_editMode.toString();
+//        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
+//        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+//        strMthInArgs += ", Rect(x,y,w,h):(" + QString::number(rect().x()) + "," + QString::number(rect().y());
+//        strMthInArgs += "," + QString::number(rect().width()) + "," + QString::number(rect().height()) + ")";
+//        mthTracer.trace(strMthInArgs);
+//    }
+
+} // mouseMoveEvent
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem

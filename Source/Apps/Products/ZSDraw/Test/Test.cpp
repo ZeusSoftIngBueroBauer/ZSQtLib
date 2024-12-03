@@ -2643,8 +2643,8 @@ void CTest::doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         QStringList strlstResultValues;
-        QString strKeyInTreeLineCreated = pIdxTree->buildKeyInTreeStr(strEntryType, "Line" + QString::number(CGraphObjLine::s_iInstCount-1));
-        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strKeyInTreeLineCreated));
+        QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(CGraphObjLine::s_iInstCount-1));
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
         if (pGraphObjLine != nullptr) {
             pGraphObjLine->rename(strGraphObjName);
             strlstResultValues.append(resultValuesForGraphObj(pGraphObjLine, false, iResultValuesPrecision));
@@ -2792,11 +2792,11 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         }
         else {
             int idxPt = i_pTestStep->getConfigValue("Points.Idx").toInt();
-            if (idxPt < points.size() - 1) {
+            if (idxPt < points.size() - 2) {
                 i_pTestStep->setConfigValue("Method", "mousePressEvent");
                 i_pTestStep->setConfigValue("Points.Idx", idxPt + 1);
             }
-            else if (idxPt == points.size() - 1) {
+            else if (idxPt == points.size() - 2) {
                 i_pTestStep->setConfigValue("Method", "mouseDoubleClickEvent");
                 i_pTestStep->setConfigValue("Points.Idx", idxPt + 1);
             }
@@ -2837,15 +2837,26 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         QStringList strlstResultValues;
-        QString strKeyInTreeLineCreated = pIdxTree->buildKeyInTreeStr(strEntryType, "Line" + QString::number(CGraphObjLine::s_iInstCount-1));
-        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strKeyInTreeLineCreated));
-        if (pGraphObjLine != nullptr) {
-            pGraphObjLine->rename(strGraphObjName);
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObjLine, false, iResultValuesPrecision));
+        QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(CGraphObjPolygon::s_iInstCount-1));
+        CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+        if (pGraphObjPolygon != nullptr) {
+            pGraphObjPolygon->rename(strGraphObjName);
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObjPolygon, false, iResultValuesPrecision));
         }
         i_pTestStep->setResultValues(strlstResultValues);
         i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
         i_pTestStep->removeConfigValue("Points.Idx");
+    }
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "Method: ";
+        if (i_pTestStep->hasConfigValue("Method")) {
+            strRuntimeInfo += i_pTestStep->getConfigValue("Method").toString();
+        }
+        if (i_pTestStep->hasConfigValue("Points.Idx")) {
+            strRuntimeInfo += ", PointsIdx: " + QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt());
+        }
+        mthTracer.trace(strRuntimeInfo);
     }
 }
 
@@ -2966,12 +2977,12 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     }
     else if (strMethod == "setResultValues") {
         QStringList strlstResultValues;
-        QString strKeyInTreeLineCreated = pIdxTree->buildKeyInTreeStr(strEntryType, "Group" + QString::number(CGraphObjGroup::s_iInstCount-1));
+        QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(CGraphObjGroup::s_iInstCount-1));
         QStringList strlstGraphObjsKeyInTreeGetResultValues;
         if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
             strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
         }
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strKeyInTreeLineCreated));
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
         if (pGraphObjGroup != nullptr) {
             // Deselect the object before changing the name. Otherwise the selection points keep their current names.
             // This would not be a problem. But this might be confusing when reading the log file.

@@ -2916,6 +2916,10 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     //CEnumMode modeDrawing = m_pDrawingScene->getMode();
     //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
@@ -2966,6 +2970,163 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "mouseReleaseEvent",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
+
+    //if (modeDrawing == EMode::Edit) {
+    //    if( m_editMode == EEditMode::Resize ) {
+    //        // The item will not be resized to the position of the mouse release event.
+    //        // A selection point might have been clicked and released immediately (without
+    //        // moving the mouse). In this case changing the size of the item according to
+    //        // position of the mouse is not expected.
+
+    //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+    //        QRectF rctBoundingSceneNew         = mapRectToScene(m_rctCurr);
+    //        QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
+    //        QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
+    //        double    fAngle_rad          = Math::degree2Rad(m_fRotAngleCurr_deg);
+    //        //QPointF   ptLTScenePosOld   = mapToScene( QPointF(0.0,0.0) );
+    //        QPointF   ptLTScenePosNew     = mapToScene( m_rctCurr.topLeft() );
+    //        QPointF   ptItemScenePosNew   = rotatePoint( ptRotOriginSceneNew, ptLTScenePosNew, -fAngle_rad );
+
+    //        if( m_rctCurr.left() != 0.0 )
+    //        {
+    //            m_rctCurr.moveLeft(0.0);
+    //        }
+    //        if( m_rctCurr.top() != 0.0 )
+    //        {
+    //            m_rctCurr.moveTop(0.0);
+    //        }
+
+    //        m_ptRotOriginCurr = m_rctCurr.center();
+
+    //        setPos(ptItemScenePosNew);    // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
+
+    //        updateTransform();
+
+    //        applyGeometryChangeToChildrens();
+
+    //        updateSelectionPointsOfBoundingRect(m_rctCurr);
+    //        #endif
+
+    //        // Not for group items. Otherwise the layout information would get lost.
+    //        //acceptCurrentAsOriginalCoors();
+    //        //updateEditInfo();
+    //        //updateToolTip();
+    //    }
+    //    m_editMode = EEditMode::None;
+    //    m_editResizeMode = EEditResizeMode::None;
+    //    m_idxSelPtSelectedPolygon = -1;
+    //    m_selPtSelectedBoundingRect = ESelectionPoint::None;
+    //}
+
+    //else if (modeDrawing == EMode::View) {
+    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseReleaseEventFunctions) {
+    //        if (fctEntry.m_pFct != nullptr) {
+    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
+    //        }
+    //    }
+    //}
+
+    //// The mouse release event would select the object.
+    //// This is not wanted if the selection tool is not active.
+    //bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
+    //bool bIsSelectableReset = false;
+
+    //if (bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select) {
+    //    setFlag(QGraphicsItem::ItemIsSelectable, false);
+    //    bIsSelectableReset = true;
+    //}
+
+    //QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
+
+    //if (bIsSelectableReset) {
+    //    setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
+    //}
+
+    // Forward the mouse event to the LineItems base implementation.
+    // This will move the item resulting in an itemChange call with PositionHasChanged.
+    QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "mouseDoubleClickEvent",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+
+    // When double clicking an item, the item will first receive a mouse
+    // press event, followed by a release event (i.e., a click), then a
+    // double click event, and finally a release event.
+    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
+
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
+
+    //if (modeDrawing == EMode::Edit) {
+    //    if (isSelected()) {
+    //        onCreateAndExecDlgFormatGraphObjs();
+    //    }
+    //}
+    //else if (modeDrawing == EMode::View) {
+    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseDoubleClickEventFunctions) {
+    //        if (fctEntry.m_pFct != nullptr) {
+    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
+    //        }
+    //    }
+    //}
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -2982,6 +3143,10 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
@@ -3069,147 +3234,14 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsItemGroup::mouseMoveEvent(i_pEv);
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
 }
-
-//------------------------------------------------------------------------------
-void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mouseReleaseEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    //if (modeDrawing == EMode::Edit) {
-    //    if( m_editMode == EEditMode::Resize ) {
-    //        // The item will not be resized to the position of the mouse release event.
-    //        // A selection point might have been clicked and released immediately (without
-    //        // moving the mouse). In this case changing the size of the item according to
-    //        // position of the mouse is not expected.
-
-    //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        QRectF rctBoundingSceneNew         = mapRectToScene(m_rctCurr);
-    //        QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
-    //        QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
-    //        double    fAngle_rad          = Math::degree2Rad(m_fRotAngleCurr_deg);
-    //        //QPointF   ptLTScenePosOld   = mapToScene( QPointF(0.0,0.0) );
-    //        QPointF   ptLTScenePosNew     = mapToScene( m_rctCurr.topLeft() );
-    //        QPointF   ptItemScenePosNew   = rotatePoint( ptRotOriginSceneNew, ptLTScenePosNew, -fAngle_rad );
-
-    //        if( m_rctCurr.left() != 0.0 )
-    //        {
-    //            m_rctCurr.moveLeft(0.0);
-    //        }
-    //        if( m_rctCurr.top() != 0.0 )
-    //        {
-    //            m_rctCurr.moveTop(0.0);
-    //        }
-
-    //        m_ptRotOriginCurr = m_rctCurr.center();
-
-    //        setPos(ptItemScenePosNew);    // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-
-    //        updateTransform();
-
-    //        applyGeometryChangeToChildrens();
-
-    //        updateSelectionPointsOfBoundingRect(m_rctCurr);
-    //        #endif
-
-    //        // Not for group items. Otherwise the layout information would get lost.
-    //        //acceptCurrentAsOriginalCoors();
-    //        //updateEditInfo();
-    //        //updateToolTip();
-    //    }
-    //    m_editMode = EEditMode::None;
-    //    m_editResizeMode = EEditResizeMode::None;
-    //    m_idxSelPtSelectedPolygon = -1;
-    //    m_selPtSelectedBoundingRect = ESelectionPoint::None;
-    //}
-
-    //else if (modeDrawing == EMode::View) {
-    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseReleaseEventFunctions) {
-    //        if (fctEntry.m_pFct != nullptr) {
-    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
-    //        }
-    //    }
-    //}
-
-    //// The mouse release event would select the object.
-    //// This is not wanted if the selection tool is not active.
-    //bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-    //bool bIsSelectableReset = false;
-
-    //if (bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select) {
-    //    setFlag(QGraphicsItem::ItemIsSelectable, false);
-    //    bIsSelectableReset = true;
-    //}
-
-    //QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
-
-    //if (bIsSelectableReset) {
-    //    setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
-    //}
-
-    // Forward the mouse event to the LineItems base implementation.
-    // This will move the item resulting in an itemChange call with PositionHasChanged.
-    QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
-    }
-} // mouseReleaseEvent
-
-//------------------------------------------------------------------------------
-void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mouseDoubleClickEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    // When double clicking an item, the item will first receive a mouse
-    // press event, followed by a release event (i.e., a click), then a
-    // double click event, and finally a release event.
-    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
-
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    //if (modeDrawing == EMode::Edit) {
-    //    if (isSelected()) {
-    //        onCreateAndExecDlgFormatGraphObjs();
-    //    }
-    //}
-    //else if (modeDrawing == EMode::View) {
-    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseDoubleClickEventFunctions) {
-    //        if (fctEntry.m_pFct != nullptr) {
-    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
-    //        }
-    //    }
-    //}
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
-    }
-} // mouseDoubleClickEvent
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
@@ -3378,10 +3410,8 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
-            //setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else {
-            //setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             //m_editMode = EEditMode::None;

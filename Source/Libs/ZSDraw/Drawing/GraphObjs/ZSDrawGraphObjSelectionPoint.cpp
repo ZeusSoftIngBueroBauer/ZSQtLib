@@ -819,36 +819,17 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     setCursor(getProposedCursor(i_pEv->pos()));
+
+    // The accepted flag is already set by the graphics scene.
+    // But the usual way would be that the object eating the event sets the flag.
     i_pEv->accept();
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    // We inform the linked object of the mouse press event as the graphics
+    // scene will not forward the event even if we would ignore the event.
+    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
+    if (pGraphicsItemParent != nullptr) {
+        m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
     }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "mouseMoveEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    setCursor(getProposedCursor(i_pEv->pos()));
-    // Eat the event. Don't pass it to other objects otherwise the object
-    // the selection point is connected to will also be moved and gets a
-    // itemChanged(PositionChanged) call which will move the complete object
-    // but not just the selection point to resize the object.
-    i_pEv->accept();
-    setPos(i_pEv->scenePos());
-    //QGraphicsEllipseItem::mouseMoveEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -871,7 +852,17 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
         /* strAddInfo   */ strMthInArgs );
 
     unsetCursor();
-    QGraphicsEllipseItem::mouseReleaseEvent(i_pEv);
+
+    // The accepted flag is already set by the graphics scene.
+    // But the usual way would be that the object eating the event sets the flag.
+    i_pEv->accept(); 
+
+    // We inform the linked object of the mouse press event as the graphics
+    // scene will not forward the event even if we would ignore the event.
+    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
+    if (pGraphicsItemParent != nullptr) {
+        m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -898,7 +889,50 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     // doubleclick event, and finally a release event.
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
     // This is not necessary here.
-    QGraphicsEllipseItem::mouseDoubleClickEvent(i_pEv);
+    //QGraphicsEllipseItem::mouseDoubleClickEvent(i_pEv);
+
+    // We inform the linked object of the mouse press event as the graphics
+    // scene will not forward the event even if we would ignore the event.
+    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
+    if (pGraphicsItemParent != nullptr) {
+        m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "mouseMoveEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    setCursor(getProposedCursor(i_pEv->pos()));
+    setPos(i_pEv->scenePos());
+
+    // Eat the event. Don't pass it to other objects otherwise the object
+    // the selection point is connected to will also be moved and gets a
+    // itemChanged(PositionChanged) call which will move the complete object
+    // but not just the selection point to resize the object.
+    // The accepted flag is already set by the graphics scene.
+    // But the usual way would be that the object eating the event sets the flag.
+    i_pEv->accept();
+
+    // The mouse move event is not forwarded to the linked object.
+    // On the one hand the move is complete "eaten" by the selection point and
+    // on the other hand this would have unwanted side effects like moving the
+    // object which again would move the selection point and so on.
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
