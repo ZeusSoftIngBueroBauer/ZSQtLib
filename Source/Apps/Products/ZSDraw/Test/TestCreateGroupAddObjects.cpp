@@ -176,6 +176,9 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     initInstCounts();
     initObjectCoors();
 
+    // Triangle
+    //---------
+
     ZS::Test::CTestStepGroup* pGrpPolygonsTriangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameTriangle,
@@ -183,11 +186,17 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestGroupAddStandardShapesPolygonTriangle(pGrpPolygonsTriangle);
     createTestGroupAddStandardShapesPolygonTriangleModifications(pGrpPolygonsTriangle);
 
+    // Star
+    //-----
+
     ZS::Test::CTestStepGroup* pGrpPolygonsStar = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameStar,
         /* pTSGrpParent */ pGrpPolygons );
     createTestGroupAddStandardShapesPolygonStar(pGrpPolygonsStar);
+
+    // OpenArrow
+    //----------
 
     ZS::Test::CTestStepGroup* pGrpPolygonsOpenArrow = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,

@@ -3589,18 +3589,18 @@ void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelect
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    QPointF ptPosThis = pos();
     CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
     QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
-    ptPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    QPointF ptPosThis = pos();
-    CPhysValPoint physValPointParentPosSelPt(*m_pDrawingScene);
+    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
+    CPhysValPoint physValPointParentSelPt(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
-        physValPointParentPosSelPt = parentGroup()->convert(ptPosSelPt);
+        physValPointParentSelPt = parentGroup()->convert(ptParentPosSelPt);
     }
     else {
-        physValPointParentPosSelPt = m_pDrawingScene->convert(ptPosSelPt);
+        physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
@@ -3616,45 +3616,44 @@ void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelect
 
         switch (selPt.m_selPt) {
             case ESelectionPoint::TopLeft: {
-                setTopLeft(physValPointParentPosSelPt);
+                setTopLeft(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::TopRight: {
-                setTopRight(physValPointParentPosSelPt);
+                setTopRight(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::BottomRight: {
-                setBottomRight(physValPointParentPosSelPt);
+                setBottomRight(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::BottomLeft: {
-                setBottomLeft(physValPointParentPosSelPt);
+                setBottomLeft(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::TopCenter: {
-                setHeightByMovingTopCenter(physValPointParentPosSelPt);
+                setHeightByMovingTopCenter(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::RightCenter: {
-                setWidthByMovingRightCenter(physValPointParentPosSelPt);
+                setWidthByMovingRightCenter(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::BottomCenter: {
-                setHeightByMovingBottomCenter(physValPointParentPosSelPt);
+                setHeightByMovingBottomCenter(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::LeftCenter: {
-                setWidthByMovingLeftCenter(physValPointParentPosSelPt);
+                setWidthByMovingLeftCenter(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::Center: {
-                setCenter(physValPointParentPosSelPt);
+                setCenter(physValPointParentSelPt);
                 break;
             }
             case ESelectionPoint::RotateTop: {
-                // The angle returned by getAngleDegree is counted counterclockwise
-                // with 0° at 3 o'clock.
-                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptPosSelPt);
+                // The angle returned by getAngleDegree is counted counterclockwise with 0° at 3 o'clock.
+                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
                 // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
                 // RotateTop is at 270°.
@@ -3664,7 +3663,7 @@ void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelect
                 break;
             }
             case ESelectionPoint::RotateBottom: {
-                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptPosSelPt);
+                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
                 // RotateBottom is at 90°.
                 fAngle_degree -= 90.0;

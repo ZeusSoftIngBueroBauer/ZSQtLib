@@ -2837,7 +2837,9 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         QStringList strlstResultValues;
-        QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(CGraphObjPolygon::s_iInstCount-1));
+        // Also for EGraphObjTypePolyline a CGraphObjPolygon object is created (the type can be changed during runtime).
+        QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(
+            strEntryType, graphObjType2Str(EGraphObjTypePolygon) + QString::number(CGraphObjPolygon::s_iInstCount-1));
         CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
         if (pGraphObjPolygon != nullptr) {
             pGraphObjPolygon->rename(strGraphObjName);
@@ -3903,66 +3905,95 @@ void CTest::addMouseMoveEventDataRows(
 
 //------------------------------------------------------------------------------
 void CTest::getSelectionPointCoors(
-    ESelectionPoint i_selPt, const CPhysValRect& i_physValRectCurr, const CPhysValRect& i_physValRectNew,
-    QPointF& o_pt1SelPt, QPointF& o_pt2SelPt)
+    const ZS::Draw::SGraphObjSelectionPoint& i_selPt,
+    const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew,
+    QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew)
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    if (i_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        getSelectionPointCoors(
+            i_selPt.m_selPt, i_physValPolygonCurr.physValBoundingRect(), i_physValPolygonNew.physValBoundingRect(),
+            o_ptSelPtRectCurr, o_ptSelPtRectNew);
+    }
+    else if (i_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
+        CPhysValPoint physValPoint = i_physValPolygonCurr.at(i_selPt.m_idxPt);
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        physValPoint = i_physValPolygonNew.at(i_selPt.m_idxPt);
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+    }
+    else if (i_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
+        CPhysValPoint physValPointLineStart = i_physValPolygonCurr.at(i_selPt.m_idxPt);
+        CPhysValPoint physValPointLineEnd = i_physValPolygonCurr.at(i_selPt.m_idxPt+1);
+        CPhysValLine physValLine(physValPointLineStart, physValPointLineEnd);
+        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+        o_ptSelPtRectCurr = physValLine.center().toQPointF();
+        physValPointLineStart = i_physValPolygonNew.at(i_selPt.m_idxPt);
+        physValPointLineEnd = i_physValPolygonNew.at(i_selPt.m_idxPt+1);
+        physValLine = CPhysValLine(physValPointLineStart, physValPointLineEnd);
+        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+        o_ptSelPtRectNew = physValLine.center().toQPointF();
+    }
+}
 
+//------------------------------------------------------------------------------
+void CTest::getSelectionPointCoors(
+    ESelectionPoint i_selPt, const CPhysValRect& i_physValRectCurr, const CPhysValRect& i_physValRectNew,
+    QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew)
+//------------------------------------------------------------------------------
+{
     if (i_selPt == ESelectionPoint::TopLeft) {
         CPhysValPoint physValPoint = i_physValRectCurr.topLeft();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.topLeft();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::TopCenter) {
         CPhysValPoint physValPoint = i_physValRectCurr.topCenter();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.topCenter();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::TopRight) {
         CPhysValPoint physValPoint = i_physValRectCurr.topRight();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.topRight();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::RightCenter) {
         CPhysValPoint physValPoint = i_physValRectCurr.rightCenter();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.rightCenter();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::BottomRight) {
         CPhysValPoint physValPoint = i_physValRectCurr.bottomRight();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.bottomRight();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::BottomCenter) {
         CPhysValPoint physValPoint = i_physValRectCurr.bottomCenter();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.bottomCenter();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::BottomLeft) {
         CPhysValPoint physValPoint = i_physValRectCurr.bottomLeft();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.bottomLeft();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::LeftCenter) {
         CPhysValPoint physValPoint = i_physValRectCurr.leftCenter();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.leftCenter();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::Center) {
         CPhysValPoint physValPoint = i_physValRectCurr.center();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         physValPoint = i_physValRectNew.center();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
         // ESelectionPoint::RotateTop: 270° (clockwise counted)
@@ -3976,9 +4007,9 @@ void CTest::getSelectionPointCoors(
         double dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
         CPhysValPoint physValPoint = i_selPt == ESelectionPoint::RotateTop ?
             i_physValRectCurr.topCenter() : i_physValRectCurr.bottomCenter();
-        o_pt1SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        o_pt1SelPt.setX(o_pt1SelPt.x() + dxSelPt);
-        o_pt1SelPt.setY(o_pt1SelPt.y() - dySelPt);
+        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectCurr.setX(o_ptSelPtRectCurr.x() + dxSelPt);
+        o_ptSelPtRectCurr.setY(o_ptSelPtRectCurr.y() - dySelPt);
         // New position
         fAngle_degree = i_physValRectNew.angle().getVal(Units.Angle.Degree);
         fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
@@ -3988,9 +4019,9 @@ void CTest::getSelectionPointCoors(
         dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
         physValPoint = i_selPt == ESelectionPoint::RotateTop ?
             i_physValRectNew.topCenter() : i_physValRectNew.bottomCenter();
-        o_pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        o_pt2SelPt.setX(o_pt2SelPt.x() + dxSelPt);
-        o_pt2SelPt.setY(o_pt2SelPt.y() - dySelPt);
+        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        o_ptSelPtRectNew.setX(o_ptSelPtRectNew.x() + dxSelPt);
+        o_ptSelPtRectNew.setY(o_ptSelPtRectNew.y() - dySelPt);
     }
 }
 

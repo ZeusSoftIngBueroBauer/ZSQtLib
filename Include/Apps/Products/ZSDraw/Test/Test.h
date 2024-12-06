@@ -52,8 +52,8 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_101x101 0
 #define TEST_PIXELS_DRAWINGS_800x600 1
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES 0
-#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
-#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
+#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 0
+#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
@@ -251,9 +251,10 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesPolygonOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesPolygonOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    //void createTestGroupDrawStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -295,7 +296,8 @@ protected: // auxiliary instance methods
     void initInstCounts();
     void initObjectCoors();
     void addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop);
-    void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_pt1SelPt, QPointF& o_pt2SelPt);
+    void getSelectionPointCoors(const ZS::Draw::SGraphObjSelectionPoint& i_selPt, const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
+    void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
     QStringList resultValuesForGroup(

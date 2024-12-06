@@ -159,7 +159,7 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ i_graphObjType,
         /* strType             */ ZS::Draw::graphObjType2Str(i_graphObjType),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Polygon" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypePolygon) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
     m_polygonOrig(),
     m_physValPolygonOrig(*m_pDrawingScene),
@@ -169,13 +169,13 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
     m_idxsAdded(),
     m_idxsRemoved()
 {
-    // For polygons the object creation is not finished if the mouse is released but instead a
-    // mouse double click is used to add the last polygon point which finishes creation of the object.
-    m_bMouseReleaseEventFinishesObjectCreation = false;
-
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
+
+    // For polygons the object creation is not finished if the mouse is released but instead a
+    // mouse double click is used to add the last polygon point which finishes creation of the object.
+    m_bMouseReleaseEventFinishesObjectCreation = false;
 
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
@@ -2627,100 +2627,11 @@ void CGraphObjPolygon::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         if (bAdjustMouseGrabber) {
             pGraphObjSelPtMouseGrabber->ungrabMouse();
         }
+        // While creating the object, only the selection points at the polygon points were visible.
+        // If the object is created, also the bounding rectangle becomes visible and all selection
+        // points should become visible.
+        showSelectionPoints();
     }
-
-    // When double clicking an item, the item will
-    // - first receive a mouse press event,
-    // - followed by a release event (i.e., a click),
-    // - then a double click event, and
-    // - finally a release event.
-    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
-    // This is not necessary here.
-    //QGraphicsPolygonItem::mouseDoubleClickEvent(i_pEv);
-
-//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-//
-//    if( modeDrawing == EMode::Edit )
-//    {
-//        if( m_editMode == EEditMode::Creating )
-//        {
-//            // Before the double click event a mouse press event occurs creating an additional
-//            // point which is not desired. This point got to be removed again. We are going
-//            // to remove all succeeding points overlapping each other which will also remove the
-//            // last undesired point.
-//
-//            QPolygonF plg = polygon();
-//
-//            if( plg.size() > 2 )
-//            {
-//                int idxPt;
-//
-//                for( idxPt = plg.size()-1; idxPt > 0; idxPt-- )
-//                {
-//                    if( plg[idxPt] == plg[idxPt-1] )
-//                    {
-//                        plg.remove(idxPt);
-//                    }
-//                }
-//            }
-//
-//            QRectF  rctItem = plg.boundingRect();
-//            QPointF ptPos   = pos();   // current position (coordinates of first shape point)
-//            QPointF ptLT    = mapToScene(rctItem.topLeft());
-//            QSizeF  sizMoveOffs( ptLT.x() - ptPos.x(), ptLT.y() - ptPos.y() );
-//            QPointF pt;
-//            int     idxPt;
-//
-//            // The position of the polygon should become the top left corner of it's bounding rectangle.
-//            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-//            {
-//                pt = plg[idxPt];
-//                pt.setX( pt.x() - sizMoveOffs.width() );
-//                pt.setY( pt.y() - sizMoveOffs.height() );
-//                plg[idxPt] = pt;
-//            }
-//
-//            QGraphicsPolygonItem::setPolygon(plg);
-//
-//            setPos(ptLT);
-//
-//            normalize();
-//
-//            m_bCoorsDirty = true;
-//
-//            updateLineEndArrowHeadPolygons();
-//
-//            plg = polygon();
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_rctCurr = plg.boundingRect();
-//            m_ptRotOriginCurr = m_rctCurr.center();
-//#endif
-//
-//            m_editMode = EEditMode::None;
-//            m_editResizeMode = EEditResizeMode::None;
-//            m_idxSelPtSelectedPolygon = -1;
-//            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-//
-//            updateTransform();
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            acceptCurrentAsOriginalCoors();
-//#endif
-//
-//            // The object has been initially created.
-//            //m_pDrawingScene->onGraphObjCreationFinished(this);
-//
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( m_editMode == EEditMode::Creating )
-//
-//        else if( isSelected() )
-//        {
-//            onCreateAndExecDlgFormatGraphObjs();
-//        }
-//
-//    } // if( modeDrawing == EMode::Edit )
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
@@ -3035,25 +2946,99 @@ void CGraphObjPolygon::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSele
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    QPointF ptPosThis = pos();
     CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
     QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
     QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
+    CPhysValPoint physValPointParentSelPt(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
-        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
+        physValPointParentSelPt = parentGroup()->convert(ptParentPosSelPt);
     }
     else {
-        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+        physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
+
+    // Moving a selection point will modify the shape of the object and the position
+    // of all other selection points got to be updated. If the position of the other
+    // selection points will be changed, those selection points are emitting the
+    // geometryOnSceneChanged signal whereupon this slot method would be called again
+    // for each other selection point. This will not end up in an endless loop but
+    // is useless and anything else but performant. So the slot will be temporarily
+    // disconnected from the geometryOnSceneChanged signal of the selection points.
+    disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
 
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         if (selPt.m_idxPt >= 0 && selPt.m_idxPt < polygon().size()) {
-            replace(selPt.m_idxPt, physValParentSelPt);
+            replace(selPt.m_idxPt, physValPointParentSelPt);
         }
     }
+    else if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        switch (selPt.m_selPt) {
+            case ESelectionPoint::TopLeft: {
+                setTopLeft(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::TopRight: {
+                setTopRight(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::BottomRight: {
+                setBottomRight(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::BottomLeft: {
+                setBottomLeft(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::TopCenter: {
+                setHeightByMovingTopCenter(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::RightCenter: {
+                setWidthByMovingRightCenter(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::BottomCenter: {
+                setHeightByMovingBottomCenter(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::LeftCenter: {
+                setWidthByMovingLeftCenter(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::Center: {
+                setCenter(physValPointParentSelPt);
+                break;
+            }
+            case ESelectionPoint::RotateTop: {
+                // The angle returned by getAngleDegree is counted counterclockwise with 0° at 3 o'clock.
+                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
+                // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
+                fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
+                // RotateTop is at 270°.
+                fAngle_degree -= 270.0;
+                fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
+                setRotationAngle(fAngle_degree);
+                break;
+            }
+            case ESelectionPoint::RotateBottom: {
+                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
+                fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
+                // RotateBottom is at 90°.
+                fAngle_degree -= 90.0;
+                fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
+                setRotationAngle(fAngle_degree);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+    connectGeometryOnSceneChangedSlotWithSelectionPoints();
 }
 
 /*==============================================================================
