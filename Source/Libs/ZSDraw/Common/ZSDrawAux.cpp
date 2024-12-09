@@ -524,7 +524,8 @@ QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv 
     return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
-        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}";
+        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
+        ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
 }
 
 //------------------------------------------------------------------------------

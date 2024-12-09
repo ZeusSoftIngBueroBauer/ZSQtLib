@@ -2440,7 +2440,12 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     // Ignore hover events if the object is currently being created.
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        showSelectionPoints();
+        if (i_pEv->modifiers() & Qt::ControlModifier) {
+            showSelectionPoints(c_uSelectionPointsPolygonPoints);
+        }
+        else {
+            showSelectionPoints();
+        }
         setIsHit(true);
         setCursor(getProposedCursor(i_pEv->pos()));
     }
@@ -2466,9 +2471,14 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     // Ignore hover events if the object is currently being created.
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        showSelectionPoints();
-        setIsHit(true);
-        setCursor(getProposedCursor(i_pEv->pos()));
+        //if (i_pEv->modifiers() & Qt::ControlModifier) {
+        //    showSelectionPoints(c_uSelectionPointsPolygonPoints);
+        //}
+        //else {
+        //    showSelectionPoints();
+        //}
+        //setIsHit(true);
+        //setCursor(getProposedCursor(i_pEv->pos()));
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
@@ -2588,7 +2598,7 @@ void CGraphObjPolygon::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     // Forward the mouse event to the base implementation.
-    QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
+    //QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);

@@ -2571,45 +2571,28 @@ int ZS::System::char2QKeyCode( const QChar& i_ch )
 {
     static bool s_bHshKeysInit = false;
     static QHash<QChar,int> s_hshKeys;
-
-    if( !s_bHshKeysInit )
-    {
-        int   idx;
-        QChar chHshCode;
-
-        for( idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ )
-        {
+    if (!s_bHshKeysInit){
+        for (int idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++) {
             // Not the variant value has been initialized with the key code but the enum index.
             //uHshCode  = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_val.toULongLong());
-            if( s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrSymbol )
-            {
-                if( s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrSymbol].length() == 1 )
-                {
-                    chHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrSymbol][0];
-
-                    if( !s_hshKeys.contains(chHshCode) )
-                    {
+            if (s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrSymbol) {
+                if (s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrSymbol].length() == 1) {
+                    QChar chHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrSymbol][0];
+                    if (!s_hshKeys.contains(chHshCode)) {
                         s_hshKeys[chHshCode] = idx;
                     }
                 }
             }
         }
-
         s_bHshKeysInit = true;
-
-    } // if( !s_bHshKeysInit )
-
+    }
     int iKeyCode = Qt::Key_unknown;
-
-    if( s_hshKeys.contains(i_ch) )
-    {
+    if (s_hshKeys.contains(i_ch)) {
         int idx = s_hshKeys[i_ch];
         iKeyCode = s_arEnumStrQKeyCode[idx].m_iEnumerator;
     }
-
     return iKeyCode;
-
-} // char2QKeyCode
+}
 
 //------------------------------------------------------------------------------
 int ZS::System::str2QKeyCode( const QString& i_str )
@@ -2617,15 +2600,14 @@ int ZS::System::str2QKeyCode( const QString& i_str )
 {
     static bool s_bHshKeysInit = false;
     static QHash<QString,int> s_hshKeys;
-
-    if( !s_bHshKeysInit ) {
-        for( int idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ ) {
+    if (!s_bHshKeysInit) {
+        for (int idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++) {
             // Not the variant value has been initialized with the key code but the enum index.
-            //uHshCode  = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_val.toULongLong());
-            if( s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrText ) {
-                if( !s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText].isEmpty() ) {
+            //uHshCode = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_val.toULongLong());
+            if (s_arEnumStrQKeyCode[idx].m_strlstNames.size() > EEnumEntryAliasStrText) {
+                if (!s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText].isEmpty()) {
                     QString strHshCode = s_arEnumStrQKeyCode[idx].m_strlstNames[EEnumEntryAliasStrText];
-                    if( !s_hshKeys.contains(strHshCode) ) {
+                    if (!s_hshKeys.contains(strHshCode)) {
                         s_hshKeys[strHshCode] = idx;
                     }
                 }
@@ -2633,9 +2615,8 @@ int ZS::System::str2QKeyCode( const QString& i_str )
         }
         s_bHshKeysInit = true;
     }
-
     int iKeyCode = Qt::Key_unknown;
-    if( s_hshKeys.contains(i_str) ) {
+    if (s_hshKeys.contains(i_str)) {
         int idx = s_hshKeys[i_str];
         iKeyCode = s_arEnumStrQKeyCode[idx].m_iEnumerator;
     }
@@ -2651,40 +2632,32 @@ QString ZS::System::qKeyboardModifiers2Str( Qt::KeyboardModifiers i_modifiers )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_modifiers & Qt::ShiftModifier )
-    {
+    if (i_modifiers & Qt::ShiftModifier) {
         if (!str.isEmpty()) str += "|";
         str = "Shift";
     }
-    if( i_modifiers & Qt::ControlModifier )
-    {
+    if (i_modifiers & Qt::ControlModifier) {
         if (!str.isEmpty()) str += "|";
         str += "Control";
     }
-    if( i_modifiers & Qt::AltModifier )
-    {
+    if (i_modifiers & Qt::AltModifier) {
         if (!str.isEmpty()) str += "|";
         str += "Alt";
     }
-    if( i_modifiers & Qt::MetaModifier )
-    {
+    if (i_modifiers & Qt::MetaModifier) {
         if (!str.isEmpty()) str += "|";
         str += "Meta";
     }
-    if( i_modifiers & Qt::KeypadModifier )
-    {
+    if (i_modifiers & Qt::KeypadModifier) {
         if (!str.isEmpty()) str += "|";
         str += "Keypad";
     }
-    if( i_modifiers & Qt::GroupSwitchModifier )
-    {
+    if (i_modifiers & Qt::GroupSwitchModifier) {
         if (!str.isEmpty()) str += "|";
         str += "GroupSwitch";
     }
     return str;
-
-} // qKeyboardModifiers2Str
+}
 
 //------------------------------------------------------------------------------
 Qt::KeyboardModifiers ZS::System::char2QKeyboardModifiers( const QChar& i_ch )
@@ -2702,9 +2675,8 @@ Qt::KeyboardModifiers ZS::System::char2QKeyboardModifiers( const QChar& i_ch )
 QString ZS::System::qMargins2Str( const QMargins& i_margins )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top())
+    return QString::number(i_margins.left()) + ", " + QString::number(i_margins.top())
         + ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
-    return str;
 }
 
 //------------------------------------------------------------------------------
@@ -2712,29 +2684,27 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_pMimeData == nullptr ) {
+    if (i_pMimeData == nullptr) {
         str = "nullptr";
     }
     else {
         QStringList strlstFormats = i_pMimeData->formats();
         str = "Formats [" + QString::number(strlstFormats.size()) + "]";
-        if( strlstFormats.size() > 0 ) {
+        if (strlstFormats.size() > 0) {
             str += "(";
-            for( int idx = 0; idx < strlstFormats.size(); idx++ ) {
-                if( idx > 0 ) {
+            for (int idx = 0; idx < strlstFormats.size(); idx++) {
+                if (idx > 0) {
                     str += ", " + strlstFormats[idx];
                 }
                 else {
                     str += strlstFormats[idx];
                 }
-                if( i_iDetailLevel > 0 ) {
+                if (i_iDetailLevel > 0) {
                     str += " {";
                     QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
                     QDataStream stream(&byteArr, QIODevice::ReadOnly);
                     QStringList strlstItems;
-
-                    while( !stream.atEnd() ) {
+                    while (!stream.atEnd()) {
                         QString strItem;
                         stream >> strItem;
                         strlstItems << strItem;
@@ -2745,7 +2715,7 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
             }
             str += ")";
         }
-        if( i_pMimeData->hasUrls() ) {
+        if (i_pMimeData->hasUrls()) {
             str += ", Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
             if( i_pMimeData->urls().size() > 0 ) {
                 str += "(";
@@ -2758,23 +2728,21 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
                 str += ")";
             }
         }
-        if( i_pMimeData->hasText() ) {
+        if (i_pMimeData->hasText()) {
             str += ", Text: " + i_pMimeData->text();
         }
-        if( i_pMimeData->hasHtml() ) {
+        if (i_pMimeData->hasHtml()) {
             str += ", Html: " + i_pMimeData->html();
         }
-        if( i_pMimeData->hasImage() ) {
+        if (i_pMimeData->hasImage()) {
             //QVariant i_pMimeData->imageData();
         }
-        if( i_pMimeData->hasColor() ) {
+        if (i_pMimeData->hasColor()) {
             //QVariant i_pMimeData->colorData();
         }
-    } // if( i_pMimeData != nullptr )
-
+    }
     return str;
-
-} // qMimeData2Str
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
