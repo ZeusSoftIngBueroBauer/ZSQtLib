@@ -2990,30 +2990,29 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::traceThisPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
         return;
     }
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            QLineF lineF = line();
-            QString strRuntimeInfo;
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
-                + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
-                + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
-            i_mthTracer.trace(strRuntimeInfo);
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-            CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
-        }
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem != nullptr) {
+        QLineF lineF = line();
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
+            + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
+            + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+        CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
     }
 }

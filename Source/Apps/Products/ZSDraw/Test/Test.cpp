@@ -3645,13 +3645,12 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
         else if (strMethod == "mouseMoveEvent") {
             Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
             if (dataRow.contains("KeyboardModifiers")) {
-                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(i_pTestStep->getConfigValue("KeyboardModifiers").toInt());
+                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
             }
             Qt::MouseButton mouseBtns = Qt::NoButton;
             if (dataRow.contains("MouseButtons")) {
                 mouseBtns = static_cast<Qt::MouseButton>(dataRow["MouseButtons"].toInt());
             }
-            QHash<QString, QVariant> dataRow = i_pTestStep->takeDataRow(0);
             QPoint ptMousePos = dataRow["MousePos"].toPoint();
             QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
             QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
@@ -3993,7 +3992,9 @@ void CTest::initObjectCoors()
 }
 
 //------------------------------------------------------------------------------
-void CTest::addMouseMoveEventDataRows(
+/*! @brief Adds data rows to simulate mouse events and returns the final mouse position.
+*/
+QPoint CTest::addMouseMoveEventDataRows(
     ZS::Test::CTestStep* i_pTestStep,
     const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop,
     int i_iMovesCount,
@@ -4058,6 +4059,7 @@ void CTest::addMouseMoveEventDataRows(
             break;
         }
     }
+    return i_ptMousePosStop;
 }
 
 //------------------------------------------------------------------------------

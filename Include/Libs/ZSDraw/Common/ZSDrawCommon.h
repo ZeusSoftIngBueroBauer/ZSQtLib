@@ -327,19 +327,16 @@ namespace Draw {
 enum class EEditMode
 //==============================================================================
 {
-    None                  = 0, /*!< No edit mode is selected. */
-    CreatingByMouseEvents = 1  /*!< The object has been initially created by a mouse press event
-                                    and is still under construction by followoing mouse events.
+    None = 0, /*!< No edit mode is selected. */
+    CreatingByMouseEvents = 1,  /*!< The object has been initially created by a mouse press event
+                                    and is still under construction by following mouse events.
                                     For example:
                                     - Resizing a line by moving the line end point.
                                     - Resizing a rectangle by moving the bottom right corner.
                                     - Adding points to poly lines. */
-    //Move           = 2, /*!< The selected objects are moved. */
-    //Resize         = 3, /*!< The selected object is resized. */
-    //Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
-    //MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
-    //EditText       = 6, /*!< A single shape point of the selected object is being moved. */
-    //Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
+    ModifyingPolygonPoints = 2 /*!< A polygon is about to be modified. In this mode points can be
+                                    added to the polygon by clicking on a line segment or existing
+                                    polygon points can be moved. */
 };
 } }
 

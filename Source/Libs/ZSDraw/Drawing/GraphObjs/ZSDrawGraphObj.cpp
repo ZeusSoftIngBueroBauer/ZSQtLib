@@ -191,6 +191,7 @@ CGraphObj::CGraphObj(
     //m_arMouseMoveEventFunctions(),
     //m_arKeyPressEventFunctions(),
     //m_arKeyReleaseEventFunctions(),
+    m_iItemChangeBlockedCounter(0),
     m_iItemChangeUpdatePhysValCoorsBlockedCounter(0),
     m_iGeometryOnSceneChangedSignalBlockedCounter(0),
     m_iIgnoreParentGeometryChange(0),
@@ -434,6 +435,7 @@ CGraphObj::~CGraphObj()
     //m_arMouseMoveEventFunctions;
     //m_arKeyPressEventFunctions;
     //m_arKeyReleaseEventFunctions;
+    m_iItemChangeBlockedCounter = 0;
     m_iItemChangeUpdatePhysValCoorsBlockedCounter = 0;
     m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
     m_iIgnoreParentGeometryChange = 0;
@@ -3738,7 +3740,6 @@ void CGraphObj::setPosition(const CPhysValPoint& i_physValPos)
         /* strMethod    */ "CGraphObj::setPosition",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QPointF ptCenter;
     if (parentGroup() != nullptr) {
         ptCenter = parentGroup()->convert(i_physValPos, Units.Length.px).toQPointF();
@@ -4177,24 +4178,44 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::setEditMode",
         /* strAddInfo   */ strMthInArgs );
-
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
     if (m_editMode != i_eMode) {
         m_editMode = i_eMode;
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
         if (m_editMode == EEditMode::CreatingByMouseEvents) {
-            QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-            if (pGraphicsItemThis != nullptr) {
-                // Immeadiately select the object to create the selection points.
-                // Following mouse move press, mouse move and mouse release events will
-                // be forwarded by the scene to the selection point responsible for
-                // resizing the obejct (the top most selection point most recently created).
+            // Immeadiately select the object to create the selection points.
+            // Following mouse move press, mouse move and mouse release events will
+            // be forwarded by the scene to the selection point responsible for
+            // resizing the obejct (the top most selection point most recently created).
+            pGraphicsItemThis->setSelected(true);
+            // The object is under construction. Hover events will not be accepted.
+            // Only when no drawing tool is selected in the drawing scene hover
+            // events may be accepted.
+            pGraphicsItemThis->setAcceptHoverEvents(false);
+        }
+        else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+            // The "itemChange" method will be blocked as that would create also
+            // selection points at the bounding rectangle. But in this edit mode only
+            // the selection points for the polygon points should be created.
+            CRefCountGuard refCountGuardItemChange(&m_iItemChangeBlockedCounter);
+            hideSelectionPoints(c_uSelectionPointsBoundingRectAll|c_uSelectionPointsLineCenter);
+            showSelectionPoints(c_uSelectionPointsPolygonPoints);
+            if (!pGraphicsItemThis->isSelected()) {
                 pGraphicsItemThis->setSelected(true);
-                // The object is under construction. Hover events will not be accepted.
-                // Only when no drawing tool is selected in the drawing scene hover
-                // events may be accepted.
-                pGraphicsItemThis->setAcceptHoverEvents(false);
+                emit_selectedChanged(true);
             }
         }
+        else {
+            pGraphicsItemThis->setAcceptHoverEvents(true);
+        }
         emit_editModeChanged(m_editMode);
+    }
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
 }
 
@@ -8465,126 +8486,136 @@ protected: // overridable auxiliary instance methods (method tracing)
 
 //------------------------------------------------------------------------------
 void CGraphObj::tracePositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0) {
         return;
     }
-    traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
-    traceParentGroupPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
+    traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+    traceParentGroupPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceThisPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
         return;
     }
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItemThis != nullptr) {
-            QPointF ptPos = pGraphicsItemThis->pos();
-            QPointF ptScenePos = pGraphicsItemThis->scenePos();
-            QRectF rectBounding = getBoundingRect();
-            QPointF ptCenterPos = rectBounding.center();
-            QString strRuntimeInfo;
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "RotationAngle: " + m_physValRotationAngle.toString();
-            i_mthTracer.trace(strRuntimeInfo);
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-        }
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        QPointF ptPos = pGraphicsItemThis->pos();
+        QPointF ptScenePos = pGraphicsItemThis->scenePos();
+        QRectF rectBounding = getBoundingRect();
+        QPointF ptCenterPos = rectBounding.center();
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "RotationAngle: " + m_physValRotationAngle.toString();
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
     }
 }
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceParentGroupPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceParentGroupPositionInfoInfoBlockedCounter > 0) {
         return;
     }
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QGraphicsItem* pGraphicsItemGroupParent = dynamic_cast<QGraphicsItemGroup*>(m_pGraphObjGroupParent);
-        //CGraphObjGroup* pGraphObjGroupParent = parentGroup();
-        QString strRuntimeInfo;
+    QGraphicsItem* pGraphicsItemGroupParent = dynamic_cast<QGraphicsItemGroup*>(m_pGraphObjGroupParent);
+    //CGraphObjGroup* pGraphObjGroupParent = parentGroup();
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = "   ";
+    strRuntimeInfo += "ParentGroup: " + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->path());
+    if (pGraphicsItemGroupParent == nullptr && m_pGraphObjGroupParent != nullptr) {
+        strRuntimeInfo += ", !! ParentGraphicsItem: null !!";
+    }
+    i_mthTracer.trace(strRuntimeInfo);
+    if (pGraphicsItemGroupParent != nullptr || m_pGraphObjGroupParent != nullptr) {
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
-        strRuntimeInfo += "ParentGroup: " + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->path());
-        if (pGraphicsItemGroupParent == nullptr && m_pGraphObjGroupParent != nullptr) {
-            strRuntimeInfo += ", !! ParentGraphicsItem: null !!";
-        }
+        strRuntimeInfo += " . ParentTransform PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
+            ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
         i_mthTracer.trace(strRuntimeInfo);
-        if (pGraphicsItemGroupParent != nullptr || m_pGraphObjGroupParent != nullptr) {
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += " . ParentTransform PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
-                ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-            QPointF ptPos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->pos();
-            QPointF ptScenePos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->scenePos();
-            QRectF rectBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRect();
-            QPointF ptCenterPos = rectBounding.center();
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += " . Parent PhysValRect {" + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->getRect().toString()) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += " .. BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += " .. ItemPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-        }
+        QPointF ptPos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->pos();
+        QPointF ptScenePos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->scenePos();
+        QRectF rectBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRect();
+        QPointF ptCenterPos = rectBounding.center();
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += " . Parent PhysValRect {" + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->getRect().toString()) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += " .. BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += " .. ItemPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
     }
 }
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceGraphicsItemStates(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceGraphicsItemStatesInfoBlockedCounter > 0) {
         return;
     }
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItemThis != nullptr) {
-            QString strRuntimeInfo;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        QString strRuntimeInfo;
+        if (i_strFilter.isEmpty() || i_strFilter.contains("Common")) {
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "AcceptHoverEvents: " + bool2Str(pGraphicsItemThis->acceptHoverEvents()) +
-                             ", IsSelected: " + bool2Str(pGraphicsItemThis->isSelected()) +
-                             ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
-                             ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled());
+            strRuntimeInfo += "IsSelected: " + bool2Str(pGraphicsItemThis->isSelected()) +
+                ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
+                ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled());
             i_mthTracer.trace(strRuntimeInfo);
+        }
+        if (i_strFilter.isEmpty() || i_strFilter.contains("HoverEvents")) {
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += "AcceptHoverEvents: " + bool2Str(pGraphicsItemThis->acceptHoverEvents());
+            i_mthTracer.trace(strRuntimeInfo);
+        }
+        if (i_strFilter.isEmpty() || i_strFilter.contains("MouseButtons")) {
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
             strRuntimeInfo += "AcceptedMouseButtons {" + qMouseButtons2Str(pGraphicsItemThis->acceptedMouseButtons()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
+        }
+        if (i_strFilter.isEmpty() || i_strFilter.contains("Flags")) {
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
@@ -8596,14 +8627,15 @@ void CGraphObj::traceGraphicsItemStates(
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceGraphObjStates(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceGraphObjStatesInfoBlockedCounter > 0) {
         return;
     }
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QString strRuntimeInfo;
+    QString strRuntimeInfo;
+    if (i_strFilter.isEmpty() || i_strFilter.contains("Common")) {
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
@@ -8612,11 +8644,13 @@ void CGraphObj::traceGraphObjStates(
             ", IsHighlighted: " + bool2Str(m_bIsHighlighted) +
             ", ForceConversion: " + bool2Str(m_bForceConversionToSceneCoors);
         i_mthTracer.trace(strRuntimeInfo);
+    }
+    if (i_strFilter.isEmpty() || i_strFilter.contains("BlockedCounter")) {
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
-        strRuntimeInfo +=
-            "SignalBlockedCounter {ItemChangeUpdatePhysValCoors: " + QString::number(m_iItemChangeUpdatePhysValCoorsBlockedCounter) +
+        strRuntimeInfo += "SignalBlockedCounter {ItemChange: " + QString::number(m_iItemChangeBlockedCounter) +
+            ", ItemChangeUpdatePhysValCoors: " + QString::number(m_iItemChangeUpdatePhysValCoorsBlockedCounter) +
             ", GeometryOnSceneChanged: " + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) +
             ", IgnoreParentGeometryChange: " + QString::number(m_iIgnoreParentGeometryChange) + "}";
         i_mthTracer.trace(strRuntimeInfo);

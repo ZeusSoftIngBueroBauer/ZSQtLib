@@ -297,7 +297,7 @@ protected slots:
 protected: // auxiliary instance methods
     void initInstCounts();
     void initObjectCoors();
-    void addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop, int i_iMovesCount = 0, Qt::MouseButton mouseBtns = Qt::NoButton, Qt::KeyboardModifiers i_modifiers = Qt::NoModifier);
+    QPoint addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop, int i_iMovesCount = 0, Qt::MouseButton mouseBtns = Qt::NoButton, Qt::KeyboardModifiers i_modifiers = Qt::NoModifier);
     void getSelectionPointCoors(const ZS::Draw::SGraphObjSelectionPoint& i_selPt, const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
@@ -324,7 +324,8 @@ protected: // instance members
     // Map with created objects. Key is name, value is current key in tree.
     // Key in hash is not existing if the object has not been created or has been removed during the test run.
     QMap<QString, QString> m_hshGraphObjNameToKeys;
-
+    // Current mouse position for drawing and modifying objects by mouse events.
+    QPoint m_ptMousePos;
     // Lines
     //------
     // SmallPlusSign

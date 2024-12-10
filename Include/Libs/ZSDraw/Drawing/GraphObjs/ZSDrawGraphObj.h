@@ -734,22 +734,27 @@ public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
     virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
     virtual void traceParentGroupPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
     virtual void traceGraphicsItemStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
     virtual void traceGraphObjStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
 protected: // class members
     static QColor s_selectionColor;
@@ -958,6 +963,9 @@ protected: // !!! OBSOLETE !!! instance members
     //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
 #endif
 protected: // instance members
+    /*!< If the itemChange method should be blocked this member may be set to a value greater than 0
+         e.g. using CRefCountGuard. */
+    int m_iItemChangeBlockedCounter;
     /*!< When modifying the geometry of graphical objects via external "setGeometry" methods
          like "setLine" or "setRect", the position of the item may be changed and "itemChange"
          will be triggered with "positionHasChanged". The "itemChange" method with flag
