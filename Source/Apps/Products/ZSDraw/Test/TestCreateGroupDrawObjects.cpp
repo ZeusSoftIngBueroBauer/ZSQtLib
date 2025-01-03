@@ -1301,19 +1301,17 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
-    // Move mouse to selection point
+    // Move mouse to polygon point
     m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt1SelPt.toPoint());
     pTestStep->addDataRow({ // Click on selection point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}
-        //{"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
-    // Move selection point
+    // Move polygon point
     m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos}
-        //{"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     m_ptPosTriangle = QPointF(325.0, 275.0);
     m_polygonTriangle = QPolygonF({
@@ -1348,6 +1346,52 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* pGrpParent      */ pGrpModifyTriangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
     getSelectionPointCoors(selPt, *m_pPhysValPolygonTriangle, physValPolygonTriangleNew, pt1SelPt, pt2SelPt);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
+    pTestStep->setConfigValue("SelectionPoint", selPt.toString());
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move from current position to empty area
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(260, 300));
+    pTestStep->addDataRow({ // Deselect object by clicking on empty area
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    // Move mouse into object
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, m_ptPosTriangle.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    // Move mouse to line segment between last and first polygon point
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt1SelPt.toPoint());
+    pTestStep->addDataRow({ // Click on line segment to create new polygon point
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    // Move newly created polygon point
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
     m_ptPosTriangle = QPointF(325.0, 250.0);
     m_polygonTriangle = QPolygonF({
         {-50.0,  25.0},
@@ -1356,34 +1400,6 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         { 25.0, -50.0}
     });
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
-    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
-    pTestStep->setConfigValue("SelectionPoint", selPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosTriangle);
-    pTestStep->setConfigValue("P1", pt1SelPt);
-    pTestStep->setConfigValue("P2", pt2SelPt);
-    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    pTestStep->addDataRow({
-        {"Method", "setCurrentDrawingTool"},
-        {"FactoryGroupName", ""},
-        {"FactoryGraphObjType", ""}
-    });
-    pTestStep->addDataRow({ // Deselect object by clicking on empty area
-        {"Method", "mousePressEvent"},
-        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)},
-        {"MousePos", QPoint(260, 300)}
-    });
-    pTestStep->addDataRow({
-        {"Method", "mouseReleaseEvent"},
-        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)},
-        {"MousePos", QPoint(260, 300)}
-    });
-    pTestStep->addDataRow({ // Deselect object by clicking on empty area
-        {"Method", "mouseMoveEvent"},
-        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)},
-        {"MousePos", QPoint(260, 300)}
-    });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
         c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
