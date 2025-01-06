@@ -810,8 +810,8 @@ QRectF CGraphObjLabel::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-    // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    // If the object is selected and the anchor line is visible also this area need to be updated.
+    if (isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
@@ -877,7 +877,7 @@ void CGraphObjLabel::paint(
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
     QPen pn(Qt::SolidLine);
-    if (m_bIsHit || isSelected()) {
+    if (isSelected()) {
         pn.setColor(Qt::blue);
         pn.setStyle(Qt::DotLine);
         i_pPainter->setPen(pn);
@@ -960,8 +960,9 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    setIsHit(true);
-    setCursor(getProposedCursor(i_pEv->pos()));
+    //setIsHit(true);
+    //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+    QGraphicsItem_setCursor(Qt::SizeAllCursor);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -983,8 +984,9 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    setIsHit(true);
-    setCursor(getProposedCursor(i_pEv->pos()));
+    //setIsHit(true);
+    //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+    QGraphicsItem_setCursor(Qt::SizeAllCursor);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -1006,8 +1008,8 @@ void CGraphObjLabel::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    setIsHit(false);
-    unsetCursor();
+    //setIsHit(false);
+    QGraphicsItem_unsetCursor();
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");

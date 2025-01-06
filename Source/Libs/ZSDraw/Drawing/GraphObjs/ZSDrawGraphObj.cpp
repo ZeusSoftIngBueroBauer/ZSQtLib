@@ -142,7 +142,6 @@ CGraphObj::CGraphObj(
     m_physValSizeMaximum(*i_pDrawingScene),
     m_physValSizeFixed(*i_pDrawingScene),
     m_arAlignments(),
-    m_bIsHit(false),
     m_bIsHighlighted(false),
     m_editMode(EEditMode::None),
     //m_editResizeMode(EEditResizeMode::None),
@@ -386,7 +385,6 @@ CGraphObj::~CGraphObj()
     //m_physValSizeMaximum;
     //m_physValSizeFixed;
     //m_arAlignments;
-    m_bIsHit = false;
     m_bIsHighlighted = false;
     m_editMode = static_cast<EEditMode>(0);
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
@@ -4264,36 +4262,36 @@ CEnumEditMode CGraphObj::editMode() const
 public: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObj::setIsHit(bool i_bIsHit)
-//-----------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = bool2Str(i_bIsHit);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setIsHit",
-        /* strAddInfo   */ strMthInArgs );
+////------------------------------------------------------------------------------
+//void CGraphObj::setIsHit(bool i_bIsHit)
+////-----------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = bool2Str(i_bIsHit);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::setIsHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_bIsHit != i_bIsHit) {
+//        m_bIsHit = i_bIsHit;
+//        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+//        if (pGraphicsItemThis != nullptr) {
+//            pGraphicsItemThis->update();
+//        }
+//    }
+//}
 
-    if (m_bIsHit != i_bIsHit) {
-        m_bIsHit = i_bIsHit;
-        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-        if (pGraphicsItemThis != nullptr) {
-            pGraphicsItemThis->update();
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-bool CGraphObj::isHit() const
-//------------------------------------------------------------------------------
-{
-    return m_bIsHit;
-}
+////------------------------------------------------------------------------------
+//bool CGraphObj::isHit() const
+////------------------------------------------------------------------------------
+//{
+//    return m_bIsHit;
+//}
 
 ////------------------------------------------------------------------------------
 //bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
@@ -4422,9 +4420,6 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
         /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::ArrowCursor;
-    if (m_bIsHit) {
-        cursor = Qt::SizeAllCursor;
-    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
@@ -8480,6 +8475,44 @@ QGraphicsItem* CGraphObj::QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphics
     return pGraphObjGroupParentPrev;
 }
 
+//------------------------------------------------------------------------------
+void CGraphObj::QGraphicsItem_setCursor(const QCursor& i_cursor)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::QGraphicsItem_setCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        pGraphicsItemThis->setCursor(i_cursor);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::QGraphicsItem_unsetCursor()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::QGraphicsItem_unsetCursor",
+        /* strAddInfo   */ "" );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        pGraphicsItemThis->unsetCursor();
+    }
+}
+
 /*==============================================================================
 protected: // overridable auxiliary instance methods (method tracing)
 ==============================================================================*/
@@ -8596,9 +8629,12 @@ void CGraphObj::traceGraphicsItemStates(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
+            QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
+            CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
             strRuntimeInfo += "IsSelected: " + bool2Str(pGraphicsItemThis->isSelected()) +
                 ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
-                ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled());
+                ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled()) +
+                ", MouseGrabber: " + QString(pGraphObjMouseGrabber == nullptr ? "null" : pGraphObjMouseGrabber->path());
             i_mthTracer.trace(strRuntimeInfo);
         }
         if (i_strFilter.isEmpty() || i_strFilter.contains("HoverEvents")) {
@@ -8640,7 +8676,6 @@ void CGraphObj::traceGraphObjStates(
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
         strRuntimeInfo += "EditMode: " + m_editMode.toString() +
-            ", IsHit: " + bool2Str(m_bIsHit) +
             ", IsHighlighted: " + bool2Str(m_bIsHighlighted) +
             ", ForceConversion: " + bool2Str(m_bForceConversionToSceneCoors);
         i_mthTracer.trace(strRuntimeInfo);

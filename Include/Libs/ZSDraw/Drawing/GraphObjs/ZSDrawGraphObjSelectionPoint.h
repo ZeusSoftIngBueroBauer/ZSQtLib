@@ -68,6 +68,9 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
+    QString pathNameOfLinkedObject() const;
+    QString myPathName() const;
+public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
     void setShapePoint( int i_idxPt );
 public: // instance methods
@@ -101,6 +104,10 @@ public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
+protected: // overridables of base class QGraphicsItem
+    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;

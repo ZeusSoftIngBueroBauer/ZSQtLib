@@ -352,8 +352,8 @@ protected: // instance members
     ZS::Draw::CObjFactoryLine* m_pObjFactoryLine;
     ZS::Draw::CObjFactoryRect* m_pObjFactoryRect;
     ZS::Draw::CObjFactoryEllipse* m_pObjFactoryEllipse;
-    ZS::Draw::CObjFactoryPolygon* m_pObjFactoryPolygon;
     ZS::Draw::CObjFactoryPolyline* m_pObjFactoryPolyline;
+    ZS::Draw::CObjFactoryPolygon* m_pObjFactoryPolygon;
     ZS::Draw::CObjFactoryText* m_pObjFactoryText;
     ZS::Draw::CObjFactoryImage* m_pObjFactoryImage;
     ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;

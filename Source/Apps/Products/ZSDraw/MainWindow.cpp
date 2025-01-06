@@ -239,8 +239,8 @@ CMainWindow::CMainWindow(
     m_pObjFactoryLine(nullptr),
     m_pObjFactoryRect(nullptr),
     m_pObjFactoryEllipse(nullptr),
-    m_pObjFactoryPolygon(nullptr),
     m_pObjFactoryPolyline(nullptr),
+    m_pObjFactoryPolygon(nullptr),
     m_pObjFactoryText(nullptr),
     m_pObjFactoryImage(nullptr),
     m_pObjFactoryConnectionPoint(nullptr),
@@ -1361,7 +1361,6 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapePolygon = new QAction(iconDrawPolygon, c_strActionNameDrawStandardShapePolygon.section(":",-1,-1), this);
     m_pActDrawStandardShapePolygon->setStatusTip(tr("Draw Polygons"));
     m_pActDrawStandardShapePolygon->setCheckable(true);
-    m_pActDrawStandardShapePolygon->setEnabled(false);
 
     QObject::connect(
         m_pActDrawStandardShapePolygon, &QAction::triggered,
@@ -4625,6 +4624,7 @@ void CMainWindow::updateActions()
             }
             else {
                 m_pActDrawStandardShapeRect->setEnabled(false);
+                //m_pActDrawStandardShapeRect->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryRect) {
                     m_pActDrawStandardShapeRect->setChecked(true);
                 }
@@ -4640,6 +4640,7 @@ void CMainWindow::updateActions()
             }
             else {
                 m_pActDrawStandardShapeEllipse->setEnabled(false);
+                //m_pActDrawStandardShapeEllipse->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryEllipse) {
                     m_pActDrawStandardShapeEllipse->setChecked(true);
                 }
@@ -4654,7 +4655,7 @@ void CMainWindow::updateActions()
                 m_pActDrawStandardShapePolyline->setChecked(false);
             }
             else {
-                m_pActDrawStandardShapePolyline->setEnabled(false);
+                m_pActDrawStandardShapePolyline->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPolyline) {
                     m_pActDrawStandardShapePolyline->setChecked(true);
                 }
@@ -4669,7 +4670,7 @@ void CMainWindow::updateActions()
                 m_pActDrawStandardShapePolygon->setChecked(false);
             }
             else {
-                m_pActDrawStandardShapePolygon->setEnabled(false);
+                m_pActDrawStandardShapePolygon->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryPolygon) {
                     m_pActDrawStandardShapePolygon->setChecked(true);
                 }
@@ -4685,6 +4686,7 @@ void CMainWindow::updateActions()
             }
             else {
                 m_pActDrawStandardShapeText->setEnabled(false);
+                //m_pActDrawStandardShapeText->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryText) {
                     m_pActDrawStandardShapeText->setChecked(true);
                 }
@@ -4716,6 +4718,7 @@ void CMainWindow::updateActions()
             }
             else {
                 m_pActDrawConnectionPoint->setEnabled(false);
+                //m_pActDrawConnectionPoint->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionPoint) {
                     m_pActDrawConnectionPoint->setChecked(true);
                 }
@@ -4731,6 +4734,7 @@ void CMainWindow::updateActions()
             }
             else {
                 m_pActDrawConnectionLine->setEnabled(false);
+                //m_pActDrawConnectionLine->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionLine) {
                     m_pActDrawConnectionLine->setChecked(true);
                 }

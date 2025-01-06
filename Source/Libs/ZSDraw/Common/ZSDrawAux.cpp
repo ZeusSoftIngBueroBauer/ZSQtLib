@@ -1214,11 +1214,23 @@ QPolygonF ZS::Draw::rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount, const 
     of the rectangle (top, bottom, left, right) intersects with the line.
     If none of those lines hit the two diagonales of the tolerance rectangle are
     also checked.
+
+    @param [in] i_line
+        Line to be checked.
+    @param [in] i_pt
+        Point to be checked.
+    @param [in] i_fTolerance_px
+        Tolerance in pixels.
+    @param [out] o_pHitInfo
+        If a valid point is passed the hit info is filled with additional info
+        of the hit point including the intersection point.
+
+    @return true, if the given point hits the line within the given tolarance, false otherwise.
 */
 bool ZS::Draw::isLineHit(
     const QLineF& i_line,
     const QPointF& i_pt,
-    double i_fTolerance,
+    double i_fTolerance_px,
     SGraphObjHitInfo* o_pHitInfo)
 //------------------------------------------------------------------------------
 {
@@ -1228,7 +1240,7 @@ bool ZS::Draw::isLineHit(
 
     bool bIsHit = false;
 
-    double fTolerance = i_fTolerance;
+    double fTolerance = i_fTolerance_px;
     if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
@@ -1300,8 +1312,7 @@ bool ZS::Draw::isLineHit(
         }
     }
     return bIsHit;
-
-} // isLineHit
+}
 
 //------------------------------------------------------------------------------
 bool ZS::Draw::isRectHit(
@@ -1613,15 +1624,13 @@ bool ZS::Draw::isPolygonHit(
     SGraphObjHitInfo* o_pHitInfo )
 //------------------------------------------------------------------------------
 {
-    bool   bIsHit = false;
+    bool bIsHit = false;
     double fTolerance = i_fTolerance;
 
     if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        //o_pHitInfo->m_editMode = EEditMode::None;
-        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
         o_pHitInfo->m_idxPolygonShapePoint = -1;
         o_pHitInfo->m_idxLineSegment = -1;
@@ -1642,7 +1651,6 @@ bool ZS::Draw::isPolygonHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    //o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
                     o_pHitInfo->m_idxPolygonShapePoint = idxPt;
                     o_pHitInfo->m_ptSelected = pt;
                     o_pHitInfo->m_cursor = Qt::CrossCursor;
@@ -1652,15 +1660,14 @@ bool ZS::Draw::isPolygonHit(
         }
         if (!bIsHit) {
             if (i_plg.size() > 1) {
-                for (int idxPt = 0; idxPt < i_plg.size()-1; idxPt++) {
-                    QLineF lin(i_plg[idxPt], i_plg[idxPt+1]);
+                for (int idxPt = 0; idxPt < i_plg.size(); idxPt++) {
+                    QLineF lin(i_plg[idxPt], idxPt < (i_plg.size()-1) ? i_plg[idxPt+1] : i_plg[0]);
                     if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
                         bIsHit = true;
                         if (o_pHitInfo != nullptr) {
-                            //o_pHitInfo->m_editMode = EEditMode::Move;
-                            //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                             o_pHitInfo->m_idxLineSegment = idxPt;
                             o_pHitInfo->m_ptSelected = i_pt;
+                            o_pHitInfo->m_cursor = Qt::CrossCursor;
                         }
                         break;
                     }
@@ -1671,8 +1678,6 @@ bool ZS::Draw::isPolygonHit(
             if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    //o_pHitInfo->m_editMode = EEditMode::Move;
-                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;

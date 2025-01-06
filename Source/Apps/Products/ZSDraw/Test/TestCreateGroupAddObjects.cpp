@@ -60,11 +60,11 @@ void CTest::createTestGroupAddObjects(ZS::Test::CTestStepGroup* i_pTestStepGroup
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddObjects",
         /* strAddInfo   */ strMthInArgs );
@@ -84,11 +84,11 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapes",
         /* strAddInfo   */ strMthInArgs );
@@ -448,11 +448,11 @@ void CTest::createTestGroupAddStandardShapesLinesSmallPlusSign(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesLinesSmallPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -538,11 +538,11 @@ void CTest::createTestGroupAddStandardShapesLinesBigPlusSign(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesLinesBigPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -628,11 +628,11 @@ void CTest::createTestGroupAddStandardShapesLinesCheckmark(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesLinesCheckmark",
         /* strAddInfo   */ strMthInArgs );
@@ -718,11 +718,11 @@ void CTest::createTestGroupAddStandardShapesLinesSmallRect(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesLinesSmallRect",
         /* strAddInfo   */ strMthInArgs );
@@ -858,11 +858,11 @@ void CTest::createTestGroupAddStandardShapesPolygonOpenArrow(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesPolygonOpenArrow",
         /* strAddInfo   */ strMthInArgs );
@@ -953,11 +953,11 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangle(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesPolygonTriangle",
         /* strAddInfo   */ strMthInArgs );
@@ -1040,11 +1040,11 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesPolygonTriangleModifications",
         /* strAddInfo   */ strMthInArgs );
@@ -1631,11 +1631,11 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesPolygonStar",
         /* strAddInfo   */ strMthInArgs );
@@ -1726,11 +1726,11 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestSt
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupSmallPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -1808,11 +1808,11 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::C
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupSmallPlusSignResize",
         /* strAddInfo   */ strMthInArgs );
@@ -1929,11 +1929,11 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStep
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -2011,11 +2011,11 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Tes
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSignRotateParent",
         /* strAddInfo   */ strMthInArgs );
@@ -2334,11 +2334,11 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignModfications(ZS::Tes
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSignModfications",
         /* strAddInfo   */ strMthInArgs );
@@ -3460,11 +3460,11 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGr
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroups",
         /* strAddInfo   */ strMthInArgs );
@@ -3584,11 +3584,11 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(+
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupPlusSignsModifications",
         /* strAddInfo   */ strMthInArgs );
@@ -4888,11 +4888,11 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGr
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupCheckmark",
         /* strAddInfo   */ strMthInArgs );
@@ -4972,11 +4972,11 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupCheckmarkModifications",
         /* strAddInfo   */ strMthInArgs );
@@ -5204,11 +5204,11 @@ void CTest::createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGro
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupPolygons",
         /* strAddInfo   */ strMthInArgs );
@@ -5332,11 +5332,11 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesGroupPolygonsModifications",
         /* strAddInfo   */ strMthInArgs );
@@ -5741,11 +5741,11 @@ void CTest::createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesAllGroups",
         /* strAddInfo   */ strMthInArgs );
@@ -5990,11 +5990,11 @@ void CTest::createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTe
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAddStandardShapesAllGroupsModifications",
         /* strAddInfo   */ strMthInArgs );

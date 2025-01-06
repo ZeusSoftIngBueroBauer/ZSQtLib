@@ -1383,15 +1383,13 @@ struct SGraphObjHitInfo
 //------------------------------------------------------------------------------
 SGraphObjHitInfo::SGraphObjHitInfo() :
 //------------------------------------------------------------------------------
-    //m_editMode(EEditMode::None),
-    //m_editResizeMode(EEditResizeMode::None),
     m_selPtBoundingRect(ESelectionPoint::None),
     m_idxPolygonShapePoint(-1),
     m_idxLineSegment(-1),
     m_ptSelected(),
     m_cursor()
 {
-} // ctor
+}
 
 /* public: // struct methods
 ==============================================================================*/
@@ -1400,44 +1398,28 @@ SGraphObjHitInfo::SGraphObjHitInfo() :
 bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
 //------------------------------------------------------------------------------
 {
-    bool bIsHit = false;
-    //if (m_editMode == EEditMode::Resize && m_editResizeMode != EEditResizeMode::None) {
-        bIsHit = (m_selPtBoundingRect >= ESelectionPointRectMin) && (m_selPtBoundingRect <= ESelectionPointRectMax);
-    //}
-    return bIsHit;
+    return (m_selPtBoundingRect >= ESelectionPointRectMin) && (m_selPtBoundingRect <= ESelectionPointRectMax);
 }
 
 //------------------------------------------------------------------------------
 bool SGraphObjHitInfo::isSelectionPointHit() const
 //------------------------------------------------------------------------------
 {
-    bool bIsHit = false;
-    //if (m_editMode != EEditMode::None) {
-        bIsHit = (m_selPtBoundingRect != ESelectionPoint::None);
-    //}
-    return bIsHit;
+    return (m_selPtBoundingRect != ESelectionPoint::None);
 }
 
 //------------------------------------------------------------------------------
 bool SGraphObjHitInfo::isPolygonShapePointHit() const
 //------------------------------------------------------------------------------
 {
-    bool bIsHit = false;
-    //if (m_editMode == EEditMode::MoveShapePoint) {
-        bIsHit = (m_idxPolygonShapePoint >= 0);
-    //}
-    return bIsHit;
+    return (m_idxPolygonShapePoint >= 0);
 }
 
 //------------------------------------------------------------------------------
 bool SGraphObjHitInfo::isLineSegmentHit() const
 //------------------------------------------------------------------------------
 {
-    bool bIsHit = false;
-    //if (m_editMode != EEditMode::None) {
-        bIsHit = (m_idxLineSegment >= 0);
-    //}
-    return bIsHit;
+    return (m_idxLineSegment >= 0);
 }
 
 /* public: // struct methods
@@ -1592,9 +1574,7 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 QString SGraphObjHitInfo::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = //"EditMode:" + m_editMode.toString() +
-        //", ResizeMode:" + m_editResizeMode.toString() +
-        ", SelPtBoundingRect: " + m_selPtBoundingRect.toString() +
+    QString str = "SelPtBoundingRect: " + m_selPtBoundingRect.toString() +
         ", PolygonShapePoint: " + QString::number(m_idxPolygonShapePoint) +
         ", LineSegment: " + QString::number(m_idxLineSegment) +
         ", PointSelected {" + qPoint2Str(m_ptSelected) + "}" +

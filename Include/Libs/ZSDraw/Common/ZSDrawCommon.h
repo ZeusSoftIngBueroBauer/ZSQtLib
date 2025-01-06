@@ -958,12 +958,8 @@ public: // struct methods
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
 public: // struct methods
-    //void setCursor(double i_fGraphObjRotAngle_rad);
-public: // struct methods
     QString toString() const;
 public: // struct members
-    //CEnumEditMode m_editMode;
-    //CEnumEditResizeMode m_editResizeMode;
     CEnumSelectionPoint m_selPtBoundingRect;
     int m_idxPolygonShapePoint;
     int m_idxLineSegment;

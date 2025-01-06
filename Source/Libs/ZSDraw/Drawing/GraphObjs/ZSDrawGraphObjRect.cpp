@@ -945,7 +945,7 @@ void CGraphObjRect::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
     //    {
     //        if( cursor().shape() != hitInfo.m_cursor.shape() )
     //        {
-    //            setCursor(hitInfo.m_cursor);
+    //            QGraphicsItem_setCursor(hitInfo.m_cursor);
     //        }
     //    }
     //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
@@ -982,7 +982,7 @@ void CGraphObjRect::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     //    {
     //        if( cursor().shape() != hitInfo.m_cursor.shape() )
     //        {
-    //            setCursor(hitInfo.m_cursor);
+    //            QGraphicsItem_setCursor(hitInfo.m_cursor);
     //        }
     //    }
     //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
@@ -1004,7 +1004,7 @@ void CGraphObjRect::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    unsetCursor();
+    QGraphicsItem_unsetCursor();
 
 } // hoverLeaveEvent
 

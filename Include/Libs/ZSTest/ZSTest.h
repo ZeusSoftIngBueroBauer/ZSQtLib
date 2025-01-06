@@ -59,7 +59,6 @@ public: // class methods to get default file paths
     static QString GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope = "User" );
 public: // ctors and dtor
     CTest(
-        const QString& i_strNameSpace,
         const QString& i_strObjName,
         const QString& i_strTestStepsAbsFilePath = "",
         const QString& i_strNodeSeparator = "\\",
@@ -145,9 +144,9 @@ protected: // instance members
     /*!< Current state of the test. */
     CEnumTestState m_state;
     /*!< Run mode the test is executed with. */
-    ZS::System::CEnumRunMode  m_runMode;
+    ZS::System::CEnumRunMode m_runMode;
     /*!< true if a test step is started. */
-    bool m_bDoTestStepPending; 
+    bool m_bDoTestStepPending;
     /*!< Pointer to trace admin object. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 

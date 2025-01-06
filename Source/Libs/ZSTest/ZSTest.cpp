@@ -84,7 +84,6 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CTest::CTest(
-    const QString& i_strNameSpace,
     const QString& i_strObjName,
     const QString& i_strTestStepsAbsFilePath,
     const QString& i_strNodeSeparator,
@@ -105,12 +104,11 @@ CTest::CTest(
 {
     setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_strNameSpace, ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "NameSpace: " + i_strNameSpace +
-            ", ObjName: " + i_strObjName +
+        strMthInArgs = "ObjName: " + i_strObjName +
             ", TestStepsFile: " + i_strTestStepsAbsFilePath +
             ", NodeSep: " + i_strNodeSeparator +
             ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms" +

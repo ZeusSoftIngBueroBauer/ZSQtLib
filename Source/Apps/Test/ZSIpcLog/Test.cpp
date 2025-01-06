@@ -76,7 +76,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(NameSpace(), "theInst"),
+    ZS::Test::CTest(NameSpace() + "Libs-IpcLog"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTmrCheckLogClientLogWdgtIsEmpty(nullptr),
     m_hshReqsInProgress()

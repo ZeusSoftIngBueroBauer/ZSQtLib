@@ -1149,9 +1149,6 @@ QCursor CGraphObjLine::getProposedCursor(const QPointF& i_pt) const
         /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::ArrowCursor;
-    if (m_bIsHit) {
-        cursor = Qt::SizeAllCursor;
-    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
@@ -1692,7 +1689,7 @@ void CGraphObjLine::paint(
 
     QPen pn = pen();
     QLineF lineF = line();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
@@ -1854,9 +1851,10 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     // Ignore hover events if the object is currently being created.
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        showSelectionPoints();
-        setIsHit(true);
-        setCursor(getProposedCursor(i_pEv->pos()));
+        //showSelectionPoints();
+        //setIsHit(true);
+        //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+        QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
@@ -1880,9 +1878,10 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     // Ignore hover events if the object is currently being created.
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        showSelectionPoints();
-        setIsHit(true);
-        setCursor(getProposedCursor(i_pEv->pos()));
+        //showSelectionPoints();
+        //setIsHit(true);
+        //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+        QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
@@ -1906,11 +1905,11 @@ void CGraphObjLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     // If the object is selected the selection points should remain visible.
-    if (!isSelected()) {
-        hideSelectionPoints();
-    }
-    setIsHit(false);
-    unsetCursor();
+    //if (!isSelected()) {
+    //    hideSelectionPoints();
+    //}
+    //setIsHit(false);
+    QGraphicsItem_unsetCursor();
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");

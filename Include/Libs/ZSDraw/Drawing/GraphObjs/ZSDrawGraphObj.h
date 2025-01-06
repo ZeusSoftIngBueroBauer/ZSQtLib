@@ -586,8 +586,8 @@ public: // overridables
     CEnumEditMode editMode() const;
     //virtual void setEditResizeMode(CEnumEditResizeMode i_eMode);
     //CEnumEditResizeMode editResizeMode() const;
-    virtual void setIsHit(bool i_bIsHit);
-    bool isHit() const;
+    //virtual void setIsHit(bool i_bIsHit);
+    //bool isHit() const;
     //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
     virtual void setIsHighlighted(bool i_bIsHighlighted);
     bool isHighlighted() const;
@@ -730,6 +730,8 @@ protected: // overridable auxiliary instance methods (method tracing)
     virtual double QGraphicsItem_setScale(double i_fFactor);
     virtual double QGraphicsItem_setRotation(double i_fAngle_degree);
     virtual QGraphicsItem* QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent);
+    virtual void QGraphicsItem_setCursor(const QCursor& i_cursor);
+    virtual void QGraphicsItem_unsetCursor();
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -815,7 +817,7 @@ protected: // instance members
     QList<SGraphObjAlignment> m_arAlignments;
     /*!< Flag indicating whether the graphical object is hit by the mouse cursor
          (between hoverEnterEvent and hoverLeaveEvent). */
-    bool m_bIsHit;
+    //bool m_bIsHit;
     /*!< Flag indicating whether the graphical object is highlighted.
          Objects are highlighted if they are selected via the graph objects index tree.
          A highlighted but not selected object does not show selection points. */

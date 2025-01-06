@@ -925,7 +925,7 @@ void CGraphObjText::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    unsetCursor();
+    QGraphicsItem_unsetCursor();
 }
 
 /*==============================================================================

@@ -111,7 +111,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -123,17 +123,17 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
            //| QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
 
-    // !!! Selection points cannot accept hover events. !!!
-    // Selection points are created by the hover enter event and deleted by the hover
-    // leave event of the graphical object the selection points belong to.
-    // If the selection points would accept hover events and the mouse cursor is
-    // hovered over a selection point, graphics scene invokes hoverLeaveEvent for other
-    // items (as well as for the object the selection points belong to). This would
-    // delete the selection points and the graphics scene will dispatch the hover event
-    // to the already deleted selection point. !!! Crash !!! as a dangled pointer will
-    // be accessed. Because of this the object creating the selection points must ask
-    // the selection points (if they are under the mouse cursor) for the proposed cursor.
-    //setAcceptHoverEvents(true); !!! NOT POSSIBLE !!!
+    ////// !!! Selection points cannot accept hover events. !!!
+    ////// Selection points are created by the hover enter event and deleted by the hover
+    ////// leave event of the graphical object the selection points belong to.
+    ////// If the selection points would accept hover events and the mouse cursor is
+    ////// hovered over a selection point, graphics scene invokes hoverLeaveEvent for other
+    ////// items (as well as for the object the selection points belong to). This would
+    ////// delete the selection points and the graphics scene will dispatch the hover event
+    ////// to the already deleted selection point. !!! Crash !!! as a dangled pointer will
+    ////// be accessed. Because of this the object creating the selection points must ask
+    ////// the selection points (if they are under the mouse cursor) for the proposed cursor.
+    setAcceptHoverEvents(true);
 
     if (m_selPt.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -163,7 +163,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -207,12 +207,38 @@ CGraphObj* CGraphObjSelectionPoint::clone()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
     CGraphObjSelectionPoint* pGraphObj = nullptr;
     return pGraphObj;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CGraphObjSelectionPoint::pathNameOfLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    QString strPath;
+    if (m_selPt.m_pGraphObj != nullptr) {
+        strPath = m_selPt.m_pGraphObj->path();
+    }
+    return strPath;
+}
+
+//------------------------------------------------------------------------------
+QString CGraphObjSelectionPoint::myPathName() const
+//------------------------------------------------------------------------------
+{
+    QString strPath = pathNameOfLinkedObject();
+    if (m_selPt.m_pGraphObj != nullptr) {
+        strPath = m_selPt.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    }
+    return strPath;
 }
 
 /*==============================================================================
@@ -242,7 +268,7 @@ void CGraphObjSelectionPoint::setShapePoint( int i_idxPt )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "setShapePoint",
         /* strAddInfo   */ strMthInArgs );
 
@@ -267,7 +293,7 @@ void CGraphObjSelectionPoint::setRadiusInPx( double i_fRadius_px )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "setRadiusInPx",
         /* strAddInfo   */ strMthInArgs );
 
@@ -309,7 +335,7 @@ public: // instance methods (replacing the methods of base class QGraphicsItem)
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "setSelected",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -341,7 +367,7 @@ void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawS
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -392,7 +418,7 @@ public: // must overridables of base class CGraphObj
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "setWidth",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -410,7 +436,7 @@ public: // must overridables of base class CGraphObj
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "setHeight",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -428,7 +454,7 @@ public: // must overridables of base class CGraphObj
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "setSize",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -493,7 +519,7 @@ QRectF CGraphObjSelectionPoint::getBoundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
 
@@ -530,7 +556,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ "" );
 
@@ -564,7 +590,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjIsHit,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "isHit",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -633,7 +659,7 @@ bool CGraphObjSelectionPoint::contains(const QPointF& i_pt) const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "contains",
         /* strAddInfo   */ strMthInArgs );
 
@@ -659,7 +685,7 @@ public: // reimplementing methods of base class QGraphicItem
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "setCursor",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -677,7 +703,7 @@ protected: // overridables of base class CGraphObj
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "updateToolTip",
 //        /* strAddInfo   */ "" );
 //
@@ -700,7 +726,7 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
@@ -725,7 +751,7 @@ QPainterPath CGraphObjSelectionPoint::shape() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
     QPainterPath painterPath = QGraphicsEllipseItem::shape();
@@ -752,7 +778,7 @@ void CGraphObjSelectionPoint::paint(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
@@ -804,6 +830,81 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ myPathName(),
+        /* strMethod    */ "hoverEnterEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    //setIsHit(true);
+    QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+    //QGraphicsItem_setCursor(Qt::SizeAllCursor);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ myPathName(),
+        /* strMethod    */ "hoverMoveEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    //setIsHit(true);
+    QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+    //QGraphicsItem_setCursor(Qt::SizeAllCursor);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ myPathName(),
+        /* strMethod    */ "hoverLeaveEvent",
+        /* strAddInfo   */ strMthInArgs );
+
+    //setIsHit(false);
+    QGraphicsItem_unsetCursor();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
+
+/*==============================================================================
+protected: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -814,11 +915,11 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    setCursor(getProposedCursor(i_pEv->pos()));
+    QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
 
     // The accepted flag is already set by the graphics scene.
     // But the usual way would be that the object eating the event sets the flag.
@@ -847,11 +948,11 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    unsetCursor();
+    QGraphicsItem_unsetCursor();
 
     // The accepted flag is already set by the graphics scene.
     // But the usual way would be that the object eating the event sets the flag.
@@ -880,7 +981,7 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -914,11 +1015,11 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    setCursor(getProposedCursor(i_pEv->pos()));
+    QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
     setPos(i_pEv->scenePos());
 
     // Eat the event. Don't pass it to other objects otherwise the object
@@ -954,7 +1055,7 @@ protected slots:
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
+//        /* strObjName   */ myPathName(),
 //        /* strMethod    */ "onGraphObjParentScenePosChanged",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -973,7 +1074,7 @@ void CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -991,7 +1092,7 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1019,7 +1120,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1086,7 +1187,7 @@ void CGraphObjSelectionPoint::updatePosition()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
+        /* strObjName   */ myPathName(),
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 

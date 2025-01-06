@@ -60,11 +60,11 @@ void CTest::createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGrou
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawObjects",
         /* strAddInfo   */ strMthInArgs );
@@ -84,11 +84,11 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapes",
         /* strAddInfo   */ strMthInArgs );
@@ -321,11 +321,11 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesLinesSmallPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -414,11 +414,11 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesLinesBigPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -507,11 +507,11 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesLinesCheckmark",
         /* strAddInfo   */ strMthInArgs );
@@ -600,11 +600,11 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesLinesSmallRect",
         /* strAddInfo   */ strMthInArgs );
@@ -745,11 +745,11 @@ void CTest::createTestGroupDrawStandardShapesPolygonOpenArrow(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesPolygonOpenArrow",
         /* strAddInfo   */ strMthInArgs );
@@ -847,11 +847,11 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangle(ZS::Test::CTestStep
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesPolygonTriangle",
         /* strAddInfo   */ strMthInArgs );
@@ -939,11 +939,11 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesPolygonTriangleModifications",
         /* strAddInfo   */ strMthInArgs );
@@ -976,6 +976,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     QString strMethod;
     QString strMthArgs;
     CPhysValPoint physValPoint(*m_pDrawingScene);
+    CPhysValLine physValLine(*m_pDrawingScene);
     CPhysValPolygon physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
     SGraphObjSelectionPoint selPt;
     QPointF pt1SelPt;
@@ -1083,6 +1084,87 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     });
 #endif
 
+    // insert(1, Pt)
+    //--------------
+
+    physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
+    physValLine = CPhysValLine(physValPolygonTriangleNew.at(0), physValPolygonTriangleNew.at(1));
+    physValPoint = physValLine.center();
+    physValPoint.setY(bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
+    physValPolygonTriangleNew.insert(1, physValPoint);
+    strObjName = c_strGraphObjNameTriangle;
+    strMethod = "insert";
+    strMthArgs = "1, {" + physValPoint.toString() + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyTriangle,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
+    selPt.m_selPt = ESelectionPoint::LineCenterPoint;
+    selPt.m_idxPt = 0;
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValPolygonTriangle, selPt);
+    pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
+    pTestStep->setConfigValue("SelectionPoint", selPt.toString());
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move from current position to empty area
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(260, 300));
+    pTestStep->addDataRow({ // Deselect object by clicking on empty area
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    // Move mouse into object
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, m_ptPosTriangle.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    // Move mouse to center of first line segment
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt1SelPt.toPoint());
+    pTestStep->addDataRow({ // Click on line segment to create new polygon point
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    // Move newly created polygon point
+    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    m_ptPosTriangle = QPointF(325.0, 250.0);
+    m_polygonTriangle = QPolygonF({
+        {-50.0,  25.0},
+        {  0.0,  50.0},
+        { 50.0,  50.0},
+        { 25.0, -50.0}
+    });
+    *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForPolygon(
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
     // Rotate
     //-------
 
@@ -1099,7 +1181,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyTriangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(selPt.m_selPt, m_pPhysValPolygonTriangle->physValBoundingRect(), physValPolygonTriangleNew.physValBoundingRect(), pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(m_pPhysValPolygonTriangle->physValBoundingRect(), selPt.m_selPt);
+    pt2SelPt = getSelectionPointCoors(physValPolygonTriangleNew.physValBoundingRect(), selPt.m_selPt);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
@@ -1268,7 +1351,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyTriangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(selPt, *m_pPhysValPolygonTriangle, physValPolygonTriangleNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(m_pPhysValPolygonTriangle->physValBoundingRect(), selPt.m_selPt);
+    pt2SelPt = getSelectionPointCoors(physValPolygonTriangleNew.physValBoundingRect(), selPt.m_selPt);
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
@@ -1345,7 +1429,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyTriangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(selPt, *m_pPhysValPolygonTriangle, physValPolygonTriangleNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(m_pPhysValPolygonTriangle->physValBoundingRect(), selPt.m_selPt);
+    pt2SelPt = getSelectionPointCoors(physValPolygonTriangleNew.physValBoundingRect(), selPt.m_selPt);
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
@@ -1661,11 +1746,11 @@ void CTest::createTestGroupDrawStandardShapesPolygonStar(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesPolygonStar",
         /* strAddInfo   */ strMthInArgs );
@@ -1765,11 +1850,11 @@ void CTest::createTestGroupDrawStandardShapesGroupSmallPlusSign(ZS::Test::CTestS
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesGroupSmallPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -1852,11 +1937,11 @@ void CTest::createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesGroupSmallPlusSignResize",
         /* strAddInfo   */ strMthInArgs );
@@ -1909,7 +1994,8 @@ void CTest::createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::
         /* strOperation    */ c_strGraphObjNameSmallPlusSign + ".setSize(" + physValRectSmallPlusSignNew.size().toString(true) + ")",
         /* pGrpParent      */ pGrpModifySmallPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectSmallPlusSign, physValRectSmallPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectSmallPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectSmallPlusSignNew, eSelPt.enumerator());
     m_sizeSmallPlusSign = physValRectSmallPlusSignNew.size().toQSizeF();
     *m_pPhysValRectSmallPlusSign = physValRectSmallPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -1959,7 +2045,8 @@ void CTest::createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::
         /* strOperation    */ c_strGraphObjNameSmallPlusSign + ".setHeight(" + physValRectSmallPlusSignNew.height().toString() + ")",
         /* pGrpParent      */ pGrpModifySmallPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectSmallPlusSign, physValRectSmallPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectSmallPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectSmallPlusSignNew, eSelPt.enumerator());
     m_sizeSmallPlusSign = physValRectSmallPlusSignNew.size().toQSizeF();
     *m_pPhysValRectSmallPlusSign = physValRectSmallPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2003,11 +2090,11 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestSte
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesGroupBigPlusSign",
         /* strAddInfo   */ strMthInArgs );
@@ -2090,11 +2177,11 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Te
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent",
         /* strAddInfo   */ strMthInArgs );
@@ -2273,7 +2360,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + physValRectTopGroupNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_physValAngleTopGroup = physValRectTopGroupNew.angle();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2426,11 +2514,11 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawStandardShapesGroupBigPlusSignModfications",
         /* strAddInfo   */ strMthInArgs );
@@ -2568,7 +2656,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + physValRectBigPlusSignNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_physValAngleBigPlusSign = physValRectBigPlusSignNew.angle();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2611,7 +2700,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setBottomRight(" + physValRectBigPlusSignNew.size().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_sizeBigPlusSign = physValRectBigPlusSignNew.size().toQSizeF();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2667,7 +2757,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + physValRectBigPlusSignNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_physValAngleBigPlusSign = physValRectBigPlusSignNew.angle();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2716,7 +2807,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + physValRectBigPlusSignNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_physValAngleBigPlusSign = physValRectBigPlusSignNew.angle();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2761,7 +2853,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setSize(" + physValRectBigPlusSignNew.size().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_sizeBigPlusSign = physValRectBigPlusSignNew.size().toQSizeF();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2814,7 +2907,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setSize(" + physValRectBigPlusSignNew.size().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_sizeBigPlusSign = physValRectBigPlusSignNew.size().toQSizeF();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2867,7 +2961,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setRotationAngle(" + physValRectBigPlusSignNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     m_physValAngleBigPlusSign = physValRectBigPlusSignNew.angle();
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -2915,7 +3010,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setCenter(" + physValRectBigPlusSignNew.center().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSign);
@@ -2958,7 +3054,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setCenter(" + physValRectBigPlusSignNew.center().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSign);
@@ -3001,7 +3098,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setCenter(" + physValRectBigPlusSignNew.center().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectBigPlusSign, physValRectBigPlusSignNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectBigPlusSign, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectBigPlusSignNew, eSelPt.enumerator());
     *m_pPhysValRectBigPlusSign = physValRectBigPlusSignNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSign);
@@ -3098,7 +3196,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setWidth(" + physValRectTopGroupNew.width().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_sizeTopGroup = physValRectTopGroupNew.size().toQSizeF();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3161,7 +3260,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setHeight(" + physValRectTopGroupNew.height().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_sizeTopGroup = physValRectTopGroupNew.size().toQSizeF();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3224,7 +3324,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setSize(" + physValRectTopGroupNew.size().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_sizeTopGroup = physValRectTopGroupNew.size().toQSizeF();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3286,7 +3387,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + physValRectTopGroupNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_physValAngleTopGroup = physValRectTopGroupNew.angle();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3335,7 +3437,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setWidth(" + physValRectTopGroupNew.width().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_sizeTopGroup = physValRectTopGroupNew.size().toQSizeF();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3397,7 +3500,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setHeight(" + physValRectTopGroupNew.height().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_sizeTopGroup = physValRectTopGroupNew.size().toQSizeF();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3459,7 +3563,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setSize(" + physValRectTopGroupNew.size().toString(true) + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_sizeTopGroup = physValRectTopGroupNew.size().toQSizeF();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3521,7 +3626,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + physValRectTopGroupNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_physValAngleTopGroup = physValRectTopGroupNew.angle();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
@@ -3676,7 +3782,8 @@ void CTest::createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Te
         /* strOperation    */ c_strGraphObjNameTopGroup + ".setRotationAngle(" + physValRectTopGroupNew.angle().toString() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    getSelectionPointCoors(eSelPt.enumerator(), *m_pPhysValRectTopGroup, physValRectTopGroupNew, pt1SelPt, pt2SelPt);
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectTopGroup, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectTopGroupNew, eSelPt.enumerator());
     m_physValAngleTopGroup = physValRectTopGroupNew.angle();
     *m_pPhysValRectTopGroup = physValRectTopGroupNew;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));

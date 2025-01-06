@@ -298,8 +298,10 @@ protected: // auxiliary instance methods
     void initInstCounts();
     void initObjectCoors();
     QPoint addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop, int i_iMovesCount = 0, Qt::MouseButton mouseBtns = Qt::NoButton, Qt::KeyboardModifiers i_modifiers = Qt::NoModifier);
-    void getSelectionPointCoors(const ZS::Draw::SGraphObjSelectionPoint& i_selPt, const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
-    void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
+    QPointF getSelectionPointCoors(const ZS::Draw::CPhysValPolygon& i_physValPolygon, const ZS::Draw::SGraphObjSelectionPoint& i_selPt) const;
+    QPointF getSelectionPointCoors(const ZS::Draw::CPhysValRect& i_physValRect, ZS::Draw::ESelectionPoint i_selPt) const;
+    //void getSelectionPointCoors(const ZS::Draw::SGraphObjSelectionPoint& i_selPt, const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
+    //void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
     QStringList resultValuesForGroup(
@@ -413,6 +415,9 @@ protected: // instance members
     QSizeF m_sizeTopGroup;
     ZS::Draw::CPhysValRect* m_pPhysValRectTopGroup = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleTopGroup;
+
+    /*!< Pointer to trace admin object. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjDrawTestSteps;
 
 }; // class CTest
 

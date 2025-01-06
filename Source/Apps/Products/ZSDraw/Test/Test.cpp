@@ -115,15 +115,17 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(NameSpace(), "theInst"),
+    ZS::Test::CTest("Apps-Products-Draw"),
     m_physValAngleSmallPlusSign(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleBigPlusSign(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleCheckmark(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleSmallRect(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleTopGroup(0.0, Units.Angle.Degree, 0.1)
 {
+    m_pTrcAdminObjDrawTestSteps = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), "theTest");
+
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
@@ -135,7 +137,7 @@ CTest::~CTest()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
@@ -146,6 +148,10 @@ CTest::~CTest()
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
+
+    mthTracer.onAdminObjAboutToBeReleased();
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjDrawTestSteps);
+    m_pTrcAdminObjDrawTestSteps = nullptr;
 
     delete m_pPhysValLineSmallPlusSignVerticalLine;
     m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
@@ -206,11 +212,11 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pMainWindow == nullptr ? "null" : i_pMainWindow->objectName());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setMainWindow",
         /* strAddInfo   */ strMthInArgs );
@@ -539,11 +545,11 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupAuxMethods",
         /* strAddInfo   */ strMthInArgs );
@@ -660,11 +666,11 @@ void CTest::createTestGroupDrawingSize(ZS::Test::CTestStepGroup* i_pTestStepGrou
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawingSize",
         /* strAddInfo   */ strMthInArgs );
@@ -734,7 +740,7 @@ void CTest::createTestGroupPrepareScene(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
                        ", DrawingSize {" + i_drawingSize.toString() + "}",
                        ", GridSettings {" + i_gridSettings.toString() + "}" +
@@ -749,7 +755,7 @@ void CTest::createTestGroupPrepareScene(
         }
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupPrepareScene",
         /* strAddInfo   */ strMthInArgs );
@@ -862,11 +868,11 @@ void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGrou
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestStepSaveLoadFile",
         /* strAddInfo   */ strMthInArgs );
@@ -905,11 +911,11 @@ void CTest::doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGetLineFromPolar",
         /* strAddInfo   */ strMthInArgs );
@@ -942,11 +948,11 @@ void CTest::doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGetPolarCoors",
         /* strAddInfo   */ strMthInArgs );
@@ -967,11 +973,11 @@ void CTest::doTestStepGetPerpendicularLine(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepGetPerpendicularLine",
         /* strAddInfo   */ strMthInArgs );
@@ -997,11 +1003,11 @@ void CTest::doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawingSize",
         /* strAddInfo   */ strMthInArgs );
@@ -1096,11 +1102,11 @@ void CTest::doTestStepMainWindowSetGeometry(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepMainWindowSetGeometry",
         /* strAddInfo   */ strMthInArgs );
@@ -1120,11 +1126,11 @@ void CTest::doTestStepClearDrawingScene(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepClearDrawingScene",
         /* strAddInfo   */ strMthInArgs );
@@ -1143,11 +1149,11 @@ void CTest::doTestStepSetDrawingSize(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepSetDrawingSize",
         /* strAddInfo   */ strMthInArgs );
@@ -1199,11 +1205,11 @@ void CTest::doTestStepSetGridSettings(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepSetGridSettings",
         /* strAddInfo   */ strMthInArgs );
@@ -1228,11 +1234,11 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepSetPainterRenderHints",
         /* strAddInfo   */ strMthInArgs );
@@ -1320,11 +1326,11 @@ void CTest::doTestStepTransformPhysValRect(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepTransformPhysValRect",
         /* strAddInfo   */ strMthInArgs );
@@ -1581,11 +1587,11 @@ void CTest::doTestStepTransformPhysValPolygon(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepTransformPhysValPolygon",
         /* strAddInfo   */ strMthInArgs );
@@ -1980,11 +1986,11 @@ void CTest::doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep* i_p
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawingSceneConvertToPhysValPoint",
         /* strAddInfo   */ strMthInArgs );
@@ -2018,11 +2024,11 @@ void CTest::doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep* i_pT
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawingSceneConvertToPhysValSize",
         /* strAddInfo   */ strMthInArgs );
@@ -2056,11 +2062,11 @@ void CTest::doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep* i_pT
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawingSceneConvertToPhysValLine",
         /* strAddInfo   */ strMthInArgs );
@@ -2101,11 +2107,11 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pT
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawingSceneConvertToPhysValRect",
         /* strAddInfo   */ strMthInArgs );
@@ -2147,11 +2153,11 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepShowLabels",
         /* strAddInfo   */ strMthInArgs );
@@ -2219,11 +2225,11 @@ void CTest::doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepHideLabels",
         /* strAddInfo   */ strMthInArgs );
@@ -2265,11 +2271,11 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepShowGeometryLabels",
         /* strAddInfo   */ strMthInArgs );
@@ -2321,11 +2327,11 @@ void CTest::doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepHideGeometryLabels",
         /* strAddInfo   */ strMthInArgs );
@@ -2367,11 +2373,11 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepAddGraphObjLine",
         /* strAddInfo   */ strMthInArgs );
@@ -2417,11 +2423,11 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepAddGraphObjPolygon",
         /* strAddInfo   */ strMthInArgs );
@@ -2466,11 +2472,11 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepAddGraphObjGroup",
         /* strAddInfo   */ strMthInArgs );
@@ -2534,11 +2540,11 @@ void CTest::doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawGraphObjLine",
         /* strAddInfo   */ strMthInArgs );
@@ -2663,11 +2669,11 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawGraphObjPolygon",
         /* strAddInfo   */ strMthInArgs );
@@ -2875,11 +2881,11 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepDrawGraphObjGroup",
         /* strAddInfo   */ strMthInArgs );
@@ -3027,11 +3033,11 @@ void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepModifyGraphObjLineByDirectMethodCalls",
         /* strAddInfo   */ strMthInArgs );
@@ -3084,11 +3090,11 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepModifyGraphObjPolylineByDirectMethodCalls",
         /* strAddInfo   */ strMthInArgs );
@@ -3193,11 +3199,11 @@ void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepModifyGraphObjGroupByDirectMethodCalls",
         /* strAddInfo   */ strMthInArgs );
@@ -3380,11 +3386,11 @@ void CTest::doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepModifyGraphObjByMovingSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
@@ -3567,11 +3573,11 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepModifyGraphObjByMouseEvents",
         /* strAddInfo   */ strMthInArgs );
@@ -3702,11 +3708,11 @@ void CTest::doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepSelectAndUngroup",
         /* strAddInfo   */ strMthInArgs );
@@ -3812,11 +3818,11 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pTestStep->path();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepSaveLoadFile",
         /* strAddInfo   */ strMthInArgs );
@@ -4063,126 +4069,211 @@ QPoint CTest::addMouseMoveEventDataRows(
 }
 
 //------------------------------------------------------------------------------
-void CTest::getSelectionPointCoors(
-    const ZS::Draw::SGraphObjSelectionPoint& i_selPt,
-    const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew,
-    QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew)
+QPointF CTest::getSelectionPointCoors(
+    const CPhysValPolygon& i_physValPolygon, const SGraphObjSelectionPoint& i_selPt) const
 //------------------------------------------------------------------------------
 {
+    QPointF pt;
     if (i_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        getSelectionPointCoors(
-            i_selPt.m_selPt, i_physValPolygonCurr.physValBoundingRect(), i_physValPolygonNew.physValBoundingRect(),
-            o_ptSelPtRectCurr, o_ptSelPtRectNew);
+        pt = getSelectionPointCoors(i_physValPolygon.physValBoundingRect(), i_selPt.m_selPt);
     }
     else if (i_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
-        CPhysValPoint physValPoint = i_physValPolygonCurr.at(i_selPt.m_idxPt);
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValPolygonNew.at(i_selPt.m_idxPt);
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValPolygon.at(i_selPt.m_idxPt);
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        CPhysValPoint physValPointLineStart = i_physValPolygonCurr.at(i_selPt.m_idxPt);
-        CPhysValPoint physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygonCurr.count() ? i_physValPolygonCurr.at(0) : i_physValPolygonCurr.at(i_selPt.m_idxPt+1);
+        CPhysValPoint physValPointLineStart = i_physValPolygon.at(i_selPt.m_idxPt);
+        CPhysValPoint physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygon.count() ?
+            i_physValPolygon.at(0) : i_physValPolygon.at(i_selPt.m_idxPt+1);
         CPhysValLine physValLine(physValPointLineStart, physValPointLineEnd);
         physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
-        o_ptSelPtRectCurr = physValLine.center().toQPointF();
-        physValPointLineStart = i_physValPolygonNew.at(i_selPt.m_idxPt);
-        physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygonNew.count() ? i_physValPolygonNew.at(0) : i_physValPolygonNew.at(i_selPt.m_idxPt+1);
-        physValLine = CPhysValLine(physValPointLineStart, physValPointLineEnd);
-        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
-        o_ptSelPtRectNew = physValLine.center().toQPointF();
+        pt = physValLine.center().toQPointF();
     }
+    return pt;
 }
 
 //------------------------------------------------------------------------------
-void CTest::getSelectionPointCoors(
-    ESelectionPoint i_selPt, const CPhysValRect& i_physValRectCurr, const CPhysValRect& i_physValRectNew,
-    QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew)
+QPointF CTest::getSelectionPointCoors(
+    const CPhysValRect& i_physValRect, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    QPointF pt;
     if (i_selPt == ESelectionPoint::TopLeft) {
-        CPhysValPoint physValPoint = i_physValRectCurr.topLeft();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.topLeft();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.topLeft();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::TopCenter) {
-        CPhysValPoint physValPoint = i_physValRectCurr.topCenter();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.topCenter();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.topCenter();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::TopRight) {
-        CPhysValPoint physValPoint = i_physValRectCurr.topRight();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.topRight();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.topRight();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::RightCenter) {
-        CPhysValPoint physValPoint = i_physValRectCurr.rightCenter();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.rightCenter();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.rightCenter();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::BottomRight) {
-        CPhysValPoint physValPoint = i_physValRectCurr.bottomRight();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.bottomRight();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.bottomRight();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::BottomCenter) {
-        CPhysValPoint physValPoint = i_physValRectCurr.bottomCenter();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.bottomCenter();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.bottomCenter();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::BottomLeft) {
-        CPhysValPoint physValPoint = i_physValRectCurr.bottomLeft();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.bottomLeft();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.bottomLeft();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::LeftCenter) {
-        CPhysValPoint physValPoint = i_physValRectCurr.leftCenter();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.leftCenter();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.leftCenter();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::Center) {
-        CPhysValPoint physValPoint = i_physValRectCurr.center();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        physValPoint = i_physValRectNew.center();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        CPhysValPoint physValPoint = i_physValRect.center();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
         // ESelectionPoint::RotateTop: 270° (clockwise counted)
         // ESelectionPoint::RotateBottom: 90° (clockwise counted)
         // Original position
-        double fAngle_degree = i_physValRectCurr.angle().getVal(Units.Angle.Degree);
+        double fAngle_degree = i_physValRect.angle().getVal(Units.Angle.Degree);
         fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
         fAngle_degree = ZS::System::Math::toCounterClockWiseAngleDegree(fAngle_degree);
         double fAngle_rad = ZS::System::Math::degree2Rad(fAngle_degree);
         double dxSelPt = ZS::Draw::getSelectionPointRotateDistance() * cos(fAngle_rad);
         double dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
         CPhysValPoint physValPoint = i_selPt == ESelectionPoint::RotateTop ?
-            i_physValRectCurr.topCenter() : i_physValRectCurr.bottomCenter();
-        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        o_ptSelPtRectCurr.setX(o_ptSelPtRectCurr.x() + dxSelPt);
-        o_ptSelPtRectCurr.setY(o_ptSelPtRectCurr.y() - dySelPt);
-        // New position
-        fAngle_degree = i_physValRectNew.angle().getVal(Units.Angle.Degree);
-        fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
-        fAngle_degree = ZS::System::Math::toCounterClockWiseAngleDegree(fAngle_degree);
-        fAngle_rad = ZS::System::Math::degree2Rad(fAngle_degree);
-        dxSelPt = ZS::Draw::getSelectionPointRotateDistance() * cos(fAngle_rad);
-        dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
-        physValPoint = i_selPt == ESelectionPoint::RotateTop ?
-            i_physValRectNew.topCenter() : i_physValRectNew.bottomCenter();
-        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-        o_ptSelPtRectNew.setX(o_ptSelPtRectNew.x() + dxSelPt);
-        o_ptSelPtRectNew.setY(o_ptSelPtRectNew.y() - dySelPt);
+            i_physValRect.topCenter() : i_physValRect.bottomCenter();
+        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        pt.setX(pt.x() + dxSelPt);
+        pt.setY(pt.y() - dySelPt);
     }
+    return pt;
 }
+
+////------------------------------------------------------------------------------
+//void CTest::getSelectionPointCoors(
+//    const ZS::Draw::SGraphObjSelectionPoint& i_selPt,
+//    const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew,
+//    QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew)
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+//        getSelectionPointCoors(
+//            i_selPt.m_selPt, i_physValPolygonCurr.physValBoundingRect(), i_physValPolygonNew.physValBoundingRect(),
+//            o_ptSelPtRectCurr, o_ptSelPtRectNew);
+//    }
+//    else if (i_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
+//        CPhysValPoint physValPoint = i_physValPolygonCurr.at(i_selPt.m_idxPt);
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValPolygonNew.at(i_selPt.m_idxPt);
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
+//        CPhysValPoint physValPointLineStart = i_physValPolygonCurr.at(i_selPt.m_idxPt);
+//        CPhysValPoint physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygonCurr.count() ? i_physValPolygonCurr.at(0) : i_physValPolygonCurr.at(i_selPt.m_idxPt+1);
+//        CPhysValLine physValLine(physValPointLineStart, physValPointLineEnd);
+//        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+//        o_ptSelPtRectCurr = physValLine.center().toQPointF();
+//        physValPointLineStart = i_physValPolygonNew.at(i_selPt.m_idxPt);
+//        physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygonNew.count() ? i_physValPolygonNew.at(0) : i_physValPolygonNew.at(i_selPt.m_idxPt+1);
+//        physValLine = CPhysValLine(physValPointLineStart, physValPointLineEnd);
+//        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+//        o_ptSelPtRectNew = physValLine.center().toQPointF();
+//    }
+//}
+
+////------------------------------------------------------------------------------
+//void CTest::getSelectionPointCoors(
+//    ESelectionPoint i_selPt, const CPhysValRect& i_physValRectCurr, const CPhysValRect& i_physValRectNew,
+//    QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew)
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPt == ESelectionPoint::TopLeft) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.topLeft();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.topLeft();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::TopCenter) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.topCenter();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.topCenter();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::TopRight) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.topRight();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.topRight();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::RightCenter) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.rightCenter();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.rightCenter();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomRight) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.bottomRight();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.bottomRight();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomCenter) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.bottomCenter();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.bottomCenter();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomLeft) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.bottomLeft();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.bottomLeft();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::LeftCenter) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.leftCenter();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.leftCenter();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::Center) {
+//        CPhysValPoint physValPoint = i_physValRectCurr.center();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        physValPoint = i_physValRectNew.center();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//    }
+//    else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
+//        // ESelectionPoint::RotateTop: 270° (clockwise counted)
+//        // ESelectionPoint::RotateBottom: 90° (clockwise counted)
+//        // Original position
+//        double fAngle_degree = i_physValRectCurr.angle().getVal(Units.Angle.Degree);
+//        fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
+//        fAngle_degree = ZS::System::Math::toCounterClockWiseAngleDegree(fAngle_degree);
+//        double fAngle_rad = ZS::System::Math::degree2Rad(fAngle_degree);
+//        double dxSelPt = ZS::Draw::getSelectionPointRotateDistance() * cos(fAngle_rad);
+//        double dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
+//        CPhysValPoint physValPoint = i_selPt == ESelectionPoint::RotateTop ?
+//            i_physValRectCurr.topCenter() : i_physValRectCurr.bottomCenter();
+//        o_ptSelPtRectCurr = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        o_ptSelPtRectCurr.setX(o_ptSelPtRectCurr.x() + dxSelPt);
+//        o_ptSelPtRectCurr.setY(o_ptSelPtRectCurr.y() - dySelPt);
+//        // New position
+//        fAngle_degree = i_physValRectNew.angle().getVal(Units.Angle.Degree);
+//        fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
+//        fAngle_degree = ZS::System::Math::toCounterClockWiseAngleDegree(fAngle_degree);
+//        fAngle_rad = ZS::System::Math::degree2Rad(fAngle_degree);
+//        dxSelPt = ZS::Draw::getSelectionPointRotateDistance() * cos(fAngle_rad);
+//        dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
+//        physValPoint = i_selPt == ESelectionPoint::RotateTop ?
+//            i_physValRectNew.topCenter() : i_physValRectNew.bottomCenter();
+//        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+//        o_ptSelPtRectNew.setX(o_ptSelPtRectNew.x() + dxSelPt);
+//        o_ptSelPtRectNew.setY(o_ptSelPtRectNew.y() - dySelPt);
+//    }
+//}
 
 //------------------------------------------------------------------------------
 SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const

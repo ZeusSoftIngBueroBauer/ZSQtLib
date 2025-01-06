@@ -148,7 +148,7 @@ public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const override;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
+    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
     virtual bool labelHasDefaultValues(const QString& i_strName) const override;

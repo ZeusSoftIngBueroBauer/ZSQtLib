@@ -1959,88 +1959,62 @@ protected: // instance methods
           source of the error log instance itself.
 */
 SErrLogEntry* CErrLog::addEntry_(
-    const QDateTime&      i_dateTime,
+    const QDateTime& i_dateTime,
     const SErrResultInfo& i_errResultInfo,
-    const QString&        i_strProposal )
+    const QString& i_strProposal )
 //------------------------------------------------------------------------------
 {
     /* This protected method is called from public methods and the mutex is already locked
     QMutexLocker mtxLockerInst(m_pMtx); */
 
     QDateTime dateTime = i_dateTime;
-
-    if( !dateTime.isValid() )
-    {
+    if (!dateTime.isValid()) {
         dateTime = QDateTime::currentDateTime();
     }
-
     int iOccurrences = 1;
-
     SErrLogEntry* pEntry = findEntry(i_errResultInfo);
-
-    if( pEntry != nullptr )
-    {
+    if (pEntry != nullptr) {
         pEntry->m_dateTime = dateTime;
         pEntry->m_strProposal = i_strProposal;
         pEntry->m_iOccurrences++;
-
-        if( m_iAddEntryRecursionCounter == 0 )
-        {
+        if (m_iAddEntryRecursionCounter == 0) {
             ++m_iAddEntryRecursionCounter;
-
-            if( !m_bRecallingModel && !m_bClearingModel )
-            {
+            if (!m_bRecallingModel && !m_bClearingModel) {
                 // If there is a problem with the save call (saving file not possible)
                 // the qt message handler is called invoking this "addEntry_" method again
                 // whereupon again the save method would be called and so on. The recursion
                 // counter avoids this endless recursion.
                 save();
             }
-
             --m_iAddEntryRecursionCounter;
-
-        } // if( m_iAddEntryRecursionCounter == 0 )
-
+        }
         emit entryChanged(pEntry->m_errResultInfo);
     }
-    else // if( pEntry == nullptr )
-    {
+    else {
         pEntry = new SErrLogEntry(
             /* dateTime      */ dateTime,
             /* fSysTime_us   */ ZS::System::Time::getProcTimeInMicroSec(),
             /* errResultInfo */ i_errResultInfo,
             /* strProposal   */ i_strProposal,
             /* iOccurrences  */ iOccurrences );
-
         EResultSeverity severity = i_errResultInfo.getSeverity();
-
         m_ararpEntries[severity].append(pEntry);
-
-        if( m_iAddEntryRecursionCounter == 0 )
-        {
+        if (m_iAddEntryRecursionCounter == 0) {
             ++m_iAddEntryRecursionCounter;
-
-            if( !m_bRecallingModel && !m_bClearingModel )
-            {
+            if (!m_bRecallingModel && !m_bClearingModel) {
                 // If there is a problem with the save call (saving file not possible)
                 // the qt message handler is called invoking this "addEntry_" method again
                 // whereupon again the save method would be called and so on. The recursion
                 // counter avoids this endless recursion.
                 save();
             }
-
             --m_iAddEntryRecursionCounter;
-
-        } // if( m_iAddEntryRecursionCounter == 0 )
-
+        }
         emit entryAdded(pEntry->m_errResultInfo);
         emit countChanged();
-
-    } // if( pEntry == nullptr )
-
+    }
     return pEntry;
-
-} // addEntry_
+}
 
 //------------------------------------------------------------------------------
 /*! Internal method called by the public changeEntry method to change an existing

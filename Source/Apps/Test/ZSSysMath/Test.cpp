@@ -58,7 +58,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest(NameSpace(), "theInst")
+    ZS::Test::CTest("Libs-Sys-Math")
 {
     ZS::Test::CTestStep* pTestStep;
 
