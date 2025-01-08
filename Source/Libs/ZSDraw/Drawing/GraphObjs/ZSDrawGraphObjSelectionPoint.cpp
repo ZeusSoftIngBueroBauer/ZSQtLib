@@ -609,7 +609,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
 //                    o_pHitInfo->m_selPtBoundingRect = m_selPt.m_selPt;
 //                    o_pHitInfo->m_idxPolygonShapePoint = -1;
 //                    o_pHitInfo->m_idxLineSegment = -1;
-//                    o_pHitInfo->m_ptSelected = rct.center();
+//                    o_pHitInfo->m_ptHit = rct.center();
 //                }
 //                else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
 //                    //o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
@@ -617,7 +617,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
 //                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
 //                    o_pHitInfo->m_idxPolygonShapePoint = m_selPt.m_idxPt;
 //                    o_pHitInfo->m_idxLineSegment = -1;
-//                    o_pHitInfo->m_ptSelected = rct.center();
+//                    o_pHitInfo->m_ptHit = rct.center();
 //                }
 //            }
 //        }

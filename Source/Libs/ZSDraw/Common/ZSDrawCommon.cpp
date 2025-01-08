@@ -1377,20 +1377,6 @@ bool SGraphObjSelectionPoint::isValid() const
 struct SGraphObjHitInfo
 *******************************************************************************/
 
-/* public: // ctor
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-SGraphObjHitInfo::SGraphObjHitInfo() :
-//------------------------------------------------------------------------------
-    m_selPtBoundingRect(ESelectionPoint::None),
-    m_idxPolygonShapePoint(-1),
-    m_idxLineSegment(-1),
-    m_ptSelected(),
-    m_cursor()
-{
-}
-
 /* public: // struct methods
 ==============================================================================*/
 
@@ -1574,11 +1560,11 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 QString SGraphObjHitInfo::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = "SelPtBoundingRect: " + m_selPtBoundingRect.toString() +
-        ", PolygonShapePoint: " + QString::number(m_idxPolygonShapePoint) +
-        ", LineSegment: " + QString::number(m_idxLineSegment) +
-        ", PointSelected {" + qPoint2Str(m_ptSelected) + "}" +
-        ", Cursor:" + qCursorShape2Str(m_cursor.shape());
+    QString str = "SelPt: " + m_selPtBoundingRect.toString() +
+        ", PolygonPt: " + QString::number(m_idxPolygonShapePoint) +
+        ", Line: " + QString::number(m_idxLineSegment) +
+        ", PtHit {" + qPoint2Str(m_ptHit) + "}" +
+        ", Cursor: " + qCursorShape2Str(m_cursor.shape());
     return str;
 }
 

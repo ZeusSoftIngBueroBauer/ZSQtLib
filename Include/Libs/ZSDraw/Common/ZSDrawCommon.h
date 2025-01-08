@@ -951,7 +951,7 @@ struct ZSDRAWDLL_API SGraphObjHitInfo
 //******************************************************************************
 {
 public: // ctor
-    SGraphObjHitInfo();
+    SGraphObjHitInfo() = default;
 public: // struct methods
     bool isBoundingRectSelectionPointHit() const;
     bool isSelectionPointHit() const;
@@ -960,10 +960,15 @@ public: // struct methods
 public: // struct methods
     QString toString() const;
 public: // struct members
-    CEnumSelectionPoint m_selPtBoundingRect;
-    int m_idxPolygonShapePoint;
-    int m_idxLineSegment;
-    QPointF m_ptSelected;
+    /*!< If not None specifies a specific selection point at the bounding rectangle. */
+    CEnumSelectionPoint m_selPtBoundingRect = ESelectionPoint::None;
+    /*!< If >= 0 specifies a specific polygon point. */
+    int m_idxPolygonShapePoint = -1;
+    /*!< If >= 0 specifies a specific line segment. */
+    int m_idxLineSegment = -1;
+    /*!< The coordinates of the hit point. */
+    QPointF m_ptHit;
+    /*!< Proposed edit cursor for the hit point. */
     QCursor m_cursor;
 
 }; // struct SGraphObjHitInfo

@@ -4332,7 +4332,7 @@ public: // overridables
 //                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
 //                    o_pHitInfo->m_idxPolygonShapePoint = -1;
 //                    o_pHitInfo->m_idxLineSegment = -1;
-//                    o_pHitInfo->m_ptSelected = i_pt;
+//                    o_pHitInfo->m_ptHit = i_pt;
 //                }
 //            }
 //        }

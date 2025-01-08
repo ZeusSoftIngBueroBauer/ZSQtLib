@@ -1608,7 +1608,7 @@ public: // overridables of base class CGraphObj
 //                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
 //                    o_pHitInfo->m_idxPolygonShapePoint = -1;
 //                    o_pHitInfo->m_idxLineSegment = -1;
-//                    o_pHitInfo->m_ptSelected = i_pt;
+//                    o_pHitInfo->m_ptHit = i_pt;
 //                }
 //            }
 //        }
@@ -2481,7 +2481,10 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
         QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
         //if (hoverMoveEventAfterMouseRelease(i_pEv)) {
-            grabMouse();
+        //    QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
+        //    if (pGraphicsItemMouseGrabber == nullptr) {
+        //        grabMouse();
+        //    }
         //}
     }
 
@@ -2620,22 +2623,18 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 QLineF line(polygon[idxPt], (idxPt+1) < polygon.size() ? polygon[idxPt+1] : polygon[0]);
                 SGraphObjHitInfo hitInfo;
                 if (isLineHit(line, ptPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
-                    // The mouse grabber item got to be changed. The newly appended selection
-                    // point will become the new grabber.
+                    insert(idxPt+1, CPhysValPoint(*m_pDrawingScene, mapToParent(hitInfo.m_ptHit), Units.Length.px));
+                    // The newly added selection point will become the new grabber
+                    // so that newly created polygon point can be moved.
                     QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-                    CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
-                    bool bAdjustMouseGrabber = pGraphObjSelPtMouseGrabber != nullptr && pGraphObjSelPtMouseGrabber == m_arpSelPtsPolygon.last();
-                    if (bAdjustMouseGrabber) {
-                        pGraphObjSelPtMouseGrabber->ungrabMouse();
+                    if (pGraphicsItemMouseGrabber != nullptr) {
+                        pGraphicsItemMouseGrabber->ungrabMouse();
                     }
-                    insert(idxPt+1, CPhysValPoint(*m_pDrawingScene, mapToParent(ptPos), Units.Length.px));
-                    if (bAdjustMouseGrabber) {
-                        pGraphObjSelPtMouseGrabber = m_arpSelPtsPolygon.last();
-                        if (pGraphObjSelPtMouseGrabber != nullptr) {
-                            pGraphObjSelPtMouseGrabber->grabMouse();
-                        }
+                    CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = m_arpSelPtsPolygon[idxPt+1];
+                    if (pGraphObjSelPtMouseGrabber != nullptr) {
+                        pGraphObjSelPtMouseGrabber->grabMouse();
                     }
-                    
+                    break;
                 }
             }
         }
@@ -2676,9 +2675,14 @@ void CGraphObjPolygon::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     else if (m_editMode == EEditMode::CreatingByMouseEvents) {
     }
     else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+        // If a polygon point has been newly created, the corresponding selection point
+        // has been temporarily set as the mouse grabber to move the polygon point.
+        // Creating the additional polygon point is finished and the selection point
+        // must no longer be the mouse grabber.
         QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-        if (pGraphicsItemMouseGrabber == nullptr) {
-            grabMouse();
+        CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
+        if (pGraphObjSelPtMouseGrabber != nullptr) {
+            pGraphObjSelPtMouseGrabber->ungrabMouse();
         }
     }
 

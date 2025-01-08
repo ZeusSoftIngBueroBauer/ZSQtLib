@@ -1139,6 +1139,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move mouse to center of first line segment
+    pt1SelPt.setY(pt1SelPt.y() - 1);
     m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt1SelPt.toPoint());
     pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
@@ -1146,18 +1147,18 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
-    m_ptPosTriangle = QPointF(325.0, 250.0);
+    m_ptPosTriangle = QPointF(300.0, 300.0);
     m_polygonTriangle = QPolygonF({
-        {-50.0,  25.0},
+        {-25.0,   0.0},
         {  0.0,  50.0},
-        { 50.0,  50.0},
-        { 25.0, -50.0}
+        { 25.0,   0.0},
+        {  0.0, -50.0}
     });
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
     strlstExpectedValues.clear();
