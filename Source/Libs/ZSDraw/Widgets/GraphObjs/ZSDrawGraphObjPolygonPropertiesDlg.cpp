@@ -64,12 +64,10 @@ CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::CreateInstance(
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if (GetInstance(i_pGraphObjPolygon) != nullptr )
-    {
+    if (GetInstance(i_pGraphObjPolygon) != nullptr) {
         QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs", ClassName(), i_pGraphObjPolygon->keyInTree());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
-
     return new CDlgGraphObjPolygonProperties(
         /* strDlgTitle   */ i_strDlgTitle,
         /* pGraphObjLine */ i_pGraphObjPolygon,

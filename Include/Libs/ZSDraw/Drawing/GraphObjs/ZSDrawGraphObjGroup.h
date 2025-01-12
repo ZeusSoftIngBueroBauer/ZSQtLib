@@ -117,7 +117,7 @@ signals:
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
-    virtual void onCreateAndExecDlgFormatGraphObjs() override;
+    void openFormatGraphObjsDialog() override;
 public: // instance methods
     void setGridSettings(const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;

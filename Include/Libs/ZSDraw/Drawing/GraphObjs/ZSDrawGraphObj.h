@@ -35,6 +35,9 @@ may result in using the software modules.
 #include <QtGui/qcursor.h>
 #include <QtGui/qpainter.h>
 
+class QAction;
+class QMenu;
+
 namespace ZS
 {
 namespace System
@@ -476,8 +479,11 @@ protected: // overridables of base class CIdxTreeEntry
     virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
     QString getFactoryGroupName() const;
-public: // overridables
-    virtual void onCreateAndExecDlgFormatGraphObjs();
+public: // must overridables
+    virtual void createContextMenu();
+    virtual void showContextMenu(const QPointF& i_ptScreenPos);
+    virtual void openFormatGraphObjsDialog();
+    virtual void openDeletePointDialog();
 public: // overridables
     virtual void setDrawSettings(const CDrawSettings& i_drawSettings);
     virtual CDrawSettings getDrawSettings() const;
@@ -688,6 +694,10 @@ protected slots: // overridables
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
+protected slots: // overridables
+    virtual void onActionFormatTriggered();
+    virtual void onActionModifyPointsTriggered();
+    virtual void onActionDeletePointTriggered();
 public: // instance methods
     int blockItemChangeUpdatePhysValCoors(bool i_bBlock);
     int blockGeometryOnSceneChangedSignal(bool i_bBlock);
@@ -920,6 +930,11 @@ protected: // instance members
     QString m_strToolTip;
     /*!< Current edit info. */
     QString m_strEditInfo;
+    /*!< Context menu. Usually opened as a popup when right clicking the object. */
+    QMenu* m_pMenuContext;
+    QAction* m_pActionMenuContextFormat;
+    QAction* m_pActionMenuContextModifyPoints;
+    QAction* m_pActionMenuContextDeletePoint;
 protected: // !!! OBSOLETE !!! instance members
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     /*!< Flag to indicate that the coordinates need to be updated. */

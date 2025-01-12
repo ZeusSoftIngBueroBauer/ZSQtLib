@@ -69,7 +69,7 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables of base class CGraphObj
-    virtual void onCreateAndExecDlgFormatGraphObjs() override;
+    virtual void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 protected: // overridables of base class CGraphObj

@@ -1453,7 +1453,7 @@ void CGraphObjConnectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* 
     //{
     //    if( isSelected() )
     //    {
-    //        onCreateAndExecDlgFormatGraphObjs();
+    //        openFormatGraphObjsDialog();
     //    }
 
     //} // if( modeDrawing == EMode::Edit )

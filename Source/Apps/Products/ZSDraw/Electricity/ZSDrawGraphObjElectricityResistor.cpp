@@ -393,7 +393,7 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjResistor::onCreateAndExecDlgFormatGraphObjs()
+void CGraphObjResistor::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
     CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
@@ -414,8 +414,7 @@ void CGraphObjResistor::onCreateAndExecDlgFormatGraphObjs()
 
     delete pDlgFormatGraphObjs;
     pDlgFormatGraphObjs = nullptr;
-
-} // onCreateAndExecDlgFormatGraphObjs
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj

@@ -80,7 +80,6 @@ CDialog* CDialog::GetInstance(
 //------------------------------------------------------------------------------
 {
     QString strKey = buildPathStr("::", i_strNameSpace, i_strClassName, i_strObjName);
-
     return s_hshpDlgs.value(strKey, nullptr);
 }
 
@@ -108,14 +107,10 @@ void CDialog::DestroyInstance(
 //------------------------------------------------------------------------------
 {
     QString strKey = buildPathStr("::", i_strNameSpace, i_strClassName, i_strObjName);
-
     CDialog* pDlg = s_hshpDlgs.value(strKey, nullptr);
-
-    if( pDlg == nullptr )
-    {
+    if (pDlg == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, strKey);
     }
-
     // The dtor of the dialog removes the instance from the hash.
     delete pDlg;
     pDlg = nullptr;
@@ -151,12 +146,9 @@ void CDialog::DestroyInstance( CDialog* i_pDlg )
 void CDialog::DestroyAllInstances()
 //------------------------------------------------------------------------------
 {
-    while( s_hshpDlgs.size() > 0 )
-    {
+    while (!s_hshpDlgs.isEmpty()) {
         QHash<QString,CDialog*>::iterator itDlgs = s_hshpDlgs.begin();
-
         CDialog* pDlg = itDlgs.value();
-
         // The dtor of the dialog removes the instance from the hash.
         delete pDlg;
         pDlg = nullptr;
@@ -173,8 +165,7 @@ void CDialog::HideAllInstances()
 //------------------------------------------------------------------------------
 {
     QHash<QString,CDialog*>::iterator itDlgs;
-    for( itDlgs = s_hshpDlgs.begin(); itDlgs != s_hshpDlgs.end(); itDlgs++ )
-    {
+    for (itDlgs = s_hshpDlgs.begin(); itDlgs != s_hshpDlgs.end(); itDlgs++) {
         CDialog* pDlg = itDlgs.value();
         pDlg->hide();
     }
@@ -235,7 +226,7 @@ CDialog::CDialog(
         /* strMethod    */ "CDialog::ctor",
         /* strAddInfo   */ "" );
 
-    if( i_strDlgTitle.isEmpty() ) {
+    if (i_strDlgTitle.isEmpty()) {
         setWindowTitle( ZS::System::GUI::getMainWindowTitle() + ": " + i_strObjName );
     }
     else {

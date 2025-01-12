@@ -1261,30 +1261,7 @@ void CGraphObjRect::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     // doubleclick event, and finally a release event.
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
     //QGraphicsRectItem::mouseDoubleClickEvent(i_pEv);
-
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    //if( modeDrawing == EMode::Edit )
-    //{
-    //    if( isSelected() )
-    //    {
-    //        onCreateAndExecDlgFormatGraphObjs();
-    //    }
-
-    //} // if( modeDrawing == EMode::Edit )
-
-    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    //{
-    //    strMthInArgs  = "Selected:" + bool2Str(isSelected());
-    //    strMthInArgs += ", EditMode:" + m_editMode.toString();
-    //    strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-    //    strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    //    strMthInArgs += ", Rect(x,y,w,h):(" + QString::number(rect().x()) + "," + QString::number(rect().y());
-    //    strMthInArgs += "," + QString::number(rect().width()) + "," + QString::number(rect().height()) + ")";
-    //    mthTracer.trace(strMthInArgs);
-    //}
-
-} // mouseDoubleClickEvent
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjRect::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )

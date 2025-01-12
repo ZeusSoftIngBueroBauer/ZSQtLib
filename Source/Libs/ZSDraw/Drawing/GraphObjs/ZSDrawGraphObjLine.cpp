@@ -46,9 +46,11 @@ may result in using the software modules.
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QMenu>
 #include <QtGui/QStyleOption>
 #else
 #include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QStyleOption>
 #endif
 
@@ -272,14 +274,14 @@ public: // must overridables of base class CGraphObj
 
     Must be overridden to create a user defined dialog.
 */
-void CGraphObjLine::onCreateAndExecDlgFormatGraphObjs()
+void CGraphObjLine::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onCreateAndExecDlgFormatGraphObjs",
+        /* strMethod    */ "openFormatGraphObjsDialog",
         /* strAddInfo   */ "" );
 
     QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Line";
@@ -1938,11 +1940,18 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
-
-    // Forward the mouse event to the base implementation.
-    // This will select the item, creating selection points if not yet created.
-    QGraphicsLineItem::mousePressEvent(i_pEv);
-
+    bool bEventHandled = false;
+    if (m_editMode == EEditMode::None) {
+        if (i_pEv->button() == Qt::RightButton) {
+            showContextMenu(i_pEv->screenPos());
+            bEventHandled = true;
+        }
+    }
+    if (!bEventHandled) {
+        // Forward the mouse event to the base implementation.
+        // This will select the item, creating selection points if not yet created.
+        QGraphicsLineItem::mousePressEvent(i_pEv);
+    }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
         traceGraphObjStates(mthTracer, EMethodDir::Leave);
@@ -2022,12 +2031,6 @@ void CGraphObjLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
     //QGraphicsLineItem::mouseDoubleClickEvent(i_pEv);
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-    if (modeDrawing == EMode::Edit) {
-        if (isSelected()) {
-            onCreateAndExecDlgFormatGraphObjs();
-        }
-    }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
         traceGraphObjStates(mthTracer, EMethodDir::Leave);

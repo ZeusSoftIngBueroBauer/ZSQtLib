@@ -2037,7 +2037,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 //
 //        else if( isSelected() )
 //        {
-//            onCreateAndExecDlgFormatGraphObjs();
+//            openFormatGraphObjsDialog();
 //        }
 //
 //    } // if( modeDrawing == EMode::Edit )

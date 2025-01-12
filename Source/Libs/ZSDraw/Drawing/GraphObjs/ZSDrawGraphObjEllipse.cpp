@@ -1242,7 +1242,7 @@ void CGraphObjEllipse::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     //{
     //    if( isSelected() )
     //    {
-    //        onCreateAndExecDlgFormatGraphObjs();
+    //        openFormatGraphObjsDialog();
     //    }
     //}
 

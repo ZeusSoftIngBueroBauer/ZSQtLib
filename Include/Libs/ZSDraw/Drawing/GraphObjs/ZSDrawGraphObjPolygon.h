@@ -64,11 +64,12 @@ public: // dtor
 public: // instance methods
     void setType(EGraphObjType i_graphObjType);
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override;
+    int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone() override;
+    CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
-    virtual void onCreateAndExecDlgFormatGraphObjs() override;
+    void showContextMenu(const QPointF& i_ptScreenPos) override;
+    void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods

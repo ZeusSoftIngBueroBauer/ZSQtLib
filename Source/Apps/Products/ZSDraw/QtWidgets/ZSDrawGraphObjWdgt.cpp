@@ -758,7 +758,7 @@ void CGraphObjWdgt::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     //{
     //    if( isSelected() )
     //    {
-    //        onCreateAndExecDlgFormatGraphObjs();
+    //        openFormatGraphObjsDialog();
     //    }
     //}
     //else // if( modeDrawing == EMode::View )

@@ -48,9 +48,11 @@ may result in using the software modules.
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QMenu>
 #include <QtGui/QStyleOption>
 #else
 #include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QStyleOption>
 #endif
 
@@ -317,18 +319,52 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjPolygon::showContextMenu(const QPointF& i_ptScreenPos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pos {" + qPoint2Str(i_ptScreenPos) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::showContextMenu",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pMenuContext == nullptr) {
+        createContextMenu();
+    }
+    if (m_editMode == EEditMode::None) {
+        m_pActionMenuContextModifyPoints->setEnabled(true);
+        m_pActionMenuContextModifyPoints->setVisible(true);
+        m_pActionMenuContextDeletePoint->setEnabled(false);
+        m_pActionMenuContextDeletePoint->setVisible(false);
+    }
+    else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+        m_pActionMenuContextModifyPoints->setEnabled(false);
+        m_pActionMenuContextModifyPoints->setVisible(false);
+        m_pActionMenuContextDeletePoint->setEnabled(true);
+        m_pActionMenuContextDeletePoint->setVisible(true);
+    }
+    m_pMenuContext->setTitle(path());
+    m_pMenuContext->popup(i_ptScreenPos.toPoint());
+}
+
+//------------------------------------------------------------------------------
 /* @brief
 
     Must be overridden to create a user defined dialog.
 */
-void CGraphObjPolygon::onCreateAndExecDlgFormatGraphObjs()
+void CGraphObjPolygon::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onCreateAndExecDlgFormatGraphObjs",
+        /* strMethod    */ "openFormatGraphObjsDialog",
         /* strAddInfo   */ "" );
 
     QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Line";
@@ -2050,20 +2086,25 @@ QRectF CGraphObjPolygon::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsPolygonItem::boundingRect();
+    //mthTracer.trace("QGraphicsPolygonItem::boundingRect(): " + qRect2Str(rctBounding));
     for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsPolygon) {
         if (pGraphObjSelPt != nullptr) {
             QRectF rctSelPt = pGraphObjSelPt->boundingRect();
             QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            rctBounding |= plgSelPt.boundingRect();
+            QRectF rctBoundingSelPt = plgSelPt.boundingRect();
+            //mthTracer.trace(pGraphObjSelPt->path() + ".boundingRect(): " + qRect2Str(rctBoundingSelPt));
+            rctBounding |= rctBoundingSelPt;
+            //mthTracer.trace("rctBounding: " + qRect2Str(rctBounding));
         }
     }
     for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect) {
         if (pGraphObjSelPt != nullptr) {
             QRectF rctSelPt = pGraphObjSelPt->boundingRect();
             QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            rctBounding |= plgSelPt.boundingRect();
-            // TODO: Check bounding rect whether rotation points are correctly taken into account
-            //       (after creating the object with mouseDoubleClickEvent).
+            QRectF rctBoundingSelPt = plgSelPt.boundingRect();
+            //mthTracer.trace(pGraphObjSelPt->path() + ".boundingRect(): " + qRect2Str(rctBoundingSelPt));
+            rctBounding |= rctBoundingSelPt;
+            //mthTracer.trace("rctBounding: " + qRect2Str(rctBounding));
         }
     }
     if (!m_plgLineStartArrowHead.isEmpty()) {
@@ -2569,15 +2610,16 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
-
+    bool bEventHandled = false;
     if (m_editMode == EEditMode::None) {
-        if (i_pEv->modifiers() & Qt::ControlModifier) {
-            setEditMode(EEditMode::ModifyingPolygonPoints);
+        if (i_pEv->button() == Qt::LeftButton) {
+            if (i_pEv->modifiers() & Qt::ControlModifier) {
+                setEditMode(EEditMode::ModifyingPolygonPoints);
+                bEventHandled = true;
+            }
         }
-        else {
-            // Forward the mouse event to the base implementation.
-            // This will select the item, creating selection points if not yet created.
-            QGraphicsPolygonItem::mousePressEvent(i_pEv);
+        else if (i_pEv->button() == Qt::RightButton) {
+            showContextMenu(i_pEv->screenPos());
         }
     }
     else if (m_editMode == EEditMode::CreatingByMouseEvents) {
@@ -2607,6 +2649,7 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
         }
+        bEventHandled = true;
     }
     else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
         if (i_pEv->modifiers() == Qt::NoModifier) {
@@ -2638,8 +2681,13 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
         }
+        bEventHandled = true;
     }
-
+    if (!bEventHandled) {
+        // Forward the mouse event to the base implementation.
+        // This will select the item, creating selection points if not yet created.
+        QGraphicsPolygonItem::mousePressEvent(i_pEv);
+    }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");

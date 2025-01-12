@@ -122,7 +122,7 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
-    virtual void onCreateAndExecDlgFormatGraphObjs() override;
+    void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods

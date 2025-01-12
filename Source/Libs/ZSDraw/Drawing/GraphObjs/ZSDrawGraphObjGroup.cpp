@@ -347,14 +347,14 @@ public: // must overridables of base class CGraphObj
 
     Must be overridden to create a user defined dialog.
 */
-void CGraphObjGroup::onCreateAndExecDlgFormatGraphObjs()
+void CGraphObjGroup::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onCreateAndExecDlgFormatGraphObjs",
+        /* strMethod    */ "openFormatGraphObjsDialog",
         /* strAddInfo   */ "" );
 
     QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Line";
@@ -2922,53 +2922,18 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
-
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if (modeDrawing == EMode::Edit) {
-    //    if (editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None) {
-    //        QGraphicsItemGroup::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-    //        QPointF ptMouseItemPos = i_pEv->pos();
-    //        SGraphObjHitInfo hitInfo;
-    //        bool bIsHit = isHit(ptMouseItemPos, &hitInfo);
-    //        m_editMode = hitInfo.m_editMode;
-    //        m_editResizeMode = hitInfo.m_editResizeMode;
-    //        m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
-    //        for (int idxSelPt = 0; idxSelPt < m_arpSelPtsBoundingRect.size(); ++idxSelPt) {
-    //            ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
-    //            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-    //            if (pGraphObjSelPt != nullptr) {
-    //                if (m_selPtSelectedBoundingRect == selPt) {
-    //                    pGraphObjSelPt->setSelected(true);
-    //                }
-    //                else {
-    //                    pGraphObjSelPt->setSelected(false);
-    //                }
-    //            }
-    //        }
-
-    //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        m_rctOnMousePressEvent = m_rctCurr;
-    //        m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
-    //        #endif
-    //        m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
-    //        //updateEditInfo();
-    //        //updateToolTip();
-    //    }
-    //}
-    //else if (modeDrawing == EMode::View) {
-    //    for (SGraphObjMouseEventFct& fctEntry : m_arMousePressEventFunctions) {
-    //        if (fctEntry.m_pFct != nullptr) {
-    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
-    //        }
-    //    }
-    //}
-
-    // Forward the mouse event to the base implementation.
-    // This will select the item, creating selection points if not yet created.
-    QGraphicsItemGroup::mousePressEvent(i_pEv);
-
+    bool bEventHandled = false;
+    if (m_editMode == EEditMode::None) {
+        if (i_pEv->button() == Qt::RightButton) {
+            showContextMenu(i_pEv->screenPos());
+            bEventHandled = true;
+        }
+    }
+    if (!bEventHandled) {
+        // Forward the mouse event to the base implementation.
+        // This will select the item, creating selection points if not yet created.
+        QGraphicsItemGroup::mousePressEvent(i_pEv);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -3110,9 +3075,6 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
     //if (modeDrawing == EMode::Edit) {
-    //    if (isSelected()) {
-    //        onCreateAndExecDlgFormatGraphObjs();
-    //    }
     //}
     //else if (modeDrawing == EMode::View) {
     //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseDoubleClickEventFunctions) {

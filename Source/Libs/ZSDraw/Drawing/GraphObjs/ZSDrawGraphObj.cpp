@@ -43,7 +43,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/QBitmap>
-#include <QtGui/QPainter>
+#include <QtWidgets/QMenu>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -167,6 +167,10 @@ CGraphObj::CGraphObj(
     m_hshpGeometryLabels(),
     m_strToolTip(),
     m_strEditInfo(),
+    m_pMenuContext(nullptr),
+    m_pActionMenuContextFormat(nullptr),
+    m_pActionMenuContextModifyPoints(nullptr),
+    m_pActionMenuContextDeletePoint(nullptr),
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_bCoorsDirty(true),
     m_rctCurr(),
@@ -217,8 +221,7 @@ CGraphObj::CGraphObj(
     QObject::connect(
         m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
         this, &CGraphObj::onDrawingSizeChanged);
-
-} // ctor
+}
 
 /*==============================================================================
 public: // dtor
@@ -283,6 +286,11 @@ CGraphObj::~CGraphObj()
     // Should already have been called by derived classes. If not, this may lead
     // to exceptions when removing the graphics item from the graphics scene.
     emit_aboutToBeDestroyed();
+
+    try {
+        delete m_pMenuContext;
+    } catch (...) {
+    }
 
     try {
         delete m_pDrawSettingsTmp;
@@ -410,6 +418,10 @@ CGraphObj::~CGraphObj()
     //m_hshpGeometryLabels;
     //m_strToolTip;
     //m_strEditInfo;
+    m_pMenuContext = nullptr;
+    m_pActionMenuContextFormat = nullptr;
+    m_pActionMenuContextModifyPoints = nullptr;
+    m_pActionMenuContextDeletePoint = nullptr;
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_bCoorsDirty = false;
     //m_rctCurr;
@@ -1061,18 +1073,104 @@ public: // overridables
 //------------------------------------------------------------------------------
 /* @brief
 
-    Must be overridden to create a user defined dialog.
+    Must be overridden to show the context popup menu.
+    Usually opened by right clicking on the the object.
 */
-void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
+void CGraphObj::createContextMenu()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onCreateAndExecDlgFormatGraphObjs",
+        /* strMethod    */ "CGraphObj::createContextMenu",
+        /* strAddInfo   */ "" );
+    if (m_pMenuContext == nullptr) {
+        m_pMenuContext = new QMenu(path());
+
+        m_pActionMenuContextFormat = new QAction("Format", this);
+        m_pMenuContext->addAction(m_pActionMenuContextFormat);
+        QObject::connect(
+            m_pActionMenuContextFormat, &QAction::triggered,
+            this, &CGraphObj::onActionFormatTriggered);
+
+        m_pActionMenuContextModifyPoints = new QAction("Modify Points", this);
+        m_pMenuContext->addAction(m_pActionMenuContextModifyPoints);
+        QObject::connect(
+            m_pActionMenuContextModifyPoints, &QAction::triggered,
+            this, &CGraphObj::onActionModifyPointsTriggered);
+        m_pActionMenuContextModifyPoints->setEnabled(false);
+        m_pActionMenuContextModifyPoints->setVisible(false);
+
+        m_pActionMenuContextDeletePoint = new QAction("Delete Point", this);
+        m_pMenuContext->addAction(m_pActionMenuContextDeletePoint);
+        QObject::connect(
+            m_pActionMenuContextDeletePoint, &QAction::triggered,
+            this, &CGraphObj::onActionDeletePointTriggered);
+        m_pActionMenuContextDeletePoint->setEnabled(false);
+        m_pActionMenuContextDeletePoint->setVisible(false);
+    }
+    m_pMenuContext->setTitle(path());
+}
+
+//------------------------------------------------------------------------------
+/* @brief
+
+    Must be overridden to show the context popup menu.
+    Usually opened by right clicking on the the object.
+*/
+void CGraphObj::showContextMenu(const QPointF& i_ptScreenPos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pos {" + qPoint2Str(i_ptScreenPos) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::showContextMenu",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pMenuContext == nullptr) {
+        createContextMenu();
+    }
+    m_pMenuContext->setTitle(path());
+    m_pMenuContext->popup(i_ptScreenPos.toPoint());
+}
+
+//------------------------------------------------------------------------------
+/* @brief
+
+    Must be overridden to create a user defined dialog.
+*/
+void CGraphObj::openFormatGraphObjsDialog()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::openFormatGraphObjsDialog",
         /* strAddInfo   */ "" );
     throw CException(__FILE__, __LINE__, EResultMethodNotYetImplemented, "should become pure virtual");
+}
+
+//------------------------------------------------------------------------------
+/* @brief
+
+    Base implemention does nothing.
+*/
+void CGraphObj::openDeletePointDialog()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::openDeletePointDialog",
+        /* strAddInfo   */ "" );
 }
 
 /*==============================================================================
@@ -7462,6 +7560,52 @@ void CGraphObj::onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
     if (m_hshpGeometryLabels.contains(pGraphObjLabel->key())) {
         m_hshpGeometryLabels.remove(pGraphObjLabel->key());
     }
+}
+
+/*==============================================================================
+protected slots: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObj::onActionFormatTriggered()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onActionFormatTriggered",
+        /* strAddInfo   */ "" );
+
+    openFormatGraphObjsDialog();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::onActionModifyPointsTriggered()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onActionModifyPointsTriggered",
+        /* strAddInfo   */ "" );
+
+    if (m_editMode == EEditMode::None) {
+        setEditMode(EEditMode::ModifyingPolygonPoints);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::onActionDeletePointTriggered()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onActionDeletePointTriggered",
+        /* strAddInfo   */ "" );
 }
 
 /*==============================================================================
