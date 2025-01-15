@@ -957,6 +957,7 @@ public: // struct methods
     bool isSelectionPointHit() const;
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
+    bool isNull() const;
 public: // struct methods
     QString toString() const;
 public: // struct members

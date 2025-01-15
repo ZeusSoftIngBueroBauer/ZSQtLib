@@ -1947,7 +1947,10 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             bEventHandled = true;
         }
     }
-    if (!bEventHandled) {
+    if (bEventHandled) {
+        i_pEv->accept();
+    }
+    else {
         // Forward the mouse event to the base implementation.
         // This will select the item, creating selection points if not yet created.
         QGraphicsLineItem::mousePressEvent(i_pEv);
@@ -1962,6 +1965,12 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @note After dispatching the mouse release event to the mouse grabber item, the
+          graphics scene will reset the mouse grabber. So it is useless trying to
+          keep the mouse grabber within the item's mouseReleaseEvent method.
+*/
 void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -1990,9 +1999,36 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     //    bIsSelectableReset = true;
     //}
 
-    // Forward the mouse event to the LineItems base implementation.
-    QGraphicsLineItem::mouseReleaseEvent(i_pEv);
-
+    bool bEventHandled = false;
+    if (m_editMode == EEditMode::None) {
+    }
+    else if (m_editMode == EEditMode::CreatingByMouseEvents) {
+        //// The mouse grabber item got to be removed.
+        //QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
+        //CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
+        //bool bAdjustMouseGrabber = pGraphObjSelPtMouseGrabber != nullptr && pGraphObjSelPtMouseGrabber == m_arpSelPtsPolygon.last();
+        //if (bAdjustMouseGrabber) {
+        //    pGraphObjSelPtMouseGrabber->ungrabMouse();
+        //}
+        // While creating the object, the selection points at the polygon points were visible.
+        // Unselect the object to hide those selection points.
+        setSelected(false);
+        // The editMode changed signal will be emitted and received by the drawing scene.
+        // The drawing scene is informed this way that creation of the object is finished
+        // and will unselect the current drawing tool and will select the object under
+        // construction showing the selection points at the bounding rectangle.
+        setEditMode(EEditMode::None);
+        bEventHandled = true;
+    }
+    else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+    }
+    if (bEventHandled) {
+        i_pEv->accept();
+    }
+    else {
+        // Forward the mouse event to the LineItems base implementation.
+        QGraphicsLineItem::mouseReleaseEvent(i_pEv);
+    }
     //if (bIsSelectableReset) {
     //    setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
     //}
@@ -2086,6 +2122,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 //------------------------------------------------------------------------------
 {
     if (m_bDtorInProgress) {
+        return i_value;
+    }
+    if (m_iItemChangeBlockedCounter > 0) {
         return i_value;
     }
 

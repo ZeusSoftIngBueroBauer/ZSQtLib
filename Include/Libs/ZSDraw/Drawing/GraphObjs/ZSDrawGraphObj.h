@@ -405,8 +405,9 @@ signals:
     void aboutToBeDestroyed(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the type of the graphic object has been changed. */
     void typeChanged(CGraphObj* i_pGraphObj, EGraphObjType i_graphObjType);
-    /*!< This signal is emitted if the edit mode of the object has been changed. */
-    void editModeChanged(CGraphObj* i_pGraphObj, const CEnumEditMode& i_eMode);
+    /*!< This signal is emitted if the edit mode of the object has been changed providing
+         the current (new) and the previous (old) edit mode of the object. */
+    void editModeChanged(CGraphObj* i_pGraphObj, const CEnumEditMode& i_eModeCurr, const CEnumEditMode& i_eModePrev);
     /*!< This signal is emitted if the selected state of the object has been changed. */
     void selectedChanged(CGraphObj* i_pGraphObj, bool i_bIsSelected);
     /*!< This signal is emitted if the position of the object on the drawing scene is changed.
@@ -466,7 +467,7 @@ public: // instance methods
     bool isGroup() const;
     bool isSelectionPoint() const;
     bool isLabel() const;
-    bool mouseReleaseEventFinishesObjectCreation() const;
+    //bool mouseReleaseEventFinishesObjectCreation() const;
 public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
@@ -720,7 +721,7 @@ protected: // overridable auxiliary instance methods (method tracing)
 protected: // auxiliary instance methods (method tracing)
     void emit_aboutToBeDestroyed();
     void emit_typeChanged(EGraphObjType i_graphObjType);
-    void emit_editModeChanged(const CEnumEditMode& i_eMode);
+    void emit_editModeChanged(const CEnumEditMode& i_eModeCurr, const CEnumEditMode& i_eModePrev);
     void emit_selectedChanged(bool i_bIsSelected);
     //void emit_scenePosChanged();
     void emit_geometryOnSceneChanged(bool i_bParentOfParentChanged = false);

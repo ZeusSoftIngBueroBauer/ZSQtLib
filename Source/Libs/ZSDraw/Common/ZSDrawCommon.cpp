@@ -1408,8 +1408,35 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
     return (m_idxLineSegment >= 0);
 }
 
-/* public: // struct methods
-==============================================================================*/
+//------------------------------------------------------------------------------
+/*! @brief Returns true if the checked object has not been hit and neither
+           a selection point at the bounding rectangle, nor a polygon point and
+           not line segment has been hit.
+           Returns false if the checked object has been hit.
+*/
+bool SGraphObjHitInfo::isNull() const
+//------------------------------------------------------------------------------
+{
+    return (m_selPtBoundingRect == ESelectionPoint::None)
+        && (m_idxPolygonShapePoint < 0)
+        && (m_idxLineSegment < 0)
+        && m_ptHit.isNull();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+*/
+QString SGraphObjHitInfo::toString() const
+//------------------------------------------------------------------------------
+{
+    return isNull() ? "null" :
+        "SelPt: " + m_selPtBoundingRect.toString() +
+        ", PolygonPt: " + QString::number(m_idxPolygonShapePoint) +
+        ", Line: " + QString::number(m_idxLineSegment) +
+        ", PtHit {" + qPoint2Str(m_ptHit) + "}" +
+        ", Cursor: " + qCursorShape2Str(m_cursor.shape());
+}
 
 //------------------------------------------------------------------------------
 /*! @brief 
@@ -1549,24 +1576,6 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 //    //    }
 //    //} // if( bSetResizeCursor )
 //} // setCursor
-
-/* public: // struct methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief 
-
-*/
-QString SGraphObjHitInfo::toString() const
-//------------------------------------------------------------------------------
-{
-    QString str = "SelPt: " + m_selPtBoundingRect.toString() +
-        ", PolygonPt: " + QString::number(m_idxPolygonShapePoint) +
-        ", Line: " + QString::number(m_idxLineSegment) +
-        ", PtHit {" + qPoint2Str(m_ptHit) + "}" +
-        ", Cursor: " + qCursorShape2Str(m_cursor.shape());
-    return str;
-}
 
 
 /*******************************************************************************

@@ -165,6 +165,7 @@ public: // instance methods
     //CEnumEditTool getEditTool() const { return m_editTool; }
     //CEnumEditMode getEditMode() const { return m_editMode; }
     //CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
+    void setMouseGrabber(CGraphObj* i_pGraphObj);
 public: // instance methods
     void setCurrentDrawingTool(CObjFactory* i_pObjFactory);
     void setCurrentDrawingTool(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
@@ -241,27 +242,28 @@ public: // instance methods
     void setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImmediatelyApplySetting = true );
     CEnumTextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
 public: // overridables of base class QGraphicsScene
-    virtual void dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
-    virtual void dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
-    virtual void dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
-    virtual void dropEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
+    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    virtual void dragMoveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    virtual void dropEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
 public: // overridables of base class QGraphicsScene
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 public: // overridables of base class QGraphicsScene
-    virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
-    virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
+    virtual void keyPressEvent(QKeyEvent* i_pEv) override;
+    virtual void keyReleaseEvent(QKeyEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsScene
-    virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect ) override;
-    virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect ) override;
+    virtual void drawBackground(QPainter* i_pPainter, const QRectF& i_rect) override;
+    virtual void drawForeground(QPainter* i_pPainter, const QRectF& i_rect) override;
 protected slots:
     void onDrawUnitsScreenResolutionInPxPerMMChanged();
     void onDrawUnitsScaleFactorChanged();
 protected slots:
-    void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
-    void onGraphObjAboutToBeDestroyed( CGraphObj* i_pGraphObj );
+    void onGraphObjFactoryDestroyed(QObject* i_pObjFactory);
+    void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
+    void onGraphObjEditModeChanged(CGraphObj* i_pGraphObj, const CEnumEditMode& i_eModeCurr, const CEnumEditMode& i_eModePrev);
 protected: // auxiliary instance methods
     //void forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv);
     //void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
@@ -341,6 +343,10 @@ protected: // instance members
         and mouse release events should not invalidate the mouse grabber item but
         the selection point should be kept as the mouse grabber item. */
     CGraphObj* m_pGraphObjUnderConstruction;
+    /*! Points to the object which should be set as the mouse grabber after dispatching
+        events to an item. Needed as mouse release events will reset the mouse grabber item
+        but when creating objects a selection point must be the mouse grabber. */
+    CGraphObj* m_pGraphObjMouseGrabber;
     /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     //QGraphicsItem* m_pGraphicsItemAddingShapePoints;
     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */

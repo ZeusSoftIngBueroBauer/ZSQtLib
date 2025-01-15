@@ -695,18 +695,18 @@ bool CGraphObj::isLabel() const
     return ((m_type >= EGraphObjTypeLabelMin) && (m_type <= EGraphObjTypeLabelMax));
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Returns whether a mouse release event finishes the object creation.
-
-    For polygons the object creation is not finished if the mouse is released but
-    instead a mouse double click is used to add the last polygon point and which
-    finishes creation of the object.
-*/
-bool CGraphObj::mouseReleaseEventFinishesObjectCreation() const
-//------------------------------------------------------------------------------
-{
-    return m_bMouseReleaseEventFinishesObjectCreation;
-}
+////------------------------------------------------------------------------------
+///*! @brief Returns whether a mouse release event finishes the object creation.
+//
+//    For polygons the object creation is not finished if the mouse is released but
+//    instead a mouse double click is used to add the last polygon point and which
+//    finishes creation of the object.
+//*/
+//bool CGraphObj::mouseReleaseEventFinishesObjectCreation() const
+////------------------------------------------------------------------------------
+//{
+//    return m_bMouseReleaseEventFinishesObjectCreation;
+//}
 
 /*==============================================================================
 public: // instance methods
@@ -4279,6 +4279,7 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
     if (m_editMode != i_eMode) {
+        CEnumEditMode modePrev = m_editMode;
         m_editMode = i_eMode;
         QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
         if (m_editMode == EEditMode::CreatingByMouseEvents) {
@@ -4307,7 +4308,7 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         else {
             pGraphicsItemThis->setAcceptHoverEvents(true);
         }
-        emit_editModeChanged(m_editMode);
+        emit_editModeChanged(m_editMode, modePrev);
     }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
@@ -8230,12 +8231,12 @@ void CGraphObj::emit_typeChanged(EGraphObjType i_graphObjType)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::emit_editModeChanged(const CEnumEditMode& i_eMode)
+void CGraphObj::emit_editModeChanged(const CEnumEditMode& i_eModeCurr, const CEnumEditMode& i_eModePrev)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_eMode.toString();
+        strMthInArgs = "Curr: " + i_eModeCurr.toString() + ", Prev: " + i_eModePrev.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -8243,7 +8244,7 @@ void CGraphObj::emit_editModeChanged(const CEnumEditMode& i_eMode)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::emit_editModeChanged",
         /* strAddInfo   */ strMthInArgs );
-    emit editModeChanged(this, i_eMode);
+    emit editModeChanged(this, i_eModeCurr, i_eModePrev);
 }
 
 //------------------------------------------------------------------------------

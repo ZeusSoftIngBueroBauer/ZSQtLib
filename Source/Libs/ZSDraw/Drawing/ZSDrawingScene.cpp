@@ -36,6 +36,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMathScaleDivLines.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -146,6 +147,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     //m_editResizeMode(EEditResizeMode::None),
     m_pObjFactory(nullptr),
     m_pGraphObjUnderConstruction(nullptr),
+    m_pGraphObjMouseGrabber(nullptr),
     //m_pGraphicsItemAddingShapePoints(nullptr),
     //m_pGraphObjAddingShapePoints(nullptr),
     m_pGraphObjsIdxTree(nullptr),
@@ -290,6 +292,7 @@ CDrawingScene::~CDrawingScene()
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
     m_pObjFactory = nullptr;
     m_pGraphObjUnderConstruction = nullptr;
+    m_pGraphObjMouseGrabber = nullptr;
     //m_pGraphicsItemAddingShapePoints = nullptr;
     //m_pGraphObjAddingShapePoints = nullptr;
     //m_strGraphObjNameSeparator;
@@ -1090,6 +1093,7 @@ void CDrawingScene::clear()
 
     m_pGraphicsItemSelectionArea = nullptr;
     m_pGraphObjUnderConstruction = nullptr;
+    m_pGraphObjMouseGrabber = nullptr;
     //m_pGraphicsItemAddingShapePoints = nullptr;
     //m_pGraphObjAddingShapePoints = nullptr;
 
@@ -1266,7 +1270,13 @@ void CDrawingScene::removeItem(QGraphicsItem* i_pGraphicsItem)
         QGraphicsScene::removeItem(i_pGraphicsItem);
     }
     if (dynamic_cast<CGraphObj*>(i_pGraphicsItem) == m_pGraphObjUnderConstruction) {
+        QObject::disconnect(
+            m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+            this, &CDrawingScene::onGraphObjEditModeChanged );
         m_pGraphObjUnderConstruction = nullptr;
+    }
+    if (dynamic_cast<CGraphObj*>(i_pGraphicsItem) == m_pGraphObjMouseGrabber) {
+        m_pGraphObjMouseGrabber = nullptr;
     }
     //if (m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints == i_pGraphObj) {
     //    m_pGraphicsItemAddingShapePoints = nullptr;
@@ -1545,10 +1555,16 @@ void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
     //}
     //else {
     //    //m_pGraphObjUnderConstruction = nullptr;
+    //    QObject::disconnect(
+    //        m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+    //        this, &CDrawingScene::onGraphObjEditModeChanged );
     //}
 
     //if (m_editTool != EEditTool::CreateObjects) {
     //    //m_pGraphObjUnderConstruction = nullptr;
+    //    QObject::disconnect(
+    //        m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+    //        this, &CDrawingScene::onGraphObjEditModeChanged );
     //}
 
     //if (i_editMode != EEditMode::Undefined && m_editMode != i_editMode) {
@@ -1570,6 +1586,28 @@ void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
     //    traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     //}
 } // setMode
+
+//------------------------------------------------------------------------------
+void CDrawingScene::setMouseGrabber(CGraphObj* i_pGraphObj)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setMouseGrabber",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pGraphObjMouseGrabber != nullptr) {
+        SErrResultInfo errResultInfo(
+            EResultInvalidMethodCall, EResultSeverityError, "Mouse Grabber already set");
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+    }
+    m_pGraphObjMouseGrabber = i_pGraphObj;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2209,7 +2247,9 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //    //            m_pGraphObjUnderConstruction->setAcceptHoverEvents(false);
 //    //            m_pGraphObjUnderConstruction->setAcceptedMouseButtons(Qt::NoButton);
 //    //            m_pGraphObjUnderConstruction = nullptr;
-//    //            m_pGraphObjUnderConstruction = nullptr;
+//    //            QObject::disconnect(
+//    //                m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+//    //                this, &CDrawingScene::onGraphObjEditModeChanged );
 //    //            m_pGraphicsItemAddingShapePoints = nullptr;
 //    //            m_pGraphObjAddingShapePoints = nullptr;
 //    //            setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
@@ -3564,6 +3604,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // shape of the graphical object.
                         // Afterwards QGraphicsScene::mousePressEvent must be called to set the mouse grabber item.
                         m_pGraphObjUnderConstruction->setEditMode(EEditMode::CreatingByMouseEvents);
+                        QObject::connect(
+                            m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+                            this, &CDrawingScene::onGraphObjEditModeChanged );
 
                         //CGraphObjConnectionLine* pGraphObjCnctLineCreating = nullptr;
                         //CGraphObjConnectionPoint* pGraphObjCnctPtCreating = nullptr;
@@ -3673,7 +3716,6 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     emit_mousePosChanged(ptScenePosMouseEvent);
 
     if (m_mode == EMode::Edit) {
-        QGraphicsItem* pGraphicsItemMouseGrabber = mouseGrabberItem();
         // If currently an object is "under construction" ...
         //if (m_pGraphObjUnderConstruction != nullptr || m_pGraphicsItemAddingShapePoints != nullptr)
         //{
@@ -3687,19 +3729,46 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         //}
         // If an object is "under construction" ...
         if (m_pGraphObjUnderConstruction != nullptr) {
+            // If an obect is under construction, the mouse grabber item is a selection point.
+            // If mouse release events don't finish the object creation, a selection point must
+            // still be a mouse grabber after the mouse release event has been dispatched.
+            // After dispatching the mouse release event to the mouse grabber item, the
+            // graphics scene will reset the mouse grabber. So it is useless trying to
+            // keep the mouse grabber within the item's mouseReleaseEvent method.
+            // We cannot simply store the current mouse grabber and restore the grabber after
+            // the event has been dispatched as the selection point, which should grab the mouse
+            // events, may change and the current mouse grabber item may even be destroyed while
+            // dispatching the mouse event.
+            // Which selection point should be the the mouse grabber after handling the mouse event,
+            // knows the object under construction. If a selection point should become (or remain)
+            // the mouse grabber item, the object under construction needs to set a "mouseGrabber"
+            // flag by calling "setMouseGrabberItem". After the mouse event has been dispatched,
+            // the graphics scene checks whether a mouse grabber item has been explicitly set,
+            // uses this as the mouse grabber and invalidates the "mouseGrabberItem" flag again.
+
             // Dispatch mouse event to objects "under cursor".
             QGraphicsScene_mouseReleaseEvent(i_pEv);
             bEventHandled = true;
-            // If an obect is under construction the mouse grabber item is a selection point
+            if (m_pGraphObjMouseGrabber != nullptr) {
+                dynamic_cast<QGraphicsItem*>(m_pGraphObjMouseGrabber)->grabMouse();
+                m_pGraphObjMouseGrabber = nullptr;
+            }
+
+            // If an object is under construction the mouse grabber item is a selection point
             // and mouse release events should not invalidate the mouse grabber item but
             // the selection point should be kept as the mouse grabber item.
-            if (m_pGraphObjUnderConstruction->mouseReleaseEventFinishesObjectCreation()) {
-                m_pGraphObjUnderConstruction->setEditMode(EEditMode::None);
-                m_pGraphObjUnderConstruction = nullptr;
-            }
-            else if (pGraphicsItemMouseGrabber != nullptr && mouseGrabberItem() == nullptr) {
-                pGraphicsItemMouseGrabber->grabMouse();
-            }
+            //if (m_pGraphObjUnderConstruction->mouseReleaseEventFinishesObjectCreation()) {
+            //    m_pGraphObjUnderConstruction->setEditMode(EEditMode::None);
+            //    dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
+            //    QObject::disconnect(
+            //        m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+            //        this, &CDrawingScene::onGraphObjEditModeChanged );
+            //    m_pGraphObjUnderConstruction = nullptr;
+            //    setCurrentDrawingTool(nullptr);
+            //}
+            //else if (pGraphicsItemMouseGrabber != nullptr && mouseGrabberItem() == nullptr) {
+            //    pGraphicsItemMouseGrabber->grabMouse();
+            //}
         }
         // If no object is "under construction" ...
         else /*if (m_pGraphObjUnderConstruction == nullptr)*/ {
@@ -3788,7 +3857,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         //        if (!bIsValidEndPoint) {
         //            delete m_pGraphObjUnderConstruction;
         //            m_pGraphObjUnderConstruction = nullptr;
-        //            m_pGraphObjUnderConstruction = nullptr;
         //            m_pGraphicsItemAddingShapePoints = nullptr;
         //            m_pGraphObjAddingShapePoints = nullptr;
         //            pGraphObjCnctLine = nullptr;
@@ -3807,8 +3875,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
             // Dispatch mouse event to objects "under cursor".
             QGraphicsScene_mouseDoubleClickEvent(i_pEv);
             bEventHandled = true;
-            m_pGraphObjUnderConstruction->setEditMode(EEditMode::None);
-            m_pGraphObjUnderConstruction = nullptr;
         }
     }
 
@@ -4688,7 +4754,7 @@ protected slots:
     @param i_pObjFactoy [in]
         Pointer to destroyed object factory.
 */
-void CDrawingScene::onGraphObjFactoryDestroyed( QObject* i_pObjFactory )
+void CDrawingScene::onGraphObjFactoryDestroyed(QObject* i_pObjFactory)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4753,6 +4819,35 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
         }
     }
     */
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::onGraphObjEditModeChanged(
+    CGraphObj* i_pGraphObj, const CEnumEditMode& i_eModeCurr, const CEnumEditMode& i_eModePrev)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObj->keyInTree() + ", Curr: " + i_eModeCurr.toString() + ", Prev: " + i_eModePrev.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onGraphObjEditModeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pGraphObjUnderConstruction == i_pGraphObj) {
+        // Object creation has been finished. Unset the current drawing tool and select
+        // the currently created object.
+        if (i_eModeCurr == EEditMode::None && i_eModePrev == EEditMode::CreatingByMouseEvents) {
+            dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
+            QObject::disconnect(
+                m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+                this, &CDrawingScene::onGraphObjEditModeChanged );
+            m_pGraphObjUnderConstruction = nullptr;
+            setCurrentDrawingTool(nullptr);
+        }
+    }
 }
 
 /*==============================================================================

@@ -2944,6 +2944,12 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @note After dispatching the mouse release event to the mouse grabber item, the
+          graphics scene will reset the mouse grabber. So it is useless trying to
+          keep the mouse grabber within the item's mouseReleaseEvent method.
+*/
 void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -3291,6 +3297,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 //------------------------------------------------------------------------------
 {
     if (m_bDtorInProgress) {
+        return i_value;
+    }
+    if (m_iItemChangeBlockedCounter > 0) {
         return i_value;
     }
 
