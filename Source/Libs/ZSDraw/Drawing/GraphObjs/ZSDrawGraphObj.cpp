@@ -144,20 +144,13 @@ CGraphObj::CGraphObj(
     m_arAlignments(),
     m_bIsHighlighted(false),
     m_editMode(EEditMode::None),
-    //m_editResizeMode(EEditResizeMode::None),
-    m_bMouseReleaseEventFinishesObjectCreation(true),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
     m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
     m_pGraphObjGroupParent(nullptr),
     m_physValRectParentGroupOrig(*i_pDrawingScene),
     m_fParentGroupScaleX(1.0),
     m_fParentGroupScaleY(1.0),
-    //m_transform(),
-    //m_transformByGroup(),
-    //m_ptScenePos(),
-    //m_idxSelPtSelectedPolygon(-1),
     m_arpSelPtsPolygon(),
-    //m_selPtSelectedBoundingRect(ESelectionPoint::None),
     m_arpSelPtsBoundingRect(CEnumSelectionPoint::count()),
     m_strlstPredefinedLabelNames(),
     m_hshLabelDscrs(),
@@ -171,29 +164,6 @@ CGraphObj::CGraphObj(
     m_pActionMenuContextFormat(nullptr),
     m_pActionMenuContextModifyPoints(nullptr),
     m_pActionMenuContextDeletePoint(nullptr),
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_bCoorsDirty(true),
-    m_rctCurr(),
-    m_fRotAngleCurr_deg(0.0),
-    m_ptRotOriginCurr(),
-    // Original coordinates and transform values:
-    m_bHasValidOrigCoors(false),
-    m_sizOrig(),
-    m_fRotAngleOrig_deg(0.0),
-    m_ptRotOriginOrig(),
-#endif
-    // Coordinates stored on mouse press events:
-    //m_ptScenePosOnMousePressEvent(),
-    //m_ptMouseEvScenePosOnMousePressEvent(),
-    //m_rctOnMousePressEvent(),
-    //m_ptRotOriginOnMousePressEvent(),
-    // Simulation Functions:
-    //m_arMousePressEventFunctions(),
-    //m_arMouseReleaseEventFunctions(),
-    //m_arMouseDoubleClickEventFunctions(),
-    //m_arMouseMoveEventFunctions(),
-    //m_arKeyPressEventFunctions(),
-    //m_arKeyReleaseEventFunctions(),
     m_iItemChangeBlockedCounter(0),
     m_iItemChangeUpdatePhysValCoorsBlockedCounter(0),
     m_iGeometryOnSceneChangedSignalBlockedCounter(0),
@@ -208,12 +178,11 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
     m_pTrcAdminObjCoordinateConversions(nullptr),
-    //m_pTrcAdminObjIsHit(nullptr),
     m_pTrcAdminObjCursor(nullptr),
     m_pTrcAdminObjPaint(nullptr),
-    //m_pTrcAdminObjSceneEvent(nullptr),
     m_pTrcAdminObjSceneEventFilter(nullptr),
-    m_pTrcAdminObjHoverEvents(nullptr),
+    m_pTrcAdminObjHoverEnterLeaveEvents(nullptr),
+    m_pTrcAdminObjHoverMoveEvents(nullptr),
     m_pTrcAdminObjMouseClickEvents(nullptr),
     m_pTrcAdminObjMouseMoveEvents(nullptr),
     m_pTrcAdminObjKeyEvents(nullptr)
@@ -384,67 +353,17 @@ CGraphObj::~CGraphObj()
     m_bAboutToBeDestroyedEmitted = false;
     m_bForceConversionToSceneCoors = false;
     m_pDrawingScene = nullptr;
-    //m_strFactoryGroupName;
     m_type = static_cast<EGraphObjType>(0);
-    //m_strType;
-    //m_drawSettings;
     m_pDrawSettingsTmp = nullptr;
-    //m_physValSizeMinimum;
-    //m_physValSizeMaximum;
-    //m_physValSizeFixed;
-    //m_arAlignments;
     m_bIsHighlighted = false;
     m_editMode = static_cast<EEditMode>(0);
-    //m_editResizeMode = static_cast<EEditResizeMode>(0);
-    m_bMouseReleaseEventFinishesObjectCreation = false;
-    //m_arfZValues.clear();
-    //m_physValRotationAngle;
     m_pGraphObjGroupParent = nullptr;
-    //m_physValRectParentGroupOrig;
     m_fParentGroupScaleX = 0.0;
     m_fParentGroupScaleY = 0.0;
-    //m_transform;
-    //m_transformByGroup;
-    //m_ptScenePos;
-    //m_idxSelPtSelectedPolygon = 0;
-    //m_arpSelPtsPolygon;
-    //m_selPtSelectedBoundingRect = static_cast<ESelectionPoint>(0);
-    //m_arpSelPtsBoundingRect;
-    //m_strlstPredefinedLabelNames;
-    //m_hshLabelDscrs;
-    //m_hshpLabels;
-    //m_strlstGeometryLabelNames;
-    //m_hshGeometryLabelDscrs;
-    //m_hshpGeometryLabels;
-    //m_strToolTip;
-    //m_strEditInfo;
     m_pMenuContext = nullptr;
     m_pActionMenuContextFormat = nullptr;
     m_pActionMenuContextModifyPoints = nullptr;
     m_pActionMenuContextDeletePoint = nullptr;
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_bCoorsDirty = false;
-    //m_rctCurr;
-    m_fRotAngleCurr_deg = 0.0;
-    //m_ptRotOriginCurr;
-    // Original item coordinates and transform values:
-    m_bHasValidOrigCoors = false;
-    //m_sizOrig;
-    m_fRotAngleOrig_deg = 0.0;
-    //m_ptRotOriginOrig;
-#endif
-    // Coordinates stored on mouse press events:
-    //m_ptScenePosOnMousePressEvent;
-    //m_ptMouseEvScenePosOnMousePressEvent;
-    //m_rctOnMousePressEvent;
-    //m_ptRotOriginOnMousePressEvent;
-    // Simulation Functions:
-    //m_arMousePressEventFunctions;
-    //m_arMouseReleaseEventFunctions;
-    //m_arMouseDoubleClickEventFunctions;
-    //m_arMouseMoveEventFunctions;
-    //m_arKeyPressEventFunctions;
-    //m_arKeyReleaseEventFunctions;
     m_iItemChangeBlockedCounter = 0;
     m_iItemChangeUpdatePhysValCoorsBlockedCounter = 0;
     m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
@@ -465,7 +384,8 @@ CGraphObj::~CGraphObj()
     m_pTrcAdminObjPaint = nullptr;
     //m_pTrcAdminObjSceneEvent = nullptr;
     m_pTrcAdminObjSceneEventFilter = nullptr;
-    m_pTrcAdminObjHoverEvents = nullptr;
+    m_pTrcAdminObjHoverEnterLeaveEvents = nullptr;
+    m_pTrcAdminObjHoverMoveEvents = nullptr;
     m_pTrcAdminObjMouseClickEvents = nullptr;
     m_pTrcAdminObjMouseMoveEvents = nullptr;
     m_pTrcAdminObjKeyEvents = nullptr;
@@ -502,18 +422,16 @@ void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::BoundingRect");
         m_pTrcAdminObjCoordinateConversions = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::CoordinateConversions");
-        //m_pTrcAdminObjIsHit = CTrcServer::GetTraceAdminObj(
-        //    NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::IsHit");
         m_pTrcAdminObjCursor = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Cursor");
         m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Paint");
-        //m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
-        //    NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEvent");
         m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEventFilter");
-        m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverEvents");
+        m_pTrcAdminObjHoverEnterLeaveEvents = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverEnterLeaveEvents");
+        m_pTrcAdminObjHoverMoveEvents = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverMoveEvents");
         m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseClickEvents");
         m_pTrcAdminObjMouseMoveEvents = CTrcServer::GetTraceAdminObj(
@@ -544,18 +462,16 @@ void CGraphObj::releaseTraceAdminObjs()
         m_pTrcAdminObjBoundingRect = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCoordinateConversions);
         m_pTrcAdminObjCoordinateConversions = nullptr;
-        //CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjIsHit);
-        //m_pTrcAdminObjIsHit = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCursor);
         m_pTrcAdminObjCursor = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
         m_pTrcAdminObjPaint = nullptr;
-        //CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
-        //m_pTrcAdminObjSceneEvent = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
         m_pTrcAdminObjSceneEventFilter = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
-        m_pTrcAdminObjHoverEvents = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEnterLeaveEvents);
+        m_pTrcAdminObjHoverEnterLeaveEvents = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverMoveEvents);
+        m_pTrcAdminObjHoverMoveEvents = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseClickEvents);
         m_pTrcAdminObjMouseClickEvents = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvents);
@@ -4278,35 +4194,36 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
+
     if (m_editMode != i_eMode) {
         CEnumEditMode modePrev = m_editMode;
         m_editMode = i_eMode;
         QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-        if (m_editMode == EEditMode::CreatingByMouseEvents) {
+        if (m_editMode == EEditMode::None) {
+            pGraphicsItemThis->setAcceptHoverEvents(true);
+        }
+        else {
+            if (m_editMode == EEditMode::CreatingByMouseEvents) {
+                // The object is under construction. Hover events will not be accepted.
+                // Only when no drawing tool is selected in the drawing scene, hover
+                // events may be accepted.
+                pGraphicsItemThis->setAcceptHoverEvents(false);
+            }
             // Immeadiately select the object to create the selection points.
             // Following mouse move press, mouse move and mouse release events will
             // be forwarded by the scene to the selection point responsible for
             // resizing the obejct (the top most selection point most recently created).
-            pGraphicsItemThis->setSelected(true);
-            // The object is under construction. Hover events will not be accepted.
-            // Only when no drawing tool is selected in the drawing scene hover
-            // events may be accepted.
-            pGraphicsItemThis->setAcceptHoverEvents(false);
-        }
-        else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-            // The "itemChange" method will be blocked as that would create also
-            // selection points at the bounding rectangle. But in this edit mode only
-            // the selection points for the polygon points should be created.
-            CRefCountGuard refCountGuardItemChange(&m_iItemChangeBlockedCounter);
-            hideSelectionPoints(c_uSelectionPointsBoundingRectAll|c_uSelectionPointsLineCenter);
-            showSelectionPoints(c_uSelectionPointsPolygonPoints);
             if (!pGraphicsItemThis->isSelected()) {
                 pGraphicsItemThis->setSelected(true);
-                emit_selectedChanged(true);
             }
-        }
-        else {
-            pGraphicsItemThis->setAcceptHoverEvents(true);
+            else if (m_editMode == EEditMode::ModifyingBoundingRect) {
+                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
+            else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+                showSelectionPoints(c_uSelectionPointsPolygonPoints);
+            }
         }
         emit_editModeChanged(m_editMode, modePrev);
     }
@@ -5091,6 +5008,7 @@ void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
         /* strMethod    */ "CGraphObj::hideSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
+    QGraphicsItem_prepareGeometryChange();
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
         for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
@@ -7592,7 +7510,7 @@ void CGraphObj::onActionModifyPointsTriggered()
         /* strMethod    */ "CGraphObj::onActionModifyPointsTriggered",
         /* strAddInfo   */ "" );
 
-    if (m_editMode == EEditMode::None) {
+    if (m_editMode != EEditMode::CreatingByMouseEvents) {
         setEditMode(EEditMode::ModifyingPolygonPoints);
     }
 }
@@ -8625,11 +8543,11 @@ void CGraphObj::QGraphicsItem_setCursor(const QCursor& i_cursor)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::QGraphicsItem_setCursor",
@@ -8637,7 +8555,12 @@ void CGraphObj::QGraphicsItem_setCursor(const QCursor& i_cursor)
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
-        pGraphicsItemThis->setCursor(i_cursor);
+        if (i_cursor.shape() == Qt::SizeAllCursor) {
+            pGraphicsItemThis->setCursor(i_cursor);
+        }
+        else {
+            pGraphicsItemThis->setCursor(i_cursor);
+        }
     }
 }
 
@@ -8646,7 +8569,7 @@ void CGraphObj::QGraphicsItem_unsetCursor()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::QGraphicsItem_unsetCursor",
@@ -8656,6 +8579,124 @@ void CGraphObj::QGraphicsItem_unsetCursor()
     if (pGraphicsItemThis != nullptr) {
         pGraphicsItemThis->unsetCursor();
     }
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CTrcAdminObj* CGraphObj::selectTraceAdminObj(QGraphicsItem::GraphicsItemChange i_change)
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = m_pTrcAdminObjItemChange;
+    switch (i_change) {
+        case QGraphicsItem::ItemPositionChange: {
+            break;
+        }
+        case QGraphicsItem::ItemPositionHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemVisibleChange: {
+            break;
+        }
+        case QGraphicsItem::ItemVisibleHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemEnabledChange: {
+            break;
+        }
+        case QGraphicsItem::ItemEnabledHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemSelectedChange: {
+            break;
+        }
+        case QGraphicsItem::ItemSelectedHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemParentChange: {
+            break;
+        }
+        case QGraphicsItem::ItemParentHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemChildAddedChange: {
+            break;
+        }
+        case QGraphicsItem::ItemChildRemovedChange: {
+            break;
+        }
+        case QGraphicsItem::ItemTransformChange: {
+            break;
+        }
+        case QGraphicsItem::ItemTransformHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemSceneChange: {
+            break;
+        }
+        case QGraphicsItem::ItemSceneHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemCursorChange: {
+            pTrcAdminObj = m_pTrcAdminObjCursor;
+            break;
+        }
+        case QGraphicsItem::ItemCursorHasChanged: {
+            pTrcAdminObj = m_pTrcAdminObjCursor;
+            break;
+        }
+        case QGraphicsItem::ItemToolTipChange: {
+            break;
+        }
+        case QGraphicsItem::ItemToolTipHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemFlagsChange: {
+            break;
+        }
+        case QGraphicsItem::ItemFlagsHaveChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemZValueChange: {
+            break;
+        }
+        case QGraphicsItem::ItemZValueHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemOpacityChange: {
+            break;
+        }
+        case QGraphicsItem::ItemOpacityHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemRotationChange: {
+            break;
+        }
+        case QGraphicsItem::ItemRotationHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemScaleChange: {
+            break;
+        }
+        case QGraphicsItem::ItemScaleHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemTransformOriginPointChange: {
+            break;
+        }
+        case QGraphicsItem::ItemTransformOriginPointHasChanged: {
+            break;
+        }
+        case QGraphicsItem::ItemScenePositionHasChanged: {
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    return pTrcAdminObj;
 }
 
 /*==============================================================================
@@ -8682,6 +8723,9 @@ void CGraphObj::traceThisPositionInfo(
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -8716,6 +8760,9 @@ void CGraphObj::traceParentGroupPositionInfo(
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceParentGroupPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     QGraphicsItem* pGraphicsItemGroupParent = dynamic_cast<QGraphicsItemGroup*>(m_pGraphObjGroupParent);
@@ -8767,6 +8814,9 @@ void CGraphObj::traceGraphicsItemStates(
     if (m_iTraceBlockedCounter > 0 || m_iTraceGraphicsItemStatesInfoBlockedCounter > 0) {
         return;
     }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        return;
+    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         QString strRuntimeInfo;
@@ -8813,6 +8863,9 @@ void CGraphObj::traceGraphObjStates(
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceGraphObjStatesInfoBlockedCounter > 0) {
+        return;
+    }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     QString strRuntimeInfo;

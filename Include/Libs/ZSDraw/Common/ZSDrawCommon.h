@@ -328,15 +328,16 @@ enum class EEditMode
 //==============================================================================
 {
     None = 0, /*!< No edit mode is selected. */
-    CreatingByMouseEvents = 1,  /*!< The object has been initially created by a mouse press event
+    CreatingByMouseEvents = 1, /*!< The object has been initially created by a mouse press event
                                     and is still under construction by following mouse events.
                                     For example:
                                     - Resizing a line by moving the line end point.
                                     - Resizing a rectangle by moving the bottom right corner.
                                     - Adding points to poly lines. */
-    ModifyingPolygonPoints = 2 /*!< A polygon is about to be modified. In this mode points can be
-                                    added to the polygon by clicking on a line segment or existing
-                                    polygon points can be moved. */
+    ModifyingBoundingRect = 2, /*!< An object is about to be modified by resizing the bounding rectangle. */
+    ModifyingPolygonPoints = 3 /*!< An object with specific polygon points (polygons, lines) is about
+                                    to be modified. In this mode points can be added e.g. by clicking
+                                    on a line segment or existing polygon points can be moved. */
 };
 } }
 
@@ -945,7 +946,23 @@ public: // struct members
 
 
 //******************************************************************************
-/*!
+/*! @brief Provides information about where a polygon has been hit.
+
+    Only one of the following hit conditions are set:
+
+    - Either a selection point of the bounding rectangle,
+    - a polygon shape point,
+    - or a line segment may be hit.
+
+    Line segments start with index 0 (line from pt[0] to pt[1]) and the
+    line segment index corresponds to the index of the start point of the line.
+
+    - If its a polygon, where the last point is connected with the first point,
+      the last line segment is from points pt[size()-1] to pt[0] and the range
+      for the line segment indices is [0..size()-1].
+    - If its a polyline, where the last point is NOT connected with the first point,
+      the last line segment is from points pt[size()-2] to pt[size()-1] and the range
+      for the line segment indices is [0..size()-2].
 */
 struct ZSDRAWDLL_API SGraphObjHitInfo
 //******************************************************************************
@@ -963,9 +980,13 @@ public: // struct methods
 public: // struct members
     /*!< If not None specifies a specific selection point at the bounding rectangle. */
     CEnumSelectionPoint m_selPtBoundingRect = ESelectionPoint::None;
-    /*!< If >= 0 specifies a specific polygon point. */
+    /*!< Index of the polygon point hit.
+         Range:  < 0, if no polygon point has been hit.
+                 >= 0 && < polygon.size(), if a polygon point has been hit. */
     int m_idxPolygonShapePoint = -1;
-    /*!< If >= 0 specifies a specific line segment. */
+    /*!< Index of the polygon's line segment hit.
+         Range:  < 0, if no line segment has been hit.
+                 >= 0 && < polygon.size(), if a polygon line segement has been hit. */
     int m_idxLineSegment = -1;
     /*!< The coordinates of the hit point. */
     QPointF m_ptHit;

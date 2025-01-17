@@ -1084,6 +1084,71 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     });
 #endif
 
+    // Resize (setBottomRight)
+    //------------------------
+
+    selPt.m_selPtType = ESelectionPointType::BoundingRectangle;
+    selPt.m_selPt = ESelectionPoint::BottomRight;
+    physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
+    physValPolygonTriangleNew.setBottomRight(QPointF(350.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0));
+    strObjName = c_strGraphObjNameTriangle;
+    strMethod = "setBottomRight";
+    strMthArgs = physValPolygonTriangleNew.bottomRight().toString();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyTriangle,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pt1SelPt = getSelectionPointCoors(m_pPhysValPolygonTriangle->physValBoundingRect(), selPt.m_selPt);
+    pt2SelPt = getSelectionPointCoors(physValPolygonTriangleNew.physValBoundingRect(), selPt.m_selPt);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
+    pTestStep->setConfigValue("SelectionPoint", selPt.toString());
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move from current position to empty area
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(375, 300));
+    pTestStep->addDataRow({ // Deselect object by clicking on empty area
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    // Move mouse into object
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, m_ptPosTriangle.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    pTestStep->addDataRow({ // Click on selection point
+        {"Method", "mousePressEvent"},
+        {"MousePos", pt1SelPt}
+    });
+    // Move selection point
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, pt1SelPt.toPoint(), pt2SelPt.toPoint(), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", pt2SelPt}
+    });
+    strlstExpectedValues.clear();
+    m_physValAngleTriangle = physValPolygonTriangleNew.angle();
+    *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
+    strlstExpectedValues.append(resultValuesForPolygon(
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
     // insert(1, Pt)
     //--------------
 

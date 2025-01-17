@@ -34,6 +34,7 @@ may result in using the software modules.
 
 #include <QtGui/qcursor.h>
 #include <QtGui/qpainter.h>
+#include <QtWidgets/qgraphicsitem.h>
 
 class QAction;
 class QMenu;
@@ -743,6 +744,8 @@ protected: // overridable auxiliary instance methods (method tracing)
     virtual QGraphicsItem* QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent);
     virtual void QGraphicsItem_setCursor(const QCursor& i_cursor);
     virtual void QGraphicsItem_unsetCursor();
+protected: // overridable auxiliary instance methods (method tracing)
+    ZS::System::CTrcAdminObj* selectTraceAdminObj(QGraphicsItem::GraphicsItemChange i_change);
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -843,7 +846,7 @@ protected: // instance members
          Default value is true but for polygons the object creation is not finished if
          the mouse is released but instead a mouse double click is used to add the last
          polygon point which finishes creation of the object. */
-    bool m_bMouseReleaseEventFinishesObjectCreation;
+    //bool m_bMouseReleaseEventFinishesObjectCreation;
     /*!< Defines the Z-Value which again defines the drawing order within the list of graphics item
          of the drawing scene.
          Two values are stored. The original version is the ZValue which will be initially used
@@ -961,8 +964,6 @@ protected: // !!! OBSOLETE !!! instance members
     /*!< Coordinates stored on mouse press events:
          In scene's coordinate system (for moving by my mouse move events). */
     //QPointF m_ptScenePosOnMousePressEvent;
-    /*!< In scene's coordinate system (for moving by my mouse move events). */
-    //QPointF m_ptMouseEvScenePosOnMousePressEvent;
     /*!< In item's coordinate system (for resizing by mouse move events). */
     //QRectF m_rctOnMousePressEvent;
     /*!< In scene's coordinate system (for rotation by mouse move events). */
@@ -980,6 +981,20 @@ protected: // !!! OBSOLETE !!! instance members
     //QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
     //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
 #endif
+protected: // instance members
+    /*!< When doubleclicking an item, the item will first receive a mouse press event, followed by a
+         release event (i.e., a click), then a double-click event, and finally a release event.
+         To handle double click mouse events correctly the mouse position of the mouse press and
+         mouse release events are temporarily stored. The double click event handler can campare
+         its mouse position with the temporarily stored mouse positions to decide, whether the
+         prior mouse events were not desired and can undo what has been done in the mouse press
+         or mouse release event functions. E.g. on creating polygons a mouse press event creates a
+         polygon shape point and a mouse double click event should finish creation of the polygon.
+         In this case the polygon point created by the mouse press event preceeding the mouse double
+         click event should not have been created and should be removed again within the mouse double
+         click event handler. */
+    //QPointF m_ptMouseEvScenePosOnMousePressEvent;
+    //QPointF m_ptMouseEvScenePosOnMouseReleaseEvent;
 protected: // instance members
     /*!< If the itemChange method should be blocked this member may be set to a value greater than 0
          e.g. using CRefCountGuard. */
@@ -1005,6 +1020,7 @@ protected: // instance members
          must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
          Same applies if the parent resizes itself to its content. */
     int m_iIgnoreParentGeometryChange;
+protected: // instance members
     /*!< Counters to block debug trace outputs for internal position and state infos. */
     int m_iTraceBlockedCounter;
     int m_iTracePositionInfoBlockedCounter;
@@ -1024,7 +1040,8 @@ protected: // instance members (method tracing)
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
     //ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEnterLeaveEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverMoveEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;

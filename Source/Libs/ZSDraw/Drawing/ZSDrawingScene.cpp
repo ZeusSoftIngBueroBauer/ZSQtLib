@@ -3642,6 +3642,10 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             else if (m_pObjFactory == nullptr && m_pGraphObjUnderConstruction == nullptr) {
                 // Dispatch mouse event to objects "under cursor".
                 QGraphicsScene_mousePressEvent(i_pEv);
+                if (m_pGraphObjMouseGrabber != nullptr) {
+                    dynamic_cast<QGraphicsItem*>(m_pGraphObjMouseGrabber)->grabMouse();
+                    m_pGraphObjMouseGrabber = nullptr;
+                }
                 bEventHandled = true;
 
                 // If no object has been selected ...
@@ -3675,6 +3679,10 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (!bEventHandled) {
         // Dispatch mouse event to objects "under cursor".
         QGraphicsScene_mousePressEvent(i_pEv);
+        if (m_pGraphObjMouseGrabber != nullptr) {
+            dynamic_cast<QGraphicsItem*>(m_pGraphObjMouseGrabber)->grabMouse();
+            m_pGraphObjMouseGrabber = nullptr;
+        }
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -3797,6 +3805,10 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (!bEventHandled) {
         // Dispatch mouse event to objects "under cursor".
         QGraphicsScene_mouseReleaseEvent(i_pEv);
+        if (m_pGraphObjMouseGrabber != nullptr) {
+            dynamic_cast<QGraphicsItem*>(m_pGraphObjMouseGrabber)->grabMouse();
+            m_pGraphObjMouseGrabber = nullptr;
+        }
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -4839,7 +4851,7 @@ void CDrawingScene::onGraphObjEditModeChanged(
     if (m_pGraphObjUnderConstruction == i_pGraphObj) {
         // Object creation has been finished. Unset the current drawing tool and select
         // the currently created object.
-        if (i_eModeCurr == EEditMode::None && i_eModePrev == EEditMode::CreatingByMouseEvents) {
+        if (i_eModePrev == EEditMode::CreatingByMouseEvents) {
             dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
             QObject::disconnect(
                 m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,

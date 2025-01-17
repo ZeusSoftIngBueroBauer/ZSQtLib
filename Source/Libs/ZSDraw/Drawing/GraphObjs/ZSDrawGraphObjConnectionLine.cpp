@@ -1173,11 +1173,11 @@ void CGraphObjConnectionLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
@@ -1211,11 +1211,11 @@ void CGraphObjConnectionLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjHoverMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
@@ -1249,11 +1249,11 @@ void CGraphObjConnectionLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",

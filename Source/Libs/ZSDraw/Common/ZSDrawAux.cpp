@@ -1274,6 +1274,7 @@ bool ZS::Draw::isLineHit(
         QLineF linePerpendicular = getPerpendicularLine(i_line, i_pt, 0.0, &ptIntersection);
         if (linePerpendicular.length() <= i_fTolerance_px) {
             bIsHit = true;
+            o_pHitInfo->m_idxLineSegment = 0;
             o_pHitInfo->m_ptHit = ptIntersection;
             o_pHitInfo->m_cursor = Qt::SizeAllCursor;
         }

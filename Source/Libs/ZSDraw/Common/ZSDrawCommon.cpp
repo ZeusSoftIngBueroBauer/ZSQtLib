@@ -285,7 +285,8 @@ template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
 {
     /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None), "None"),
     /* 1 */ SEnumEntry( static_cast<int>(EEditMode::CreatingByMouseEvents), "CreatingByMouseEvents"),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::ModifyingPolygonPoints), "ModifyingPolygonPoints")
+    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::ModifyingBoundingRect), "ModifyingBoundingRect"),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::ModifyingPolygonPoints), "ModifyingPolygonPoints")
 };
 
 

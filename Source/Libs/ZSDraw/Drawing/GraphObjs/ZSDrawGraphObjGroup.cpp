@@ -2828,11 +2828,11 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
@@ -2853,11 +2853,11 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjHoverMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
@@ -2878,11 +2878,11 @@ void CGraphObjGroup::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
+        /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",
@@ -3303,12 +3303,13 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         return i_value;
     }
 
+    CTrcAdminObj* pTrcAdminObj = selectTraceAdminObj(i_change);
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsItemChange2Str(i_change, i_value);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
@@ -6571,6 +6572,9 @@ void CGraphObjGroup::traceThisPositionInfo(
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
