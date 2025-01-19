@@ -319,12 +319,12 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjPolygon::showContextMenu(const QPointF& i_ptScreenPos)
+void CGraphObjPolygon::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pos {" + qPoint2Str(i_ptScreenPos) + "}";
+        strMthInArgs = "Pos {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -336,28 +336,46 @@ void CGraphObjPolygon::showContextMenu(const QPointF& i_ptScreenPos)
     if (m_pMenuContext == nullptr) {
         createContextMenu();
     }
+    m_hitInfoOnShowContextMenu = SGraphObjHitInfo();
     if (m_editMode == EEditMode::CreatingByMouseEvents) {
+        m_pActionMenuContextModifyPoints->setVisible(false);
+        m_pActionMenuContextModifyPoints->setEnabled(false);
+        m_pActionMenuContextDeletePoint->setVisible(false);
+        m_pActionMenuContextDeletePoint->setEnabled(false);
+    }
+    else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
         m_pActionMenuContextModifyPoints->setEnabled(false);
         m_pActionMenuContextModifyPoints->setVisible(false);
-        m_pActionMenuContextDeletePoint->setEnabled(false);
-        m_pActionMenuContextDeletePoint->setVisible(false);
-    }
-    else {
-        if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-            m_pActionMenuContextModifyPoints->setEnabled(false);
-            m_pActionMenuContextModifyPoints->setVisible(false);
-            m_pActionMenuContextDeletePoint->setEnabled(true);
+        // Check if any line segment has been hit.
+        // As this method may have been called by the selection point, "pos" would return
+        // the local coordinate of the selection point. We need to use the scene pos.
+        QPointF ptEvLocalPos = mapFromScene(i_pEv->scenePos());
+        SGraphObjHitInfo hitInfo;
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(ptEvLocalPos) + ")");
+        }
+        bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+        }
+        m_hitInfoOnShowContextMenu = hitInfo;
+        if (hitInfo.isPolygonShapePointHit() && polygon().size() > 2) {
             m_pActionMenuContextDeletePoint->setVisible(true);
+            m_pActionMenuContextDeletePoint->setEnabled(true);
         }
         else {
-            m_pActionMenuContextModifyPoints->setEnabled(true);
-            m_pActionMenuContextModifyPoints->setVisible(true);
+            m_pActionMenuContextDeletePoint->setVisible(true);
             m_pActionMenuContextDeletePoint->setEnabled(false);
-            m_pActionMenuContextDeletePoint->setVisible(false);
         }
     }
+    else {
+        m_pActionMenuContextModifyPoints->setVisible(true);
+        m_pActionMenuContextModifyPoints->setEnabled(true);
+        m_pActionMenuContextDeletePoint->setVisible(false);
+        m_pActionMenuContextDeletePoint->setEnabled(false);
+    }
     m_pMenuContext->setTitle(path());
-    m_pMenuContext->popup(i_ptScreenPos.toPoint());
+    m_pMenuContext->popup(i_pEv->screenPos());
 }
 
 //------------------------------------------------------------------------------
@@ -2708,25 +2726,12 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             }
         }
         else if (m_editMode == EEditMode::ModifyingBoundingRect) {
-            if (i_pEv->button() == Qt::LeftButton) {
-                if (i_pEv->modifiers() & Qt::ControlModifier) {
-                    setEditMode(EEditMode::ModifyingPolygonPoints);
-                }
-            }
-            else if (i_pEv->button() == Qt::RightButton) {
-                showContextMenu(i_pEv->screenPos());
+            if (i_pEv->modifiers() & Qt::ControlModifier) {
+                setEditMode(EEditMode::ModifyingPolygonPoints);
             }
         }
         else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-            //if (i_pEv->modifiers() == Qt::NoModifier) {
-            //    setEditMode(EEditMode::ModifyingBoundingRect);
-            //    // Forward the mouse event to the base implementation.
-            //    // This will select the item, creating selection points if not yet created.
-            //    QGraphicsPolygonItem::mousePressEvent(i_pEv);
-            //}
-            //else if (i_pEv->modifiers() & Qt::ControlModifier) {
             // Check if any line segment has been hit.
-            QPolygonF plgLocalPos = polygon();
             // As this method may have been called by the selection point, "pos" would return
             // the local coordinate of the selection point. We need to use the scene pos.
             QPointF ptEvLocalPos = mapFromScene(i_pEv->scenePos());
@@ -2748,25 +2753,27 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             }
             // If a line segment has been hit (but not at polygon shape points as those are selection points) ..
             else if (hitInfo.isLineSegmentHit()) {
-                // .. create a new point there.
-                insert(hitInfo.m_idxLineSegment+1, CPhysValPoint(*m_pDrawingScene, mapToParent(hitInfo.m_ptHit), Units.Length.px));
-                // The newly added selection point will become the new grabber
-                // so that newly created polygon point can be moved.
-                QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-                if (pGraphicsItemMouseGrabber != nullptr) {
-                    pGraphicsItemMouseGrabber->ungrabMouse();
+                if (i_pEv->modifiers() & Qt::ControlModifier) {
+                    // .. create a new point there.
+                    insert(hitInfo.m_idxLineSegment+1, CPhysValPoint(*m_pDrawingScene, mapToParent(hitInfo.m_ptHit), Units.Length.px));
+                    // The newly added selection point will become the new grabber
+                    // so that newly created polygon point can be moved.
+                    QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
+                    if (pGraphicsItemMouseGrabber != nullptr) {
+                        pGraphicsItemMouseGrabber->ungrabMouse();
+                    }
+                    CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = m_arpSelPtsPolygon[hitInfo.m_idxLineSegment+1];
+                    if (pGraphObjSelPtMouseGrabber != nullptr) {
+                        m_pDrawingScene->setMouseGrabber(pGraphObjSelPtMouseGrabber);
+                    }
                 }
-                CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = m_arpSelPtsPolygon[hitInfo.m_idxLineSegment+1];
-                if (pGraphObjSelPtMouseGrabber != nullptr) {
-                    m_pDrawingScene->setMouseGrabber(pGraphObjSelPtMouseGrabber);
-                }
-                bCallBaseMouseEventHandler = false;
+                //bCallBaseMouseEventHandler = false;
             }
         }
     }
     else if (i_pEv->button() == Qt::RightButton) {
         if (m_editMode != EEditMode::CreatingByMouseEvents) {
-            showContextMenu(i_pEv->screenPos());
+            showContextMenu(i_pEv);
             bCallBaseMouseEventHandler = false;
         }
     }
@@ -3351,6 +3358,33 @@ void CGraphObjPolygon::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSele
 
 /*==============================================================================
 protected: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjPolygon::onActionDeletePointTriggered()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onActionDeletePointTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_hitInfoOnShowContextMenu.isPolygonShapePointHit() && polygon().size() > 2) {
+        if (m_hitInfoOnShowContextMenu.m_idxPolygonShapePoint >= 0 && m_hitInfoOnShowContextMenu.m_idxPolygonShapePoint < polygon().size()) {
+            removeAt(m_hitInfoOnShowContextMenu.m_idxPolygonShapePoint);
+        }
+    }
+}
+
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

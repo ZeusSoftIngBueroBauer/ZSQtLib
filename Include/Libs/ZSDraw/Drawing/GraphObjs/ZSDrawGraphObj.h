@@ -404,6 +404,8 @@ signals:
          For this the signal may not be emitted "directly" by the derived classes but the class
          must call "emit_aboutToBeDestroyed" in their destructors. */
     void aboutToBeDestroyed(CGraphObj* i_pGraphObj);
+    /*!< This signal is emitted if the name of the graphic object has been changed. */
+    void nameChanged(CGraphObj* i_pGraphObj, const QString& i_strNameNew, const QString& i_strNameOld);
     /*!< This signal is emitted if the type of the graphic object has been changed. */
     void typeChanged(CGraphObj* i_pGraphObj, EGraphObjType i_graphObjType);
     /*!< This signal is emitted if the edit mode of the object has been changed providing
@@ -483,7 +485,7 @@ public: // instance methods
     QString getFactoryGroupName() const;
 public: // must overridables
     virtual void createContextMenu();
-    virtual void showContextMenu(const QPointF& i_ptScreenPos);
+    virtual void showContextMenu(QGraphicsSceneMouseEvent* i_pEv);
     virtual void openFormatGraphObjsDialog();
     virtual void openDeletePointDialog();
 public: // overridables
@@ -721,6 +723,7 @@ protected: // overridable auxiliary instance methods (method tracing)
     double setParentGroupScaleY(double i_fScaleY);
 protected: // auxiliary instance methods (method tracing)
     void emit_aboutToBeDestroyed();
+    void emit_nameChanged(const QString& i_strNameNew, const QString& i_strNameOld);
     void emit_typeChanged(EGraphObjType i_graphObjType);
     void emit_editModeChanged(const CEnumEditMode& i_eModeCurr, const CEnumEditMode& i_eModePrev);
     void emit_selectedChanged(bool i_bIsSelected);
@@ -963,7 +966,7 @@ protected: // !!! OBSOLETE !!! instance members
     QPointF m_ptRotOriginOrig;
     /*!< Coordinates stored on mouse press events:
          In scene's coordinate system (for moving by my mouse move events). */
-    //QPointF m_ptScenePosOnMousePressEvent;
+    QPointF m_ptScenePosOnMousePressEvent;
     /*!< In item's coordinate system (for resizing by mouse move events). */
     //QRectF m_rctOnMousePressEvent;
     /*!< In scene's coordinate system (for rotation by mouse move events). */
@@ -982,19 +985,9 @@ protected: // !!! OBSOLETE !!! instance members
     //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
 #endif
 protected: // instance members
-    /*!< When doubleclicking an item, the item will first receive a mouse press event, followed by a
-         release event (i.e., a click), then a double-click event, and finally a release event.
-         To handle double click mouse events correctly the mouse position of the mouse press and
-         mouse release events are temporarily stored. The double click event handler can campare
-         its mouse position with the temporarily stored mouse positions to decide, whether the
-         prior mouse events were not desired and can undo what has been done in the mouse press
-         or mouse release event functions. E.g. on creating polygons a mouse press event creates a
-         polygon shape point and a mouse double click event should finish creation of the polygon.
-         In this case the polygon point created by the mouse press event preceeding the mouse double
-         click event should not have been created and should be removed again within the mouse double
-         click event handler. */
-    //QPointF m_ptMouseEvScenePosOnMousePressEvent;
-    //QPointF m_ptMouseEvScenePosOnMouseReleaseEvent;
+    /*!< Hit info on mouse events. Set e.g. on right clicking an object to set which
+         point of the object was hit before opening the context menu. */
+    SGraphObjHitInfo m_hitInfoOnShowContextMenu;
 protected: // instance members
     /*!< If the itemChange method should be blocked this member may be set to a value greater than 0
          e.g. using CRefCountGuard. */

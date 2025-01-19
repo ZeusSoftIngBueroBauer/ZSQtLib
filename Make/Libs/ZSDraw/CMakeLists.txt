@@ -304,6 +304,9 @@ list(APPEND _Images
     ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateRightBy90Degrees16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/EditGroup16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/EditUngroup16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/FormatGraphObj16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/FormatGraphObjDeletePoint16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/FormatGraphObjModifyPoints16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionLine16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionPoint16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjEllipse16x16.png

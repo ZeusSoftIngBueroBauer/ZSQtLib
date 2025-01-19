@@ -103,6 +103,9 @@ CWdgtGraphObjGroupProperties::CWdgtGraphObjGroupProperties(
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Group",
         ClassName(), i_strObjName, i_pWdgtParent),
+    m_pWdgtHeadLine(nullptr),
+    m_pLytHeadLine(nullptr),
+    m_pLblHeadLine(nullptr),
     m_pWdgtLabels(nullptr),
     m_pWdgtGeometry(nullptr),
     m_pWdgtLineStyle(nullptr),
@@ -121,6 +124,17 @@ CWdgtGraphObjGroupProperties::CWdgtGraphObjGroupProperties(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
+
+    m_pWdgtHeadLine = new QWidget();
+    m_pLytHeadLine = new QHBoxLayout();
+    m_pWdgtHeadLine->setLayout(m_pLytHeadLine);
+    m_pLblHeadLine = new QLabel();
+    QFont fntHeadLine = m_pLblHeadLine->font();
+    fntHeadLine.setBold(true);
+    m_pLblHeadLine->setFont(fntHeadLine);
+    m_pLytHeadLine->addWidget(m_pLblHeadLine, 1);
+    m_pLyt->addWidget(m_pWdgtHeadLine);
+    m_pLyt->addSpacing(4);
 
     m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
@@ -183,6 +197,9 @@ CWdgtGraphObjGroupProperties::~CWdgtGraphObjGroupProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_pWdgtHeadLine = nullptr;
+    m_pLytHeadLine = nullptr;
+    m_pLblHeadLine = nullptr;
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
@@ -246,16 +263,28 @@ bool CWdgtGraphObjGroupProperties::setKeyInTree(const QString& i_strKeyInTree)
     bool bObjectChanged = false;
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
+        if (m_pGraphObj != nullptr) {
+            QObject::disconnect(
+                m_pGraphObj, &CGraphObj::nameChanged,
+                this, &CWdgtGraphObjGroupProperties::onGraphObjNameChanged);
+        }
         // Fill the content of the edit controls.
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
             CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+            m_pLblHeadLine->setText(m_pGraphObj == nullptr ? "---" : m_pGraphObj->path());
             m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
             m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
             m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
             m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
             m_pWdgtGridStyle->setKeyInTree(i_strKeyInTree);
         }
+        if (m_pGraphObj != nullptr) {
+            QObject::connect(
+                m_pGraphObj, &CGraphObj::nameChanged,
+                this, &CWdgtGraphObjGroupProperties::onGraphObjNameChanged);
+        }
+        updateButtonsEnabled();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bObjectChanged);
@@ -508,5 +537,30 @@ void CWdgtGraphObjGroupProperties::onWdgtGridStyleContentChanged()
     }
     else {
         m_bContentChanged = true;
+    }
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGroupProperties::onGraphObjNameChanged(
+    CGraphObj* i_pGraphObj, const QString& i_strNameNew, const QString& i_strNameOld)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "GraphObj: " + QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->path()) +
+            "Name {New: " + i_strNameNew + ", Old: " + i_strNameOld + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onGraphObjNameChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pGraphObj == m_pGraphObj) {
+        m_pLblHeadLine->setText(m_pGraphObj == nullptr ? "---" : m_pGraphObj->path());
     }
 }

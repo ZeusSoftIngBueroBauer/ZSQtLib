@@ -13,6 +13,9 @@
         <file alias="DrawToolRotateRightBy90Degrees16x16.png">Images/DrawToolRotateRightBy90Degrees16x16.png</file>
         <file alias="DrawToolMirrorVertical16x16.png">Images/DrawToolMirrorVertical16x16.png</file>
         <file alias="DrawToolMirrorHorizontal16x16.png">Images/DrawToolMirrorHorizontal16x16.png</file>
+        <file alias="FormatGraphObj16x16.png">Images/FormatGraphObj16x16.png</file>
+        <file alias="FormatGraphObjDeletePoint16x16.png">Images/FormatGraphObjDeletePoint16x16.png</file>
+        <file alias="FormatGraphObjModifyPoints16x16.png">Images/FormatGraphObjModifyPoints16x16.png</file>
         <file alias="GraphObjConnectionLine16x16.png">Images/GraphObjConnectionLine16x16.png</file>
         <file alias="GraphObjConnectionPoint16x16.png">Images/GraphObjConnectionPoint16x16.png</file>
         <file alias="GraphObjEllipse16x16.png">Images/GraphObjEllipse16x16.png</file>

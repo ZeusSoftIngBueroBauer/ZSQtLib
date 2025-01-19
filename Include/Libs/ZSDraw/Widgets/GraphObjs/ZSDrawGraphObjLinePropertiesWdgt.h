@@ -73,7 +73,12 @@ protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
+protected slots:
+    void onGraphObjNameChanged(CGraphObj* i_pGraphObj, const QString& i_strNameNew, const QString& i_strNameOld);
 protected: // instance members
+    QWidget* m_pWdgtHeadLine;
+    QHBoxLayout* m_pLytHeadLine;
+    QLabel* m_pLblHeadLine;
     CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
     CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;

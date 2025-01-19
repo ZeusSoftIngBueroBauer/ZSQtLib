@@ -68,10 +68,10 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
-    void showContextMenu(const QPointF& i_ptScreenPos) override;
+    void showContextMenu(QGraphicsSceneMouseEvent* i_pEv) override;
     void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
+    void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setPolygon(const CPhysValPolygon& i_physValPolygon);
     void setPolygon(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unit);
@@ -137,57 +137,59 @@ public: // instance methods
     CPhysValPoint takeFirst();
     CPhysValPoint takeLast();
 public: // must overridables of base class CGraphObj
-    virtual QRectF getBoundingRect() const override;
-    virtual QRectF getEffectiveBoundingRectOnScene() const override;
-    virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    QRectF getBoundingRect() const override;
+    QRectF getEffectiveBoundingRectOnScene() const override;
+    CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // overridables of base class CGraphObj
-    virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
+    QCursor getProposedCursor(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj
-    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
-    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, int i_idxPt) const override;
+    CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
+    QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, int i_idxPt) const override;
 public: // must overridables of base class CGraphObj
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const override;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const override;
+    SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const override;
+    QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
+    void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
-    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
-    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+    QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    bool labelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
-    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
+    bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const override;
-    virtual QPainterPath shape() const override;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    //virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
+    //bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+    QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable slots of base class CGraphObj
-    //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+    //void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+protected slots: // overridables of base class CGraphObj
+    void onActionDeletePointTriggered() override;
 public: // must overridables of base class CGraphObj
-    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
-    virtual void updateTransformedCoorsOnParentGeometryChanged() override;
-    virtual void updateTransformedCoorsOnItemPositionChanged() override;
+    void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
+    void updateTransformedCoorsOnParentGeometryChanged() override;
+    void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
-    virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
-    virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
+    bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
+    void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
     QPolygonF getPolygonScaled(const QPolygonF& i_polygonOrig) const;
     CPhysValPolygon getPhysValPolygonOrig(const QPolygonF& i_polygonOrig) const;
     CPhysValPolygon getPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygonOrig) const;
     QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon, ZS::PhysVal::CPhysVal& o_physValAngle) const;
-    virtual void normalize(); // removes "unnecessary" points
+    void normalize(); // removes "unnecessary" points
 protected: // auxiliary instance methods
     int getNumberOfPredefinedPolygonPointLabelNames() const;
     int getNumberOfPolygonPointGeometryLabelNames() const;
@@ -200,7 +202,7 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValPolygon setPhysValPolygonScaledAndRotated(const CPhysValPolygon& i_physValPolygon);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    virtual void traceThisPositionInfo(
+    void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         const QString& i_strFilter = "",

@@ -2925,7 +2925,7 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     bool bEventHandled = false;
     if (m_editMode == EEditMode::None) {
         if (i_pEv->button() == Qt::RightButton) {
-            showContextMenu(i_pEv->screenPos());
+            showContextMenu(i_pEv);
             bEventHandled = true;
         }
     }

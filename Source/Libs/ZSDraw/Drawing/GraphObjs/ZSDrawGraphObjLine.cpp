@@ -1960,7 +1960,7 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     }
     else if (i_pEv->button() == Qt::RightButton) {
-        showContextMenu(i_pEv->screenPos());
+        showContextMenu(i_pEv);
         bCallBaseMouseEventHandler = false;
     }
     //i_pEv->accept();

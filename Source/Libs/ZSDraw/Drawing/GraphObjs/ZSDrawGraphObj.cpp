@@ -43,7 +43,9 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/QBitmap>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMenu>
+#include <QtWidgets/QWidgetAction>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -164,6 +166,7 @@ CGraphObj::CGraphObj(
     m_pActionMenuContextFormat(nullptr),
     m_pActionMenuContextModifyPoints(nullptr),
     m_pActionMenuContextDeletePoint(nullptr),
+    m_hitInfoOnShowContextMenu(),
     m_iItemChangeBlockedCounter(0),
     m_iItemChangeUpdatePhysValCoorsBlockedCounter(0),
     m_iGeometryOnSceneChangedSignalBlockedCounter(0),
@@ -869,6 +872,7 @@ void CGraphObj::setName( const QString& i_strName )
 
     if (m_strName != i_strName)
     {
+        QString strNameOld = m_strName;
         CIdxTreeEntry::setName(i_strName);
         if (m_hshLabelDscrs.contains(c_strLabelName)) {
             m_hshLabelDscrs[c_strLabelName].m_strText = i_strName;
@@ -877,6 +881,7 @@ void CGraphObj::setName( const QString& i_strName )
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setText(name());
         }
+        emit_nameChanged(m_strName, strNameOld);
         //updateEditInfo();
         //updateToolTip();
     }
@@ -1002,29 +1007,57 @@ void CGraphObj::createContextMenu()
         /* strMethod    */ "CGraphObj::createContextMenu",
         /* strAddInfo   */ "" );
     if (m_pMenuContext == nullptr) {
-        m_pMenuContext = new QMenu(path());
+        m_pMenuContext = new QMenu();
+        // The title only works for sub menus.
+        // A widget action must be used to set a title.
+        //m_pMenuContext = new QMenu(path());
+        //m_pMenuContext->setTitle(path());
 
-        m_pActionMenuContextFormat = new QAction("Format", this);
+        QLabel* pLblTitle = new QLabel(path());
+        QFont fntTitle = pLblTitle->font();
+        fntTitle.setBold(true);
+        pLblTitle->setFont(fntTitle);
+        pLblTitle->setContentsMargins(2, 5, 2, 5);
+        QWidgetAction* pWdgtAction = new QWidgetAction(this);
+        pWdgtAction->setDefaultWidget(pLblTitle);
+        m_pMenuContext->addAction(pWdgtAction);
+        m_pMenuContext->addSeparator();
+
+        //QIcon iconFormat;
+        QPixmap pxmFormat(":/ZS/Draw/FormatGraphObj16x16.png");
+        pxmFormat.setMask(pxmFormat.createHeuristicMask());
+        //iconFormat.addPixmap(pxmFormat);
+        m_pActionMenuContextFormat = new QAction(pxmFormat, "Format", this);
         m_pMenuContext->addAction(m_pActionMenuContextFormat);
         QObject::connect(
             m_pActionMenuContextFormat, &QAction::triggered,
             this, &CGraphObj::onActionFormatTriggered);
+        m_pMenuContext->addSeparator();
 
-        m_pActionMenuContextModifyPoints = new QAction("Modify Points", this);
+        //QIcon iconFormatModifyPoints;
+        QPixmap pxmFormatModifyPoints(":/ZS/Draw/FormatGraphObjModifyPoints16x16.png");
+        pxmFormatModifyPoints.setMask(pxmFormatModifyPoints.createHeuristicMask());
+        //iconFormat.addPixmap(pxmFormat);
+        m_pActionMenuContextModifyPoints = new QAction(pxmFormatModifyPoints, "Modify Points", this);
         m_pMenuContext->addAction(m_pActionMenuContextModifyPoints);
+        m_pMenuContext->addSeparator();
         QObject::connect(
             m_pActionMenuContextModifyPoints, &QAction::triggered,
             this, &CGraphObj::onActionModifyPointsTriggered);
-        m_pActionMenuContextModifyPoints->setEnabled(false);
         m_pActionMenuContextModifyPoints->setVisible(false);
+        m_pActionMenuContextModifyPoints->setEnabled(false);
 
-        m_pActionMenuContextDeletePoint = new QAction("Delete Point", this);
+        //QIcon iconFormatDeletePoint;
+        QPixmap pxmFormatDeletePoint(":/ZS/Draw/FormatGraphObjDeletePoint16x16.png");
+        pxmFormatDeletePoint.setMask(pxmFormatDeletePoint.createHeuristicMask());
+        //iconFormatDeletePoint.addPixmap(pxmFormat);
+        m_pActionMenuContextDeletePoint = new QAction(pxmFormatDeletePoint, "Delete Point", this);
         m_pMenuContext->addAction(m_pActionMenuContextDeletePoint);
         QObject::connect(
             m_pActionMenuContextDeletePoint, &QAction::triggered,
             this, &CGraphObj::onActionDeletePointTriggered);
-        m_pActionMenuContextDeletePoint->setEnabled(false);
         m_pActionMenuContextDeletePoint->setVisible(false);
+        m_pActionMenuContextDeletePoint->setEnabled(false);
     }
     m_pMenuContext->setTitle(path());
 }
@@ -1035,12 +1068,12 @@ void CGraphObj::createContextMenu()
     Must be overridden to show the context popup menu.
     Usually opened by right clicking on the the object.
 */
-void CGraphObj::showContextMenu(const QPointF& i_ptScreenPos)
+void CGraphObj::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pos {" + qPoint2Str(i_ptScreenPos) + "}";
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1052,8 +1085,9 @@ void CGraphObj::showContextMenu(const QPointF& i_ptScreenPos)
     if (m_pMenuContext == nullptr) {
         createContextMenu();
     }
+    m_hitInfoOnShowContextMenu = SGraphObjHitInfo();
     m_pMenuContext->setTitle(path());
-    m_pMenuContext->popup(i_ptScreenPos.toPoint());
+    m_pMenuContext->popup(i_pEv->screenPos());
 }
 
 //------------------------------------------------------------------------------
@@ -5902,14 +5936,19 @@ void CGraphObj::setLabelText(const QString& i_strName, const QString& i_strText)
     }
 
     if (m_hshLabelDscrs[i_strName].m_strText != i_strText) {
-        m_hshLabelDscrs[i_strName].m_strText = i_strText;
-        CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
-        if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setText(i_strText);
+        if (i_strName == c_strLabelName) {
+            rename(i_strText);
         }
-        emit_labelChanged(i_strName);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
+        else {
+            m_hshLabelDscrs[i_strName].m_strText = i_strText;
+            CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
+            if (pGraphObjLabel != nullptr) {
+                pGraphObjLabel->setText(i_strText);
+            }
+            emit_labelChanged(i_strName);
+            if (m_pTree != nullptr) {
+                m_pTree->onTreeEntryChanged(this);
+            }
         }
     }
 }
@@ -7489,12 +7528,16 @@ protected slots: // overridables
 void CGraphObj::onActionFormatTriggered()
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onActionFormatTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     openFormatGraphObjsDialog();
 }
@@ -7503,12 +7546,16 @@ void CGraphObj::onActionFormatTriggered()
 void CGraphObj::onActionModifyPointsTriggered()
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onActionModifyPointsTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     if (m_editMode != EEditMode::CreatingByMouseEvents) {
         setEditMode(EEditMode::ModifyingPolygonPoints);
@@ -7519,12 +7566,16 @@ void CGraphObj::onActionModifyPointsTriggered()
 void CGraphObj::onActionDeletePointTriggered()
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onActionDeletePointTriggered",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 }
 
 /*==============================================================================
@@ -8129,6 +8180,23 @@ void CGraphObj::emit_aboutToBeDestroyed()
         emit aboutToBeDestroyed(this);
         m_bAboutToBeDestroyedEmitted = true;
     }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_nameChanged(const QString& i_strNameNew, const QString& i_strNameOld)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Name {New: " + i_strNameNew + ", Old: " + i_strNameOld + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_nameChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit nameChanged(this, i_strNameNew, i_strNameOld);
 }
 
 //------------------------------------------------------------------------------

@@ -80,8 +80,6 @@ protected: // instance members
     ZS::System::CIdxTree* m_pIdxTree;
     QString m_strKeyInTree;
     QVBoxLayout* m_pLyt;
-    QHBoxLayout* m_pLytHeadLine;
-    QLineEdit* m_pEdtPath;
     QScrollArea* m_pScrollArea;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

@@ -73,21 +73,16 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pIdxTree(i_pDrawingView->drawingScene()->getGraphObjsIdxTree()),
     m_strKeyInTree(),
     m_pLyt(nullptr),
-    m_pLytHeadLine(nullptr),
-    m_pEdtPath(nullptr),
     m_pScrollArea(nullptr)
 {
     setObjectName(i_pDrawingView->objectName());
-
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Widgets::GraphObjs", ClassName(), objectName());
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
-
     QObject::connect(
         m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
         this, &CWdgtStackGraphObjsProperties::onIdxTreeAboutToBeDestroyed);
@@ -95,25 +90,11 @@ CWdgtStackGraphObjsProperties::CWdgtStackGraphObjsProperties(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    // Headline
-    //---------
-
-    m_pLytHeadLine = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytHeadLine);
-
-    m_pEdtPath = new QLineEdit();
-    m_pEdtPath->setReadOnly(true);
-    m_pLytHeadLine->addWidget(m_pEdtPath, 1);
-
-    // Content of selected tree node
-    //------------------------------
-
     m_pScrollArea = new QScrollArea();
     m_pScrollArea->setWidgetResizable(true);
     m_pLyt->addWidget(m_pScrollArea, 1);
     m_pScrollArea->setWidget(createGraphObjPropertiesWidget(""));
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CWdgtStackGraphObjsProperties::~CWdgtStackGraphObjsProperties()
@@ -132,13 +113,9 @@ CWdgtStackGraphObjsProperties::~CWdgtStackGraphObjsProperties()
 
     m_pDrawingView = nullptr;
     m_pIdxTree = nullptr;
-    //m_strKeyInTree;
     m_pLyt = nullptr;
-    m_pLytHeadLine = nullptr;
-    m_pEdtPath = nullptr;
     m_pScrollArea = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -226,7 +203,6 @@ bool CWdgtStackGraphObjsProperties::setKeyInTree( const QString& i_strKeyInTree 
                         }
                     }
                 }
-                m_pEdtPath->setText(strEntryPath);
                 if (strGraphObjTypeCurr != strGraphObjTypePrev) {
                     delete m_pScrollArea->takeWidget();
                     m_pScrollArea->setWidget(createGraphObjPropertiesWidget(strGraphObjTypeCurr));
