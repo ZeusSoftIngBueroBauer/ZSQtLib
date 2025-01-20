@@ -2326,33 +2326,35 @@ void CGraphObjPolygon::paint(
     }
 
     if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
-        if (!polygon.isEmpty()) {
-            QRectF rctBounding = getBoundingRect();
-            pn.setColor(Qt::blue);
-            pn.setStyle(Qt::DotLine);
-            pn.setWidth(1);
-            i_pPainter->setPen(pn);
-            i_pPainter->setBrush(Qt::NoBrush);
-            i_pPainter->drawRect(rctBounding);
-            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
-             && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
-                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-                QPointF ptRctM = mapFromScene(ptRct);
-                QPointF ptRotM = mapFromScene(ptRot);
-                i_pPainter->drawLine(ptRctM, ptRotM);
-            }
-            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
-             && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
-                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-                QPointF ptRctM = mapFromScene(ptRct);
-                QPointF ptRotM = mapFromScene(ptRot);
-                i_pPainter->drawLine( ptRctM, ptRotM );
+        if (m_editMode == EEditMode::ModifyingBoundingRect) {
+            if (!polygon.isEmpty()) {
+                QRectF rctBounding = getBoundingRect();
+                pn.setColor(Qt::blue);
+                pn.setStyle(Qt::DotLine);
+                pn.setWidth(1);
+                i_pPainter->setPen(pn);
+                i_pPainter->setBrush(Qt::NoBrush);
+                i_pPainter->drawRect(rctBounding);
+                if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
+                 && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
+                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
+                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
+                    QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+                    QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
+                    QPointF ptRctM = mapFromScene(ptRct);
+                    QPointF ptRotM = mapFromScene(ptRot);
+                    i_pPainter->drawLine(ptRctM, ptRotM);
+                }
+                if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
+                 && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
+                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
+                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
+                    QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+                    QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
+                    QPointF ptRctM = mapFromScene(ptRct);
+                    QPointF ptRotM = mapFromScene(ptRot);
+                    i_pPainter->drawLine( ptRctM, ptRotM );
+                }
             }
         }
     }
@@ -2689,7 +2691,7 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     bool bCallBaseMouseEventHandler = true;
     if (i_pEv->button() == Qt::LeftButton) {
         if (m_editMode == EEditMode::None) {
-            if (i_pEv->modifiers() & Qt::NoModifier) {
+            if (i_pEv->modifiers() == Qt::NoModifier) {
                 setEditMode(EEditMode::ModifyingBoundingRect);
             }
             else if (i_pEv->modifiers() & Qt::ControlModifier) {
@@ -3064,22 +3066,16 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
         //QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
-            if (m_editMode == EEditMode::None) {
-                setEditMode(EEditMode::ModifyingBoundingRect);
-                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
-                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
-            }
-            else if (m_editMode == EEditMode::CreatingByMouseEvents) {
-                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
                 showSelectionPoints(c_uSelectionPointsPolygonPoints);
+                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
             }
             else if (m_editMode == EEditMode::ModifyingBoundingRect) {
                 hideSelectionPoints(c_uSelectionPointsPolygonPoints);
                 showSelectionPoints(c_uSelectionPointsBoundingRectAll);
             }
-            else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
-                showSelectionPoints(c_uSelectionPointsPolygonPoints);
+            else /*if (m_editMode == EEditMode::None)*/ {
+                hideSelectionPoints();
             }
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.

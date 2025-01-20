@@ -4250,13 +4250,13 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
             if (!pGraphicsItemThis->isSelected()) {
                 pGraphicsItemThis->setSelected(true);
             }
+            else if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
+                showSelectionPoints(c_uSelectionPointsPolygonPoints);
+                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
             else if (m_editMode == EEditMode::ModifyingBoundingRect) {
                 hideSelectionPoints(c_uSelectionPointsPolygonPoints);
                 showSelectionPoints(c_uSelectionPointsBoundingRectAll);
-            }
-            else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
-                showSelectionPoints(c_uSelectionPointsPolygonPoints);
             }
         }
         emit_editModeChanged(m_editMode, modePrev);

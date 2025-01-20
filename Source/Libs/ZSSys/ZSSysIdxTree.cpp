@@ -278,12 +278,16 @@ CIdxTree::CIdxTree(
     const QString& i_strObjName,
     CIdxTreeEntry* i_pRootTreeEntry,
     const QString& i_strNodeSeparator,
-    bool           i_bCreateMutex,
-    QObject*       i_pObjParent,
+    bool i_bCreateMutex,
+    QObject* i_pObjParent,
+    const QString& i_strNameSpaceOfDerivedClass,
+    const QString& i_strNameOfDerivedClass,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eTrcDetailLevelMutex ) :
 //------------------------------------------------------------------------------
     QObject(i_pObjParent),
+    m_strNameSpaceOfDerivedClass(i_strNameSpaceOfDerivedClass),
+    m_strNameOfDerivedClass(i_strNameOfDerivedClass),
     m_strNodeSeparator(i_strNodeSeparator),
     m_pMtx(nullptr),
     m_mappTreeEntries(),
@@ -300,60 +304,48 @@ CIdxTree::CIdxTree(
     // If the tree's parent is the trace server or the trace client the
     // detail level of trace outputs may not be controlled by trace admin
     // objects as they belong to the index tree of the trace server or client.
-    if( dynamic_cast<CTrcServer*>(i_pObjParent) == nullptr )
-    {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-
-        if( m_pTrcAdminObj != nullptr )
-        {
+    if (dynamic_cast<CTrcServer*>(i_pObjParent) == nullptr) {
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
+        if (m_pTrcAdminObj != nullptr) {
             m_eTrcMthFileDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
-
             QObject::connect(
                 m_pTrcAdminObj, &CTrcAdminObj::changed,
                 this, &CIdxTree::onTrcAdminObjChanged,
                 Qt::DirectConnection );
         }
     }
-    else
-    {
+    else {
         QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
         m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
     }
 
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs  = i_strObjName;
         strMthInArgs += ", RootTreeEntry: " + QString(i_pRootTreeEntry == nullptr ? "nullptr" : i_pRootTreeEntry->name());
         strMthInArgs += ", NodeSeparator: " + i_strNodeSeparator;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( i_bCreateMutex )
-    {
+    if (i_bCreateMutex) {
         m_pMtx = new CRecursiveMutex("CIdxTree-" + i_strObjName, i_eTrcDetailLevelMutex);
     }
-
-    if( m_pRoot == nullptr )
-    {
+    if (m_pRoot == nullptr) {
         m_pRoot = new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Root, i_strObjName);
     }
 
     // The root entry will neither be added to the list nor to the map of tree entries.
     m_pRoot->setTree(this);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! Destroys the instance.
@@ -368,14 +360,13 @@ CIdxTree::~CIdxTree()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
 
-    if( m_pMtx != nullptr )
-    {
+    if (m_pMtx != nullptr) {
         m_pMtx->lock();
     }
 
@@ -388,37 +379,30 @@ CIdxTree::~CIdxTree()
     // itself from the index tree by invoking the remove method.
     m_pRoot->setTree(nullptr);
 
-    try
-    {
+    try {
         delete m_pRoot;
     }
-    catch(...)
-    {
+    catch(...) {
     }
 
-    if( m_pMtx != nullptr )
-    {
+    if (m_pMtx != nullptr) {
         m_pMtx->unlock();
     }
 
-    try
-    {
+    try {
         delete m_pMtx;
     }
-    catch(...)
-    {
+    catch(...) {
     }
 
-    if( m_pTrcMthFile != nullptr )
-    {
+    if (m_pTrcMthFile != nullptr) {
         m_pTrcMthFile->close();
         CTrcMthFile::Free(m_pTrcMthFile);
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     }
 
@@ -432,8 +416,37 @@ CIdxTree::~CIdxTree()
     m_eTrcMthFileDetailLevel = static_cast<EMethodTraceDetailLevel>(0);
     m_pTrcMthFile = nullptr;
     m_pTrcAdminObj = nullptr;
+}
 
-} // dtor
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns either the name space of the base class or, if provided by
+           the constructor, the name space of the derived class.
+*/
+QString CIdxTree::nameSpace() const
+//------------------------------------------------------------------------------
+{
+    if (m_strNameSpaceOfDerivedClass.isEmpty()) {
+        return NameSpace();
+    }
+    return m_strNameSpaceOfDerivedClass;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns either the name of the base class or, if provided by
+           the constructor, the name of the derived class.
+*/
+QString CIdxTree::className() const
+//------------------------------------------------------------------------------
+{
+    if (m_strNameOfDerivedClass.isEmpty()) {
+        return ClassName();
+    }
+    return m_strNameOfDerivedClass;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -446,26 +459,19 @@ public: // instance methods
 void CIdxTree::clear()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "clear",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
 
     clear(m_pRoot);
-
-} // clear
+}
 
 /*==============================================================================
 public: // instance methods
@@ -483,29 +489,21 @@ public: // instance methods
 void CIdxTree::lock()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "lock",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
 
-    if( m_pMtx != nullptr )
-    {
+    if (m_pMtx != nullptr) {
         m_pMtx->lock();
     }
-
-} // lock
+}
 
 //------------------------------------------------------------------------------
 /*! Removes a previous lock of the tree.
@@ -513,29 +511,21 @@ void CIdxTree::lock()
 void CIdxTree::unlock()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "unlock",
-        /* strMethodInArgs    */ strMthInArgs );
+        /* strMethodInArgs    */ "" );
 
-    if( m_pMtx != nullptr )
-    {
+    if (m_pMtx != nullptr) {
         m_pMtx->unlock();
     }
-
-} // unlock
+}
 
 /*==============================================================================
 public: // instance methods
@@ -552,8 +542,7 @@ public: // instance methods
     @param i_str1 [in] String 1.
     @param i_str3 [in] String 2.
 */
-QString CIdxTree::buildPathStr(
-    const QString& i_str1, const QString& i_str2 ) const
+QString CIdxTree::buildPathStr(const QString& i_str1, const QString& i_str2) const
 //------------------------------------------------------------------------------
 {
     return ZS::System::buildPathStr(m_strNodeSeparator, i_str1, i_str2);
@@ -754,48 +743,36 @@ QString CIdxTree::splitPathStr(
 //------------------------------------------------------------------------------
 {
     QStringList strlst;
-    QString     strPath = i_strPath;
-    QString     strEntryType;
-    QString     strName;
-    QString     strBranchPath;
+    QString strPath = i_strPath;
+    QString strEntryType;
+    QString strName;
+    QString strBranchPath;
 
-    for( int iEntryType = 0; iEntryType < static_cast<int>(CIdxTreeEntry::EEntryType::Count); ++iEntryType )
-    {
+    for (int iEntryType = 0; iEntryType < static_cast<int>(CIdxTreeEntry::EEntryType::Count); ++iEntryType) {
         CIdxTreeEntry::EEntryType entryType = static_cast<CIdxTreeEntry::EEntryType>(iEntryType);
         strEntryType = CIdxTreeEntry::entryType2Str(entryType, EEnumEntryAliasStrSymbol);
-
-        if( strPath.startsWith(strEntryType+":",Qt::CaseInsensitive) )
-        {
+        if (strPath.startsWith(strEntryType + ":", Qt::CaseInsensitive)) {
             strPath.remove(0, 2);
             break;
         }
         strEntryType = "";
     }
-
     strlst = strPath.split(m_strNodeSeparator);
-
-    if( strlst.size() >= 1 )
-    {
+    if (strlst.size() >= 1) {
         strName = strlst.last();
         strlst.removeLast();
     }
-    if( strlst.size() >= 1 ) // still >= 1? The last one has been removed above.
-    {
+    if (strlst.size() >= 1) { // still >= 1? The last one has been removed above.
         strBranchPath = strlst.join(m_strNodeSeparator);
     }
-
-    if( o_pstrName != nullptr )
-    {
+    if (o_pstrName != nullptr) {
         *o_pstrName = strName;
     }
-    if( o_pstrBranchPath != nullptr )
-    {
+    if (o_pstrBranchPath != nullptr) {
         *o_pstrBranchPath = strBranchPath;
     }
-
     return strEntryType;
-
-} // splitPathStr
+}
 
 /*==============================================================================
 public: // overridables (createBranch and createLeave must be overridden to create entries using a generic tree view)
@@ -815,35 +792,27 @@ CIdxTreeEntry* CIdxTree::createBranch( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "createBranch",
         /* strMethodInArgs    */ strMthInArgs );
 
     CMutexLocker mtxLocker(m_pMtx);
-
     CIdxTreeEntry* pBranch = new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Branch, i_strName);
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         mthTracer.setMethodReturn(pBranch == nullptr ? "null" : pBranch->name());
     }
-
     return pBranch;
-
-} // createBranch
+}
 
 //------------------------------------------------------------------------------
 /*! Generic method to create a leave entry with the given name.
@@ -859,35 +828,27 @@ CIdxTreeEntry* CIdxTree::createLeave( const QString& i_strName ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "createLeave",
         /* strMethodInArgs    */ strMthInArgs );
 
     CMutexLocker mtxLocker(m_pMtx);
-
     CIdxTreeEntry* pLeave = new CIdxTreeEntry(CIdxTreeEntry::EEntryType::Leave, i_strName);
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         mthTracer.setMethodReturn(pLeave == nullptr ? "null" : pLeave->name());
     }
-
     return pLeave;
-
-} // createLeave
+}
 
 /*==============================================================================
 public: // instance methods
@@ -905,14 +866,15 @@ int CIdxTree::treeEntriesVectorSize() const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "treeEntriesVectorSize",
         /* strMethodInArgs    */ "" );
@@ -936,31 +898,27 @@ CIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "getEntry",
         /* strMethodInArgs    */ "" );
 
     CIdxTreeEntry* pTreeEntry = nullptr;
-
     CMutexLocker mtxLocker(m_pMtx);
-
-    if( i_idxObj >= 0 && i_idxObj < m_arpTreeEntries.size() )
-    {
+    if (i_idxObj >= 0 && i_idxObj < m_arpTreeEntries.size()) {
         // The entry may be nullptr.
         pTreeEntry = m_arpTreeEntries[i_idxObj];
     }
-
     return pTreeEntry;
-
-} // getEntry
+}
 
 /*==============================================================================
 public: // instance methods
@@ -978,14 +936,15 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findBranch",
         /* strMethodInArgs    */ "" );
@@ -995,64 +954,52 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
     QString strPath;
     QString strKeyInTree;
 
-    if( i_strPath.startsWith(strEntryType + ":") )
-    {
+    if (i_strPath.startsWith(strEntryType + ":")) {
         strKeyInTree = i_strPath;
         strPath = strKeyInTree.mid(strEntryType.length() + 1);
     }
-    else
-    {
+    else {
         strKeyInTree = strEntryType + ":" + i_strPath;
         strPath = i_strPath;
     }
 
     CMutexLocker mtxLocker(m_pMtx);
-
     CIdxTreeEntry* pTreeEntry = nullptr;
-
-    if( m_mappShortcutTreeEntries.contains(strPath) )
-    {
+    if (m_mappShortcutTreeEntries.contains(strPath)) {
         pTreeEntry = m_mappShortcutTreeEntries.value(strPath, nullptr);
     }
-    else
-    {
+    else {
         pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
     }
 
     // Still not found? Maybe shortcuts have been added to starting
     // sections of the given path.
-    if( pTreeEntry == nullptr && !m_mappShortcutTreeEntries.isEmpty() )
-    {
+    if (pTreeEntry == nullptr && !m_mappShortcutTreeEntries.isEmpty()) {
         QStringList strlstPathSections = strPath.split(m_strNodeSeparator);
         QString strPathTmp;
         QString strPathRemaining;
-        for( const QString& strSection : strlstPathSections )
-        {
-            if( strPathTmp.isEmpty() ) {
+        for (const QString& strSection : strlstPathSections) {
+            if (strPathTmp.isEmpty()) {
                 strPathTmp = strSection;
             } else {
                 strPathTmp += m_strNodeSeparator + strSection;
             }
-            if( pTreeEntry == nullptr ) {
+            if (pTreeEntry == nullptr) {
                 pTreeEntry = m_mappShortcutTreeEntries.value(strPathTmp, nullptr);
             } else {
                 strPathRemaining += m_strNodeSeparator + strSection;
             }
         }
-        if( pTreeEntry != nullptr )
-        {
+        if (pTreeEntry != nullptr) {
             strKeyInTree = strEntryType + ":" + pTreeEntry->path() + strPathRemaining;
             pTreeEntry = m_mappTreeEntries.value(strKeyInTree, nullptr);
         }
     }
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
     }
-
     return pTreeEntry;
-
-} // findBranch
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the branch entry with the given path and name.
@@ -1067,14 +1014,15 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findBranch",
         /* strMethodInArgs    */ "" );
@@ -1166,8 +1114,8 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findLeave",
         /* strMethodInArgs    */ "" );
@@ -1249,14 +1197,15 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findLeave",
         /* strMethodInArgs    */ "" );
@@ -1342,14 +1291,15 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findEntry",
         /* strMethodInArgs    */ "" );
@@ -1418,27 +1368,24 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetPath: " + i_strTargetPath;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canAdd",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "add";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -1461,7 +1408,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, const QString& i_s
         errResultInfo = canAdd(i_pTreeEntry, pTargetBranch);
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -1495,27 +1442,24 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canAdd",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "add";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -1573,7 +1517,7 @@ SErrResultInfo CIdxTree::canAdd( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_p
         }
     } // if( idxInTargetBranch < 0 )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -1617,20 +1561,17 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetPath: " + i_strTargetPath;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "add",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1673,7 +1614,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, const QString& i_strTargetPath )
 
     int idxInTree = add(i_pTreeEntry, pTargetBranch);
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -1710,20 +1651,17 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "add",
         /* strMethodInArgs    */ strMthInArgs );
@@ -1800,7 +1738,7 @@ int CIdxTree::add( CIdxTreeEntry* i_pTreeEntry, CIdxTreeEntry* i_pTargetBranch )
 
     } // if( idxInTargetBranch >= 0 )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -1845,34 +1783,31 @@ public: // instance methods
 SErrResultInfo CIdxTree::canInsert(
     CIdxTreeEntry* i_pTreeEntry,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree ) const
+    int i_idxInTargetBranch,
+    int i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canInsert",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "insert";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -1903,7 +1838,7 @@ SErrResultInfo CIdxTree::canInsert(
         errResultInfo = canInsert(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -1947,34 +1882,31 @@ SErrResultInfo CIdxTree::canInsert(
 SErrResultInfo CIdxTree::canInsert(
     CIdxTreeEntry* i_pTreeEntry,
     CIdxTreeEntry* i_pTargetBranch,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree ) const
+    int i_idxInTargetBranch,
+    int i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree()) +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canInsert",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "insert";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -2056,7 +1988,7 @@ SErrResultInfo CIdxTree::canInsert(
         }
     } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -2106,27 +2038,24 @@ public: // instance methods
 int CIdxTree::insert(
     CIdxTreeEntry* i_pTreeEntry,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree )
+    int i_idxInTargetBranch,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "insert",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2168,7 +2097,7 @@ int CIdxTree::insert(
 
     int idxInTree = insert(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -2212,27 +2141,24 @@ int CIdxTree::insert(
 int CIdxTree::insert(
     CIdxTreeEntry* i_pTreeEntry,
     CIdxTreeEntry* i_pTargetBranch,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree )
+    int i_idxInTargetBranch,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree()) +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "insert",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2357,7 +2283,7 @@ int CIdxTree::insert(
 
     } // if( idxInTargetBranch >= 0 )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -2387,19 +2313,16 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canRemove",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2411,7 +2334,7 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
 
     QString strMth = "remove";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -2430,7 +2353,7 @@ SErrResultInfo CIdxTree::canRemove( CIdxTreeEntry* i_pTreeEntry ) const
         errResultInfo.setAddErrInfoDscr(strKeyInTree);
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -2459,26 +2382,23 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strKeyInTree;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canRemove",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "remove";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -2496,7 +2416,7 @@ SErrResultInfo CIdxTree::canRemove( const QString& i_strKeyInTree ) const
         errResultInfo = canRemove(pTreeEntry);
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -2552,19 +2472,16 @@ void CIdxTree::remove( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "remove",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2698,19 +2615,16 @@ void CIdxTree::remove( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strKeyInTree;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "remove",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2759,25 +2673,22 @@ public: // instance methods
 SErrResultInfo CIdxTree::canMove(
     const QString& i_strSourcePath,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch ) const
+    int i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "SourcePath: " + i_strSourcePath;
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "SourcePath: " + i_strSourcePath +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canMove",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2786,7 +2697,7 @@ SErrResultInfo CIdxTree::canMove(
 
     QString strMth = "move";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -2834,7 +2745,7 @@ SErrResultInfo CIdxTree::canMove(
         } // if( pTargetBranch != nullptr )
     } // if( pTreeEntry != nullptr )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -2873,25 +2784,22 @@ SErrResultInfo CIdxTree::canMove(
 SErrResultInfo CIdxTree::canMove(
     CIdxTreeEntry* i_pTreeEntry,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch ) const
+    int i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canMove",
         /* strMethodInArgs    */ strMthInArgs );
@@ -2900,7 +2808,7 @@ SErrResultInfo CIdxTree::canMove(
 
     QString strMth = "move";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -2945,7 +2853,7 @@ SErrResultInfo CIdxTree::canMove(
         } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
     } // if( pTargetBranch != nullptr )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -2983,32 +2891,29 @@ SErrResultInfo CIdxTree::canMove(
 SErrResultInfo CIdxTree::canMove(
     CIdxTreeEntry* i_pTreeEntry,
     CIdxTreeEntry* i_pTargetBranch,
-    int            i_idxInTargetBranch ) const
+    int i_idxInTargetBranch ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree()) +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canMove",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "move";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -3053,7 +2958,7 @@ SErrResultInfo CIdxTree::canMove(
         }
     } // if( i_idxInTargetBranch < 0 || i_idxInTargetBranch <= pTargetBranch->count() )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -3098,25 +3003,22 @@ public: // instance methods
 void CIdxTree::move(
     const QString& i_strSourcePath,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch )
+    int i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "SourcePath: " + i_strSourcePath;
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "SourcePath: " + i_strSourcePath +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3170,25 +3072,22 @@ void CIdxTree::move(
 void CIdxTree::move(
     CIdxTreeEntry* i_pTreeEntry,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch )
+    int i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "Branch: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "Branch: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3235,25 +3134,22 @@ void CIdxTree::move(
 void CIdxTree::move(
     CIdxTreeEntry* i_pTreeEntry,
     CIdxTreeEntry* i_pTargetBranch,
-    int            i_idxInTargetBranch )
+    int i_idxInTargetBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree()) +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "move",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3337,27 +3233,24 @@ public: // instance methods
 SErrResultInfo CIdxTree::canCopy(
     const QString& i_strSourcePath,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree ) const
+    int i_idxInTargetBranch,
+    int i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "SourcePath: " + i_strSourcePath;
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "SourcePath: " + i_strSourcePath +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canCopy",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3366,7 +3259,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     QString strMth = "copy";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -3426,7 +3319,7 @@ SErrResultInfo CIdxTree::canCopy(
         } // if( pTargetBranch != nullptr )
     } // if( pTreeEntry != nullptr )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -3471,27 +3364,24 @@ SErrResultInfo CIdxTree::canCopy(
 SErrResultInfo CIdxTree::canCopy(
     CIdxTreeEntry* i_pTreeEntry,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree ) const
+    int i_idxInTargetBranch,
+    int i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canCopy",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3500,7 +3390,7 @@ SErrResultInfo CIdxTree::canCopy(
 
     QString strMth = "copy";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -3557,7 +3447,7 @@ SErrResultInfo CIdxTree::canCopy(
         } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
     } // if( pTargetBranch != nullptr )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -3602,34 +3492,31 @@ SErrResultInfo CIdxTree::canCopy(
 SErrResultInfo CIdxTree::canCopy(
     CIdxTreeEntry* i_pTreeEntry,
     CIdxTreeEntry* i_pTargetBranch,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree ) const
+    int i_idxInTargetBranch,
+    int i_idxInTree ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree()) +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canCopy",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "copy";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_pTreeEntry == nullptr )
     {
@@ -3686,7 +3573,7 @@ SErrResultInfo CIdxTree::canCopy(
         }
     } // if( !errResultInfo.isErrorResult() && i_idxInTree >= 0 )
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -3729,27 +3616,24 @@ public: // instance methods
 int CIdxTree::copy(
     const QString& i_strSourcePath,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree )
+    int i_idxInTargetBranch,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "SourcePath: " + i_strSourcePath;
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "SourcePath: " + i_strSourcePath +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3772,7 +3656,7 @@ int CIdxTree::copy(
 
     int idxInTree = copy(pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -3806,27 +3690,24 @@ int CIdxTree::copy(
 int CIdxTree::copy(
     CIdxTreeEntry* i_pTreeEntry,
     const QString& i_strTargetPath,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree )
+    int i_idxInTargetBranch,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetPath: " + i_strTargetPath;
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetPath: " + i_strTargetPath +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3842,7 +3723,7 @@ int CIdxTree::copy(
 
     int idxInTree = copy(i_pTreeEntry, pTargetBranch, i_idxInTargetBranch, i_idxInTree);
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -3882,27 +3763,24 @@ int CIdxTree::copy(
 int CIdxTree::copy(
     CIdxTreeEntry* i_pTreeEntry,
     CIdxTreeEntry* i_pTargetBranch,
-    int            i_idxInTargetBranch,
-    int            i_idxInTree )
+    int i_idxInTargetBranch,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree());
-        strMthInArgs += ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch);
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", TargetBranch: " + QString(i_pTargetBranch == nullptr ? "nullptr" : i_pTargetBranch->keyInTree()) +
+            ", IdxInTargetBranch: " + QString::number(i_idxInTargetBranch) +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "copy",
         /* strMethodInArgs    */ strMthInArgs );
@@ -3966,7 +3844,7 @@ int CIdxTree::copy(
         }
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         mthTracer.setMethodReturn(QString::number(idxInTree));
     }
@@ -4002,20 +3880,16 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "SourcePath: " + i_strSourcePath;
-        strMthInArgs += ", NameNew: " + i_strNameNew;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "SourcePath: " + i_strSourcePath + ", NameNew: " + i_strNameNew;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canRename",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4024,7 +3898,7 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
 
     QString strMth = "rename";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
 
@@ -4039,7 +3913,7 @@ SErrResultInfo CIdxTree::canRename( const QString& i_strSourcePath, const QStrin
         errResultInfo = canRename(pTreeEntry, i_strNameNew);
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -4071,20 +3945,17 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", NameNew: " + i_strNameNew;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", NameNew: " + i_strNameNew;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canRename",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4098,7 +3969,7 @@ SErrResultInfo CIdxTree::canRename( CIdxTreeEntry* i_pTreeEntry, const QString& 
 
     QString strMth = "rename";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
 
@@ -4153,36 +4024,28 @@ void CIdxTree::rename( const QString& i_strSourcePath, const QString& i_strNameN
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs  = "SourcePath: " + i_strSourcePath;
         strMthInArgs += ", NameNew: " + i_strNameNew;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "rename",
         /* strMethodInArgs    */ strMthInArgs );
 
     CMutexLocker mtxLocker(m_pMtx);
-
     CIdxTreeEntry* pTreeEntry = findEntry(i_strSourcePath);
-
-    if( pTreeEntry == nullptr )
-    {
+    if (pTreeEntry == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strSourcePath);
     }
-
     return rename(pTreeEntry, i_strNameNew);
-
-} // rename
+}
 
 //------------------------------------------------------------------------------
 /*! Renames the given tree entry to the given new name.
@@ -4210,45 +4073,36 @@ void CIdxTree::rename( CIdxTreeEntry* i_pTreeEntry, const QString& i_strNameNew 
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
-        strMthInArgs += ", NameNew: " + i_strNameNew;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree()) +
+            ", NameNew: " + i_strNameNew;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "rename",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( i_pTreeEntry == nullptr )
-    {
+    if (i_pTreeEntry == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
 
     CMutexLocker mtxLocker(m_pMtx);
-
     QString strKeyInTreePrev = i_pTreeEntry->keyInTree();
     QString strNamePrev = i_pTreeEntry->name();
 
     emit_treeEntryAboutToBeRenamed(strKeyInTreePrev, i_strNameNew);
 
     CIdxTreeEntry* pParentBranch = i_pTreeEntry->parentBranch();
-
     pParentBranch->renameChild(i_pTreeEntry, i_strNameNew);
-
     updateKeyInTree(i_pTreeEntry);
-
     emit_treeEntryRenamed(i_pTreeEntry->keyInTree(), strKeyInTreePrev, strNamePrev);
-
-} // rename
+}
 
 /*==============================================================================
 public: // instance methods
@@ -4270,26 +4124,23 @@ SErrResultInfo CIdxTree::canAddShortcut( const QString& i_strUniqueName ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strUniqueName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "canAddShortcut",
         /* strMethodInArgs    */ strMthInArgs );
 
     QString strMth = "addShortcut";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     CMutexLocker mtxLocker(m_pMtx);
 
@@ -4310,7 +4161,7 @@ SErrResultInfo CIdxTree::canAddShortcut( const QString& i_strUniqueName ) const
         }
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -4338,20 +4189,17 @@ void CIdxTree::addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUni
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name());
-        strMthInArgs += ", UniqueName: " + i_strUniqueName;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs  = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->name()) +
+            ", UniqueName: " + i_strUniqueName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "addShortcut",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4360,7 +4208,7 @@ void CIdxTree::addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUni
 
     QString strMth = "addShortcut";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_strUniqueName.isEmpty() )
     {
@@ -4384,7 +4232,7 @@ void CIdxTree::addShortcut( CIdxTreeEntry* i_pTreeEntry, const QString& i_strUni
         }
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -4415,19 +4263,16 @@ SErrResultInfo CIdxTree::removeShortcut( const QString& i_strUniqueName )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strUniqueName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "removeShortcut",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4436,7 +4281,7 @@ SErrResultInfo CIdxTree::removeShortcut( const QString& i_strUniqueName )
 
     QString strMth = "removeShortcut";
 
-    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
+    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
 
     if( i_strUniqueName.isEmpty() )
     {
@@ -4461,7 +4306,7 @@ SErrResultInfo CIdxTree::removeShortcut( const QString& i_strUniqueName )
         }
     }
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal)
     {
         int iErrResultInfoDetailLevel = 0;
         if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsVerbose ) iErrResultInfoDetailLevel = 2;
@@ -4488,19 +4333,16 @@ void CIdxTree::updateKeyInTree( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "updateKeyInTree",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4575,19 +4417,16 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "clear",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4629,34 +4468,30 @@ CIdxTree::iterator CIdxTree::begin( iterator::ETraversalOrder i_traversalOrder )
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "begin",
         /* strMethodInArgs    */ "" );
 
     CMutexLocker mtxLocker(m_pMtx);
-
     CIdxTree::iterator itIdxTree(this, i_traversalOrder);
-    if( i_traversalOrder == iterator::ETraversalOrder::Index )
-    {
-        for( int idxInTree = 0; idxInTree < m_arpTreeEntries.size(); ++idxInTree )
-        {
+    if (i_traversalOrder == iterator::ETraversalOrder::Index) {
+        for (int idxInTree = 0; idxInTree < m_arpTreeEntries.size(); ++idxInTree) {
             itIdxTree.m_pTreeEntryCurr = m_arpTreeEntries[idxInTree];
-            if( itIdxTree.m_pTreeEntryCurr != nullptr )
-            {
+            if (itIdxTree.m_pTreeEntryCurr != nullptr) {
                 break;
             }
         }
     }
-    else if( i_traversalOrder == iterator::ETraversalOrder::PreOrder )
-    {
+    else if (i_traversalOrder == iterator::ETraversalOrder::PreOrder) {
         itIdxTree.m_pTreeEntryCurr = m_pRoot;
     }
     return itIdxTree;
@@ -4671,14 +4506,15 @@ CIdxTree::iterator CIdxTree::end()
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "end",
         /* strMethodInArgs    */ "" );
@@ -4707,19 +4543,16 @@ void CIdxTree::onTreeEntryChanged( CIdxTreeEntry* i_pTreeEntry )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = "TreeEntry: " + QString(i_pTreeEntry == nullptr ? "nullptr" : i_pTreeEntry->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTreeEntryChanged",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4741,19 +4574,16 @@ void CIdxTree::emit_treeEntryAdded( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strKeyInTree;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryAdded",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4771,19 +4601,16 @@ void CIdxTree::emit_treeEntryChanged( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
         strMthInArgs = i_strKeyInTree;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryChanged",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4799,25 +4626,20 @@ void CIdxTree::emit_treeEntryChanged( const QString& i_strKeyInTree )
     @param i_idxInTree [in] Index of the entry which will be removed from the tree.
 */
 void CIdxTree::emit_treeEntryAboutToBeRemoved(
-    const QString& i_strKeyInTree,
-    int i_idxInTree )
+    const QString& i_strKeyInTree, int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "Key: " + i_strKeyInTree;
-        strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "Key: " + i_strKeyInTree + ", Idx: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryAboutToBeRemoved",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4836,20 +4658,16 @@ void CIdxTree::emit_treeEntryRemoved( const QString& i_strKeyInTree, int i_idxIn
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "Key: " + i_strKeyInTree;
-        strMthInArgs += ", Idx: " + QString::number(i_idxInTree);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "Key: " + i_strKeyInTree + ", Idx: " + QString::number(i_idxInTree);
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryRemoved",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4870,20 +4688,17 @@ void CIdxTree::emit_treeEntryAboutToBeMoved(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "OrigKey: " + i_strOrigKeyInTree;
-        strMthInArgs += ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "OrigKey: " + i_strOrigKeyInTree +
+            ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryAboutToBeMoved",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4907,21 +4722,18 @@ void CIdxTree::emit_treeEntryMoved(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "NewKey: " + i_strNewKeyInTree;
-        strMthInArgs += ", OrigKey: " + i_strOrigKeyInTree;
-        strMthInArgs += ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
+            ", OrigKey: " + i_strOrigKeyInTree +
+            ", TargetBranch: " + i_strKeyInTreeOfTargetBranch;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryMoved",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4942,20 +4754,16 @@ void CIdxTree::emit_treeEntryAboutToBeRenamed(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "OrigKey: " + i_strOrigKeyInTree;
-        strMthInArgs += ", NameNew: " + i_strNameNew;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "OrigKey: " + i_strOrigKeyInTree + ", NameNew: " + i_strNameNew;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryAboutToBeRenamed",
         /* strMethodInArgs    */ strMthInArgs );
@@ -4978,21 +4786,18 @@ void CIdxTree::emit_treeEntryRenamed(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "NewKey: " + i_strNewKeyInTree;
-        strMthInArgs += ", OrigKeyInTree: " + i_strOrigKeyInTree;
-        strMthInArgs += ", OrigName: " + i_strOrigName;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
+            ", OrigKeyInTree: " + i_strOrigKeyInTree +
+            ", OrigName: " + i_strOrigName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryRenamed",
         /* strMethodInArgs    */ strMthInArgs );
@@ -5014,20 +4819,17 @@ void CIdxTree::emit_treeEntryKeyInTreeChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = "NewKey: " + i_strNewKeyInTree;
-        strMthInArgs += ", OrigKeyInTree: " + i_strOrigKeyInTree;
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "NewKey: " + i_strNewKeyInTree +
+            ", OrigKeyInTree: " + i_strOrigKeyInTree;
     }
-
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
+        /* strNameSpace       */ nameSpace(),
+        /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "emit_treeEntryKeyInTreeChanged",
         /* strMethodInArgs    */ strMthInArgs );
@@ -5057,9 +4859,7 @@ void CIdxTree::onTrcAdminObjChanged( QObject* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTrcAdminObj);
-
-    if( pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj )
-    {
+    if (pTrcAdminObj != nullptr && m_pTrcAdminObj == pTrcAdminObj) {
         m_eTrcMthFileDetailLevel = pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
 }

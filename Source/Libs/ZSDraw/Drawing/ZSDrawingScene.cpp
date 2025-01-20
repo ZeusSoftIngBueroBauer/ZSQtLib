@@ -2396,6 +2396,13 @@ CGraphObjGroup* CDrawingScene::groupGraphObjsSelected()
         pGraphObjGroup = groupGraphObjs(arpGraphicsItemsSelected);
         pGraphObjGroup->setSelected(true);
     }
+
+    if (m_pGraphicsItemSelectionArea != nullptr) {
+        QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+        delete m_pGraphicsItemSelectionArea;
+        m_pGraphicsItemSelectionArea = nullptr;
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path()));
     }
@@ -3549,6 +3556,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
+    if (m_pGraphicsItemSelectionArea != nullptr) {
+        QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+        delete m_pGraphicsItemSelectionArea;
+        m_pGraphicsItemSelectionArea = nullptr;
+    }
+
     if (m_mode == EMode::Edit) {
         // If currently an object is "under construction" ...
         //if (m_pGraphObjUnderConstruction != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
@@ -3781,9 +3794,6 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // If no object is "under construction" ...
         else /*if (m_pGraphObjUnderConstruction == nullptr)*/ {
             if (m_pGraphicsItemSelectionArea != nullptr) {
-                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
-                delete m_pGraphicsItemSelectionArea;
-                m_pGraphicsItemSelectionArea = nullptr;
                 QRectF rctSelectionArea(
                     /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
                     /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
@@ -3798,6 +3808,46 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
                 setSelectionArea(path, Qt::ReplaceSelection, Qt::ContainsItemShape);
                 #endif
                 bEventHandled = true;
+
+                QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
+                if (arpGraphicsItemsSelected.size() > 1) {
+                    // Selection points, labels and connection lines will not become part of a group
+                    // will be removed from the list of selected items.
+                    // In addition items which already belong as childs to a group got to be removed
+                    // from the list of selected items as those childs will be added to the new group
+                    // as childs of the item.
+                    QList<QGraphicsItem*> arpGraphicsItemsToBeRemoved;
+                    for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
+                        CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+                        if (pGraphObjSelected->isConnectionLine() || pGraphObjSelected->isSelectionPoint() || pGraphObjSelected->isLabel()) {
+                            arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
+                        }
+                        else if (pGraphicsItemSelected->parentItem() != nullptr) {
+                            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected->parentItem());
+                            if (pGraphObjGroup != nullptr) {
+                                arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
+                            }
+                        }
+                    }
+                    for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsToBeRemoved) {
+                        arpGraphicsItemsSelected.removeOne(pGraphicsItemSelected);
+                    }
+                }
+                if (arpGraphicsItemsSelected.size() > 1) {
+                    QRectF rctBounding;
+                    for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
+                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+                        if (pGraphObj != nullptr) {
+                            rctBounding |= pGraphicsItemSelected->mapToScene(pGraphObj->getBoundingRect()).boundingRect();
+                        }
+                    }
+                    m_pGraphicsItemSelectionArea->setRect(rctBounding);
+                }
+                else {
+                    QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+                    delete m_pGraphicsItemSelectionArea;
+                    m_pGraphicsItemSelectionArea = nullptr;
+                }
             }
         }
     }
@@ -5600,12 +5650,10 @@ void CDrawingScene::traceInternalStates(
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
         strRuntimeInfo += "Mode: " + m_mode.toString() +
-            //", EditTool: " + m_editTool.toString() +
-            //", EditMode: " + m_editMode.toString() +
-            //", ResizeMode: " + m_editResizeMode.toString() +
             ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
             ", UnderConstruction: " + QString(m_pGraphObjUnderConstruction == nullptr ? "nullptr" : m_pGraphObjUnderConstruction->path()) +
-            ", HitTol: " + QString::number(m_fHitTolerance_px) + " px";
+            ", HitTol: " + QString::number(m_fHitTolerance_px) + " px" +
+            ", SelectArea {" + QString(m_pGraphicsItemSelectionArea == nullptr ? "null" : qRect2Str(m_pGraphicsItemSelectionArea->rect())) + "}";
         QGraphicsItem* pGraphicsItemMouseGrabber = mouseGrabberItem();
         CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
         if (pGraphObjMouseGrabber == nullptr) {

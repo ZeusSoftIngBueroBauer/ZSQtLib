@@ -67,20 +67,20 @@ public: // instance methods
     QLineEdit* nameColumnEditor();
 public: // overridables of base class QStyledItemDelegate
     QWidget* createEditor(
-        QWidget*                    i_pWdgtParent,
+        QWidget* i_pWdgtParent,
         const QStyleOptionViewItem& i_option,
-        const QModelIndex&          i_modelIdx ) const override;
+        const QModelIndex& i_modelIdx ) const override;
     void setEditorData(
-        QWidget*           i_pWdgtEditor,
+        QWidget* i_pWdgtEditor,
         const QModelIndex& i_modelIdx ) const override;
     void setModelData(
-        QWidget*            i_pWdgtEditor,
+        QWidget* i_pWdgtEditor,
         QAbstractItemModel* i_pModel,
         const QModelIndex&  i_modelIdx ) const override;
     void updateEditorGeometry(
-        QWidget*                    i_pWdgtEditor,
+        QWidget* i_pWdgtEditor,
         const QStyleOptionViewItem& i_option,
-        const QModelIndex&          i_modelIdx ) const override;
+        const QModelIndex& i_modelIdx ) const override;
 protected slots:
     void onEdtNameDestroyed( QObject* i_pWdgtEditor );
 private: // copy ctor not implemented
@@ -89,7 +89,7 @@ private: // assignment operator not implemented
     CDelegateGraphObjsTreeView& operator = ( const CDelegateGraphObjsTreeView& );
 private: // instance members
     QLineEdit* m_pEdtName;
-    bool       m_bEdtNameDestroyedSignalConnected;
+    bool m_bEdtNameDestroyedSignalConnected;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDelegateGraphObjsTreeView
@@ -103,9 +103,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CTreeViewGraphObjs"; }
 public: // ctors and dtor
-    CTreeViewGraphObjs(
-        CDrawingScene* i_pDrawingScene,
-        QWidget*       i_pWdgtParent = nullptr );
+    CTreeViewGraphObjs(CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtParent = nullptr );
     virtual ~CTreeViewGraphObjs();
 public: // instance methods
     void setSortOrder( ZS::System::GUI::EIdxTreeSortOrder i_sortOrder );
@@ -156,6 +154,12 @@ protected: // instance members
     QModelIndex m_modelIdxSelectedOnMousePressEvent;
     QModelIndex m_modelIdxSelectedOnMouseReleaseEvent;
     bool m_bSilentlyExecuteDeleteRequests;
+    /*!< Reference counter to avoid recursive calls of "onDrawingSceneSelectionChanged" and "selectionChanged".
+         "selectionChanged" is called if the selection state of items on the drawing scene are changed and also,
+         if the user clicked on an item in the tree view whereupon the selection state of the graphics item
+         may be changed and "onDrawingSceneSelectionChanged" is called and .... This recursion will be
+         interrupted by the reference counter using CRefCountGuard. */
+    int m_iSelectionChangedBlockedCounter;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjEvent;
 

@@ -1376,13 +1376,23 @@ void CModelGraphObjPolygonGeometry::onGraphObjGeometryOnSceneChanged(CGraphObj* 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pGraphObj->keyInTree();
+        if (m_pGraphObjPolygon == i_pGraphObj) {
+            strMthInArgs += " [" + QString::number(m_pGraphObjPolygon->count()) + "]";
+        }
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "onGraphObjGeometryOnSceneChanged",
         /* strMethodInArgs    */ strMthInArgs );
-
+    
+    if (m_pGraphObjPolygon != i_pGraphObj) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError, "i_pGraphObj != m_pGraphObjPolygon");
+    }
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "-+ Polygon [" + QString::number(m_physValPolygon.count()) + "]";
+        mthTracer.trace(strRuntimeInfo);
+    }
     // When applying the changes from the model by invoking "applySettings"
     // the ContentChangedSignalBlockedCounter is incremented to avoid that the
     // "onGraphObj<Signal>" slots overwrite settings in the model which haven't been
@@ -1403,21 +1413,41 @@ void CModelGraphObjPolygonGeometry::onGraphObjGeometryOnSceneChanged(CGraphObj* 
                         physValPolygon = m_pDrawingScene->convert(physValPolygon, Units.Length.px);
                     }
                 }
+                bool bRowsInserted = false;
+                bool bRowsRemoved = false;
                 bool bContentChanged = false;
                 if (physValPolygon != m_physValPolygon) {
+                    bContentChanged = false;
+                    if (m_physValPolygon.count() < physValPolygon.count()) {
+                        // Could detect which points have been added by comparing the points.
+                        // But this is not really necessary.
+                        bRowsInserted = true;
+                    }
+                    else if (m_physValPolygon.count() > physValPolygon.count()) {
+                        // Could detect which points have been removed by comparing the points.
+                        // But this is not really necessary.
+                        bRowsRemoved = true;
+                    }
                     m_physValPolygon = physValPolygon;
                     bContentChanged = true;
                 }
                 if (bContentChanged) {
-                    QModelIndex modelIdxTL = index(0, EColumnXVal);
-                    QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
-                    emit_dataChanged(modelIdxTL, modelIdxBR);
-                }
-                if (m_iContentChangedSignalBlockedCounter > 0) {
-                    m_bContentChanged = true;
-                }
-                else {
-                    emit_contentChanged();
+                    if (bRowsInserted || bRowsRemoved) {
+                        _beginResetModel();
+                        m_arLabelSettings = getLabelSettings(m_pGraphObjPolygon);
+                        _endResetModel();
+                    }
+                    else {
+                        QModelIndex modelIdxTL = index(0, EColumnXVal);
+                        QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
+                        emit_dataChanged(modelIdxTL, modelIdxBR);
+                    }
+                    if (m_iContentChangedSignalBlockedCounter > 0) {
+                        m_bContentChanged = true;
+                    }
+                    else {
+                        emit_contentChanged();
+                    }
                 }
             }
         }
@@ -1429,6 +1459,10 @@ void CModelGraphObjPolygonGeometry::onGraphObjGeometryOnSceneChanged(CGraphObj* 
             // of the Apply and Reset buttons.
             emit_contentChanged();
         }
+    }
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "+- Polygon [" + QString::number(m_physValPolygon.count()) + "]";
+        mthTracer.trace(strRuntimeInfo);
     }
 }
 
@@ -1661,6 +1695,31 @@ void CModelGraphObjPolygonGeometry::emit_contentChanged()
         /* strAddInfo   */ "" );
     m_bContentChanged = false;
     emit contentChanged();
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjPolygonGeometry::_beginResetModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "beginResetModel",
+        /* strAddInfo   */ "" );
+
+    beginResetModel();
+}
+//------------------------------------------------------------------------------
+void CModelGraphObjPolygonGeometry::_endResetModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "endResetModel",
+        /* strAddInfo   */ "" );
+
+    endResetModel();
 }
 
 //------------------------------------------------------------------------------

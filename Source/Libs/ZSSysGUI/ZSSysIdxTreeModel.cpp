@@ -69,7 +69,7 @@ Type definitions and constants
 /* enum class EIdxTreeSortOrder
 ==============================================================================*/
 
-static const SEnumEntry s_arEnumStrIdxTreeSortOrders[] = {             // IdxName,   Symbol, Text
+static const SEnumEntry s_arEnumStrIdxTreeSortOrders[] = {
     /*  0 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Config),     "Config",     "-", "As Configured" ),
     /*  1 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Ascending),  "Ascending",  "A", "Ascending"     ),
     /*  2 */ SEnumEntry( static_cast<int>(EIdxTreeSortOrder::Descending), "Descending", "D", "Descending"    )
@@ -111,11 +111,8 @@ EIdxTreeSortOrder ZS::System::GUI::str2IdxTreeSortOrder( const QString& i_strVal
 //------------------------------------------------------------------------------
 {
     EIdxTreeSortOrder sortOrder = EIdxTreeSortOrder::Undefined;
-
     int iVal = SEnumEntry::str2Enumerator(s_arEnumStrIdxTreeSortOrders, _ZSArrLen(s_arEnumStrIdxTreeSortOrders), i_strVal, i_alias, Qt::CaseInsensitive);
-
-    if( iVal >= 0 && iVal < static_cast<int>(EIdxTreeSortOrder::Count) )
-    {
+    if (iVal >= 0 && iVal < static_cast<int>(EIdxTreeSortOrder::Count)) {
         sortOrder = static_cast<EIdxTreeSortOrder>(iVal);
     }
     return sortOrder;
@@ -141,48 +138,40 @@ bool CModelIdxTree::iterator::operator == ( const iterator& i_other ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-
-    if( m_pModel != i_other.m_pModel )
-    {
+    if (m_pModel != i_other.m_pModel) {
         bEqual = false;
     }
-    else if( m_pModelTreeEntryCurr != i_other.m_pModelTreeEntryCurr )
-    {
+    else if (m_pModelTreeEntryCurr != i_other.m_pModelTreeEntryCurr) {
         bEqual = false;
     }
-    else if( m_traversalOrder != ETraversalOrder::Undefined
-         && i_other.m_traversalOrder != ETraversalOrder::Undefined
-         && m_traversalOrder != i_other.m_traversalOrder )
+    else if (m_traversalOrder != ETraversalOrder::Undefined
+          && i_other.m_traversalOrder != ETraversalOrder::Undefined
+          && m_traversalOrder != i_other.m_traversalOrder)
     {
         bEqual = false;
     }
     return bEqual;
-
-} // iterator::operator ==
+}
 
 //------------------------------------------------------------------------------
 bool CModelIdxTree::iterator::operator == ( iterator& i_other ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-
-    if( m_pModel != i_other.m_pModel )
-    {
+    if (m_pModel != i_other.m_pModel) {
         bEqual = false;
     }
-    else if( m_pModelTreeEntryCurr != i_other.m_pModelTreeEntryCurr )
-    {
+    else if (m_pModelTreeEntryCurr != i_other.m_pModelTreeEntryCurr) {
         bEqual = false;
     }
-    else if( m_traversalOrder != ETraversalOrder::Undefined
-         && i_other.m_traversalOrder != ETraversalOrder::Undefined
-         && m_traversalOrder != i_other.m_traversalOrder )
+    else if (m_traversalOrder != ETraversalOrder::Undefined
+          && i_other.m_traversalOrder != ETraversalOrder::Undefined
+          && m_traversalOrder != i_other.m_traversalOrder)
     {
         bEqual = false;
     }
     return bEqual;
-
-} // iterator::operator ==
+}
 
 //------------------------------------------------------------------------------
 bool CModelIdxTree::iterator::operator != ( const iterator& i_other ) const
@@ -202,92 +191,65 @@ bool CModelIdxTree::iterator::operator != ( iterator& i_other ) const
 CModelIdxTree::iterator& CModelIdxTree::iterator::operator ++ ()
 //------------------------------------------------------------------------------
 {
-    if( m_pModelTreeEntryCurr == nullptr )
-    {
+    if (m_pModelTreeEntryCurr == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError, "m_pModelTreeEntryCurr == nullptr");
     }
-
     CModelIdxTreeEntry* pModelTreeEntryNew = nullptr;
-
-    if( m_traversalOrder == ETraversalOrder::Index )
-    {
+    if (m_traversalOrder == ETraversalOrder::Index) {
         int idxInTree = m_pModelTreeEntryCurr->indexInTree();
-
         CIdxTree* pIdxTree = dynamic_cast<CIdxTree*>(m_pModel->idxTree());
-        for( ++idxInTree; idxInTree < pIdxTree->treeEntriesVec().size(); ++idxInTree )
-        {
+        for (++idxInTree; idxInTree < pIdxTree->treeEntriesVec().size(); ++idxInTree) {
             CIdxTreeEntry* pTreeEntry = pIdxTree->treeEntriesVec()[idxInTree];
-            if( pTreeEntry != nullptr )
-            {
+            if (pTreeEntry != nullptr) {
                 pModelTreeEntryNew = m_pModel->findEntry(pTreeEntry->keyInTree());
                 break;
             }
         }
     }
-    else if( m_traversalOrder == ETraversalOrder::PreOrder )
-    {
-        if( m_pModelTreeEntryCurr == m_pModel->m_pModelRootEntry )
-        {
+    else if (m_traversalOrder == ETraversalOrder::PreOrder) {
+        if (m_pModelTreeEntryCurr == m_pModel->m_pModelRootEntry) {
             CModelIdxTreeEntry* pModelBranchCurr = m_pModel->m_pModelRootEntry;
-
-            if( pModelBranchCurr->count() > 0 )
-            {
+            if (pModelBranchCurr->count() > 0) {
                 pModelTreeEntryNew = pModelBranchCurr->at(0);
             }
         }
-        else // if( m_pModelTreeEntryCurr != m_pModel->m_pModelRootEntry )
-        {
-            if( m_pModelTreeEntryCurr->isLeave() )
-            {
+        else {
+            if (m_pModelTreeEntryCurr->isLeave()) {
                 int idxInParentBranch = m_pModelTreeEntryCurr->indexInParentBranch();
                 CModelIdxTreeEntry* pModelBranchParent = m_pModelTreeEntryCurr->parentBranch();
-
-                if( idxInParentBranch >= (pModelBranchParent->count()-1) )
-                {
+                if (idxInParentBranch >= (pModelBranchParent->count()-1)) {
                     idxInParentBranch = pModelBranchParent->indexInParentBranch();
                     pModelBranchParent = pModelBranchParent->parentBranch();
-
-                    while( pModelBranchParent != nullptr && idxInParentBranch >= (pModelBranchParent->count()-1) )
-                    {
+                    while (pModelBranchParent != nullptr && idxInParentBranch >= (pModelBranchParent->count()-1)) {
                         idxInParentBranch = pModelBranchParent->indexInParentBranch();
                         pModelBranchParent = pModelBranchParent->parentBranch();
                     }
                 }
-                if( pModelBranchParent != nullptr && idxInParentBranch < (pModelBranchParent->count()-1) )
-                {
+                if (pModelBranchParent != nullptr && idxInParentBranch < (pModelBranchParent->count()-1)) {
                     pModelTreeEntryNew = pModelBranchParent->at(idxInParentBranch+1);
                 }
             }
-            else
-            {
+            else {
                 CModelIdxTreeEntry* pModelBranchCurr = m_pModelTreeEntryCurr;
-
-                if( pModelBranchCurr->count() > 0 )
-                {
+                if (pModelBranchCurr->count() > 0) {
                     pModelTreeEntryNew = pModelBranchCurr->at(0);
                 }
-                else
-                {
+                else {
                     int idxInParentBranch = pModelBranchCurr->indexInParentBranch();
                     CModelIdxTreeEntry* pModelBranchParent = pModelBranchCurr->parentBranch();
-
-                    while( pModelBranchParent != nullptr && idxInParentBranch >= (pModelBranchParent->count()-1) )
-                    {
+                    while (pModelBranchParent != nullptr && idxInParentBranch >= (pModelBranchParent->count()-1)) {
                         pModelBranchCurr = pModelBranchParent;
                         idxInParentBranch = pModelBranchCurr->indexInParentBranch();
                         pModelBranchParent = pModelBranchParent->parentBranch();
                     }
-                    if( pModelBranchParent != nullptr && idxInParentBranch < (pModelBranchParent->count()-1) )
-                    {
+                    if (pModelBranchParent != nullptr && idxInParentBranch < (pModelBranchParent->count()-1)) {
                         pModelTreeEntryNew = pModelBranchParent->at(idxInParentBranch+1);
                     }
                 }
             }
-        } // if( m_pModelTreeEntryCurr != m_pModel->m_pModelRootEntry )
-    } // if( m_traversalOrder == ETraversalOrder::PreOrder )
-
+        }
+    }
     m_pModelTreeEntryCurr = pModelTreeEntryNew;
-
     return *this;
 
 } // operator ++
@@ -412,49 +374,35 @@ QIcon CModelIdxTree::getIcon( const QString& i_strEntryType )
 //------------------------------------------------------------------------------
 {
     QIcon icon;
-
-    if( !s_bIconsCreated )
-    {
+    if (!s_bIconsCreated) {
         s_pPxmRoot = new QPixmap(":/ZS/TreeView/TreeViewRootEntry.png");
         s_pPxmBranch = new QPixmap(":/ZS/TreeView/TreeViewBranchEntry.png");
         s_pPxmLeave = new QPixmap(":/ZS/TreeView/TreeViewLeaveEntry.png");
-
         s_pIconRoot = new QIcon();
         s_pIconBranch = new QIcon();
         s_pIconLeave = new QIcon();
-
         s_pIconRoot->addPixmap(*s_pPxmRoot);
         s_pIconBranch->addPixmap(*s_pPxmBranch);
         s_pIconLeave->addPixmap(*s_pPxmLeave);
-
         s_bIconsCreated = true;
     }
-
-    if( i_strEntryType.startsWith("R") )
-    {
-        if( s_pIconRoot != nullptr )
-        {
+    if (i_strEntryType.startsWith("R")) {
+        if (s_pIconRoot != nullptr) {
             icon = *s_pIconRoot;
         }
     }
-    else if( i_strEntryType.startsWith("B") )
-    {
-        if( s_pIconBranch != nullptr )
-        {
+    else if (i_strEntryType.startsWith("B")) {
+        if (s_pIconBranch != nullptr) {
             icon = *s_pIconBranch;
         }
     }
-    else if( i_strEntryType.startsWith("L") )
-    {
-        if( s_pIconLeave != nullptr )
-        {
+    else if (i_strEntryType.startsWith("L")) {
+        if (s_pIconLeave != nullptr) {
             icon = *s_pIconLeave;
         }
     }
-
     return icon;
-
-} // getIcon
+}
 
 /*==============================================================================
 protected: // class methods
@@ -472,9 +420,14 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelIdxTree::CModelIdxTree( QObject* i_pObjParent ) :
+CModelIdxTree::CModelIdxTree(
+    QObject* i_pObjParent,
+    const QString& i_strNameSpaceOfDerivedClass,
+    const QString& i_strNameOfDerivedClass) :
 //------------------------------------------------------------------------------
-    CModelIdxTree(nullptr, true, (Qt::CopyAction | Qt::MoveAction), i_pObjParent)
+    CModelIdxTree(
+        nullptr, true, (Qt::CopyAction | Qt::MoveAction), i_pObjParent,
+        i_strNameSpaceOfDerivedClass, i_strNameOfDerivedClass)
 {
 }
 
@@ -483,7 +436,9 @@ CModelIdxTree::CModelIdxTree(
     CIdxTree* i_pIdxTree,
     bool i_bNamesAreEditable,
     Qt::DropActions i_supportedDropActions,
-    QObject* i_pObjParent ) :
+    QObject* i_pObjParent,
+    const QString& i_strNameSpaceOfDerivedClass,
+    const QString& i_strNameOfDerivedClass) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(i_pObjParent),
     m_pIdxTree(nullptr),
@@ -505,14 +460,18 @@ CModelIdxTree::CModelIdxTree(
 
     #ifdef ZS_TRACE_GUI_MODELS
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
+        i_strNameSpaceOfDerivedClass.isEmpty() ? NameSpace() : i_strNameSpaceOfDerivedClass,
+        i_strNameOfDerivedClass.isEmpty() ? ClassName() : i_strNameOfDerivedClass,
+        objectName());
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::NoisyMethods", objectName());
+        i_strNameSpaceOfDerivedClass.isEmpty() ? NameSpace() : i_strNameSpaceOfDerivedClass,
+        QString(i_strNameOfDerivedClass.isEmpty() ? ClassName() : i_strNameOfDerivedClass) +  "::NoisyMethods",
+        objectName());
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName()) +
-                       ", NamesAreEditable: " + bool2Str(i_bNamesAreEditable) +
-                       ", DropActions: " + qDropActions2Str(m_supportedDropActions);
+            ", NamesAreEditable: " + bool2Str(i_bNamesAreEditable) +
+            ", DropActions: " + qDropActions2Str(m_supportedDropActions);
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -523,12 +482,10 @@ CModelIdxTree::CModelIdxTree(
 
     s_iInstCount++;
 
-    if( i_pIdxTree != nullptr )
-    {
+    if (i_pIdxTree != nullptr) {
         setIdxTree(i_pIdxTree);
     }
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CModelIdxTree::~CModelIdxTree()
@@ -544,8 +501,7 @@ CModelIdxTree::~CModelIdxTree()
 
     s_iInstCount--;
 
-    if( m_pIdxTree != nullptr )
-    {
+    if (m_pIdxTree != nullptr) {
         QObject::disconnect(
             m_pIdxTree, &CIdxTree::aboutToBeDestroyed,
             this, &CModelIdxTree::onIdxTreeAboutToBeDestroyed);
@@ -565,45 +521,36 @@ CModelIdxTree::~CModelIdxTree()
             m_pIdxTree, &CIdxTree::treeEntryKeyInTreeChanged,
             this, &CModelIdxTree::onIdxTreeEntryKeyInTreeChanged);
     }
-
-    if( m_pModelRootEntry != nullptr )
-    {
+    if (m_pModelRootEntry != nullptr) {
         clear(m_pModelRootEntry);
-
-        try
-        {
+        try {
             delete m_pModelRootEntry;
         }
-        catch(...)
-        {
+        catch(...) {
         }
     }
-
-    if( s_iInstCount == 0 )
-    {
+    if (s_iInstCount == 0) {
         delete s_pPxmRoot;
         s_pPxmRoot = nullptr;
         delete s_pPxmBranch;
         s_pPxmBranch = nullptr;
         delete s_pPxmLeave;
         s_pPxmLeave = nullptr;
-
         delete s_pIconRoot;
         s_pIconRoot = nullptr;
         delete s_pIconBranch;
         s_pIconBranch = nullptr;
         delete s_pIconLeave;
         s_pIconLeave = nullptr;
-
         s_bIconsCreated = false;
     }
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( m_pTrcAdminObj != nullptr ) {
+    if (m_pTrcAdminObj != nullptr) {
         mthTracer.onAdminObjAboutToBeReleased();
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     }
-    if( m_pTrcAdminObjNoisyMethods != nullptr ) {
+    if (m_pTrcAdminObjNoisyMethods != nullptr) {
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
     }
     m_pTrcAdminObj = nullptr;
@@ -618,8 +565,7 @@ CModelIdxTree::~CModelIdxTree()
     m_mappModelTreeEntries.clear();
     m_pModelRootEntry = nullptr;
     m_ariClmWidths.clear();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods

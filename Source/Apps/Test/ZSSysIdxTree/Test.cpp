@@ -155,9 +155,13 @@ public: // ctors and dtor
 CTrcAdmObjIdxTree() :
 //-----------------------------------------------------------------------------
     CIdxTree(
-      /* strObjName       */ CTest::c_strTrcAdmObjIdxTreeName,
-      /* pRootTreeEntry   */ new CTrcAdmObjRoot(),
-      /* strNodeSeparator */ "::" )
+        /* strObjName       */ CTest::c_strTrcAdmObjIdxTreeName,
+        /* pRootTreeEntry   */ new CTrcAdmObjRoot(),
+        /* strNodeSeparator */ "::",
+        /* bCreateMutex     */ false ,
+        /* pObjParent       */ nullptr,
+        /* strNameSpace     */ NameSpace(),
+        /* strClassName     */ ClassName())
 {
 } // ctor
 

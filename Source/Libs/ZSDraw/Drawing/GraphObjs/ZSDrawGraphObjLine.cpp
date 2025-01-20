@@ -2024,9 +2024,9 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // construction showing the selection points at the bounding rectangle.
         setEditMode(EEditMode::ModifyingPolygonPoints);
     }
-    else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-        bCallBaseMouseEventHandler = false;
-    }
+    //else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+    //    bCallBaseMouseEventHandler = false;
+    //}
     //i_pEv->accept();
     if (bCallBaseMouseEventHandler) {
         // Forward the mouse event to the LineItems base implementation.
@@ -2209,13 +2209,17 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     else if (i_change == ItemSelectedHasChanged) {
         //QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
-            bringToFront(); 
-            if (m_editMode == EEditMode::None) {
-                setEditMode(EEditMode::ModifyingPolygonPoints);
+            bringToFront();
+            if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
                 showSelectionPoints(c_uSelectionPointsPolygonPoints);
+                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
             }
-            else if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
-                showSelectionPoints(c_uSelectionPointsPolygonPoints);
+            else if (m_editMode == EEditMode::ModifyingBoundingRect) {
+                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
+            else /*if (m_editMode == EEditMode::None)*/ {
+                hideSelectionPoints();
             }
             // Not necessary to bring selection points to front as item has been already brought
             // to front and "showSelectionPoints" sets zValue of selection points above item.
@@ -2225,10 +2229,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             setEditMode(EEditMode::None);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
-            //m_editMode = EEditMode::None;
-            //m_editResizeMode = EEditResizeMode::None;
-            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
-            //m_idxSelPtSelectedPolygon = -1;
         }
         bSelectedChanged = true;
         bTreeEntryChanged = true;

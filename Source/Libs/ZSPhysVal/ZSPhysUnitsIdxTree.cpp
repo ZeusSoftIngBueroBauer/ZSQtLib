@@ -181,7 +181,9 @@ CIdxTreeUnits::CIdxTreeUnits( CIdxTreeEntry* i_pRootTreeEntry ) :
         /* pRootTreeEntry   */ i_pRootTreeEntry,
         /* strNodeSeparator */ ".",
         /* bCreateMutex     */ false,
-        /* pObjParent       */ nullptr ),
+        /* pObjParent       */ nullptr,
+        /* strNameSpace     */ NameSpace(),
+        /* strClassName     */ ClassName()),
     m_iRefCount(0)
 {
     CMethodTracer mthTracer(

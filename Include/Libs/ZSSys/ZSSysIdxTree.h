@@ -144,11 +144,16 @@ public: // ctors and dtor
         const QString& i_strObjName,
         CIdxTreeEntry* i_pRootTreeEntry = nullptr,
         const QString& i_strNodeSeparator = "/",
-        bool           i_bCreateMutex = false,
-        QObject*       i_pObjParent = nullptr,
+        bool i_bCreateMutex = false,
+        QObject* i_pObjParent = nullptr,
+        const QString& i_strNameSpaceOfDerivedClass = "",
+        const QString& i_strNameOfDerivedClass = "",
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
         EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None );
     virtual ~CIdxTree();
+public:
+    QString nameSpace() const;
+    QString className() const;
 public: // instance methods
     void clear(); // keeps the root entry
 signals:
@@ -330,6 +335,8 @@ protected: // instance methods (tracing of signals)
 protected slots:
     void onTrcAdminObjChanged( QObject* i_pTrcAdminObj );
 protected: // instance members
+    QString m_strNameSpaceOfDerivedClass;
+    QString m_strNameOfDerivedClass;
     /*!< String used to seperate the node names with an entries path. */
     QString m_strNodeSeparator;
     /*!< Mutex to protect the instance if accessed by different threads. */

@@ -73,7 +73,9 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
         /* pRootTreeEntry   */ new CTestStepRoot(i_pTest, i_pTest->objectName()),
         /* strNodeSeparator */ "\\",
         /* bCreateMutex     */ true,
-        /* pObjParent       */ nullptr),
+        /* pObjParent       */ nullptr,
+        /* strNameSpace     */ NameSpace(),
+        /* strClassName     */ ClassName()),
     m_pTest(i_pTest)
 {
     setObjectName("TestSteps-" + i_pTest->objectName());

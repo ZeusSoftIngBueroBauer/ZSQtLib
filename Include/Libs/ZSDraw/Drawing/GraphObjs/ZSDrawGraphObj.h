@@ -207,6 +207,50 @@ class CGraphObjSelectionPoint;
     the top left corner of Group0 (instead of (-30/-10) the coordinates (20/20)
     for example.
 
+    Current and Original Coordinates
+    ================================
+
+    Items may be added to groups. If the group is resized or rotated the geometry
+    of the childs must also be adjusted coorrespondingly. If a group is resized
+    to twice the size also the childrens should become twice the size. Same applies
+    when shrinking the group's bounding rectangle.
+
+    If a group is going to be resized, at any time the group's width or height may
+    become zero. Once the width or height of the group becomes zero resizing the
+    children to fit the new groups size would no longer be possible.
+    For this the original size of the child item must be stored and the current
+    scale factor to resize the children is calculated using the current and
+    the original size.
+
+    To avoid rounding errors and to be able to calculate a scale factor the items
+    must keep the original coordinates in addition to the current, transformed
+    coordinates of their shape points.
+
+    Depending on the Y-Axis-Scale-Orientation the coordinates are relative either
+    to the top left or bottom left corner of the parent item's bounding rectange.
+    If the item does not have another item as a  parent (does not belong to a group),
+    the coordinates are in scene coordinates.
+    As long as the item is not added to a group, the original and current
+    coordinates are equal.
+
+    If the item is not a group (and not a label or selection point)
+    - and the item is not a child of a group
+      - the current (transformed) and original coordinates are equal.
+    - If the item is added to or removed from a group as a child
+      - the current (transformed) coordinates are set as the original coordinates.
+    - If the item already belongs as a child to a group
+      - only the current (transformed) coordinates are updated.
+
+    If the item is a group
+    - the current (transformed) coordinates are set as the original coordinates
+      right after the group has been initially created or right after adding the
+      group to or removing the group from another group.
+    - At any other time the current (transformed) coordinates are not taken over
+      as the original coordinates. When modifying (resizing) the group, the current
+      scale factor can be evaluated by the parent group using the current and
+      original coordinates and can than be used to apply the geometry changes to
+      the group items without rounding errors.
+
     Selection Points
     ================
 
@@ -318,49 +362,35 @@ class CGraphObjSelectionPoint;
     It is also possible to show the geometry information for the graphical objects
     within the drawing view.
 
-    Current and Original Coordinates
-    ================================
+    Appearance on the scene depending on Selection and Highligthed State and Edit Mode
+    ----------------------------------------------------------------------------------
 
-    Items may be added to groups. If the group is resized or rotated the geometry
-    of the childs must also be adjusted coorrespondingly. If a group is resized
-    to twice the size also the childrens should become twice the size. Same applies
-    when shrinking the group's bounding rectangle.
+    A graphics item may be selected by clicking on a specific graphics item in the drawing scene.
+    Several graphics items may by selected by including the items in a selection rectangle on the drawing scene.
+    A graphics item may be highlighted by clicking on the item in the tree view.
 
-    If a group is going to be resized, at any time the group's width or height may
-    become zero. Once the width or height of the group becomes zero resizing the
-    children to fit the new groups size would no longer be possible.
-    For this the original size of the child item must be stored and the current
-    scale factor to resize the children is calculated using the current and
-    the original size.
+    The appearance of an item depends on the selection state and on an edit mode.
 
-    To avoid rounding errors and to be able to calculate a scale factor the items
-    must keep the original coordinates in addition to the current, transformed
-    coordinates of their shape points.
+    If an item on the graphics scene is not selected, the edit mode is always None.
+    An unselected graphics item in edit mode None might be highlighted if the corresponding
+    tree view item is selected in the tree view.
 
-    Depending on the Y-Axis-Scale-Orientation the coordinates are relative either
-    to the top left or bottom left corner of the parent item's bounding rectange.
-    If the item does not have another item as a  parent (does not belong to a group),
-    the coordinates are in scene coordinates.
-    As long as the item is not added to a group, the original and current
-    coordinates are equal.
+    If a single graphics item is selected on the drawing scene, the corresponding tree view
+    item is also selected and the graphics item is also highlighted.
 
-    If the item is not a group (and not a label or selection point)
-    - and the item is not a child of a group
-      - the current (transformed) and original coordinates are equal.
-    - If the item is added to or removed from a group as a child
-      - the current (transformed) coordinates are set as the original coordinates.
-    - If the item already belongs as a child to a group
-      - only the current (transformed) coordinates are updated.
+    A selected graphics item may have different appearances on the drawing scene
+    depending on the edit mode as follows:
 
-    If the item is a group
-    - the current (transformed) coordinates are set as the original coordinates
-      right after the group has been initially created or right after adding the
-      group to or removing the group from another group.
-    - At any other time the current (transformed) coordinates are not taken over
-      as the original coordinates. When modifying (resizing) the group, the current
-      scale factor can be evaluated by the parent group using the current and
-      original coordinates and can than be used to apply the geometry changes to
-      the group items without rounding errors.
+    EditMode              | Appearance
+    ----------------------+---------------------------------------------------
+    None                  | The item is highlighted (looks the same as it would
+                          | just be highlighted via the tree view).
+    CreatingByMouseEvents | The item is highlighted and indicates selection
+                          | points a the polygon points.
+    ModifyingBoundingRect | The item is highlighted and indicates selection
+                          | points at the bounding rectangle.
+    ModifyingPolygonPoints| The item is highlighted and indicates selection
+                          | points a the polygon points.
 */
 class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************

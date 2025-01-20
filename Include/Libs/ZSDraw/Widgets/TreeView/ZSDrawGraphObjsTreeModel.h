@@ -60,11 +60,11 @@ public: // overridables of base class QAbstractItemModel
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
-    QIcon          m_iconRootEntry;
-    QIcon          m_iconSelectionPointEntry;
-    QIcon          m_iconLabelEntry;
-    QIcon          m_iconBranchEntry;
-    QIcon          m_iconLeaveEntry;
+    QIcon m_iconRootEntry;
+    QIcon m_iconSelectionPointEntry;
+    QIcon m_iconLabelEntry;
+    QIcon m_iconBranchEntry;
+    QIcon m_iconLeaveEntry;
 
 }; // class CModelIdxTreeGraphObjs
 

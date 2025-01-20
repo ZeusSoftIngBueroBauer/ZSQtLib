@@ -2922,18 +2922,23 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
-    bool bEventHandled = false;
-    if (m_editMode == EEditMode::None) {
-        if (i_pEv->button() == Qt::RightButton) {
-            showContextMenu(i_pEv);
-            bEventHandled = true;
+
+    bool bCallBaseMouseEventHandler = true;
+    if (i_pEv->button() == Qt::LeftButton) {
+        if (m_editMode == EEditMode::None) {
+            setEditMode(EEditMode::ModifyingBoundingRect);
         }
     }
-    if (!bEventHandled) {
+    else if (i_pEv->button() == Qt::RightButton) {
+        showContextMenu(i_pEv);
+        bCallBaseMouseEventHandler = false;
+    }
+    if (bCallBaseMouseEventHandler) {
         // Forward the mouse event to the base implementation.
         // This will select the item, creating selection points if not yet created.
         QGraphicsItemGroup::mousePressEvent(i_pEv);
     }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -2968,79 +2973,6 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    //if (modeDrawing == EMode::Edit) {
-    //    if( m_editMode == EEditMode::Resize ) {
-    //        // The item will not be resized to the position of the mouse release event.
-    //        // A selection point might have been clicked and released immediately (without
-    //        // moving the mouse). In this case changing the size of the item according to
-    //        // position of the mouse is not expected.
-
-    //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        QRectF rctBoundingSceneNew         = mapRectToScene(m_rctCurr);
-    //        QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
-    //        QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
-    //        double    fAngle_rad          = Math::degree2Rad(m_fRotAngleCurr_deg);
-    //        //QPointF   ptLTScenePosOld   = mapToScene( QPointF(0.0,0.0) );
-    //        QPointF   ptLTScenePosNew     = mapToScene( m_rctCurr.topLeft() );
-    //        QPointF   ptItemScenePosNew   = rotatePoint( ptRotOriginSceneNew, ptLTScenePosNew, -fAngle_rad );
-
-    //        if( m_rctCurr.left() != 0.0 )
-    //        {
-    //            m_rctCurr.moveLeft(0.0);
-    //        }
-    //        if( m_rctCurr.top() != 0.0 )
-    //        {
-    //            m_rctCurr.moveTop(0.0);
-    //        }
-
-    //        m_ptRotOriginCurr = m_rctCurr.center();
-
-    //        setPos(ptItemScenePosNew);    // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-
-    //        updateTransform();
-
-    //        applyGeometryChangeToChildrens();
-
-    //        updateSelectionPointsOfBoundingRect(m_rctCurr);
-    //        #endif
-
-    //        // Not for group items. Otherwise the layout information would get lost.
-    //        //acceptCurrentAsOriginalCoors();
-    //        //updateEditInfo();
-    //        //updateToolTip();
-    //    }
-    //    m_editMode = EEditMode::None;
-    //    m_editResizeMode = EEditResizeMode::None;
-    //    m_idxSelPtSelectedPolygon = -1;
-    //    m_selPtSelectedBoundingRect = ESelectionPoint::None;
-    //}
-
-    //else if (modeDrawing == EMode::View) {
-    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseReleaseEventFunctions) {
-    //        if (fctEntry.m_pFct != nullptr) {
-    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
-    //        }
-    //    }
-    //}
-
-    //// The mouse release event would select the object.
-    //// This is not wanted if the selection tool is not active.
-    //bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-    //bool bIsSelectableReset = false;
-
-    //if (bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select) {
-    //    setFlag(QGraphicsItem::ItemIsSelectable, false);
-    //    bIsSelectableReset = true;
-    //}
-
-    //QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
-
-    //if (bIsSelectableReset) {
-    //    setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
-    //}
-
     // Forward the mouse event to the LineItems base implementation.
     // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
@@ -3073,23 +3005,6 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    // When double clicking an item, the item will first receive a mouse
-    // press event, followed by a release event (i.e., a click), then a
-    // double click event, and finally a release event.
-    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
-
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    //if (modeDrawing == EMode::Edit) {
-    //}
-    //else if (modeDrawing == EMode::View) {
-    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseDoubleClickEventFunctions) {
-    //        if (fctEntry.m_pFct != nullptr) {
-    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
-    //        }
-    //    }
-    //}
-
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
         traceGraphObjStates(mthTracer, EMethodDir::Leave);
@@ -3117,88 +3032,6 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
-
-    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    //if (modeDrawing == EMode::Edit) {
-    //    // Mouse events may first be dispatched to childrens of the group. Mapping the mouse
-    //    // coordinates from the childrens to the parent's (the group's) coordinate system
-    //    // does not work for succeeding mouse move events. So the mouse item pos returned
-    //    // by "i_pEv->pos()" is not correct here and we need to map the mouse scene event
-    //    // pos to the group's mouse item pos.
-
-    //    if (m_editMode == EEditMode::Move) {
-    //        QGraphicsItemGroup::mouseMoveEvent(i_pEv);
-    //    }
-    //    else if (m_editMode == EEditMode::Resize) {
-    //        QPointF ptMouseItemPos = i_pEv->pos();
-
-    //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, nullptr );
-
-    //        // Don't change the position of the object as the position of further
-    //        // mouse events should be received relative to the object's position
-    //        // on starting the edit process on pressing the mouse.
-    //        //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-
-    //        applyGeometryChangeToChildrens();
-    //        updateSelectionPointsOfBoundingRect(m_rctCurr);
-    //        #endif
-    //        //updateEditInfo();
-    //        //updateToolTip();
-    //        update();
-    //    }
-    //    else if (m_editMode == EEditMode::Rotate) {
-    //        QPointF ptMouseScenePos = i_pEv->scenePos(); // see comment above
-    //        double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
-
-    //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        m_fRotAngleCurr_deg = Math::rad2Degree(fRotAngle_rad);
-
-    //        switch( m_selPtSelectedBoundingRect.enumerator() )
-    //        {
-    //            case ESelectionPoint::RotateTop:
-    //            {
-    //                m_fRotAngleCurr_deg -= 90.0;
-    //                break;
-    //            }
-    //            case ESelectionPoint::RotateBottom:
-    //            {
-    //                m_fRotAngleCurr_deg -= 270.0;
-    //                break;
-    //            }
-    //            default:
-    //            {
-    //                break;
-    //            }
-    //        }
-
-    //        m_fRotAngleCurr_deg = Math::round2Resolution( m_fRotAngleCurr_deg, m_pDrawingScene->getRotationAngleResolutionInDegree() );
-
-    //        while( m_fRotAngleCurr_deg >= 360.0 )
-    //        {
-    //            m_fRotAngleCurr_deg -= 360.0;
-    //        }
-    //        while( m_fRotAngleCurr_deg < 0.0 )
-    //        {
-    //            m_fRotAngleCurr_deg += 360.0;
-    //        }
-    //        #endif
-
-    //        updateTransform();
-    //        //updateEditInfo();
-    //        //updateToolTip();
-
-    //        update();
-    //    }
-    //}
-    //else if (modeDrawing == EMode::View) {
-    //    for (SGraphObjMouseEventFct& fctEntry : m_arMouseMoveEventFunctions) {
-    //        if (fctEntry.m_pFct != nullptr) {
-    //            fctEntry.m_pFct(fctEntry.m_pvThis, fctEntry.m_pvData, this, i_pEv);
-    //        }
-    //    }
-    //}
 
     // Forward the mouse event to the LineItems base implementation.
     // This will move the item resulting in an itemChange call with PositionHasChanged.
@@ -3380,7 +3213,17 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
-            showSelectionPoints();
+            if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
+                showSelectionPoints(c_uSelectionPointsPolygonPoints);
+                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
+            else if (m_editMode == EEditMode::ModifyingBoundingRect) {
+                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
+            else /*if (m_editMode == EEditMode::None)*/ {
+                hideSelectionPoints();
+            }
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();

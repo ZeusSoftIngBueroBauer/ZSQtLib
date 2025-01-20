@@ -45,9 +45,12 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CModelIdxTreeGraphObjs::CModelIdxTreeGraphObjs(
     CDrawingScene* i_pDrawingScene,
-    QObject*       i_pObjParent ) :
+    QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
-    CModelIdxTree(i_pDrawingScene->getGraphObjsIdxTree(), i_pObjParent),
+    CModelIdxTree(
+        i_pDrawingScene->getGraphObjsIdxTree(),
+        true, (Qt::CopyAction | Qt::MoveAction),
+        i_pObjParent, NameSpace() + "::Widgets::TreeView", ClassName()),
     m_pDrawingScene(i_pDrawingScene),
     m_iconRootEntry(),
     m_iconSelectionPointEntry(),

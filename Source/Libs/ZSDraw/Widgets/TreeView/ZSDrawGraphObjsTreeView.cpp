@@ -24,6 +24,21 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSDraw/Widgets/TreeView/ZSDrawGraphObjsTreeView.h"
+#include "ZSDraw/Widgets/TreeView/ZSDrawGraphObjsTreeModel.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
+#include "ZSSysGUI/ZSSysGUIAux.h"
+#include "ZSSysGUI/ZSSysErrDlg.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+
 #include <QtCore/qglobal.h>
 #include <QtGui/qevent.h>
 #include <QtGui/qdrag.h>
@@ -37,20 +52,6 @@ may result in using the software modules.
 #include <QtWidgets/qmenu.h>
 #include <QtWidgets/qmessagebox.h>
 #endif
-
-#include "ZSDraw/Widgets/TreeView/ZSDrawGraphObjsTreeView.h"
-#include "ZSDraw/Widgets/TreeView/ZSDrawGraphObjsTreeModel.h"
-#include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
-#include "ZSSysGUI/ZSSysGUIAux.h"
-#include "ZSSysGUI/ZSSysErrDlg.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
-#include "ZSSys/ZSSysAux.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
-#include "ZSSys/ZSSysTrcMethod.h"
-#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -333,6 +334,7 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
     m_modelIdxSelectedOnMousePressEvent(),
     m_modelIdxSelectedOnMouseReleaseEvent(),
     m_bSilentlyExecuteDeleteRequests(false),
+    m_iSelectionChangedBlockedCounter(0),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjEvent(nullptr)
 {
@@ -464,6 +466,7 @@ CTreeViewGraphObjs::~CTreeViewGraphObjs()
     //m_modelIdxSelectedOnMousePressEvent;
     //m_modelIdxSelectedOnMouseReleaseEvent;
     m_bSilentlyExecuteDeleteRequests = false;
+    m_iSelectionChangedBlockedCounter = 0;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjEvent = nullptr;
 
@@ -768,58 +771,86 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief This slot method is called if the selection state of graphic items
+           is changed on the drawing scene.
+
+    The method selects the corresponding item in the tree view and set the
+    focus on this item.
+
+    To avoid that selecting the tree view item again triggers selection of
+    graphic items on the scene, a reference counter guard is used.
+*/
 void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
 //------------------------------------------------------------------------------
 {
+    if (m_iSelectionChangedBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
+        strMthInArgs = "SelectedItems [" + QString::number(arpSelectedItems.size()) + "]";
+        if (arpSelectedItems.size() > 0) {
+            strMthInArgs += "(";
+            for (auto& pGraphicsItem : arpSelectedItems) {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if( !strMthInArgs.endsWith("(") ) strMthInArgs += ", ";
+                strMthInArgs += pGraphObj->path();
+            }
+            strMthInArgs += ")";
+        }
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneSelectionChanged",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    //QObject::disconnect(
-    //    selectionModel(), currentChanged,
-    //    this, &CTreeViewGraphObjs::onCurrentChanged );
+    CRefCountGuard refCountGuardSelectionChanged(&m_iSelectionChangedBlockedCounter);
 
-    //clearSelection();
-
-    QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = "SelectedItems [" + QString::number(arpSelectedItems.size()) + "]";
-        if (arpSelectedItems.size() > 0) {
-            strRuntimeInfo += "(";
-            for (auto& pGraphicsItem : arpSelectedItems) {
-                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                if( !strRuntimeInfo.endsWith("(") ) strRuntimeInfo += ", ";
-                strRuntimeInfo += pGraphObj->path();
-            }
-            strRuntimeInfo += ")";
+    QGraphicsItem* pGraphicsItemDeselected = nullptr;
+    CGraphObj* pGraphObjDeselected = nullptr;
+    QItemSelectionModel* pSelModel = selectionModel();
+    QModelIndex modelIdxSelected = pSelModel->currentIndex();
+    if (modelIdxSelected.isValid()) {
+        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
+            mthTracer.trace(strMthInArgs);
         }
-        mthTracer.trace(strRuntimeInfo);
+        if (pModelTreeEntry != nullptr) {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
+            if (pGraphObj != nullptr && !pGraphObj->isRoot()) {
+                if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+                    pGraphObjDeselected = pGraphObj;
+                    pGraphicsItemDeselected = dynamic_cast<QGraphicsItem*>(pGraphObjDeselected);
+                }
+            }
+        }
+    }
+    if (pGraphObjDeselected != nullptr) {
+        pGraphObjDeselected->setIsHighlighted(false);
     }
 
-    //if( arpSelectedItems.size() == 1 )
-    //{
-    //    QGraphicsItem* pGraphicsItem = arpSelectedItems[0];
-    //    CGraphObj*     pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+    QGraphicsItem* pGraphicsItemSelected = nullptr;
+    CGraphObj* pGraphObjSelected = nullptr;
+    QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
+    if (arpSelectedItems.size() > 0) {
+        pGraphicsItemSelected = arpSelectedItems.last();
+        pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+    }
 
-    //    if( pGraphObj != nullptr )
-    //    {
-    //        QModelIndex modelIdx = dynamic_cast<CModelIdxTreeGraphObjs*>(model())->index(pGraphObj->keyInTree(), 0);
-
-    //        if( modelIdx.isValid() )
-    //        {
-    //            setCurrentIndex(modelIdx);
-    //            scrollTo(modelIdx);
-    //        }
-    //    }
-    //}
-
-    //QObject::connect(
-    //    selectionModel(), currentChanged,
-    //    this, &CTreeViewGraphObjs::onCurrentChanged );
-
-} // onDrawingSceneSelectionChanged
+    if (pGraphObjSelected != nullptr) {
+        QModelIndex modelIdx =
+            dynamic_cast<CModelIdxTreeGraphObjs*>(model())->index(pGraphObjSelected->keyInTree(), 0);
+        if (modelIdx.isValid()) {
+            setCurrentIndex(modelIdx);
+            scrollTo(modelIdx);
+            pGraphObjSelected->setIsHighlighted(true);
+        }
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class QObject
@@ -838,6 +869,7 @@ bool CTreeViewGraphObjs::event( QEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "event",
         /* strMthInArgs */ strMthInArgs );
+
     return QTreeView::event(i_pEv);
 }
 
@@ -1084,40 +1116,26 @@ protected: // overridables of base class QTreeView
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief This method is called if the selection state of a tree view item is changed.
+
+    The method highlights the corresponding item on the graphics scene.
+
+    Any other graphics item which was selected will be unselected.
+
+    To avoid that selecting the graphics item again triggers selection of
+    the tree view item, a reference counter guard is used.
+
+    The item selections contain each cell (each column).
+    We are only interested in the rows and duplicate entries will be removed.
+*/
 void CTreeViewGraphObjs::selectionChanged(
     const QItemSelection& i_selected,
     const QItemSelection& i_deselected )
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Selected [" + QString::number(i_selected.indexes().size()) + "]";
-        if (i_selected.indexes().size() > 0) {
-            strMthInArgs += "(";
-            for (const auto& modelIdx : i_selected.indexes()) {
-                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
-                strMthInArgs += "{" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
-            }
-            strMthInArgs += ")";
-        }
-        strMthInArgs += ", Deselected [" + QString::number(i_deselected.indexes().size()) + "]";
-        if (i_deselected.indexes().size() > 0) {
-            strMthInArgs += "(";
-            for (const auto& modelIdx : i_deselected.indexes()) {
-                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
-                strMthInArgs += "{" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
-            }
-            strMthInArgs += ")";
-        }
+    if (m_iSelectionChangedBlockedCounter > 0) {
+        return;
     }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "selectionChanged",
-        /* strMthInArgs */ strMthInArgs );
-
-    // The selection contains each cell (each column).
-    // We are only interested in the rows and duplicate entries will be removed.
 
     QHash<QString, CGraphObj*> hshpGraphObjsSelected;
     for (const auto& modelIdx : i_selected.indexes()) {
@@ -1165,13 +1183,49 @@ void CTreeViewGraphObjs::selectionChanged(
             }
         }
     }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Selected [" + QString::number(hshpGraphObjsSelected.size()) + "]";
+        if (hshpGraphObjsSelected.size() > 0) {
+            strMthInArgs += "(";
+            for (CGraphObj* pGraphObj : hshpGraphObjsSelected) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                strMthInArgs += pGraphObj->path();
+            }
+            strMthInArgs += ")";
+        }
+        strMthInArgs += ", Deselected [" + QString::number(hshpGraphObjsDeselected.size()) + "]";
+        if (hshpGraphObjsDeselected.size() > 0) {
+            strMthInArgs += "(";
+            for (CGraphObj* pGraphObj : hshpGraphObjsDeselected) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                strMthInArgs += pGraphObj->path();
+            }
+            strMthInArgs += ")";
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "selectionChanged",
+        /* strMthInArgs */ strMthInArgs );
+
+    QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
+    if (arpSelectedItems.size() > 0) {
+        for (QGraphicsItem* pGraphicsItem : arpSelectedItems) {
+            if (pGraphicsItem != nullptr) {
+                pGraphicsItem->setSelected(false);
+            }
+        }
+    }
     for (CGraphObj* pGraphObj : hshpGraphObjsDeselected) {
         pGraphObj->setIsHighlighted(false);
     }
     for (CGraphObj* pGraphObj : hshpGraphObjsSelected) {
         pGraphObj->setIsHighlighted(true);
     }
-} // selectionChanged
+}
 
 /*==============================================================================
 protected slots:
@@ -1265,4 +1319,4 @@ void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
             }
         }
     }
-} // onActionGraphObjDeleteTriggered
+}

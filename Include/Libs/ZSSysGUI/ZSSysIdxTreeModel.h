@@ -147,12 +147,17 @@ public: // class methods
 protected: // class methods
     static bool areIconsCreated();
 public: // ctors and dtor
-    CModelIdxTree( QObject* i_pObjParent = nullptr );
+    CModelIdxTree(
+        QObject* i_pObjParent = nullptr,
+        const QString& i_strNameSpaceOfDerivedClass = "",
+        const QString& i_strNameOfDerivedClass = "");
     CModelIdxTree(
         CIdxTree* i_pIdxTree,
         bool i_bNamesAreEditable = true,
         Qt::DropActions i_supportedDropActions = (Qt::CopyAction | Qt::MoveAction),
-        QObject* i_pObjParent = nullptr );
+        QObject* i_pObjParent = nullptr,
+        const QString& i_strNameSpaceOfDerivedClass = "",
+        const QString& i_strNameOfDerivedClass = "");
     virtual ~CModelIdxTree();
 signals:
     void idxTreeChanged( QObject* i_pIdxTree );

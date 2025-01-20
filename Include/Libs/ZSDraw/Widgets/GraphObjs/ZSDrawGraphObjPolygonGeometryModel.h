@@ -154,6 +154,8 @@ protected: // auxiliary instance methods
     void updateXYValueSizeHint();
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();
+    void _beginResetModel();
+    void _endResetModel();
     void _beginInsertRows(const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast);
     void _endInsertRows();
     void _beginRemoveRows(const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast);

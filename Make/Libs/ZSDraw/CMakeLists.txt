@@ -138,8 +138,6 @@ list(APPEND _HeadersWidgetsObjFactories
 )
 
 list(APPEND _HeadersWidgetsTreeView
-    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphicsItemsModel.h
-    ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjModelEntry.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeView.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeWdgt.h
@@ -264,8 +262,6 @@ list(APPEND _SourcesWidgetsObjFactories
 )
 
 list(APPEND _SourcesWidgetsTreeView
-    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphicsItemsModel.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjModelEntry.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/TreeView/ZSDrawGraphObjsTreeWdgt.cpp

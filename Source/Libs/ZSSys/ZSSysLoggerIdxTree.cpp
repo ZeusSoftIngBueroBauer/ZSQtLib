@@ -63,7 +63,9 @@ CIdxTreeLoggers::CIdxTreeLoggers( const QString& i_strObjName, QObject* i_pObjPa
         /* pRootTreeEntry   */ nullptr,
         /* strNodeSeparator */ "::",
         /* bCreateMutex     */ true,
-        /* pObjParent       */ i_pObjParent )
+        /* pObjParent       */ i_pObjParent,
+        /* strNameSpace     */ NameSpace(),
+        /* strClassName     */ ClassName())
 {
 }
 

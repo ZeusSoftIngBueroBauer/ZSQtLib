@@ -159,7 +159,9 @@ CEnumerationIdxTree::CEnumerationIdxTree(
         /* pRootTreeEntry   */ i_pRootTreeEntry,
         /* strNodeSeparator */ i_strNodeSeparator,
         /* bCreateMutex     */ i_bCreateMutex,
-        /* pObjParent       */ i_pObjParent )
+        /* pObjParent       */ i_pObjParent,
+        /* strNameSpace     */ NameSpace(),
+        /* strClassName     */ ClassName())
 {
     QString strAddTrcInfo;
 
