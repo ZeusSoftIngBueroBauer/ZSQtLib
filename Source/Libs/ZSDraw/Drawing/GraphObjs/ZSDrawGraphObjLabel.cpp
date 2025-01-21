@@ -108,7 +108,7 @@ CGraphObjLabel::CGraphObjLabel(
     setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent + 0.2, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
 
     //QObject::connect(
     //    m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
@@ -157,7 +157,7 @@ CGraphObjLabel::CGraphObjLabel(
     setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent + 0.2, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
 
     //QObject::connect(
     //    m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
@@ -202,7 +202,7 @@ CGraphObjLabel::CGraphObjLabel(
     setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt1.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent + 0.2, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
 
     //QObject::connect(
     //    m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
@@ -1181,10 +1181,10 @@ void CGraphObjLabel::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    // The labels anchor line should be drawn before the parent object is drawn.
-    // Otherwise the anchor lines may cover the painting of the parent object.
+    // The labels anchor line should be drawn above the parent object.
+    // Otherwise the anchor lines may be covered by the painting of the parent object.
     double fZValueParent = m_labelDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + 0.2);
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels);
 }
 
 /*==============================================================================

@@ -397,8 +397,9 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 {
     Q_OBJECT
 public: // type definitions and constants
+    static const double c_fStackingOrderOffsetLabels;
+    static const double c_fStackingOrderOffsetSelectionPoints;
     static const QString c_strLabelName;
-public: // type definitions and constants
     static const QString c_strGeometryLabelNameP;
     static const QString c_strGeometryLabelNameP1;
     static const QString c_strGeometryLabelNameP2;

@@ -75,8 +75,10 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include <QtGui/qevent.h>
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qapplication.h>
 #include <QtGui/qaction.h>
 #else
+#include <QtWidgets/qapplication.h>
 #include <QtWidgets/qaction.h>
 #endif
 
@@ -3605,6 +3607,10 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
             triggerDoTestStep();
         }
         else if (strMethod == "mousePressEvent") {
+            Qt::MouseButton mouseButton = Qt::LeftButton;
+            if (dataRow.contains("MouseButton")) {
+                mouseButton = static_cast<Qt::MouseButton>(dataRow["MouseButton"].toInt());
+            }
             Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
             if (dataRow.contains("KeyboardModifiers")) {
                 keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
@@ -3618,8 +3624,8 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
                 /* type      */ QEvent::MouseButtonPress,
                 /* pos       */ ptDrawingViewMousePos,
                 /* globalPos */ ptMousePosGlobal,
-                /* button    */ Qt::LeftButton,
-                /* button    */ Qt::LeftButton,
+                /* button    */ mouseButton,
+                /* button    */ mouseButton,
                 /* modifiers */ keyboardModifiers );
             m_pDrawingView->mousePressEvent(pMouseEv);
             delete pMouseEv;
@@ -3627,6 +3633,10 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
             triggerDoTestStep();
         }
         else if (strMethod == "mouseReleaseEvent") {
+            Qt::MouseButton mouseButton = Qt::LeftButton;
+            if (dataRow.contains("MouseButton")) {
+                mouseButton = static_cast<Qt::MouseButton>(dataRow["MouseButton"].toInt());
+            }
             Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
             if (dataRow.contains("KeyboardModifiers")) {
                 keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
@@ -3640,7 +3650,7 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
                 /* type      */ QEvent::MouseButtonRelease,
                 /* pos       */ ptDrawingViewMousePos,
                 /* globalPos */ ptMousePosGlobal,
-                /* button    */ Qt::LeftButton,
+                /* button    */ mouseButton,
                 /* buttons   */ Qt::NoButton,
                 /* modifiers */ keyboardModifiers );
             m_pDrawingView->mouseReleaseEvent(pMouseEv);
@@ -3649,13 +3659,13 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
             triggerDoTestStep();
         }
         else if (strMethod == "mouseMoveEvent") {
-            Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
-            if (dataRow.contains("KeyboardModifiers")) {
-                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
-            }
             Qt::MouseButton mouseBtns = Qt::NoButton;
             if (dataRow.contains("MouseButtons")) {
                 mouseBtns = static_cast<Qt::MouseButton>(dataRow["MouseButtons"].toInt());
+            }
+            Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+            if (dataRow.contains("KeyboardModifiers")) {
+                keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
             }
             QPoint ptMousePos = dataRow["MousePos"].toPoint();
             QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
@@ -3670,6 +3680,52 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
             m_pDrawingView->mouseMoveEvent(pMouseEv);
             delete pMouseEv;
             pMouseEv = nullptr;
+            triggerDoTestStep();
+        }
+        else if (strMethod == "activePopupWidget.keyPressEvent") {
+            QWidget* pWdgtReceiver = QApplication::activePopupWidget();
+            if (pWdgtReceiver != nullptr) {
+                Qt::Key key = Qt::Key_Escape;
+                if (dataRow.contains("Key")) {
+                    key = static_cast<Qt::Key>(dataRow["Key"].toInt());
+                }
+                Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+                if (dataRow.contains("KeyboardModifiers")) {
+                    keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
+                }
+                QKeyEvent* pKeyEvent = new QKeyEvent(
+                    /* type      */ QEvent::KeyPress,
+                    /* iKey      */ key,
+                    /* modifiers */ keyboardModifiers,
+                    /* strText   */ "",
+                    /* bAutoRep  */ false,
+                    /* uCount    */ 1 );
+                QApplication::postEvent(pWdgtReceiver, pKeyEvent);
+                pKeyEvent = nullptr;
+            }
+            triggerDoTestStep();
+        }
+        else if (strMethod == "activePopupWidget.keyReleaseEvent") {
+            QWidget* pWdgtReceiver = QApplication::activePopupWidget();
+            if (pWdgtReceiver != nullptr) {
+                Qt::Key key = Qt::Key_Escape;
+                if (dataRow.contains("Key")) {
+                    key = static_cast<Qt::Key>(dataRow["Key"].toInt());
+                }
+                Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
+                if (dataRow.contains("KeyboardModifiers")) {
+                    keyboardModifiers = static_cast<Qt::KeyboardModifiers>(dataRow["KeyboardModifiers"].toInt());
+                }
+                QKeyEvent* pKeyEvent = new QKeyEvent(
+                    /* type      */ QEvent::KeyRelease,
+                    /* iKey      */ key,
+                    /* modifiers */ keyboardModifiers,
+                    /* strText   */ "",
+                    /* bAutoRep  */ false,
+                    /* uCount    */ 1 );
+                QApplication::postEvent(pWdgtReceiver, pKeyEvent);
+                pKeyEvent = nullptr;
+            }
             triggerDoTestStep();
         }
     }

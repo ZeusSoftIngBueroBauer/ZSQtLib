@@ -485,8 +485,7 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
-    if (m_physValPolygonOrig.isNull() || this->polygon() != polygon || m_physValPolygonOrig != i_physValPolygon)
-    {
+    if (m_physValPolygonScaledAndRotated != i_physValPolygon) {
         // If the added or removed indices are unknown, we must assume something.
         if ((i_physValPolygon.count() > m_physValPolygonOrig.count()) && (m_idxsAdded.second <= 0)) {
             // In case the number of points have been increased, labels will be added at the end.

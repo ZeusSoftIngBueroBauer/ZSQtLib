@@ -142,7 +142,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     }
 
     double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + 0.1, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints, ERowVersion::Original);
 
     //QObject::connect(
     //    m_selPt.m_pGraphObj, &CGraphObj::scenePosChanged,
@@ -1159,7 +1159,7 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
 
     // The selectin point should be drawn after the parent object is drawn.
     double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + 0.1);
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints);
 }
 
 /*==============================================================================
