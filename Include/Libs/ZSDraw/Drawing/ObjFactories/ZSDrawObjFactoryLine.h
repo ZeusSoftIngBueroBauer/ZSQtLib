@@ -54,6 +54,7 @@ public: // interface methods of base class CObjFactory
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings) override;
+public: // interface methods of base class CObjFactory
     virtual ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
         QXmlStreamWriter& i_xmlStreamWriter) const override;

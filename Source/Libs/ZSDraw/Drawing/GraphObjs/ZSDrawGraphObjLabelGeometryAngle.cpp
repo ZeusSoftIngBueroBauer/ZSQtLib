@@ -63,6 +63,37 @@ class CGraphObjLabelGeometryAngle : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjLabelGeometryAngle::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjLabelGeometryAngle::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryAngle::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryAngle::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -251,6 +282,7 @@ void CGraphObjLabelGeometryAngle::paint(
         color.setAlpha(192);
         pn.setColor(color);
         i_pPainter->setPen(pn);
+        i_pPainter->setRenderHints(s_painterRenderHints);
         // The startAngle and spanAngle must be specified in 1/16th of a degree.
         // The painter counts angles counter clockwise whereas the graphics system
         // counts angles clockwise. Correct the angles before drawing the pies.

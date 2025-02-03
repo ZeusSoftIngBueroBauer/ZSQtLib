@@ -349,6 +349,20 @@ CPhysValRect::~CPhysValRect()
 }
 
 /*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rectOther )
+//------------------------------------------------------------------------------
+{
+    m_ptCenter = i_rectOther.center();
+    m_size = i_rectOther.size();
+    initSelectionPoints();
+    return *this;
+}
+
+/*==============================================================================
 public: // must overridable operators of base class CPhysValShape
 ==============================================================================*/
 
@@ -2108,12 +2122,37 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns a QRectF instance in the current unit of the unrotated rectangle.
+*/
+//------------------------------------------------------------------------------
+QRectF CPhysValRect::toQRectF() const
+{
+    QRectF rect;
+    rect.setSize(m_size);
+    rect.moveCenter(m_ptCenter);
+    return rect;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a QRectF instance in the desired unit of the unrotated rectangle.
+*/
+QRectF CPhysValRect::toQRectF(const ZS::PhysVal::CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    CPhysValRect physValRect = *this;
+    physValRect.setAngle(0.0);
+    QPointF ptTL = physValRect.topLeft().toQPointF(i_unit);
+    QSizeF size = physValRect.size().toQSizeF(i_unit);
+    return QRectF(ptTL, size);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the physical rectangle as a QPolygonF instance in the current unit.
 
     The points are returned in clockwise order starting with the top left corner.
-
-    @note The physical rectangle may be rotated and therefore a QRectF instance
-          cannot be returned.
 */
 QPolygonF CPhysValRect::toQPolygonF() const
 //------------------------------------------------------------------------------

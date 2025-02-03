@@ -241,24 +241,24 @@ public: // instance methods
 //public: // instance methods
 //    void setCheckedActionModeEdit(bool i_bChecked);
 //    void setCheckedActionModeView(bool i_bChecked);
-public: // instance methods
-    void setCheckedActionDrawStandardShapeLine(bool i_bChecked);
-    void setCheckedActionDrawStandardShapeRect(bool i_bChecked);
-    void setCheckedActionDrawStandardShapeEllipse(bool i_bChecked);
-    void setCheckedActionDrawStandardShapePolyline(bool i_bChecked);
-    void setCheckedActionDrawStandardShapePolygon(bool i_bChecked);
-    void setCheckedActionDrawStandardShapeText(bool i_bChecked);
-    void triggerActionDrawGraphicsImage();
-    void setCheckedActionDrawConnectionPoint(bool i_bChecked);
-    void setCheckedActionDrawConnectionLine(bool i_bChecked);
-public: // instance methods
-    void setCheckedActionEditSelect(bool i_bChecked);
-    void triggerActionEditRotateLeft();
-    void triggerActionEditRotateRight();
-    void triggerActionEditMirrorVertical();
-    void triggerActionEditMirrorHorizontal();
-    void triggerActionEditGroup();
-    void triggerActionEditUngroup();
+//public: // instance methods
+//    void setCheckedActionDrawStandardShapeLine(bool i_bChecked);
+//    void setCheckedActionDrawStandardShapeRect(bool i_bChecked);
+//    void setCheckedActionDrawStandardShapeEllipse(bool i_bChecked);
+//    void setCheckedActionDrawStandardShapePolyline(bool i_bChecked);
+//    void setCheckedActionDrawStandardShapePolygon(bool i_bChecked);
+//    void setCheckedActionDrawStandardShapeText(bool i_bChecked);
+//    void triggerActionDrawGraphicsImage();
+//    void setCheckedActionDrawConnectionPoint(bool i_bChecked);
+//    void setCheckedActionDrawConnectionLine(bool i_bChecked);
+//public: // instance methods
+//    void setCheckedActionEditSelect(bool i_bChecked);
+//    void triggerActionEditRotateLeft();
+//    void triggerActionEditRotateRight();
+//    void triggerActionEditMirrorVertical();
+//    void triggerActionEditMirrorHorizontal();
+//    void triggerActionEditGroup();
+//    void triggerActionEditUngroup();
 public slots: // Menu - File
     void onActionFileNewTriggered(bool i_bChecked = false);
     void onActionFileOpenTriggered(bool i_bChecked = false);

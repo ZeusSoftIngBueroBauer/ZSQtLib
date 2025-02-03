@@ -62,6 +62,37 @@ class CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTextItem
 *******************************************************************************/
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjLabel::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjLabel::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -879,24 +910,14 @@ void CGraphObjLabel::paint(
     QPen pn(Qt::SolidLine);
     if (isSelected()) {
         pn.setColor(Qt::blue);
-        pn.setStyle(Qt::DotLine);
-        i_pPainter->setPen(pn);
-        i_pPainter->drawRect(rct);
     }
     else if (text().isEmpty()) {
         pn.setColor(Qt::black);
-        pn.setStyle(Qt::DotLine);
-        i_pPainter->setPen(pn);
-        i_pPainter->drawRect(rct);
     }
-    //#pragma message(__TODO__"To be removed")
-    //else {
-    //    pn.setColor(Qt::black);
-    //    pn.setStyle(Qt::DotLine);
-    //    i_pPainter->setPen(pn);
-    //    i_pPainter->drawRect(rct);
-    //}
-    //#pragma message(__TODO__"To be removed")
+    pn.setStyle(Qt::DotLine);
+    i_pPainter->setPen(pn);
+    i_pPainter->setRenderHints(s_painterRenderHints);
+    i_pPainter->drawRect(rct);
 
     //#pragma message(__TODO__"To be removed")
     //pn.setColor(Qt::black);

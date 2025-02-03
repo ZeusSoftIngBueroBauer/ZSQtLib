@@ -1314,7 +1314,6 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeRect = new QAction(iconDrawRect, c_strActionNameDrawStandardShapeRect.section(":",-1,-1), this);
     m_pActDrawStandardShapeRect->setStatusTip(tr("Draw Rectangles"));
     m_pActDrawStandardShapeRect->setCheckable(true);
-    m_pActDrawStandardShapeRect->setEnabled(false);
 
     QObject::connect(
         m_pActDrawStandardShapeRect, &QAction::triggered,
@@ -1330,7 +1329,6 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeEllipse = new QAction(iconDrawEllipse, c_strActionNameDrawStandardShapeEllipse.section(":",-1,-1), this);
     m_pActDrawStandardShapeEllipse->setStatusTip(tr("Draw Ellipses"));
     m_pActDrawStandardShapeEllipse->setCheckable(true);
-    m_pActDrawStandardShapeEllipse->setEnabled(false);
 
     QObject::connect(
         m_pActDrawStandardShapeEllipse, &QAction::triggered,
@@ -1376,7 +1374,6 @@ void CMainWindow::createActions()
     m_pActDrawStandardShapeText = new QAction(iconDrawText, c_strActionNameDrawStandardShapeText.section(":",-1,-1), this);
     m_pActDrawStandardShapeText->setStatusTip(tr("Draw Texts"));
     m_pActDrawStandardShapeText->setCheckable(true);
-    m_pActDrawStandardShapeText->setEnabled(false);
 
     QObject::connect(
         m_pActDrawStandardShapeText, &QAction::triggered,
@@ -2431,285 +2428,285 @@ public: // instance methods
 public: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeLine(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapeLine",
-        /* strAddInfo   */ strMthInArgs );
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawStandardShapeLine(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawStandardShapeLine",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawStandardShapeLine != nullptr) {
+//        m_pActDrawStandardShapeLine->setChecked(i_bChecked);
+//    }
+//}
 
-    if (m_pActDrawStandardShapeLine != nullptr) {
-        m_pActDrawStandardShapeLine->setChecked(i_bChecked);
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawStandardShapeRect(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawStandardShapeRect",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawStandardShapeRect != nullptr) {
+//        m_pActDrawStandardShapeRect->setChecked(i_bChecked);
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeRect(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapeRect",
-        /* strAddInfo   */ strMthInArgs );
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawStandardShapeEllipse(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawStandardShapeEllipse",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawStandardShapeEllipse != nullptr) {
+//        m_pActDrawStandardShapeEllipse->setChecked(i_bChecked);
+//    }
+//}
 
-    if (m_pActDrawStandardShapeRect != nullptr) {
-        m_pActDrawStandardShapeRect->setChecked(i_bChecked);
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawStandardShapePolyline(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawStandardShapePolyline",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawStandardShapePolyline != nullptr) {
+//        m_pActDrawStandardShapePolyline->setChecked(i_bChecked);
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeEllipse(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapeEllipse",
-        /* strAddInfo   */ strMthInArgs );
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawStandardShapePolygon(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawStandardShapePolygon",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawStandardShapePolygon != nullptr) {
+//        m_pActDrawStandardShapePolygon->setChecked(i_bChecked);
+//    }
+//}
 
-    if (m_pActDrawStandardShapeEllipse != nullptr) {
-        m_pActDrawStandardShapeEllipse->setChecked(i_bChecked);
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawStandardShapeText(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawStandardShapeText",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawStandardShapeText != nullptr) {
+//        m_pActDrawStandardShapeText->setChecked(i_bChecked);
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapePolyline(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapePolyline",
-        /* strAddInfo   */ strMthInArgs );
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionDrawGraphicsImage()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionDrawGraphicsImage",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActDrawGraphicsImage != nullptr) {
+//        m_pActDrawGraphicsImage->trigger();
+//    }
+//}
 
-    if (m_pActDrawStandardShapePolyline != nullptr) {
-        m_pActDrawStandardShapePolyline->setChecked(i_bChecked);
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawConnectionPoint(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawConnectionPoint",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawConnectionPoint != nullptr) {
+//        m_pActDrawConnectionPoint->setChecked(i_bChecked);
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapePolygon(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapePolygon",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_pActDrawStandardShapePolygon != nullptr) {
-        m_pActDrawStandardShapePolygon->setChecked(i_bChecked);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawStandardShapeText(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawStandardShapeText",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_pActDrawStandardShapeText != nullptr) {
-        m_pActDrawStandardShapeText->setChecked(i_bChecked);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionDrawGraphicsImage()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionDrawGraphicsImage",
-        /* strAddInfo   */ "" );
-
-    if (m_pActDrawGraphicsImage != nullptr) {
-        m_pActDrawGraphicsImage->trigger();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawConnectionPoint(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawConnectionPoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_pActDrawConnectionPoint != nullptr) {
-        m_pActDrawConnectionPoint->setChecked(i_bChecked);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionDrawConnectionLine(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionDrawConnectionLine",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_pActDrawConnectionLine != nullptr) {
-        m_pActDrawConnectionLine->setChecked(i_bChecked);
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionDrawConnectionLine(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionDrawConnectionLine",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActDrawConnectionLine != nullptr) {
+//        m_pActDrawConnectionLine->setChecked(i_bChecked);
+//    }
+//}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CMainWindow::setCheckedActionEditSelect(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setCheckedActionEditSelect",
-        /* strAddInfo   */ strMthInArgs );
+////------------------------------------------------------------------------------
+//void CMainWindow::setCheckedActionEditSelect(bool i_bChecked)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setCheckedActionEditSelect",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_pActEditSelect != nullptr) {
+//        m_pActEditSelect->setChecked(i_bChecked);
+//    }
+//}
 
-    if (m_pActEditSelect != nullptr) {
-        m_pActEditSelect->setChecked(i_bChecked);
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionEditRotateLeft()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionEditRotateLeft",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActEditRotateLeft != nullptr) {
+//        m_pActEditRotateLeft->trigger();
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionEditRotateLeft()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionEditRotateLeft",
-        /* strAddInfo   */ "" );
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionEditRotateRight()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionEditRotateRight",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActEditRotateRight != nullptr) {
+//        m_pActEditRotateRight->trigger();
+//    }
+//}
 
-    if (m_pActEditRotateLeft != nullptr) {
-        m_pActEditRotateLeft->trigger();
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionEditMirrorVertical()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionEditMirrorVertical",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActEditMirrorVertical != nullptr) {
+//        m_pActEditMirrorVertical->trigger();
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionEditRotateRight()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionEditRotateRight",
-        /* strAddInfo   */ "" );
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionEditMirrorHorizontal()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionEditMirrorHorizontal",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActEditMirrorHorizontal != nullptr) {
+//        m_pActEditMirrorHorizontal->trigger();
+//    }
+//}
 
-    if (m_pActEditRotateRight != nullptr) {
-        m_pActEditRotateRight->trigger();
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionEditGroup()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionEditGroup",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActEditGroup != nullptr) {
+//        m_pActEditGroup->trigger();
+//    }
+//}
 
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionEditMirrorVertical()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionEditMirrorVertical",
-        /* strAddInfo   */ "" );
-
-    if (m_pActEditMirrorVertical != nullptr) {
-        m_pActEditMirrorVertical->trigger();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionEditMirrorHorizontal()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionEditMirrorHorizontal",
-        /* strAddInfo   */ "" );
-
-    if (m_pActEditMirrorHorizontal != nullptr) {
-        m_pActEditMirrorHorizontal->trigger();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionEditGroup()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionEditGroup",
-        /* strAddInfo   */ "" );
-
-    if (m_pActEditGroup != nullptr) {
-        m_pActEditGroup->trigger();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::triggerActionEditUngroup()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "triggerActionEditUngroup",
-        /* strAddInfo   */ "" );
-
-    if (m_pActEditUngroup != nullptr) {
-        m_pActEditUngroup->trigger();
-    }
-}
+////------------------------------------------------------------------------------
+//void CMainWindow::triggerActionEditUngroup()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "triggerActionEditUngroup",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_pActEditUngroup != nullptr) {
+//        m_pActEditUngroup->trigger();
+//    }
+//}
 
 /*==============================================================================
 public slots: // Menu - File
@@ -4623,8 +4620,7 @@ void CMainWindow::updateActions()
                 m_pActDrawStandardShapeRect->setChecked(false);
             }
             else {
-                m_pActDrawStandardShapeRect->setEnabled(false);
-                //m_pActDrawStandardShapeRect->setEnabled(true);
+                m_pActDrawStandardShapeRect->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryRect) {
                     m_pActDrawStandardShapeRect->setChecked(true);
                 }
@@ -4639,8 +4635,7 @@ void CMainWindow::updateActions()
                 m_pActDrawStandardShapeEllipse->setChecked(false);
             }
             else {
-                m_pActDrawStandardShapeEllipse->setEnabled(false);
-                //m_pActDrawStandardShapeEllipse->setEnabled(true);
+                m_pActDrawStandardShapeEllipse->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryEllipse) {
                     m_pActDrawStandardShapeEllipse->setChecked(true);
                 }
@@ -4685,8 +4680,7 @@ void CMainWindow::updateActions()
                 m_pActDrawStandardShapeText->setChecked(false);
             }
             else {
-                m_pActDrawStandardShapeText->setEnabled(false);
-                //m_pActDrawStandardShapeText->setEnabled(true);
+                m_pActDrawStandardShapeText->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryText) {
                     m_pActDrawStandardShapeText->setChecked(true);
                 }

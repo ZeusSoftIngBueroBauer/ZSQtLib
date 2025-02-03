@@ -41,7 +41,7 @@ may result in using the software modules.
 class QGraphicsItem;
 class QPainterPath;
 
-#define TEST_ALL 1
+#define TEST_ALL 0
 
 #if TEST_ALL == 0
 
@@ -52,24 +52,27 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_101x101 0
 #define TEST_PIXELS_DRAWINGS_800x600 1
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES 0
-#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 0
+#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
 #define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
@@ -79,9 +82,12 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 0
@@ -113,6 +119,7 @@ class QPainterPath;
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 1
@@ -124,6 +131,7 @@ class QPainterPath;
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 1
@@ -184,6 +192,15 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallRectRightLine = "SmallRect-RightLine";
     const QString c_strGraphObjNameSmallRectBottomLine = "SmallRect-BottomLine";
     const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
+    // Rectangles
+    //-----------
+    const QString c_strGraphObjNameRectangle = "Rectangle";
+    // Ellipses
+    //-----------
+    const QString c_strGraphObjNameEllipse = "Ellipse";
+    // Texts
+    //-----------
+    const QString c_strGraphObjNameText = "Text";
     // Polylines
     //----------
     const QString c_strGraphObjNameOpenArrow = "OpenArrow";
@@ -228,6 +245,12 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesEllipse(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesEllipseModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesTextModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -251,6 +274,12 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesRectModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesEllipse(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesEllipseModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesText(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesTextModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesPolygonOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -281,9 +310,15 @@ protected slots:
     void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjRect(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjText(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
@@ -304,17 +339,26 @@ protected: // auxiliary instance methods
     //void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
-    QStringList resultValuesForGroup(
-        const QString& strGraphObjName, const QPointF& i_pos,
-        const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
     QStringList resultValuesForLine(
         const QString& strGraphObjName, const QPointF& i_pos,
         const QLineF& i_lineItemCoors, const ZS::Draw::CPhysValLine& i_physValLine, int i_iPrecision = -1) const;
+    QStringList resultValuesForRect(
+        const QString& strGraphObjName, const QPointF& i_pos,
+        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
+    QStringList resultValuesForEllipse(
+        const QString& strGraphObjName, const QPointF& i_pos,
+        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
+    QStringList resultValuesForText(
+        const QString& strGraphObjName, const QPointF& i_pos,
+        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
     QStringList resultValuesForPolygon(
         const QString& strGraphObjName, const QPointF& i_pos,
         const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;
     QStringList resultValuesForLabel(
         const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision = -1) const;
+    QStringList resultValuesForGroup(
+        const QString& strGraphObjName, const QPointF& i_pos,
+        const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
 public: // overridables of base class CTest (make protected method public)
     void triggerDoTestStep(int i_iInterval_ms = -1) override;
 protected: // class members
@@ -328,6 +372,7 @@ protected: // instance members
     QMap<QString, QString> m_hshGraphObjNameToKeys;
     // Current mouse position for drawing and modifying objects by mouse events.
     QPoint m_ptMousePos;
+
     // Lines
     //------
     // SmallPlusSign
@@ -364,6 +409,27 @@ protected: // instance members
     QPointF m_ptPosSmallRectLeftLine;
     QLineF m_lineSmallRectLeftLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectLeftLine = nullptr;
+
+    // Rectangles
+    //-----------
+    // Rectangle
+    QPointF m_ptPosRectangle;
+    QRectF m_rectRectangle;
+    ZS::Draw::CPhysValRect* m_pPhysValRectRectangle = nullptr;
+
+    // Ellipses
+    //-----------
+    // Ellipse
+    QPointF m_ptPosEllipse;
+    QRectF m_rectEllipse;
+    ZS::Draw::CPhysValRect* m_pPhysValRectEllipse = nullptr;
+
+    // Texts
+    //-----------
+    // Text
+    QPointF m_ptPosText;
+    QRectF m_rectText;
+    ZS::Draw::CPhysValRect* m_pPhysValRectText = nullptr;
 
     // Polygons
     //----------

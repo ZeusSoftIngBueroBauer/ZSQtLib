@@ -62,6 +62,37 @@ class CGraphObjLabelGeometryDY : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjLabelGeometryDY::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjLabelGeometryDY::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryDY::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryDY::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -260,6 +291,7 @@ void CGraphObjLabelGeometryDY::paint(
                 i_pPainter->setPen(pn);
                 QBrush brsh(pn.color());
                 i_pPainter->setBrush(brsh);
+                i_pPainter->setRenderHints(s_painterRenderHints);
                 i_pPainter->drawPolygon(m_plgP1ArrowHead);
                 i_pPainter->drawPolygon(m_plgP2ArrowHead);
             }

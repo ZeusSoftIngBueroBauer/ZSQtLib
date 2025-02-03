@@ -180,8 +180,6 @@ public: // must overridables of base class QGraphicsItem
     virtual QPainterPath shape() const override;
     virtual void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr) override;
 protected: // overridables of base class QGraphicsItem
-    //virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
-protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
     virtual void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;

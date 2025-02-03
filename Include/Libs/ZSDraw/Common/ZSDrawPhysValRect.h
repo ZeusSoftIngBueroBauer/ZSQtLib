@@ -80,6 +80,8 @@ public: // copy ctor
     CPhysValRect(const CPhysValRect& i_physValRectOther);
 public: // dtor
     virtual ~CPhysValRect();
+public: // operators
+    CPhysValRect& operator = (const QRectF& i_rectOther);
 public: // must overridable operators of base class CPhysValShape
     CPhysValShape& operator = (const CPhysValShape& i_physValRectOther) override;
 public: // must overridables of base class CPhysValShape
@@ -134,6 +136,8 @@ public: // instance methods
     void setBottomLeft(const QPointF& i_pt);
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
 public: // instance methods (to convert the values into another unit)
+    QRectF toQRectF() const;
+    QRectF toQRectF(const ZS::PhysVal::CUnit& i_unit) const;
     QPolygonF toQPolygonF() const;
     QPolygonF toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // overridables

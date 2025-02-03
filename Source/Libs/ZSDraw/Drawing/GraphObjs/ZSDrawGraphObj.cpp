@@ -726,7 +726,9 @@ void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGrap
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onParentGroupChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
@@ -744,7 +746,9 @@ void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGrap
         initParentTransform();
         updateTransformedCoorsOnParentChanged(i_pGraphObjGroupPrev, i_pGraphObjGroupNew);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 /*==============================================================================
@@ -4064,7 +4068,9 @@ void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
 #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
@@ -4075,7 +4081,9 @@ void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
         }
         emit_geometryOnSceneChanged();
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -4430,7 +4438,9 @@ void CGraphObj::setIsHighlighted(bool i_bIsHighlighted)
             pGraphicsItemThis->update(pGraphicsItemThis->boundingRect());
         }
         if (m_bIsHighlighted) {
-            tracePositionInfo(mthTracer);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer);
+            }
         }
     }
 }
@@ -7352,7 +7362,9 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
 #pragma message(__TODO__"Pure virtual")
 
@@ -7377,7 +7389,9 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
             }
         }
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
@@ -7765,7 +7779,9 @@ void CGraphObj::updateTransformedCoorsOnParentChanged(
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::updateTransformedCoorsOnParentChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
@@ -7778,7 +7794,9 @@ void CGraphObj::updateTransformedCoorsOnParentChanged(
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------

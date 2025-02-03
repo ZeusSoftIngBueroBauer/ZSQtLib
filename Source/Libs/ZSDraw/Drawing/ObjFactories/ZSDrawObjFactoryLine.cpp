@@ -93,6 +93,7 @@ CGraphObj* CObjFactoryLine::createGraphObj(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -124,7 +125,8 @@ CGraphObj* CObjFactoryLine::createGraphObj(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
+        strMthInArgs = "Point {" + i_physValPoint.toString() + "}" +
+            ", DrawSettings {" + i_drawSettings.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -147,6 +149,10 @@ CGraphObj* CObjFactoryLine::createGraphObj(
     }
     return pGraphObj;
 }
+
+/*==============================================================================
+public: // interface methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryLine::saveGraphObj(
@@ -228,7 +234,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path())
-                     + ", ObjName: " + i_strObjName;
+            + ", ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

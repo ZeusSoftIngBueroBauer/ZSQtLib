@@ -62,6 +62,37 @@ class CGraphObjLabelGeometryDX : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjLabelGeometryDX::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjLabelGeometryDX::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryDX::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryDX::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -246,7 +277,7 @@ void CGraphObjLabelGeometryDX::paint(
 
     if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         i_pPainter->save();
-        i_pPainter->setRenderHint(QPainter::Antialiasing);
+        i_pPainter->setRenderHints(s_painterRenderHints);
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);

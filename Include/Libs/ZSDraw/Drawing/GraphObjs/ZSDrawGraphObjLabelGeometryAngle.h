@@ -105,6 +105,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLabelGeometryAngle"; }
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // ctors and dtor
     CGraphObjLabelGeometryAngle(
         CDrawingScene* i_pDrawingScene,
@@ -123,6 +127,8 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     virtual void updatePosition() override;
     virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< The line between the two selection points the label is linked to.
          The line end points are in scene coordinates. */

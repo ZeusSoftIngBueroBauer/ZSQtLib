@@ -110,14 +110,17 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 /*! @brief Creates a graphical line object.
 
-    The number of line objects stored in s_iInstCount is increased to create
-    a unique line name when creating objects by passing an empty object name.
+    The number of lines stored in s_iInstCount is increased.
+    By passing an empty object name the number of created instances is used to
+    create a unique object name.
 
+    @param [in] i_pDrawingScene
+        Pointer to drawing scene from which the object is created.
     @param [in] i_strObjName
         Name of the graphical object.
         Names of graphical objects must be unique below its parent.
-        If an empty string is passed a unique name is created by adding the
-        current number of line objects taken from s_iInstCount to "Line".
+        If an empty string is passed a unique name is created by adding the current
+        number of objects taken from s_iInstCount to the graphical object type.
 */
 CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
@@ -212,8 +215,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CGraphObjLine::~CGraphObjLine()
@@ -258,11 +260,11 @@ CGraphObj* CGraphObjLine::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
+    CGraphObjLine* pGraphObj = new CGraphObjLine(m_pDrawingScene, m_strName);
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CGraphObjLine* pGraphObjLine = new CGraphObjLine(m_pDrawingScene, m_strName);
-    pGraphObjLine->setLine(getLine(drawingSize.unit()));
-    pGraphObjLine->setDrawSettings(m_drawSettings);
-    return pGraphObjLine;
+    pGraphObj->setLine(getLine(drawingSize.unit()));
+    pGraphObj->setDrawSettings(m_drawSettings);
+    return pGraphObj;
 }
 
 /*==============================================================================
@@ -325,7 +327,6 @@ void CGraphObjLine::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld
     if (bDrawSettingsChanged) {
         if (lineEndArrowHeadPolygonsNeedUpdate(ELinePoint::Start, i_drawSettingsOld)) {
             updateLineEndArrowHeadPolygons(ELinePoint::Start);
-            bDrawSettingsChanged = true;
         }
         if (lineEndArrowHeadPolygonsNeedUpdate(ELinePoint::End, i_drawSettingsOld)) {
             updateLineEndArrowHeadPolygons(ELinePoint::End);
@@ -362,7 +363,9 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         /* strObjName   */ path(),
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     QPointF ptPosPrev = pos();
 
@@ -377,8 +380,6 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 
     bool bGeometryOnSceneChanged = false;
 
-    // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
-    // or if the coordinates have been changed ...
     if (m_physValLineScaledAndRotated != i_physValLine) {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
@@ -420,7 +421,9 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         // on the scene of this item is changed.
         bGeometryOnSceneChanged = true;
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
         emit_geometryOnSceneChanged();
@@ -2164,7 +2167,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
-            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
             updateLineEndArrowHeadPolygons();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
@@ -2172,7 +2177,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
     else if (i_change == ItemParentHasChanged) {
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            //tracePositionInfo(mthTracer, EMethodDir::Enter);
+            //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            //    tracePositionInfo(mthTracer, EMethodDir::Enter);
+            //}
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
@@ -2187,7 +2194,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
     else if (i_change == ItemPositionHasChanged) {
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
@@ -2201,7 +2210,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemRotationHasChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -2238,7 +2249,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
 
     if (bGeometryChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Leave);
+        }
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
@@ -2307,7 +2320,9 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
         /* strObjName   */ path(),
         /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     bool bGeometryOnSceneChanged = false;
 
@@ -2374,7 +2389,9 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
             bGeometryOnSceneChanged = true;
         }
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
@@ -2446,7 +2463,9 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged(
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnParentChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
@@ -2457,7 +2476,9 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged(
         setPhysValLineScaled(physValLine);
         setPhysValLineScaledAndRotated(physValLine);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     emit_geometryOnSceneChanged(true);
 }
 
@@ -2473,7 +2494,9 @@ void CGraphObjLine::updateTransformedCoorsOnParentGeometryChanged()
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnParentGeometryChanged",
         /* strAddInfo   */ "" );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
@@ -2485,7 +2508,9 @@ void CGraphObjLine::updateTransformedCoorsOnParentGeometryChanged()
         //physValLine.setAngle(m_physValRotationAngle);
         setPhysValLineScaledAndRotated(physValLine);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     emit_geometryOnSceneChanged(true);
 }
 
@@ -2501,7 +2526,9 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnItemPositionChanged",
         /* strAddInfo   */ "" );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     // ItemChange is called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
@@ -2550,7 +2577,9 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
         setPhysValLineScaledAndRotated(physValLine);
         #endif
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     emit_geometryOnSceneChanged();
 }
 

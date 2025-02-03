@@ -25,31 +25,33 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
-#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextPropertiesDlg.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-#include <QtGui/QBitmap>
 #include <QtGui/qevent.h>
 #include <QtGui/QPainter>
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QMenu>
 #include <QtGui/QStyleOption>
 #else
 #include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QStyleOption>
 #endif
 
@@ -67,16 +69,61 @@ class CGraphObjText : public CGraphObj, public QGraphicsTextitem
 *******************************************************************************/
 
 /*==============================================================================
-protected: // class members
+public: // class members
 ==============================================================================*/
 
 qint64 CGraphObjText::s_iInstCount = 0;
+
+/*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjText::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjText::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates a graphical text object.
+
+    The number of text objects stored in s_iInstCount is increased.
+    By passing an empty object name the number of created instances is used to
+    create a unique object name.
+
+    @param [in] i_pDrawingScene
+        Pointer to drawing scene from which the object is created.
+    @param [in] i_strObjName
+        Name of the graphical object.
+        Names of graphical objects must be unique below its parent.
+        If an empty string is passed a unique name is created by adding the current
+        number of objects taken from s_iInstCount to the graphical object type.
+*/
 CGraphObjText::CGraphObjText(
     CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
@@ -86,7 +133,11 @@ CGraphObjText::CGraphObjText(
         /* type                */ EGraphObjTypeText,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeText),
         /* strObjName          */ i_strObjName.isEmpty() ? "Text" + QString::number(s_iInstCount) : i_strObjName),
-    QGraphicsTextItem()
+    QGraphicsItem(), //QGraphicsTextItem(),
+    m_rectOrig(),
+    m_physValRectOrig(*m_pDrawingScene),
+    m_physValRectScaled(*m_pDrawingScene),
+    m_physValRectScaledAndRotated(*m_pDrawingScene)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -97,6 +148,7 @@ CGraphObjText::CGraphObjText(
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -105,28 +157,81 @@ CGraphObjText::CGraphObjText(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rctBounding = QGraphicsTextItem::boundingRect();
+    m_strlstPredefinedLabelNames.append(c_strLabelName);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopLeft);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopRight);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameBottomLeft);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameBottomRight);
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_ptRotOriginCurr = rctBounding.center();
-#endif
+    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
+        if (!m_hshpLabels.contains(strLabelName)) {
+            if (strLabelName == c_strGeometryLabelNameTopLeft) {
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft);
+            }
+            else if (strLabelName == c_strGeometryLabelNameTopRight) {
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight);
+            }
+            else if (strLabelName == c_strGeometryLabelNameBottomRight) {
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight);
+            }
+            else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft);
+            }
+            else {
+                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+            }
+        }
+    }
 
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
-    setTextInteractionFlags(Qt::TextEditorInteraction);
+    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
+    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        if (strLabelName == c_strGeometryLabelNameTopLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
+        }
+        else if (strLabelName == c_strGeometryLabelNameTopRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
+        }
+        else if (strLabelName == c_strGeometryLabelNameCenter) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameWidth) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameHeight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameAngle) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+    }
 
-    //onDrawSettingsChanged();
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
+            |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
+    setAcceptHoverEvents(true);
 
-    //updateToolTip();
-
-} // ctor
+    //setTextInteractionFlags(Qt::TextEditorInteraction);
+}
 
 //------------------------------------------------------------------------------
 CGraphObjText::~CGraphObjText()
 //------------------------------------------------------------------------------
 {
-    m_bDtorInProgress = true;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -134,9 +239,9 @@ CGraphObjText::~CGraphObjText()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -159,103 +264,57 @@ public: // must overridables of base class CGraphObj
 CGraphObj* CGraphObjText::clone()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "clone",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     CGraphObjText* pGraphObj = new CGraphObjText(m_pDrawingScene, m_strName);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    pGraphObj->setRect(getRect(drawingSize.unit()));
     pGraphObj->setDrawSettings(m_drawSettings);
-
-    pGraphObj->setPlainText( toPlainText() );
-    pGraphObj->setPos( pos() );
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
-    //pGraphObj->setScaleFactors(m_fScaleFacXCurr,m_fScaleFacYCurr);
-    pGraphObj->acceptCurrentAsOriginalCoors();
-#endif
-
+    //pGraphObj->setPlainText(toPlainText());
     return pGraphObj;
-
-} // clone
+}
 
 /*==============================================================================
-public: // replacing methods of QGraphicsTextItem
+public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjText::setHtml( const QString& i_strText )
+/* @brief
+
+    Must be overridden to create a user defined dialog.
+*/
+void CGraphObjText::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = i_strText;
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setHtml",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "openFormatGraphObjsDialog",
+        /* strAddInfo   */ "" );
 
-    QGraphicsTextItem::setHtml(i_strText);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_rctCurr = QGraphicsTextItem::boundingRect();
-#endif
-
-} // setHtml
-
-//------------------------------------------------------------------------------
-void CGraphObjText::setPlainText( const QString& i_strText )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = i_strText;
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Text";
+    CDlgGraphObjTextProperties* pDlg = CDlgGraphObjTextProperties::GetInstance(this);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgGraphObjTextProperties::CreateInstance(strDlgTitle, this);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->setModal(false);
+        pDlg->show();
     }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setPlainText",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsTextItem::setPlainText(i_strText);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_rctCurr = QGraphicsTextItem::boundingRect();
-#endif
-
-} // setPlainText
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QRectF CGraphObjText::rect() const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = QGraphicsTextItem::boundingRect();
-
-    return rctBounding;
-
-} // rect
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -276,187 +335,832 @@ void CGraphObjText::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_drawSettings.isTextUsed() )
-    {
-        QFont fnt = m_drawSettings.getTextFont();
+    bool bDrawSettingsChanged = (m_drawSettings != i_drawSettingsOld);
+    if (bDrawSettingsChanged) {
+        update();
+        emit_drawSettingsChanged();
+    }
+}
 
-        ETextSize textSize = m_drawSettings.getTextSize();
+/*==============================================================================
+public: // replacing methods of QGraphicsTextItem
+==============================================================================*/
 
-        fnt.setPixelSize( textSize2SizeInPixels(textSize) );
+//------------------------------------------------------------------------------
+void CGraphObjText::setHtml( const QString& i_strText )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strText;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHtml",
+        /* strAddInfo   */ strMthInArgs );
 
-        CEnumTextStyle textStyle = m_drawSettings.getTextStyle();
+    //QGraphicsTextItem::setHtml(i_strText);
+}
 
-        bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
-        bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
+//------------------------------------------------------------------------------
+void CGraphObjText::setPlainText( const QString& i_strText )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strText;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPlainText",
+        /* strAddInfo   */ strMthInArgs );
 
-        fnt.setItalic(bItalic);
-        fnt.setBold(bBold);
+    //QGraphicsTextItem::setPlainText(i_strText);
+}
 
-        CEnumTextEffect textEffect = m_drawSettings.getTextEffect();
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
 
-        bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
-        bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
+//------------------------------------------------------------------------------
+/*! @brief Sets the item's rectangle to the given rectangle.
 
-        fnt.setStrikeOut(bStrikeout);
-        fnt.setUnderline(bUnderline);
+    Depending on the Y axis scale orientation of the drawing scene the coordinates
+    must be passed either relative to the top left or relative to the bottom left
+    corner of the parent item's bounding rectangle.
 
-        setFont(fnt);
+    The passed rectangle contains may be rotated (the angle may be in range 0 .. 360°).
 
-        setDefaultTextColor(m_drawSettings.getTextColor());
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        m_rctCurr = QGraphicsTextItem::boundingRect();
-#endif
-
+    @param [in] i_physValRect
+        Rectangle to be set in parent coordinates, depending on the Y scale orientation
+        relative to the top left or bottom left corner of parent item's bounding rectangle.
+*/
+void CGraphObjText::setRect( const CPhysValRect& i_physValRect )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValRect.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRect",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-} // onDrawSettingsChanged
+    QPointF ptPosPrev = pos();
+
+    // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
+    // have been passed either relative to the top left or bottom left corner of the
+    // parent item's bounding rectangle.
+    // The coordinates need to be transformed into the local coordinate system of the graphical
+    // object whose origin point is the center of the objects bounding rectangle.
+
+    QRectF rectF;
+    CPhysVal physValAngle;
+    QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
+
+    bool bGeometryOnSceneChanged = false;
+
+    if (m_physValRectScaledAndRotated != i_physValRect) {
+        // Prepare the item for a geometry change. This function must be called before
+        // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
+        QGraphicsItem_prepareGeometryChange();
+
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+            CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+            // Store physical coordinates.
+            CPhysValRect physValRect(i_physValRect);
+            physValRect.setAngle(0.0);
+            setPhysValRectOrig(physValRect);
+            setPhysValRectScaled(physValRect);
+            setPhysValRectScaledAndRotated(i_physValRect);
+
+            // Set the rectangle in local coordinate system.
+            // Also note that itemChange must not overwrite the current values (refCountGuard).
+            setRectOrig(rectF);
+            QGraphicsTextItem_setRect(rectF);
+
+            // Move the object to the parent position.
+            // This has to be done after resizing the groups rectangle which updates the local coordinates
+            // of the rectangle with origin (0/0) at the rectangle's center point.
+            // "setPos" will trigger an itemChange call which will update the position of the
+            // selection points and labels. To position the selection points and labels correctly
+            // the local coordinate system must be up-to-date.
+            // Also note that itemChange must not overwrite the current rectangle coordinates (refCountGuard).
+            if (ptPos != ptPosPrev) {
+                QGraphicsItem_setPos(ptPos);
+            }
+            if (physValAngle != m_physValRotationAngle) {
+                m_physValRotationAngle = physValAngle;
+                QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+            }
+        }
+        // If the geometry of the parent on the scene of this item changes, also the geometry
+        // on the scene of this item is changed.
+        bGeometryOnSceneChanged = true;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
+    // Emit signal after updated position info has been traced.
+    if (bGeometryOnSceneChanged) {
+        emit_geometryOnSceneChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Depending on the Y scale orientation of the drawing scene returns the
+           item's rectangle coordinates either relative to the top left corner or
+           relative to the bottom right corner of the parent's bounding rectangle
+           in the current unit of the drawing scene.
+*/
+CPhysValRect CGraphObjText::getRect() const
+//------------------------------------------------------------------------------
+{
+    return getRect(m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Depending on the Y scale orientation of the drawing scene returns the
+           item's rectangle coordinates either relative to the top left corner or
+           relative to the bottom right corner of the parent's bounding rectangle
+           in the given unit.
+
+    @param [in] i_unit
+        Unit in which the line coordinates should be returned.
+    @param [in] i_rowVersion
+        If set to Current (default), the scaled and rotated coordinates are returned.
+        If set to Original, the unscaled and not rotated coordinates are returned.
+        The Original coordinates are used by childs to calculate the parent's scale factor.
+
+    @return Physical rectangle (scaled and rotated) in parent or scene coordinates,
+            if the object has no parent group.
+*/
+CPhysValRect CGraphObjText::getRect(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (parentGroup() != nullptr) {
+        return parentGroup()->convert(m_physValRectScaledAndRotated, i_unit);
+    }
+    else {
+        return m_pDrawingScene->convert(m_physValRectScaledAndRotated, i_unit);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setCenter(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPoint.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setCenter(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getCenter() const
+//------------------------------------------------------------------------------
+{
+    return getRect().center();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getCenter(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).center();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setSize(const QSizeF& i_size)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qSize2Str(i_size) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setSize",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setSize(i_size);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setSize(const CPhysValSize& i_physValSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValSize.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setSize",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setSize(i_physValSize);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize CGraphObjText::getSize() const
+//------------------------------------------------------------------------------
+{
+    return getRect().size();
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize CGraphObjText::getSize(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).size();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setWidth(double i_fWidth)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fWidth);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setWidth",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidth(i_fWidth);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setWidth(const CPhysVal& i_physValWidth)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValWidth.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setWidth",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidth(i_physValWidth);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setWidthByMovingLeftCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qPoint2Str(i_pt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setWidthByMovingLeftCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidthByMovingLeftCenter(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValPoint.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setWidthByMovingLeftCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidthByMovingLeftCenter(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setWidthByMovingRightCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qPoint2Str(i_pt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setWidthByMovingRightCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidthByMovingRightCenter(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValPoint.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setWidthByMovingRightCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidthByMovingRightCenter(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjText::getWidth() const
+//------------------------------------------------------------------------------
+{
+    return getRect().width();
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjText::getWidth(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).width();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setHeight(double i_fHeight)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fHeight);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHeight",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeight(i_fHeight);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setHeight(const CPhysVal& i_physValHeight)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValHeight.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHeight",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeight(i_physValHeight);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setHeightByMovingTopCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qPoint2Str(i_pt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHeightByMovingTopCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeightByMovingTopCenter(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValPoint.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHeightByMovingTopCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeightByMovingTopCenter(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setHeightByMovingBottomCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qPoint2Str(i_pt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHeightByMovingBottomCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeightByMovingBottomCenter(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValPoint.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setHeightByMovingBottomCenter",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeightByMovingBottomCenter(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjText::getHeight() const
+//------------------------------------------------------------------------------
+{
+    return getRect().height();
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjText::getHeight(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).height();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setTopLeft(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTopLeft",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setTopLeft(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setTopLeft(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPoint.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTopLeft",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setTopLeft(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getTopLeft() const
+//------------------------------------------------------------------------------
+{
+    return getRect().topLeft();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getTopLeft(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).topLeft();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setTopRight(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTopRight",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setTopRight(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setTopRight(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPoint.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTopRight",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setTopRight(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getTopRight() const
+//------------------------------------------------------------------------------
+{
+    return getRect().topRight();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getTopRight(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).topRight();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setBottomRight(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setBottomRight",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setBottomRight(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setBottomRight(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPoint.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setBottomRight",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setBottomRight(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getBottomRight() const
+//------------------------------------------------------------------------------
+{
+    return getRect().bottomRight();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getBottomRight(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).bottomRight();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setBottomLeft(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setBottomLeft",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setBottomLeft(i_pt);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::setBottomLeft(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPoint.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setBottomLeft",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setBottomLeft(i_physValPoint);
+    setRect(physValRect);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getBottomLeft() const
+//------------------------------------------------------------------------------
+{
+    return getRect().bottomLeft();
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObjText::getBottomLeft(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getRect(i_unit).bottomLeft();
+}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CGraphObjText::setIsHit( bool i_bHit )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs = "Hit:" + bool2Str(i_bHit);
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "setIsHit",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if( m_bIsHit != i_bHit )
-//    {
-//        m_bIsHit = i_bHit;
-//
-//        update();
-//    }
-//
-//} // setIsHit
+//------------------------------------------------------------------------------
+/*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
+           around the Z axis.
 
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
+    @note This method must be overwritten. Otherwise because of implicit conversion
+          instead of setRotationAngle(double) the overloaded method
+          setRotationAngle(const CPhysVal&) would be called. And the physValAngle
+          value would not contain the unit.
 
-////------------------------------------------------------------------------------
-//bool CGraphObjText::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = "Point:" + point2Str(i_pt) +
-//            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) +
-//            ", Rect(x,y,w,h):" + rect2Str(rect());
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "isHit",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    bool bIsHit = false;
-//
-//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//
-//    if (pGraphicsItem != nullptr) {
-//        if (pGraphicsItem->isSelected()) {
-//            bIsHit = isBoundingRectSelectionPointHit(
-//                /* pt               */ i_pt,
-//                /* iSelPtsCount     */ -1,
-//                /* pSelPts          */ nullptr,
-//                /* pGraphObjHitInfo */ o_pHitInfo );
-//        }
-//        if (!bIsHit) {
-//            QRectF rct = rect();
-//            bIsHit = isRectHit(rct, EFillStyle::None, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo);
-//            if (bIsHit) {
-//                // Text items cannot be resized by mouse cursor:
-//                if (o_pHitInfo != nullptr/* && o_pHitInfo->m_editMode == EEditMode::Resize*/) {
-//                    //o_pHitInfo->m_editMode = EEditMode::Move;
-//                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-//                }
-//            }
-//            else {
-//                bIsHit = isRectHit(rct, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo);
-//                // If "inside" the text item ...
-//                if (bIsHit) {
-//                    if (o_pHitInfo != nullptr/*&& o_pHitInfo->m_editMode == EEditMode::Move*/) {
-//                        //o_pHitInfo->m_editMode = EEditMode::EditText;
-//                        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-//                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-//                    }
-//                }
-//            }
-//        }
-//        if (!bIsHit) {
-//            if (pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern) {
-//                bIsHit = pGraphicsItem->contains(i_pt);
-//                if (o_pHitInfo != nullptr) {
-//                    //o_pHitInfo->m_editMode = EEditMode::EditText;
-//                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-//                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-//                    o_pHitInfo->m_idxLineSegment = -1;
-//                    o_pHitInfo->m_ptHit = i_pt;
-//                }
-//            }
-//        }
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//        if( bIsHit && o_pHitInfo != nullptr )
-//        {
-//            o_pHitInfo->setCursor( Math::degree2Rad(m_fRotAngleCurr_deg) );
-//        }
-//#endif
-//    } // if( pGraphicsItem != nullptr )
-//
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        QString strMthOutArgs;
-//        if (o_pHitInfo != nullptr) {
-//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-//            mthTracer.setMethodOutArgs(strMthOutArgs);
-//        }
-//        mthTracer.setMethodReturn(bIsHit);
-//    }
-//    return bIsHit;
-//}
+    @param [in] i_fAngle_degree
+        Rotation angle in degree.
+*/
+void CGraphObjText::setRotationAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fAngle_degree, 'f', 3);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
 
-/*==============================================================================
-public: // reimplementing methods of base class QGraphicItem
-==============================================================================*/
+    setRotationAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
+}
 
-////------------------------------------------------------------------------------
-//void CGraphObjText::setCursor( const QCursor& i_cursor )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs = qCursorShape2Str(i_cursor.shape());
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "setCursor",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    QGraphicsTextItem::setCursor(i_cursor);
-//
-//} // setCursor
+//------------------------------------------------------------------------------
+void CGraphObjText::setRotationAngle(const CPhysVal& i_physValAngle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValAngle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setAngle(i_physValAngle);
+    setRect(physValRect);
+}
 
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
@@ -477,10 +1181,10 @@ void CGraphObjText::showSelectionPoints(TSelectionPointTypes i_selPts)
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    if (QGraphicsObject::parent() == nullptr) {
-        unsigned char selPts = i_selPts & c_uSelectionPointsBoundingRectRotate;
-        showSelectionPointsOfBoundingRect( rect(), selPts );
-    }
+    //if (QGraphicsObject::parent() == nullptr) {
+    //    unsigned char selPts = i_selPts & c_uSelectionPointsBoundingRectRotate;
+    //    //showSelectionPointsOfBoundingRect(rect(), selPts);
+    //}
 }
 
 /*==============================================================================
@@ -495,7 +1199,7 @@ QRectF CGraphObjText::boundingRect() const
 
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strMthInArgs = "TextWidth:" + QString::number(textWidth());
+        //strMthInArgs = "TextWidth:" + QString::number(textWidth());
     }
 
     CMethodTracer mthTracer(
@@ -505,7 +1209,8 @@ QRectF CGraphObjText::boundingRect() const
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rctBounding = QGraphicsTextItem::boundingRect();
+    //QRectF rctBounding = QGraphicsTextItem::boundingRect();
+    QRectF rctBounding; // = QGraphicsItem::boundingRect();
 
     CGraphObjSelectionPoint* pGraphObjSelPt;
     QRectF                   rctSelPt;
@@ -562,10 +1267,34 @@ QRectF CGraphObjText::boundingRect() const
 } // boundingRect
 
 //------------------------------------------------------------------------------
+/*! @brief Reimplements QGraphicsItem::shape.
+*/
+QPainterPath CGraphObjText::shape() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "shape",
+        /* strAddInfo   */ "" );
+
+    QPainterPath painterPath = QGraphicsItem::shape();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
+        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
+        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return painterPath;
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjText::paint(
-    QPainter*                       i_pPainter,
+    QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,
-    QWidget*                        i_pWdgt )
+    QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -583,7 +1312,8 @@ void CGraphObjText::paint(
 
     QPen pn;
 
-    QRectF rct = QGraphicsTextItem::boundingRect();
+    //QRectF rct = QGraphicsTextItem::boundingRect();
+    QRectF rct; // = QGraphicsItem::boundingRect();
 
     if( m_drawSettings.getFillStyle() != EFillStyle::None )
     {
@@ -667,14 +1397,14 @@ void CGraphObjText::paint(
             i_pPainter->drawRect(rct);
         }
 
-        else if( toPlainText().isEmpty() )
-        {
-            pn.setColor(Qt::black);
-            pn.setStyle(Qt::DotLine);
+        //else if( toPlainText().isEmpty() )
+        //{
+        //    pn.setColor(Qt::black);
+        //    pn.setStyle(Qt::DotLine);
 
-            i_pPainter->setPen(pn);
-            i_pPainter->drawRect(rct);
-        }
+        //    i_pPainter->setPen(pn);
+        //    i_pPainter->drawRect(rct);
+        //}
     } // if( m_pDrawingScene->getMode() == EMode::Edit )
 
     else // if( m_pDrawingScene->getMode() == EMode::View )
@@ -701,7 +1431,8 @@ void CGraphObjText::paint(
     styleOption.state &= ~QStyle::State_Selected;
     styleOption.state &= ~QStyle::State_HasFocus;
 
-    QGraphicsTextItem::paint(i_pPainter,&styleOption,i_pWdgt);
+    //QGraphicsTextItem::paint(i_pPainter,&styleOption,i_pWdgt);
+    //QGraphicsItem::paint(i_pPainter,&styleOption,i_pWdgt);
 
 } // paint
 
@@ -1319,7 +2050,8 @@ void CGraphObjText::keyPressEvent( QKeyEvent* i_pEv )
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsTextItem::keyPressEvent(i_pEv);
+    //QGraphicsTextItem::keyPressEvent(i_pEv);
+    QGraphicsItem::keyPressEvent(i_pEv);
 
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = QGraphicsTextItem::boundingRect();
@@ -1342,11 +2074,8 @@ void CGraphObjText::keyReleaseEvent( QKeyEvent* i_pEv )
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsTextItem::keyReleaseEvent(i_pEv);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_rctCurr = QGraphicsTextItem::boundingRect();
-#endif
+    //QGraphicsTextItem::keyReleaseEvent(i_pEv);
+    QGraphicsItem::keyReleaseEvent(i_pEv);
 
 } // keyReleaseEvent
 
@@ -1454,3 +2183,282 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
     return valChanged;
 
 } // itemChange
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the item position relative to the parent item or drawing scene
+           as well as the item coordinates in local coordinates.
+
+    @param [in] i_physValRect
+        Rectangle in parent coordinates, depending on the Y scale orientation
+        relative to the top left or bottom left corner of parent item's bounding
+        rectangle. If the item belongs to a parent group the passed rectangle
+        must have been resized and the center must have been moved according to the
+        parents scale factors.
+    @param [out] o_rectF
+        Rectangle coordinates in local coordinates.
+    @param [out] o_physValAngle
+        The rotatian angle of the passed rectangle.
+*/
+QPointF CGraphObjText::getItemPosAndLocalCoors(
+    const CPhysValRect& i_physValRect, QRectF& o_rect, CPhysVal& o_physValAngle) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getItemPosAndLocalCoors",
+        /* strAddInfo   */ strMthInArgs );
+
+    // First determine the position of the item in the parent's (scene or group) coordinate system.
+    CPhysValRect physValRectTmp(i_physValRect);
+    // For the graphics item the rotation angle is set explicitly applied to the unrotated coordinates.
+    o_physValAngle = physValRectTmp.angle();
+    physValRectTmp.setAngle(0.0);
+    if (parentGroup() != nullptr) {
+        physValRectTmp = parentGroup()->convert(physValRectTmp, Units.Length.px);
+    }
+    else {
+        physValRectTmp = m_pDrawingScene->convert(physValRectTmp, Units.Length.px);
+    }
+    o_rect = QRectF(physValRectTmp.topLeft().toQPointF(), physValRectTmp.size().toQSizeF());
+
+    // Transform the parent coordinates into local coordinate system.
+    // The origin is the center point of the rectangle.
+    QPointF ptPos = o_rect.center(); // rect here still in parent or scene coordinates
+    QPointF ptTL = o_rect.topLeft() - ptPos;
+    QPointF ptBR = o_rect.bottomRight() - ptPos;
+    o_rect = QRectF(ptTL, ptBR); // rect now in local coordinates
+
+    if (parentGroup() != nullptr) {
+        ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthOutArgs = "Rect {" + qRect2Str(o_rect) + "}, Angle: " + o_physValAngle.toString();
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
+    }
+    return ptPos;
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Set the original, untransformed (not scaled, not rotated) rectangle
+           coordinates in local coordinates relative to the origin of the
+           groups bounding rectangle
+
+    @param [in] i_rect
+        Rectangle coordinates in local coordinates to be set.
+
+    @return Previous original rectangle coordinates.
+*/
+QRectF CGraphObjText::setRectOrig(const QRectF& i_rect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + qRect2Str(i_rect) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRectOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectPrev = m_rectOrig;
+    m_rectOrig = i_rect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
+    }
+    return rectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled but not rotated line coordinates in local
+           coordinates relative to the origin of the item's bounding rectangle.
+
+    @param [in] i_line
+        Coordinates to be set.
+
+    @return Previous coordinates.
+*/
+QRectF CGraphObjText::QGraphicsTextItem_setRect(const QRectF& i_rect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + qRect2Str(i_rect) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsTextItem_setRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectPrev; // = QGraphicsItem::rect();
+    //QGraphicsItem::setRect(i_rect);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
+    }
+    return rectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled but not rotated line coordinates in local
+           coordinates relative to the origin of the item's bounding rectangle.
+
+    @param [in] i_fX1, i_fY1, i_fX2, i_fY2
+        Line coordinates to be set.
+
+    @return Previous line coordinates.
+*/
+QRectF CGraphObjText::QGraphicsTextItem_setRect(double i_fX, double i_fY, double i_fWidth, double i_fHeight)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + qRect2Str(QRectF(i_fX, i_fY, i_fWidth, i_fHeight)) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsTextItem_setRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectPrev; // = QGraphicsItem::rect();
+    //QGraphicsItem::setRect(QRectF(i_fX, i_fY, i_fWidth, i_fHeight));
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qRect2Str(rectPrev));
+    }
+    return rectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the original, untransformed (not scaled, not rotated) rectangle
+           coordinates with unit in parent coordinates relative to the top left
+           or bottom left corner of the parent.
+
+    @param [in] i_physValRect
+        Rectangle coordinates relative to the parent (or scene) to be set.
+
+    @return Previous original rectangle coordinates.
+*/
+CPhysValRect CGraphObjText::setPhysValRectOrig(const CPhysValRect& i_physValRect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPhysValRectOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectPrev = m_physValRectOrig;
+    m_physValRectOrig = i_physValRect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
+    }
+    return physValRectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled but not rotated rectangle coordinates with unit in
+           parent coordinates relative to the top left or bottom left corner of
+           the parent.
+
+    @param [in] i_physValRect
+        Rectangle coordinates relative to the parent (or scene) to be set.
+
+    @return Previous rectangle coordinates.
+*/
+CPhysValRect CGraphObjText::setPhysValRectScaled(const CPhysValRect& i_physValRect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPhysValRectScaled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectPrev = m_physValRectScaled;
+    m_physValRectScaled = i_physValRect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
+    }
+    return physValRectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled and rotated rectangle coordinates with unit in parent
+           coordinates relative to the top left or bottom left corner of the parent.
+
+    @param [in] i_physValRect
+        Rectangle coordinates relative to the parent (or scene) to be set.
+
+    @return Previous rectangle coordinates.
+*/
+CPhysValRect CGraphObjText::setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPhysValRectScaledAndRotated",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectPrev = m_physValRectScaledAndRotated;
+    m_physValRectScaledAndRotated = i_physValRect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
+    }
+    return physValRectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+
+    As the prepareGeometryChange method is a protected method of QGraphicsItem
+    this method must be reimplemented by the derived classes.
+*/
+void CGraphObjText::QGraphicsItem_prepareGeometryChange()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsItem_prepareGeometryChange",
+        /* strAddInfo   */ "" );
+
+    prepareGeometryChange();
+}

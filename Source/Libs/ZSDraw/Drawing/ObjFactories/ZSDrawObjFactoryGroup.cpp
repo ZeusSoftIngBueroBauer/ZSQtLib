@@ -147,6 +147,10 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
     return pGraphObj;
 }
 
+/*==============================================================================
+public: // interface methods
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryGroup::saveGraphObj(
     CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const

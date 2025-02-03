@@ -84,6 +84,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLabel"; }
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // ctors and dtor
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
@@ -172,6 +176,8 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
     //    ZS::System::CMethodTracer& i_mthTracer,
     //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
     //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< Key and selection point(s) of the label. */
     SLabelDscr m_labelDscr;

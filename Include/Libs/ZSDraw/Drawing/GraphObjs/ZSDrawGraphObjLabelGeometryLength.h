@@ -70,6 +70,10 @@ public: // ctors and dtor
         const SGraphObjSelectionPoint& i_selPt1,
         const SGraphObjSelectionPoint& i_selPt2);
     virtual ~CGraphObjLabelGeometryLength();
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
@@ -81,6 +85,8 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     virtual void updatePosition() override;
     virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< Draw settings used to draw the arrow heads at the ends of anchor line 2. */
     CDrawSettings m_drawSettingsArrowHeads;

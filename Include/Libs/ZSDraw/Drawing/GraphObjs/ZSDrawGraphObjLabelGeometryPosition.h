@@ -44,6 +44,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLabelGeometryPosition"; }
+public: // class methods
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
 public: // ctors and dtor
     CGraphObjLabelGeometryPosition(
         CDrawingScene* i_pDrawingScene,
@@ -56,6 +60,8 @@ public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;
+protected: // class members
+    static QPainter::RenderHints s_painterRenderHints;
 
 }; // class CGraphObjLabelGeometryPosition
 

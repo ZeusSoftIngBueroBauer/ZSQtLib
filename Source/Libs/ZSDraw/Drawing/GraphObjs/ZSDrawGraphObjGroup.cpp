@@ -266,7 +266,7 @@ void CGraphObjGroup::initInstance()
     }
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
-           | QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+            |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 }
@@ -461,7 +461,9 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         /* strObjName   */ path(),
         /* strMethod    */ "addToGroup",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
     if (i_pGraphObj == nullptr) {
@@ -564,7 +566,9 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         i_pGraphObj->blockItemChangeUpdatePhysValCoors(false);
         i_pGraphObj->onParentGroupChanged(pGraphObjGroupPrev, this);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -588,7 +592,9 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         /* strObjName   */ path(),
         /* strMethod    */ "removeFromGroup",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
     if (i_pGraphObj == nullptr) {
@@ -613,7 +619,9 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         i_pGraphObj->blockItemChangeUpdatePhysValCoors(false);
         i_pGraphObj->onParentGroupChanged(this, pGraphObjGroupNew);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -628,7 +636,9 @@ void CGraphObjGroup::resizeToContent()
         /* strObjName   */ path(),
         /* strMethod    */ "resizeToContent",
         /* strAddInfo   */ "" );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     // Remember current position of this group in parent coordinates.
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -702,7 +712,9 @@ void CGraphObjGroup::resizeToContent()
             }
         }
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -759,7 +771,9 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         /* strObjName   */ path(),
         /* strMethod    */ "setRect",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     QPointF ptPosPrev = pos();
 
@@ -775,10 +789,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
 
     bool bGeometryOnSceneChanged = false;
 
-    // If the coordinates MUST be updated
-    // (initially set, changed or after the drawing size has been changed)
-    if (m_rectOrig.isNull() || m_physValRectOrig.isNull() || m_rectOrig != rectF || m_physValRectOrig != i_physValRect || m_physValRotationAngle != i_physValRect.angle() || m_bForceConversionToSceneCoors)
-    {
+    if (m_physValRectScaledAndRotated != i_physValRect) {
         updateDivLinesMetrics(rectF.size(), QSizeF(i_physValRect.width().getVal(), i_physValRect.height().getVal()));
 
         // Prepare the item for a geometry change. This function must be called before
@@ -818,7 +829,9 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         // on the scene of this item is changed.
         bGeometryOnSceneChanged = true;
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
         emit_geometryOnSceneChanged();
@@ -3162,7 +3175,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
-            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
             //updateInternalScenePos();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
@@ -3170,7 +3185,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
     else if (i_change == ItemParentHasChanged) {
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            //tracePositionInfo(mthTracer, EMethodDir::Enter);
+            //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            //    tracePositionInfo(mthTracer, EMethodDir::Enter);
+            //}
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
@@ -3181,7 +3198,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
     else if (i_change == ItemPositionHasChanged) {
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
@@ -3192,7 +3211,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemRotationHasChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -3245,7 +3266,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     if (bGeometryChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Leave);
+        }
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
@@ -3314,7 +3337,9 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
         /* strObjName   */ path(),
         /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     bool bGeometryOnSceneChanged = false;
 
@@ -3380,7 +3405,9 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
             bGeometryOnSceneChanged = true;
         }
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
@@ -3518,7 +3545,9 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnParentChanged",
         /* strAddInfo   */ strMthInArgs );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
@@ -3547,7 +3576,9 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged(
         physValRect.setAngle(m_physValRotationAngle);
         setPhysValRectScaledAndRotated(physValRect);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     emit_geometryOnSceneChanged(true);
 }
 
@@ -3563,7 +3594,9 @@ void CGraphObjGroup::updateTransformedCoorsOnParentGeometryChanged()
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnParentGeometryChanged",
         /* strAddInfo   */ "" );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     // ItemChange will be called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
@@ -3576,7 +3609,9 @@ void CGraphObjGroup::updateTransformedCoorsOnParentGeometryChanged()
         physValRect.setAngle(m_physValRotationAngle);
         setPhysValRectScaledAndRotated(physValRect);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     emit_geometryOnSceneChanged(true);
 }
 
@@ -3592,7 +3627,9 @@ void CGraphObjGroup::updateTransformedCoorsOnItemPositionChanged()
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnItemPositionChanged",
         /* strAddInfo   */ "" );
-    tracePositionInfo(mthTracer, EMethodDir::Enter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     // ItemChange will be called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
@@ -3604,7 +3641,9 @@ void CGraphObjGroup::updateTransformedCoorsOnItemPositionChanged()
         physValRect.setAngle(m_physValRotationAngle);
         setPhysValRectScaledAndRotated(physValRect);
     }
-    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
     emit_geometryOnSceneChanged();
 }
 
@@ -4315,7 +4354,7 @@ protected: // overridables
 //        /* strObjName   */ path(),
 //        /* strMethod    */ "applyGeometryChangeToChildrens",
 //        /* strAddInfo   */ "" );
-//    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
 //        tracePositionInfo(mthTracer);
 //    }
 //

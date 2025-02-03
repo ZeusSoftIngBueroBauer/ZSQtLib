@@ -138,7 +138,7 @@ CWdgtFormatGraphObjsText::CWdgtFormatGraphObjsText(
     //-----------
 
     m_pEdtText = new QTextEdit();
-    m_pEdtText->setText( pGraphObjText->toPlainText() );
+    //m_pEdtText->setText( pGraphObjText->toPlainText() );
     m_pLytWdgtText->addWidget(m_pEdtText);
     m_pLytWdgtText->addStretch();
 
@@ -234,7 +234,7 @@ void CWdgtFormatGraphObjsText::resetChanges()
 
     if( m_pEdtText != nullptr )
     {
-        m_pEdtText->setPlainText( pGraphObjText->toPlainText() );
+        //m_pEdtText->setPlainText( pGraphObjText->toPlainText() );
     }
 
 } // resetChanges
@@ -264,7 +264,7 @@ bool CWdgtFormatGraphObjsText::hasChanges() const
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjText == nullptr" );
     }
 
-    QString strText = pGraphObjText->toPlainText();
+    QString strText; // = pGraphObjText->toPlainText();
 
     if( m_pEdtText != nullptr )
     {

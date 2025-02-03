@@ -62,6 +62,37 @@ class CGraphObjLabelGeometryLength : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QPainter::RenderHints CGraphObjLabelGeometryLength::s_painterRenderHints = QPainter::Antialiasing;
+
+/*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPainter::RenderHints CGraphObjLabelGeometryLength::painterRenderHints()
+//------------------------------------------------------------------------------
+{
+    return s_painterRenderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryLength::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = i_renderHints;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryLength::resetPainterRenderHints()
+//------------------------------------------------------------------------------
+{
+    s_painterRenderHints = QPainter::Antialiasing;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -260,6 +291,7 @@ void CGraphObjLabelGeometryLength::paint(
                 i_pPainter->setPen(pn);
                 QBrush brsh(pn.color());
                 i_pPainter->setBrush(brsh);
+                i_pPainter->setRenderHints(s_painterRenderHints);
                 i_pPainter->drawPolygon(m_plgP1ArrowHead);
                 i_pPainter->drawPolygon(m_plgP2ArrowHead);
             }
