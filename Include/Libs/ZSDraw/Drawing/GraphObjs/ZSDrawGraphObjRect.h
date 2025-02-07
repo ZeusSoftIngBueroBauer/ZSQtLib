@@ -110,8 +110,17 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+public: // must overridables of base class CGraphObj
+    virtual QRectF getBoundingRect() const override;
+    virtual QRectF getEffectiveBoundingRectOnScene() const override;
+    virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
+public: // overridables of base class CGraphObj (text labels)
+    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+public: // overridables of base class CGraphObj (geometry labels)
+    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

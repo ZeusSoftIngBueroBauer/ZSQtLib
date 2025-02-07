@@ -351,11 +351,11 @@ void CGraphObjPolygon::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
         // the local coordinate of the selection point. We need to use the scene pos.
         QPointF ptEvLocalPos = mapFromScene(i_pEv->scenePos());
         SGraphObjHitInfo hitInfo;
-        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(ptEvLocalPos) + ")");
         }
         bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
         }
         m_hitInfoOnShowContextMenu = hitInfo;
@@ -1758,11 +1758,11 @@ QCursor CGraphObjPolygon::getProposedCursor(const QPointF& i_pt) const
         }
         else {
             SGraphObjHitInfo hitInfo;
-            if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                 mthTracer.trace("-+ isPolygonHit(" + qPoint2Str(i_pt) + ")");
             }
             bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-            if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                 mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
             }
             if (bIsPolygonHit) {
@@ -2364,145 +2364,6 @@ void CGraphObjPolygon::paint(
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//bool CGraphObjPolygon::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv )
-////------------------------------------------------------------------------------
-//{
-//    //--------------------------------------------------------------------
-//    // Mouse events of selection points will be "watched" to forward those
-//    // events to this item in order to resize and rotate this item.
-//    //--------------------------------------------------------------------
-//
-//    CGraphObjSelectionPoint* pGraphObjSelPtWatched = dynamic_cast<CGraphObjSelectionPoint*>(i_pGraphicsItemWatched);
-//    if (pGraphObjSelPtWatched == nullptr) {
-//        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObjSelPtWatched == nullptr" );
-//    }
-//
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjSceneEventFilter, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = "ItemWatched: " + pGraphObjSelPtWatched->name();
-//        if (isGraphicsSceneHoverEvent(i_pEv)) {
-//            QGraphicsSceneHoverEvent* pHoverEvent = dynamic_cast<QGraphicsSceneHoverEvent*>(i_pEv);
-//            strMthInArgs += ", " + qEventType2Str(i_pEv->type()) + " {" + qGraphicsSceneHoverEvent2Str(pHoverEvent) + "}";
-//        }
-//        else if (isGraphicsSceneMouseEvent(i_pEv)) {
-//            QGraphicsSceneMouseEvent* pMouseEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-//            strMthInArgs += ", " + qEventType2Str(i_pEv->type()) + " {" + qGraphicsSceneMouseEvent2Str(pMouseEvent) + "}";
-//        }
-//        else {
-//            strMthInArgs += ", Event: " + qEventType2Str(i_pEv->type());
-//        }
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjSceneEventFilter,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "sceneEventFilter",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    bool bEventHandled = false;
-//
-//    switch( i_pEv->type() )
-//    {
-//        case QEvent::GraphicsSceneMouseMove:
-//        {
-//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-//            if( pEv != nullptr )
-//            {
-//                QPointF ptEvPos;
-//                for( int i = 0x1; i <= 0x10; i <<= 1 )
-//                {
-//                    Qt::MouseButton button = Qt::MouseButton(i);
-//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-//                    pEv->setButtonDownPos( button, ptEvPos );
-//                }
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-//                pEv->setPos(ptEvPos);
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-//                pEv->setLastPos(ptEvPos);
-//                mouseMoveEvent(pEv);
-//                bEventHandled = true;
-//            }
-//            break;
-//        }
-//        case QEvent::GraphicsSceneMousePress:
-//        {
-//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-//            if( pEv != nullptr )
-//            {
-//                QPointF ptEvPos;
-//                for( int i = 0x1; i <= 0x10; i <<= 1 )
-//                {
-//                    Qt::MouseButton button = Qt::MouseButton(i);
-//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-//                    pEv->setButtonDownPos( button, ptEvPos );
-//                }
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-//                pEv->setPos(ptEvPos);
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-//                pEv->setLastPos(ptEvPos);
-//                mousePressEvent(pEv);
-//                bEventHandled = true;
-//            }
-//            break;
-//        }
-//        case QEvent::GraphicsSceneMouseRelease:
-//        {
-//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-//            if( pEv != nullptr )
-//            {
-//                QPointF ptEvPos;
-//                for( int i = 0x1; i <= 0x10; i <<= 1 )
-//                {
-//                    Qt::MouseButton button = Qt::MouseButton(i);
-//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-//                    pEv->setButtonDownPos( button, ptEvPos );
-//                }
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-//                pEv->setPos(ptEvPos);
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-//                pEv->setLastPos(ptEvPos);
-//                mouseReleaseEvent(pEv);
-//                bEventHandled = true;
-//            }
-//            break;
-//        }
-//        case QEvent::GraphicsSceneMouseDoubleClick:
-//        {
-//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-//            if( pEv != nullptr )
-//            {
-//                QPointF ptEvPos;
-//                for( int i = 0x1; i <= 0x10; i <<= 1 )
-//                {
-//                    Qt::MouseButton button = Qt::MouseButton(i);
-//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-//                    pEv->setButtonDownPos( button, ptEvPos );
-//                }
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-//                pEv->setPos(ptEvPos);
-//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-//                pEv->setLastPos(ptEvPos);
-//                mouseDoubleClickEvent(pEv);
-//                bEventHandled = true;
-//            }
-//            break;
-//        }
-//        default:
-//        {
-//            break;
-//        }
-//
-//    } // switch( i_pEv->type() )
-//
-//    return bEventHandled;
-//
-//} // sceneEventFilter
-
-/*==============================================================================
-protected: // overridables of base class QGraphicsItem
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
@@ -2517,7 +2378,7 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -2529,11 +2390,11 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
             if (m_editMode == EEditMode::ModifyingPolygonPoints) {
                 if (i_pEv->modifiers() & Qt::ControlModifier) {
                     SGraphObjHitInfo hitInfo;
-                    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                         mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
                     }
                     bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                         mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
                     }
                     if (bIsPolygonHit) {
@@ -2545,7 +2406,7 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         QGraphicsItem_setCursor(cursor);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
@@ -2568,7 +2429,7 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -2580,11 +2441,11 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
             if (m_editMode == EEditMode::ModifyingPolygonPoints) {
                 if (i_pEv->modifiers() & Qt::ControlModifier) {
                     SGraphObjHitInfo hitInfo;
-                    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                         mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
                     }
                     bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                         mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
                     }
                     if (bIsPolygonHit) {
@@ -2596,7 +2457,7 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         QGraphicsItem_setCursor(cursor);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
@@ -2619,7 +2480,7 @@ void CGraphObjPolygon::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -2632,11 +2493,11 @@ void CGraphObjPolygon::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
             if (m_editMode == EEditMode::ModifyingPolygonPoints) {
                 if (i_pEv->modifiers() & Qt::ControlModifier) {
                     SGraphObjHitInfo hitInfo;
-                    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                         mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
                     }
                     bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                         mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
                     }
                     if (bIsPolygonHit) {
@@ -2654,7 +2515,7 @@ void CGraphObjPolygon::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         }
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
@@ -2681,7 +2542,7 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
@@ -2708,22 +2569,7 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
             if (!bIgnoreMouseEvent) {
-                // The mouse grabber item got to be changed.
-                //QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-                //CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
-                //bool bAdjustMouseGrabber = pGraphObjSelPtMouseGrabber != nullptr && pGraphObjSelPtMouseGrabber == m_arpSelPtsPolygon.last();
-                //// The previously "last" selection point should no longer be the mouse grabber.
-                //if (bAdjustMouseGrabber) {
-                //    pGraphObjSelPtMouseGrabber->ungrabMouse();
-                //}
                 append(physValPointLast);
-                //// The newly appended selection point should become the new grabber.
-                //if (bAdjustMouseGrabber) {
-                //    pGraphObjSelPtMouseGrabber = m_arpSelPtsPolygon.last();
-                //    if (pGraphObjSelPtMouseGrabber != nullptr) {
-                //        pGraphObjSelPtMouseGrabber->grabMouse();
-                //    }
-                //}
             }
         }
         else if (m_editMode == EEditMode::ModifyingBoundingRect) {
@@ -2737,11 +2583,11 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             // the local coordinate of the selection point. We need to use the scene pos.
             QPointF ptEvLocalPos = mapFromScene(i_pEv->scenePos());
             SGraphObjHitInfo hitInfo;
-            if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                 mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(ptEvLocalPos) + ")");
             }
             bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.getFillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-            if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                 mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
             }
             if (hitInfo.isNull()) {
@@ -2768,7 +2614,6 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         m_pDrawingScene->setMouseGrabber(pGraphObjSelPtMouseGrabber);
                     }
                 }
-                //bCallBaseMouseEventHandler = false;
             }
         }
     }
@@ -2778,14 +2623,13 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             bCallBaseMouseEventHandler = false;
         }
     }
-    //i_pEv->accept();
     if (bCallBaseMouseEventHandler) {
         // Forward the mouse event to the base implementation.
         // This will select the item, creating selection points if not yet created.
         QGraphicsPolygonItem::mousePressEvent(i_pEv);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
@@ -2815,7 +2659,7 @@ void CGraphObjPolygon::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
@@ -2828,27 +2672,8 @@ void CGraphObjPolygon::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // The mouse grabber item got to be kept.
         // The newly appended selection point should remain the new grabber.
         m_pDrawingScene->setMouseGrabber(m_arpSelPtsPolygon.last());
-        //QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-        //CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
-        //bool bAdjustMouseGrabber = pGraphObjSelPtMouseGrabber == nullptr || pGraphObjSelPtMouseGrabber != m_arpSelPtsPolygon.last();
-        //if (bAdjustMouseGrabber) {
-        //    pGraphObjSelPtMouseGrabber->ungrabMouse();
-        //    pGraphObjSelPtMouseGrabber = m_arpSelPtsPolygon.last();
-        //    if (pGraphObjSelPtMouseGrabber != nullptr) {
-        //        pGraphObjSelPtMouseGrabber->grabMouse();
-        //    }
-        //}
     }
     else if (m_editMode == EEditMode::ModifyingBoundingRect) {
-        // If a polygon point has been newly created, the corresponding selection point
-        // has been temporarily set as the mouse grabber to move the polygon point.
-        // Creating the additional polygon point is finished and the selection point
-        // must no longer be the mouse grabber.
-        //QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-        //CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
-        //if (pGraphObjSelPtMouseGrabber != nullptr) {
-        //    pGraphObjSelPtMouseGrabber->ungrabMouse();
-        //}
     }
     else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
         // If a polygon point has been newly created, the corresponding selection point
@@ -2868,7 +2693,7 @@ void CGraphObjPolygon::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
@@ -2898,7 +2723,7 @@ void CGraphObjPolygon::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
@@ -2913,17 +2738,6 @@ void CGraphObjPolygon::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         if (polygon.size() >= 3 && polygon[polygon.size()-1].toPoint() == polygon[polygon.size()-2].toPoint()) {
             removeLast();
         }
-
-        // The mouse grabber item got to be removed.
-        //QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
-        //CGraphObjSelectionPoint* pGraphObjSelPtMouseGrabber = dynamic_cast<CGraphObjSelectionPoint*>(pGraphicsItemMouseGrabber);
-        //bool bAdjustMouseGrabber = pGraphObjSelPtMouseGrabber != nullptr && pGraphObjSelPtMouseGrabber == m_arpSelPtsPolygon.last();
-        //if (bAdjustMouseGrabber) {
-        //    pGraphObjSelPtMouseGrabber->ungrabMouse();
-        //}
-        // While creating the object, the selection points at the polygon points were visible.
-        // Unselect the object to hide (destroy) those selection points.
-        //setSelected(false);
         // The editMode changed signal will be emitted and received by the drawing scene.
         // The drawing scene is informed this way that creation of the object is finished
         // and will unselect the current drawing tool and will select the object under
@@ -2931,7 +2745,7 @@ void CGraphObjPolygon::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         setEditMode(EEditMode::ModifyingBoundingRect);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
@@ -2955,7 +2769,7 @@ void CGraphObjPolygon::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
@@ -2964,7 +2778,7 @@ void CGraphObjPolygon::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     // Forward the mouse event to the base implementation.
     QGraphicsPolygonItem::mouseMoveEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
         traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
@@ -3821,7 +3635,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
         /* strObjName   */ path(),
         /* strMethod    */ "updateLabelsOnPolygonPointsAdded",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceThisPositionInfo(mthTracer, EMethodDir::Enter);
     }
     if (m_idxsAdded.second > 0) {
@@ -3938,7 +3752,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
         /* strObjName   */ path(),
         /* strMethod    */ "updateLabelsOnPolygonPointsRemoved",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceThisPositionInfo(mthTracer, EMethodDir::Enter);
     }
     if (m_idxsRemoved.second > 0) {

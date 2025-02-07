@@ -4235,7 +4235,7 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::setEditMode",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -4272,7 +4272,7 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         }
         emit_editModeChanged(m_editMode, modePrev);
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
@@ -4707,22 +4707,6 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(
         physValPos = m_pDrawingScene->convert(ptPos, i_unit);
     }
     return physValPos;
-    //CPhysValRect physValRctBounding = getPhysValBoundingRect(i_unit);
-    //CPhysValPoint physValPoint(*m_pDrawingScene);
-    //if (i_selPt == ESelectionPoint::RotateTop) {
-    //    physValPoint = physValRctBounding.topCenter();
-    //    CPhysVal physValDistance(getSelectionPointRotateDistance(), Units.Length.px);
-    //    physValPoint.setY(physValPoint.y().getVal() - physValDistance.getVal(i_unit));
-    //}
-    //else if (i_selPt == ESelectionPoint::RotateBottom) {
-    //    physValPoint = physValRctBounding.bottomCenter();
-    //    CPhysVal physValDistance(getSelectionPointRotateDistance(), Units.Length.px);
-    //    physValPoint.setY(physValPoint.y().getVal() - physValDistance.getVal(i_unit));
-    //}
-    //else {
-    //    physValPoint = physValRctBounding.selectionPoint(i_selPt);
-    //}
-    //return physValPoint;
 }
 
 //------------------------------------------------------------------------------
@@ -4763,12 +4747,6 @@ QPointF CGraphObj::getPositionOfSelectionPointInSceneCoors(
         ptScenePos = pGraphicsItem->mapToScene(ptPos);
     }
     return ptScenePos;
-    //CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
-    //CPhysValPoint physValPoint = physValRctBounding.selectionPoint(i_selPt);
-    //if (parentGroup() != nullptr) {
-    //    physValPoint = parentGroup()->mapToScene(physValPoint);
-    //}
-    //return physValPoint.toQPointF();
 }
 
 //------------------------------------------------------------------------------

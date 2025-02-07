@@ -1964,50 +1964,96 @@ protected: // overridables of base class QGraphicsItem
 QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
 //------------------------------------------------------------------------------
 {
-    if( m_bDtorInProgress )
-    {
+    if (m_bDtorInProgress) {
+        return i_value;
+    }
+    if (m_iItemChangeBlockedCounter > 0) {
         return i_value;
     }
 
+    CTrcAdminObj* pTrcAdminObj = selectTraceAdminObj(i_change);
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = qGraphicsItemChange2Str(i_change, i_value);
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer);
+    }
+
+    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
     QVariant valChanged = i_value;
 
+    bool bGeometryChanged = false;
+    bool bSelectedChanged = false;
     bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
 
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
+            bGeometryChanged = true;
+            bTreeEntryChanged = true;
         }
     }
+    else if (i_change == ItemParentHasChanged) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+        }
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemPositionHasChanged) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
+            // If the item is not a group and as long as the item is not added as a child to
+            // a group, the current (transformed) and original coordinates are equal.
+            // If the item is a child of a group, the current (transformed) coordinates are only
+            // taken over as the original coordinates if initially creating the item or when
+            // adding the item to or removing the item from a group.
+            updateTransformedCoorsOnItemPositionChanged();
+            bGeometryChanged = true;
+        }
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemRotationHasChanged) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
+        bGeometryChanged = true;
+        bTreeEntryChanged = true;
+    }
     else if (i_change == ItemSelectedHasChanged) {
-        QGraphicsItem_prepareGeometryChange();
+        //QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
-            //if (m_editMode == EEditMode::Creating) {
-            //    showSelectionPoints(
-            //        ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
-            //}
-            //else {
-            //    showSelectionPoints();
-            //}
+            if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
+                showSelectionPoints(c_uSelectionPointsPolygonPoints);
+                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
+            else if (m_editMode == EEditMode::ModifyingBoundingRect) {
+                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+            }
+            else /*if (m_editMode == EEditMode::None)*/ {
+                hideSelectionPoints();
+            }
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
-            setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else {
-            setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             //m_editMode = EEditMode::None;
@@ -2015,35 +2061,23 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
             //m_selPtSelectedBoundingRect = ESelectionPoint::None;
             //m_idxSelPtSelectedPolygon = -1;
         }
-        //updateEditInfo();
-        //updateToolTip();
+        bSelectedChanged = true;
         bTreeEntryChanged = true;
-    }
-    else if (i_change == ItemTransformHasChanged) {
-        //updateEditInfo();
-        //updateToolTip();
-    }
-    else if( i_change == ItemTransformChange
-          || i_change == ItemPositionHasChanged
-          || i_change == ItemParentHasChanged
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemScenePositionHasChanged
-          || i_change == ItemRotationHasChanged
-          || i_change == ItemScaleHasChanged
-          || i_change == ItemTransformOriginPointHasChanged )
-          #else
-          || i_change == ItemScenePositionHasChanged )
-          #endif
-    {
-        //updateTransform();
-        //updateEditInfo();
-        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;
         bTreeEntryChanged = true;
     }
 
+    if (bGeometryChanged) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Leave);
+        }
+        emit_geometryOnSceneChanged();
+    }
+    if (bSelectedChanged) {
+        emit_selectedChanged(isSelected());
+    }
     if (bZValueChanged) {
         emit_zValueChanged(zValue());
     }
@@ -2057,10 +2091,8 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
     }
-
     return valChanged;
-
-} // itemChange
+}
 
 /*==============================================================================
 protected: // auxiliary instance methods

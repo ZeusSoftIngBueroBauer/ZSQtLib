@@ -68,11 +68,11 @@ class QPainterPath;
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
 
-#define TEST_ADD_OBJECTS_STANDARDSHAPES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
@@ -85,8 +85,8 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
@@ -322,9 +322,11 @@ protected slots:
     void doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjTextByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
-    // TODO: to be replaced by doTestStepModifyGraphObjByMouseEvents
     void doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep);
@@ -416,6 +418,7 @@ protected: // instance members
     QPointF m_ptPosRectangle;
     QRectF m_rectRectangle;
     ZS::Draw::CPhysValRect* m_pPhysValRectRectangle = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleRectangle;
 
     // Ellipses
     //-----------
@@ -423,6 +426,7 @@ protected: // instance members
     QPointF m_ptPosEllipse;
     QRectF m_rectEllipse;
     ZS::Draw::CPhysValRect* m_pPhysValRectEllipse = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleEllipse;
 
     // Texts
     //-----------
@@ -430,6 +434,7 @@ protected: // instance members
     QPointF m_ptPosText;
     QRectF m_rectText;
     ZS::Draw::CPhysValRect* m_pPhysValRectText = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleText;
 
     // Polygons
     //----------

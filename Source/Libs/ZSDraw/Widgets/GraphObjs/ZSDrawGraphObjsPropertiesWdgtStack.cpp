@@ -25,9 +25,12 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjEllipsePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPolygonPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjRectPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextPropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
@@ -250,6 +253,18 @@ CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPr
         }
         else if (eGraphObjType == EGraphObjTypeLine) {
             pWidget = new CWdgtGraphObjLineProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeRect) {
+            pWidget = new CWdgtGraphObjRectProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeEllipse) {
+            pWidget = new CWdgtGraphObjEllipseProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeText) {
+            pWidget = new CWdgtGraphObjTextProperties(
                 m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
         }
         else if (eGraphObjType == EGraphObjTypePolyline || eGraphObjType == EGraphObjTypePolygon) {

@@ -89,20 +89,19 @@ CPhysValRect::CPhysValRect(
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
     m_ptCenter(i_rect.center()),
-    m_size(fabs(i_rect.width()), i_rect.height()),
+    m_size(i_rect.width(), i_rect.height()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
 {
-    if (m_bYAxisTopDown) {
-        if (i_rect.topLeft().y() > i_rect.bottomRight().y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
+    if (i_rect.topLeft().y() > i_rect.bottomRight().y()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    else {
-        if (i_rect.topLeft().y() < i_rect.bottomRight().y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
+    else if (i_rect.width() < 0.0) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    else if (i_rect.height() < 0.0) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     initSelectionPoints();
 }
@@ -120,15 +119,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
 {
-    if (m_bYAxisTopDown) {
-        if (i_rect.topLeft().y() > i_rect.bottomRight().y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
+    if (i_rect.topLeft().y() > i_rect.bottomRight().y()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    else {
-        if (i_rect.topLeft().y() < i_rect.bottomRight().y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
+    else if (i_rect.width() < 0.0) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    else if (i_rect.height() < 0.0) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (!m_bYAxisTopDown) {
+        m_ptCenter.setY(i_rect.topLeft().y() - i_rect.size().height()/2.0);
     }
     initSelectionPoints();
 }
@@ -140,11 +141,14 @@ CPhysValRect::CPhysValRect(
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
     m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
-    m_size(fabs(i_ptTL.x() - i_ptBR.x()), fabs(i_ptTL.y() - i_ptBR.y())),
+    m_size(i_ptBR.x() - i_ptTL.x(), fabs(i_ptBR.y() - i_ptTL.y())),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
 {
+    if (i_ptTL.x() > i_ptBR.x()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     if (m_bYAxisTopDown) {
         if (i_ptTL.y() > i_ptBR.y()) {
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -166,11 +170,14 @@ CPhysValRect::CPhysValRect(
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
     m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
-    m_size(fabs(i_ptTL.x() - i_ptBR.x()), fabs(i_ptTL.y() - i_ptBR.y())),
+    m_size(i_ptTL.x() - i_ptBR.x(), fabs(i_ptBR.y() - i_ptTL.y())),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
 {
+    if (i_ptTL.x() > i_ptBR.x()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     if (m_bYAxisTopDown) {
         if (i_ptTL.y() > i_ptBR.y()) {
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -2124,13 +2131,14 @@ public: // instance methods (to convert the values into another unit)
 //------------------------------------------------------------------------------
 /*! @brief Returns a QRectF instance in the current unit of the unrotated rectangle.
 */
-//------------------------------------------------------------------------------
 QRectF CPhysValRect::toQRectF() const
+//------------------------------------------------------------------------------
 {
-    QRectF rect;
-    rect.setSize(m_size);
-    rect.moveCenter(m_ptCenter);
-    return rect;
+    CPhysValRect physValRect = *this;
+    physValRect.setAngle(0.0);
+    QPointF ptTL = physValRect.topLeft().toQPointF();
+    QSizeF size = physValRect.size().toQSizeF();
+    return QRectF(ptTL, size);
 }
 
 //------------------------------------------------------------------------------
