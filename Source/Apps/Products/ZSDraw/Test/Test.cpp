@@ -186,6 +186,10 @@ CTest::~CTest()
 
     delete m_pPhysValRectRectangle;
     m_pPhysValRectRectangle = nullptr;
+    delete m_pPhysValRectCrossVerticalBar;
+    m_pPhysValRectCrossVerticalBar = nullptr;
+    delete m_pPhysValRectCrossHorizontalBar;
+    m_pPhysValRectCrossHorizontalBar = nullptr;
 
     delete m_pPhysValRectEllipse;
     m_pPhysValRectEllipse = nullptr;
@@ -260,6 +264,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // Rectangles
     //-----------
     m_pPhysValRectRectangle = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectCrossVerticalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectCrossHorizontalBar = new CPhysValRect(*m_pDrawingScene);
 
     // Ellipses
     //----------
@@ -4970,13 +4976,25 @@ void CTest::initObjectCoors()
 
     // Rectangles
     //-----------
+
     m_ptPosRectangle = QPointF();
     m_rectRectangle = QRectF();
     *m_pPhysValRectRectangle = CPhysValRect(*m_pDrawingScene);
     m_physValAngleRectangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
+    m_ptPosRectCrossVerticalBar = QPointF();
+    m_rectRectCrossVerticalBar = QRectF();
+    *m_pPhysValRectCrossVerticalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleCrossVerticalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRectCrossHorizontalBar = QPointF();
+    m_rectRectCrossHorizontalBar = QRectF();
+    *m_pPhysValRectCrossHorizontalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleCrossHorizontalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
     // Ellipses
     //----------
+
     m_ptPosEllipse = QPointF();
     m_rectEllipse = QRectF();
     *m_pPhysValRectEllipse = CPhysValRect(*m_pDrawingScene);
@@ -4984,6 +5002,7 @@ void CTest::initObjectCoors()
 
     // Texts
     //----------
+
     m_ptPosText = QPointF();
     m_rectText = QRectF();
     *m_pPhysValRectText = CPhysValRect(*m_pDrawingScene);

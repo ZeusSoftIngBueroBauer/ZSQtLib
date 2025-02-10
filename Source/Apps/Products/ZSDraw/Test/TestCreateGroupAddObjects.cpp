@@ -181,7 +181,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     ZS::Test::CTestStepGroup* pGrpRectanglesRectangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRectangle,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect,
         /* pTSGrpParent */ pGrpRectangles );
     createTestGroupAddStandardShapesRect(pGrpRectanglesRectangle);
     createTestGroupAddStandardShapesRectModifications(pGrpRectanglesRectangle);
@@ -326,7 +326,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     // SmallPlusSign
     //--------------
 
-#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN == 1
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN == 1
 
     ZS::Test::CTestStepGroup* pGrpGroupsSmallPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -349,16 +349,16 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
         /* pTSGrpParent */ pGrpGroupsSmallPlusSign );
 
-    createTestGroupAddStandardShapesGroupSmallPlusSign(pGrpGroupsSmallPlusSignAddShapes);
-    createTestGroupAddStandardShapesGroupSmallPlusSignResize(pGrpGroupsSmallPlusSign);
+    createTestGroupAddStandardShapesGroupLinesSmallPlusSign(pGrpGroupsSmallPlusSignAddShapes);
+    createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(pGrpGroupsSmallPlusSign);
     createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
 
-#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN
 
     // BigPlusSign
     //------------
 
-#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN == 1
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN == 1
 
     ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -386,8 +386,8 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
         /* pTSGrpParent */ pGrpGroupsBigPlusSignRotateTop );
 
-    createTestGroupAddStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateTopAddShapes);
-    createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
+    createTestGroupAddStandardShapesGroupLinesBigPlusSign(pGrpGroupsBigPlusSignRotateTopAddShapes);
+    createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
     createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateTop, 2);
 
     ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateAndResize = new ZS::Test::CTestStepGroup(
@@ -411,16 +411,16 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
         /* pTSGrpParent */ pGrpGroupsBigPlusSignRotateAndResize );
 
-    createTestGroupAddStandardShapesGroupBigPlusSign(pGrpGroupsBigPlusSignRotateAndResizeAddShapes);
-    createTestGroupAddStandardShapesGroupBigPlusSignModfications(pGrpGroupsBigPlusSignRotateAndResize);
+    createTestGroupAddStandardShapesGroupLinesBigPlusSign(pGrpGroupsBigPlusSignRotateAndResizeAddShapes);
+    createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications(pGrpGroupsBigPlusSignRotateAndResize);
     createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateAndResize, 2);
 
-#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN == 1
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN == 1
 
     // PlusSigns
     //----------
 
-#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_PLUSSIGNS == 1
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS == 1
 
     ZS::Test::CTestStepGroup* pGrpGroupsPlusSigns = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -443,16 +443,16 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
         /* pTSGrpParent */ pGrpGroupsPlusSigns );
 
-    createTestGroupAddStandardShapesGroupPlusSigns(pGrpGroupsPlusSignsAddShapes);
-    createTestGroupAddStandardShapesGroupPlusSignsModifications(pGrpGroupsPlusSigns);
+    createTestGroupAddStandardShapesGroupLinesPlusSigns(pGrpGroupsPlusSignsAddShapes);
+    createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(pGrpGroupsPlusSigns);
     createTestStepSaveLoadFile(pGrpGroupsPlusSigns, 1);
 
-#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_PLUSSIGNS
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS
 
     // Checkmark
     //------------
 
-#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CHECKMARK == 1
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK == 1
 
     ZS::Test::CTestStepGroup* pGrpGroupsCheckmark = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -475,11 +475,43 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
         /* pTSGrpParent */ pGrpGroupsCheckmark );
 
-    createTestGroupAddStandardShapesGroupCheckmark(pGrpGroupsCheckmarkAddShapes);
-    createTestGroupAddStandardShapesGroupCheckmarkModifications(pGrpGroupsCheckmark);
+    createTestGroupAddStandardShapesGroupLinesCheckmark(pGrpGroupsCheckmarkAddShapes);
+    createTestGroupAddStandardShapesGroupLinesCheckmarkModifications(pGrpGroupsCheckmark);
     createTestStepSaveLoadFile(pGrpGroupsCheckmark);
 
-#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CHECKMARK
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK
+
+    // Rectangles
+    //-----------
+
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES == 1
+
+    ZS::Test::CTestStepGroup* pGrpGroupsRectangles = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNameCross,
+        /* pTSGrpParent */ pGrpGroups );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpGroupsRectangles,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
+
+    initInstCounts();
+    initObjectCoors();
+
+    ZS::Test::CTestStepGroup* pGrpGroupsRectanglesAddShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
+        /* pTSGrpParent */ pGrpGroupsRectangles );
+
+    createTestGroupAddStandardShapesGroupRectsCross(pGrpGroupsRectanglesAddShapes);
+    createTestGroupAddStandardShapesGroupRectsCrossModifications(pGrpGroupsRectangles);
+    createTestStepSaveLoadFile(pGrpGroupsRectangles, 3);
+
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES
 
     // Polygons
     //---------
@@ -958,8 +990,7 @@ void CTest::createTestGroupAddStandardShapesLinesSmallRect(
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesRect(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -985,6 +1016,13 @@ void CTest::createTestGroupAddStandardShapesRect(
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
     int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+
+    QString strObjName;
+    QString strMethod = "DrawingScene.addGraphObj";
+    QString strMthArgs;
+
     /*-----------------------------------------------------------------------
     Pixels Drawing:
         Size: 800 * 600 Pixels
@@ -994,36 +1032,33 @@ void CTest::createTestGroupAddStandardShapesRect(
         Decimals: 2
     -----------------------------------------------------------------------*/
 
-    ZS::Test::CTestStep* pTestStep = nullptr;
-    QStringList strlstExpectedValues;
-
+    strObjName = c_strGraphObjNameRect;
+    strMthArgs = strObjName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameRectangle + ")",
-        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameRectangle + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
-    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameRectangle, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRectangle));
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRectangle = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     QSizeF sizeRectangle(50.0, 50.0);
     m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectRectangle->setSize(sizeRectangle);
     m_pPhysValRectRectangle->setCenter(m_ptPosRectangle);
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameRectangle);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectRectangle->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        c_strGraphObjNameRectangle, m_ptPosRectangle,
-        m_rectRectangle, *m_pPhysValRectRectangle, iDigits));
+        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, iDigits));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesRectModifications(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1060,20 +1095,19 @@ void CTest::createTestGroupAddStandardShapesRectModifications(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    QString strObjName;
+    QString strObjName = c_strGraphObjNameRect;
     QString strMethod;
     QString strMthArgs;
 
     ZS::Test::CTestStepGroup* pGrpModifyRectangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + c_strGraphObjNameRectangle,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + strObjName,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     // setRotationAngle
     //-----------------
 
     m_physValAngleRectangle.setVal(45.0);
-    strObjName = c_strGraphObjNameRectangle;
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleRectangle.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -1099,7 +1133,6 @@ void CTest::createTestGroupAddStandardShapesRectModifications(
 
     QSizeF sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
     sizeRectangle.setWidth(100.0);
-    strObjName = c_strGraphObjNameRectangle;
     strMethod = "setWidth";
     strMthArgs = QString::number(sizeRectangle.width()) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
@@ -1128,7 +1161,6 @@ void CTest::createTestGroupAddStandardShapesRectModifications(
 
     sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
     sizeRectangle.setHeight(100.0);
-    strObjName = c_strGraphObjNameRectangle;
     strMethod = "setHeight";
     strMthArgs = QString::number(sizeRectangle.height()) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
@@ -1156,7 +1188,6 @@ void CTest::createTestGroupAddStandardShapesRectModifications(
     //--------
 
     sizeRectangle = QSizeF(150.0, 150.0);
-    strObjName = c_strGraphObjNameRectangle;
     strMethod = "setSize";
     strMthArgs = qSize2Str(sizeRectangle);
     pTestStep = new ZS::Test::CTestStep(
@@ -1185,7 +1216,6 @@ void CTest::createTestGroupAddStandardShapesRectModifications(
 
     sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
     sizeRectangle.setWidth(50.0);
-    strObjName = c_strGraphObjNameRectangle;
     strMethod = "setWidth";
     strMthArgs = QString::number(sizeRectangle.width()) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
@@ -1214,7 +1244,6 @@ void CTest::createTestGroupAddStandardShapesRectModifications(
 
     sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
     sizeRectangle.setHeight(50.0);
-    strObjName = c_strGraphObjNameRectangle;
     strMethod = "setHeight";
     strMthArgs = QString::number(sizeRectangle.height()) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
@@ -2339,7 +2368,7 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2349,7 +2378,7 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestSt
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupSmallPlusSign",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesSmallPlusSign",
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -2421,7 +2450,7 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestSt
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2431,7 +2460,7 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::C
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupSmallPlusSignResize",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -2542,7 +2571,7 @@ void CTest::createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::C
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2552,7 +2581,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStep
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSign",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesBigPlusSign",
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -2624,7 +2653,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStep
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2634,7 +2663,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Tes
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSignRotateParent",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateParent",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -2947,7 +2976,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Tes
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2957,7 +2986,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignModfications(ZS::Tes
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupBigPlusSignModfications",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -4073,7 +4102,7 @@ void CTest::createTestGroupAddStandardShapesGroupBigPlusSignModfications(ZS::Tes
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4197,7 +4226,7 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGr
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4207,7 +4236,7 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test
     CMethodTracer mthTracer(+
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupPlusSignsModifications",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesPlusSignsModifications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -5501,7 +5530,7 @@ void CTest::createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5511,7 +5540,7 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGr
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupCheckmark",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesCheckmark",
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -5585,7 +5614,7 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGr
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesGroupLinesCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5595,7 +5624,7 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesGroupCheckmarkModifications",
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupLinesCheckmarkModifications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -5814,6 +5843,142 @@ void CTest::createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test
         c_strGraphObjNameCheckmarkRightLine, m_ptPosCheckmarkRightLine,
         m_lineCheckmarkRightLine, *m_pPhysValLineCheckmarkRightLine));
     pTestStep->setExpectedValues(strlstExpectedValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupRectsCross",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fYAxisMaxVal = 600.0;
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+
+    QString strObjName;
+    QString strMethod = "DrawingScene.addGraphObj";
+    QString strMthArgs;
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
+    -----------------------------------------------------------------------*/
+
+    // Cross-VerticalBar
+    //------------------
+
+    strObjName = c_strGraphObjNameCrossVerticalBar;
+    strMthArgs = strObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_ptPosRectCrossVerticalBar = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    QSizeF sizeRectangle(50.0, 50.0);
+    m_rectRectCrossVerticalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRectCrossVerticalBar->setSize(sizeRectangle);
+    m_pPhysValRectCrossVerticalBar->setCenter(m_ptPosRectCrossVerticalBar);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("Rect", m_pPhysValRectCrossVerticalBar->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strObjName, m_ptPosRectCrossVerticalBar, m_rectRectCrossVerticalBar, *m_pPhysValRectCrossVerticalBar, iDigits));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Cross-HorizontalBar
+    //------------------
+
+    strObjName = c_strGraphObjNameCrossHorizontalBar;
+    strMthArgs = strObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_ptPosRectCrossHorizontalBar = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    sizeRectangle = QSizeF(50.0, 50.0);
+    m_rectRectCrossHorizontalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRectCrossHorizontalBar->setSize(sizeRectangle);
+    m_pPhysValRectCrossHorizontalBar->setCenter(m_ptPosRectCrossHorizontalBar);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("Rect", m_pPhysValRectCrossHorizontalBar->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strObjName, m_ptPosRectCrossHorizontalBar, m_rectRectCrossHorizontalBar, *m_pPhysValRectCrossHorizontalBar, iDigits));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAddStandardShapesGroupRectsCrossModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupRectsCrossModifications",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fYAxisMaxVal = 600.0;
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
+    -----------------------------------------------------------------------*/
+
 }
 
 //------------------------------------------------------------------------------

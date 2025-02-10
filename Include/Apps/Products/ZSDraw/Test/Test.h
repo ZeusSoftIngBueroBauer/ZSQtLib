@@ -74,11 +74,12 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_PLUSSIGNS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CHECKMARK 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
@@ -89,8 +90,8 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 
 #else // TEST_ALL
 
@@ -122,10 +123,10 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_PLUSSIGNS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CHECKMARK 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 1
 
@@ -134,8 +135,8 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_SMALLPLUSSIGN 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_BIGPLUSSIGN 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
 
 #endif // TEST_ALL
 
@@ -194,7 +195,9 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
     // Rectangles
     //-----------
-    const QString c_strGraphObjNameRectangle = "Rectangle";
+    const QString c_strGraphObjNameRect = "Rect";
+    const QString c_strGraphObjNameCrossVerticalBar = "Cross-VerticalBar";
+    const QString c_strGraphObjNameCrossHorizontalBar = "Cross-HorizontalBar";
     // Ellipses
     //-----------
     const QString c_strGraphObjNameEllipse = "Ellipse";
@@ -215,6 +218,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
     const QString c_strGraphObjNameCheckmark = "Checkmark";
     const QString c_strGraphObjNameSmallRect = "SmallRect";
+    const QString c_strGraphObjNameCross = "Cross";
     const QString c_strGraphObjNamePolygons = "Polygons";
 public: // ctors and dtor
     CTest();
@@ -255,15 +259,17 @@ protected: // instance methods
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupRectsCrossModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -284,11 +290,11 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
     void doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep);
@@ -419,6 +425,16 @@ protected: // instance members
     QRectF m_rectRectangle;
     ZS::Draw::CPhysValRect* m_pPhysValRectRectangle = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleRectangle;
+    // Rect-CrossVerticalBar
+    QPointF m_ptPosRectCrossVerticalBar;
+    QRectF m_rectRectCrossVerticalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectCrossVerticalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleCrossVerticalBar;
+    // Rect-CrossHorizontalBar
+    QPointF m_ptPosRectCrossHorizontalBar;
+    QRectF m_rectRectCrossHorizontalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectCrossHorizontalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleCrossHorizontalBar;
 
     // Ellipses
     //-----------
@@ -456,22 +472,22 @@ protected: // instance members
 
     // Groups
     //-------
-    // SmallPlusSign
+    // Lines-SmallPlusSign
     QPointF m_ptPosSmallPlusSign;
     QSizeF m_sizeSmallPlusSign;
     ZS::Draw::CPhysValRect* m_pPhysValRectSmallPlusSign = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleSmallPlusSign;
-    // BigPlusSign
+    // Lines-BigPlusSign
     QPointF m_ptPosBigPlusSign;
     QSizeF m_sizeBigPlusSign;
     ZS::Draw::CPhysValRect* m_pPhysValRectBigPlusSign = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleBigPlusSign;
-    // Checkmark
+    // Lines-Checkmark
     QPointF m_ptPosCheckmark;
     QSizeF m_sizeCheckmark;
     ZS::Draw::CPhysValRect* m_pPhysValRectCheckmark = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleCheckmark;
-    // SmallRect
+    // Lines-SmallRect
     QPointF m_ptPosSmallRect;
     QSizeF m_sizeSmallRect;
     ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
