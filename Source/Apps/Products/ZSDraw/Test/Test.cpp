@@ -212,6 +212,8 @@ CTest::~CTest()
     m_pPhysValRectCheckmark = nullptr;
     delete m_pPhysValRectSmallRect;
     m_pPhysValRectSmallRect = nullptr;
+    delete m_pPhysValRectCross;
+    m_pPhysValRectCross = nullptr;
     delete m_pPhysValRectPolygons;
     m_pPhysValRectPolygons = nullptr;
     delete m_pPhysValRectTopGroup;
@@ -287,6 +289,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallRect = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectCross = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectPolygons = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
@@ -2690,16 +2693,15 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeGroup);
-        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
-        m_pDrawingScene->addGraphObj(pGraphObj);
-        pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactory->createGraphObj(m_pDrawingScene, drawSettings));
         if (pGraphObjGroup != nullptr) {
+            m_pDrawingScene->addGraphObj(pGraphObjGroup);
             pGraphObjGroup->rename(strGraphObjName);
             for (const QString& strGraphObjNameChild : strlstGraphObjsAddToGroup) {
                 strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjNameChild);
-                CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
-                if (pGraphObj != nullptr) {
-                    pGraphObjGroup->addToGroup(pGraphObj);
+                CGraphObj* pGraphObjChild = m_pDrawingScene->findGraphObj(strKeyInTree);
+                if (pGraphObjChild != nullptr) {
+                    pGraphObjGroup->addToGroup(pGraphObjChild);
                 }
             }
         }
@@ -5048,6 +5050,11 @@ void CTest::initObjectCoors()
     m_sizeSmallRect = QSizeF();
     *m_pPhysValRectSmallRect = CPhysValRect(*m_pDrawingScene);
     m_physValAngleSmallRect = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosCross = QPointF();
+    m_sizeCross = QSizeF();
+    *m_pPhysValRectCross = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleCross = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosPolygons = QPointF();
     m_sizePolygons = QSizeF();

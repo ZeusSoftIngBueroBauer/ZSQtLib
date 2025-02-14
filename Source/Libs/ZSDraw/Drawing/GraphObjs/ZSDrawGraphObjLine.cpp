@@ -2313,22 +2313,24 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
     QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
+    CPhysValPoint physValPointParentSelPt(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
-        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
+        physValPointParentSelPt = parentGroup()->convert(ptParentPosSelPt);
     }
     else {
-        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+        physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
 
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
+        disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
         if (selPt.m_idxPt == 0) {
-            setP1(physValParentSelPt);
+            setP1(physValPointParentSelPt);
         }
         else if (selPt.m_idxPt == 1) {
-            setP2(physValParentSelPt);
+            setP2(physValPointParentSelPt);
         }
+        connectGeometryOnSceneChangedSlotWithSelectionPoints();
     }
 }
 
@@ -2424,49 +2426,12 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
     // ItemChange is called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-        #if 0
-        //QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-        //QLineF lineF = line();
-        //double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
-        //if (fRotationAngle_degree != 0.0) {
-        //    QGraphicsItem_setRotation(0.0);
-        //}
-        //if (parentGroup() != nullptr) {
-        //    QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
-        //    QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
-        //    pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
-        //    pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
-        //    CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
-        //    CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-        //    CPhysValLine physValLine(physValPointP1, physValPointP2);
-        //    setPhysValLineOrig(physValLine);
-        //    setPhysValLineScaled(physValLine);
-        //    setPhysValLineScaledAndRotated(physValLine);
-        //}
-        //else {
-        //    // Please note that "mapToScene" maps the local coordinates relative to the
-        //    // top left corner of the item's bounding rectangle and there is no need to
-        //    // call "mapToBoundingRectTopLeft" beforehand.
-        //    QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
-        //    QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
-        //    CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
-        //    CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-        //    CPhysValLine physValLine(physValPointP1, physValPointP2);
-        //    setPhysValLineOrig(physValLine);
-        //    setPhysValLineScaled(physValLine);
-        //    setPhysValLineScaledAndRotated(physValLine);
-        //}
-        //if (fRotationAngle_degree != 0.0) {
-        //    QGraphicsItem_setRotation(fRotationAngle_degree);
-        //}
-        #else
         CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
         setPhysValLineOrig(physValLine);
         physValLine = getPhysValLineScaled(m_physValLineOrig);
         setPhysValLineScaled(physValLine);
         //physValLine.setAngle(m_physValRotationAngle);
         setPhysValLineScaledAndRotated(physValLine);
-        #endif
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Leave);

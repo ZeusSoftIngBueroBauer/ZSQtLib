@@ -136,7 +136,17 @@ protected: // overridables of base class QGraphicsItem
     void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // overridable slots of base class CGraphObj
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+public: // must overridables of base class CGraphObj
+    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
+    virtual void updateTransformedCoorsOnParentGeometryChanged() override;
+    virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
+    QRectF getRectScaled(const QRectF& i_rectOrig) const;
+    CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
+    CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
     QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
 protected: // auxiliary instance methods (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
@@ -146,6 +156,12 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    virtual void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.

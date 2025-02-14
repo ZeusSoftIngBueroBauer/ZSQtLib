@@ -492,6 +492,11 @@ protected: // instance members
     QSizeF m_sizeSmallRect;
     ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
+    // Rects-Cross
+    QPointF m_ptPosCross;
+    QSizeF m_sizeCross;
+    ZS::Draw::CPhysValRect* m_pPhysValRectCross = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleCross;
     // Polygons
     QPointF m_ptPosPolygons;
     QSizeF m_sizePolygons;

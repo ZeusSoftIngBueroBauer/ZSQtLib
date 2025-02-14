@@ -5870,7 +5870,7 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepG
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
@@ -5878,6 +5878,7 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepG
     QString strObjName;
     QString strMethod = "DrawingScene.addGraphObj";
     QString strMthArgs;
+    QStringList strlstGraphObjsAddToGroup;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -5900,11 +5901,11 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepG
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_ptPosRectCrossVerticalBar = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
-    QSizeF sizeRectangle(50.0, 50.0);
+    m_ptPosRectCrossVerticalBar = QPointF(400.0, 300.0);
+    QSizeF sizeRectangle(20.0, 200.0);
     m_rectRectCrossVerticalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectCrossVerticalBar->setSize(sizeRectangle);
-    m_pPhysValRectCrossVerticalBar->setCenter(m_ptPosRectCrossVerticalBar);
+    m_pPhysValRectCrossVerticalBar->setCenter(QPointF(400.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0));
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectCrossVerticalBar->toQRectF());
@@ -5916,7 +5917,7 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepG
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Cross-HorizontalBar
-    //------------------
+    //--------------------
 
     strObjName = c_strGraphObjNameCrossHorizontalBar;
     strMthArgs = strObjName;
@@ -5927,11 +5928,11 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepG
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_ptPosRectCrossHorizontalBar = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
-    sizeRectangle = QSizeF(50.0, 50.0);
+    m_ptPosRectCrossHorizontalBar = QPointF(400.0, 250.0);
+    sizeRectangle = QSizeF(200.0, 20.0);
     m_rectRectCrossHorizontalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectCrossHorizontalBar->setSize(sizeRectangle);
-    m_pPhysValRectCrossHorizontalBar->setCenter(m_ptPosRectCrossHorizontalBar);
+    m_pPhysValRectCrossHorizontalBar->setCenter(QPointF(400.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0));
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectCrossHorizontalBar->toQRectF());
@@ -5940,6 +5941,53 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepG
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
         strObjName, m_ptPosRectCrossHorizontalBar, m_rectRectCrossHorizontalBar, *m_pPhysValRectCrossHorizontalBar, iDigits));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Group Cross
+    //------------
+
+    strObjName = c_strGraphObjNameCross;
+    strMthArgs = strObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_hshGraphObjNameToKeys[c_strGraphObjNameCrossVerticalBar] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, strObjName, c_strGraphObjNameCrossVerticalBar);
+    m_hshGraphObjNameToKeys[c_strGraphObjNameCrossHorizontalBar] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, strObjName, c_strGraphObjNameCrossHorizontalBar);
+    strlstGraphObjsAddToGroup.clear();
+    strlstGraphObjsAddToGroup.append(c_strGraphObjNameCrossVerticalBar);
+    strlstGraphObjsAddToGroup.append(c_strGraphObjNameCrossHorizontalBar);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
+    strlstExpectedValues.clear();
+    // Group
+    m_ptPosCross = QPointF(400.0, 300.0);
+    m_sizeCross = QSizeF(200.0, 200.0);
+    m_pPhysValRectCross->setSize(m_sizeCross);
+    m_pPhysValRectCross->setCenter(QPointF(400.0, bYAxisTopDown ? 300.0 : 300.0));
+    strlstExpectedValues.append(resultValuesForGroup(strObjName, m_ptPosCross, *m_pPhysValRectCross));
+    // Cross-VerticalBar
+    m_ptPosRectCrossVerticalBar = QPointF(0.0, 0.0);
+    m_rectRectCrossVerticalBar = QRectF(QPointF(-10.0, -100.0), QSizeF(20.0, 200.0));
+    m_pPhysValRectCrossVerticalBar->setSize(m_rectRectCrossVerticalBar.size());
+    m_pPhysValRectCrossVerticalBar->setCenter(QPointF(100.0, 100.0));
+    strlstExpectedValues.append(resultValuesForRect(
+        c_strGraphObjNameCrossVerticalBar, m_ptPosRectCrossVerticalBar,
+        m_rectRectCrossVerticalBar, *m_pPhysValRectCrossVerticalBar));
+    // Cross-HorizontalBar
+    m_ptPosRectCrossHorizontalBar = QPointF(0.0, -50.0);
+    m_rectRectCrossHorizontalBar = QRectF(QPointF(-100.0, -10.0), QSizeF(200.0, 20.0));
+    m_pPhysValRectCrossHorizontalBar->setSize(m_rectRectCrossHorizontalBar.size());
+    m_pPhysValRectCrossHorizontalBar->setCenter(QPointF(100.0, bYAxisTopDown ? 50.0 : 150.0));
+    strlstExpectedValues.append(resultValuesForRect(
+        c_strGraphObjNameCrossHorizontalBar, m_ptPosRectCrossHorizontalBar,
+        m_rectRectCrossHorizontalBar, *m_pPhysValRectCrossHorizontalBar));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -5964,10 +6012,10 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossModifications(ZS::Tes
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
     /*-----------------------------------------------------------------------
@@ -5979,6 +6027,92 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossModifications(ZS::Tes
         Decimals: 2
     -----------------------------------------------------------------------*/
 
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstGraphObjsAddToGroup;
+    QStringList strlstExpectedValues;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues;
+    QString strObjName;
+    QString strMethod;
+    QString strMthArgs;
+
+    ZS::Test::CTestStepGroup* pGrpModifyGroupCross = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + c_strGraphObjNameCross,
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    // Resize
+    //-------
+
+    QPointF ptBRGroupCross(500.0, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0);
+    strObjName = c_strGraphObjNameCross;
+    strMethod = "setBottomRight";
+    strMthArgs = qPoint2Str(ptBRGroupCross) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyGroupCross,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    iResultValuesPrecision = 6;
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("BottomRight", ptBRGroupCross);
+    pTestStep->setConfigValue("BottomRight.unit", strUnit);
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strObjName]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameCrossVerticalBar]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameCrossHorizontalBar]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    // Group Cross
+    m_ptPosPolygons = QPointF(387.5, 312.5);
+    m_sizePolygons = QSizeF(225.0, 125.0);
+    m_pPhysValRectPolygons->setSize(m_sizePolygons);
+    m_pPhysValRectPolygons->setCenter(QPointF(387.5, bYAxisTopDown ? 312.5 : fYAxisMaxVal - 312.5));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
+    // Rect VerticalBar
+    m_ptPosStar = QPointF(43.3, 12.5);
+    m_polygonStar = QPolygonF({
+        {  0.000000, -50.000000},
+        { 17.307692, -12.500000},
+        { 69.230769,   0.000000},
+        { 17.307692,  12.500000},
+        {  0.000000,  50.000000},
+        {-17.307692,  12.500000},
+        {-69.230769,   0.000000},
+        {-17.307692, -12.500000}
+    });
+    *m_pPhysValPolygonStar = QPolygonF({
+        {155.769231, bYAxisTopDown ?  25.000000 : m_sizePolygons.height() -  25.000000},
+        {173.076923, bYAxisTopDown ?  62.500000 : m_sizePolygons.height() -  62.500000},
+        {225.000000, bYAxisTopDown ?  75.000000 : m_sizePolygons.height() -  75.000000},
+        {173.076923, bYAxisTopDown ?  87.500000 : m_sizePolygons.height() -  87.500000},
+        {155.769231, bYAxisTopDown ? 125.000000 : m_sizePolygons.height() - 125.000000},
+        {138.461538, bYAxisTopDown ?  87.500000 : m_sizePolygons.height() -  87.500000},
+        { 86.538462, bYAxisTopDown ?  75.000000 : m_sizePolygons.height() -  75.000000},
+        {138.461538, bYAxisTopDown ?  62.500000 : m_sizePolygons.height() -  62.500000}
+    });
+    strlstExpectedValues.append(resultValuesForPolygon(
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+    // Rect HorizontalBar
+    m_ptPosTriangle = QPointF(-95.2, -50.0);
+    m_polygonTriangle = QPolygonF({
+        {-17.307692,  12.500000},
+        { 17.307692,  12.500000},
+        {  0.000000, -12.500000}
+    });
+    *m_pPhysValPolygonTriangle = QPolygonF({
+        { 0.000000, bYAxisTopDown ? 25.000000 : m_sizePolygons.height() - 25.000000},
+        {34.615385, bYAxisTopDown ? 25.000000 : m_sizePolygons.height() - 25.000000},
+        {17.307692, bYAxisTopDown ?  0.000000 : m_sizePolygons.height() -  0.000000}
+    });
+    strlstExpectedValues.append(resultValuesForPolygon(
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------
@@ -6514,7 +6648,6 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     });
     strlstExpectedValues.append(resultValuesForPolygon(
         c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
-    pTestStep->setExpectedValues(strlstExpectedValues);
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 

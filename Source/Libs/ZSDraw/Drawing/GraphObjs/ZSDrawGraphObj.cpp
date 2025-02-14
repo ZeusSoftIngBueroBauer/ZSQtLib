@@ -7297,7 +7297,7 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 
     When resizing a group all children of the group should be resized and positioned so
     that they keep their relative positions and sizes within the group. If the item
-    was added to a new group the current rectangle of the parent group was stored as
+    is added to a new group the current rectangle of the parent group is stored as
     the original group rectangle.
 
     If the item is removed from a group (but not added to a new group) the original
