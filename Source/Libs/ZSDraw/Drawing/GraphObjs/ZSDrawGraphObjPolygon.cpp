@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -2734,7 +2734,7 @@ void CGraphObjPolygon::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         // a release event (i.e., a click), then a double-click event, and finally a release event.
         // If the mouse double click event appeared on the same position as the prior mouse press and
         // release events, the last polygon points will be removed again.
-        QPolygonF& polygon = this->polygon();
+        const QPolygonF& polygon = this->polygon();
         if (polygon.size() >= 3 && polygon[polygon.size()-1].toPoint() == polygon[polygon.size()-2].toPoint()) {
             removeLast();
         }
@@ -3138,11 +3138,11 @@ void CGraphObjPolygon::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSele
                 break;
             }
             case ESelectionPoint::RotateTop: {
-                // The angle returned by getAngleDegree is counted counterclockwise with 0° at 3 o'clock.
+                // The angle returned by getAngleDegree is counted counterclockwise with 0Â° at 3 o'clock.
                 double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
-                // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
+                // setRotationAngle expects the angle counted clockwise with 0Â° at 3 o'clock.
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateTop is at 270°.
+                // RotateTop is at 270Â°.
                 fAngle_degree -= 270.0;
                 fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
                 setRotationAngle(fAngle_degree);
@@ -3151,7 +3151,7 @@ void CGraphObjPolygon::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSele
             case ESelectionPoint::RotateBottom: {
                 double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateBottom is at 90°.
+                // RotateBottom is at 90Â°.
                 fAngle_degree -= 90.0;
                 fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
                 setRotationAngle(fAngle_degree);

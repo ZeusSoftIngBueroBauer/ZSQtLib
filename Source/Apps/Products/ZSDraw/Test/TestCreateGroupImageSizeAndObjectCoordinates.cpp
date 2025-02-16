@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -116,7 +116,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 0.0�
+    // Rotation Angle: 0.0°
     //--------------------------------------------------------------------------
 
     CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
@@ -127,7 +127,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(0�)
+    /* setAngle(0°)
     ----------------
         200   250   300   350   400      BottomUp
      250 +-----+-----+-----+-----+         350
@@ -1734,7 +1734,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 90.0�
+    // Rotation Angle: 90.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(90.0);
@@ -1745,7 +1745,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(90�)
+    /* setAngle(90°)
     ----------------
             200   250   300   350   400
     TopDown                              BottomUp
@@ -3076,7 +3076,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 180.0�
+    // Rotation Angle: 180.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(180.0);
@@ -3087,7 +3087,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(180�)
+    /* setAngle(180°)
     ----------------
             200   250   300   350   400
     TopDown                              BottomUp
@@ -4417,7 +4417,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 270.0�
+    // Rotation Angle: 270.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(270.0);
@@ -4428,7 +4428,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(270�)
+    /* setAngle(270°)
     -----------------
             200   250   300   350   400
     TopDown                              BottomUp
@@ -5762,7 +5762,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 30.0�
+    // Rotation Angle: 30.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(30.0);
@@ -5773,7 +5773,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(30.0�)
+    /* setAngle(30.0°)
     ------------------*/
     //iDigits = 6;
     pTestStep = new ZS::Test::CTestStep(
@@ -7101,7 +7101,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 120.0�
+    // Rotation Angle: 120.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(120.0);
@@ -7112,7 +7112,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(120.0�)
+    /* setAngle(120.0°)
     -------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -8434,7 +8434,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 210.0�
+    // Rotation Angle: 210.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(210.0);
@@ -8445,7 +8445,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(210.0�)
+    /* setAngle(210.0°)
     -------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -9766,7 +9766,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
-    // Rotation Angle: 300.0�
+    // Rotation Angle: 300.0°
     //--------------------------------------------------------------------------
 
     physValAngle.setVal(300.0);
@@ -9777,7 +9777,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
-    /* setAngle(300.0�)
+    /* setAngle(300.0°)
     -------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -11492,7 +11492,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(45.0�)
+    // setAngle(45.0°)
     //------------------
     iDigits = 6;
     physValAngle.setVal(45.0);
@@ -11553,7 +11553,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setSize(100, 100), setAngle(45.0�), setSize(200, 200)
+    // setSize(100, 100), setAngle(45.0°), setSize(200, 200)
     //-------------------------------------------------------
     iDigits = 6;
     sizeModified = QSizeF(100.0, 100.0);
@@ -11624,7 +11624,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(45.0�), setSize(100, 100), setAngle(180.0�)
+    // setAngle(45.0°), setSize(100, 100), setAngle(180.0°)
     //-------------------------------------------------------
     iDigits = 6;
     physValAngle.setVal(45.0);
@@ -11760,7 +11760,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(45.0�), replace(3, {600, 200})
+    // setAngle(45.0°), replace(3, {600, 200})
     //----------------------------------------
     iDigits = 6;
     physValAngle.setVal(45.0);
@@ -11829,7 +11829,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(45.0�), setSize(100, 100), replace(3, {600, 200})
+    // setAngle(45.0°), setSize(100, 100), replace(3, {600, 200})
     //-----------------------------------------------------------
     iDigits = 6;
     physValAngle.setVal(45.0);
@@ -11967,7 +11967,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(210.0�), append(600, 200)
+    // setAngle(210.0°), append(600, 200)
     //-----------------------------------
     iDigits = 6;
     physValAngle.setVal(210.0);
@@ -12035,7 +12035,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(210.0�), setSize(100, 100), append(600, 200)
+    // setAngle(210.0°), setSize(100, 100), append(600, 200)
     //------------------------------------------------------
     iDigits = 6;
     physValAngle.setVal(45.0);
@@ -12174,7 +12174,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(210.0�), insert(4, {600, 200})
+    // setAngle(210.0°), insert(4, {600, 200})
     //----------------------------------------
     iDigits = 6;
     physValAngle.setVal(210.0);
@@ -12244,7 +12244,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(210.0�), setSize(100, 100), insert(4, {600, 200})
+    // setAngle(210.0°), setSize(100, 100), insert(4, {600, 200})
     //-----------------------------------------------------------
     iDigits = 6;
     physValAngle.setVal(45.0);
@@ -12381,7 +12381,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(210.0�), remove(2, 2)
+    // setAngle(210.0°), remove(2, 2)
     //-------------------------------
     iDigits = 6;
     physValAngle.setVal(210.0);
@@ -12447,7 +12447,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // setAngle(210.0�), setSize(100, 100), remove(2, 2)
+    // setAngle(210.0°), setSize(100, 100), remove(2, 2)
     //--------------------------------------------------
     iDigits = 6;
     physValAngle.setVal(45.0);

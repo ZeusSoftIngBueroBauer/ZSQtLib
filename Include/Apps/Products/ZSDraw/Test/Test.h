@@ -196,8 +196,12 @@ public: // type definition and constants
     // Rectangles
     //-----------
     const QString c_strGraphObjNameRect = "Rect";
-    const QString c_strGraphObjNameCrossVerticalBar = "Cross-VerticalBar";
-    const QString c_strGraphObjNameCrossHorizontalBar = "Cross-HorizontalBar";
+    const QString c_strGraphObjNameBigCrossVerticalBar = "BigCross-VerticalBar";
+    const QString c_strGraphObjNameBigCrossHorizontalBar = "BigCross-HorizontalBar";
+    const QString c_strGraphObjNameSmallCross1VerticalBar = "SmallCross1-VerticalBar";
+    const QString c_strGraphObjNameSmallCross1HorizontalBar = "SmallCross1-HorizontalBar";
+    const QString c_strGraphObjNameSmallCross2VerticalBar = "SmallCross2-VerticalBar";
+    const QString c_strGraphObjNameSmallCross2HorizontalBar = "SmallCross2-HorizontalBar";
     // Ellipses
     //-----------
     const QString c_strGraphObjNameEllipse = "Ellipse";
@@ -218,7 +222,9 @@ public: // type definition and constants
     const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
     const QString c_strGraphObjNameCheckmark = "Checkmark";
     const QString c_strGraphObjNameSmallRect = "SmallRect";
-    const QString c_strGraphObjNameCross = "Cross";
+    const QString c_strGraphObjNameBigCross = "BigCross";
+    const QString c_strGraphObjNameSmallCross1 = "SmallCross1";
+    const QString c_strGraphObjNameSmallCross2 = "SmallCross2";
     const QString c_strGraphObjNamePolygons = "Polygons";
 public: // ctors and dtor
     CTest();
@@ -268,8 +274,8 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupRectsCross(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupRectsCrossModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupRectsCrosses(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -425,16 +431,36 @@ protected: // instance members
     QRectF m_rectRectangle;
     ZS::Draw::CPhysValRect* m_pPhysValRectRectangle = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleRectangle;
-    // Rect-CrossVerticalBar
-    QPointF m_ptPosRectCrossVerticalBar;
-    QRectF m_rectRectCrossVerticalBar;
-    ZS::Draw::CPhysValRect* m_pPhysValRectCrossVerticalBar = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleCrossVerticalBar;
-    // Rect-CrossHorizontalBar
-    QPointF m_ptPosRectCrossHorizontalBar;
-    QRectF m_rectRectCrossHorizontalBar;
-    ZS::Draw::CPhysValRect* m_pPhysValRectCrossHorizontalBar = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleCrossHorizontalBar;
+    // Rect-BigCross-VerticalBar
+    QPointF m_ptPosRectBigCrossVerticalBar;
+    QRectF m_rectRectBigCrossVerticalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectBigCrossVerticalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleBigCrossVerticalBar;
+    // Rect-BigCross-HorizontalBar
+    QPointF m_ptPosRectBigCrossHorizontalBar;
+    QRectF m_rectRectBigCrossHorizontalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectBigCrossHorizontalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleBigCrossHorizontalBar;
+    // Rect-SmallCross1-VerticalBar
+    QPointF m_ptPosRectSmallCross1VerticalBar;
+    QRectF m_rectRectSmallCross1VerticalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallCross1VerticalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallCross1VerticalBar;
+    // Rect-SmallCross1-HorizontalBar
+    QPointF m_ptPosRectSmallCross1HorizontalBar;
+    QRectF m_rectRectSmallCross1HorizontalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallCross1HorizontalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallCross1HorizontalBar;
+    // Rect-SmallCross2-VerticalBar
+    QPointF m_ptPosRectSmallCross2VerticalBar;
+    QRectF m_rectRectSmallCross2VerticalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallCross2VerticalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallCross2VerticalBar;
+    // Rect-SmallCross2-HorizontalBar
+    QPointF m_ptPosRectSmallCross2HorizontalBar;
+    QRectF m_rectRectSmallCross2HorizontalBar;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallCross2HorizontalBar = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallCross2HorizontalBar;
 
     // Ellipses
     //-----------
@@ -492,11 +518,21 @@ protected: // instance members
     QSizeF m_sizeSmallRect;
     ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
-    // Rects-Cross
-    QPointF m_ptPosCross;
-    QSizeF m_sizeCross;
-    ZS::Draw::CPhysValRect* m_pPhysValRectCross = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleCross;
+    // Rects-BigCross
+    QPointF m_ptPosBigCross;
+    QSizeF m_sizeBigCross;
+    ZS::Draw::CPhysValRect* m_pPhysValRectBigCross = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleBigCross;
+    // Rects-SmallCross1
+    QPointF m_ptPosSmallCross1;
+    QSizeF m_sizeSmallCross1;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallCross1 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallCross1;
+    // Rects-SmallCross2
+    QPointF m_ptPosSmallCross2;
+    QSizeF m_sizeSmallCross2;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallCross2 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallCross2;
     // Polygons
     QPointF m_ptPosPolygons;
     QSizeF m_sizePolygons;

@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -348,7 +348,7 @@ public: // instance methods
     must be passed either relative to the top left or relative to the bottom left
     corner of the parent item's bounding rectangle.
 
-    The passed rectangle contains may be rotated (the angle may be in range 0 .. 360�).
+    The passed rectangle contains may be rotated (the angle may be in range 0 .. 360°).
 
     @param [in] i_physValRect
         Rectangle to be set in parent coordinates, depending on the Y scale orientation

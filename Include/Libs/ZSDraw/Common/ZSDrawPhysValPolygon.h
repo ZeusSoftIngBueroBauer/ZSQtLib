@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -41,7 +41,7 @@ namespace Draw
     When drawing the polygon, depending on the IsClosedPolygon flag, a line will be
     drawn from the last point to the first point.
 
-    As the polygon�s bounding rectangle may be resized by mouse move events,
+    As the polygon’s bounding rectangle may be resized by mouse move events,
     width and height of the bounding rectangle may become (at least temporarily) zero.
     To handle several resize events correctly, the original polygon points,
     the original size and the original center point of the bounding rectangle are
@@ -147,7 +147,7 @@ protected: // auxiliary instance methods
     void updateOriginalPolygon();
 protected: // instance members
     /*!< true, if the polygon should be closed by drawing a line from the last point
-         to the first point. false otherwise. */
+         to the first point, false otherwise. */
     bool m_bIsClosedPolygon;
     /*!< Original center point of the unscaled and unrotated polygon. */
     QPointF m_ptCenterOrig;

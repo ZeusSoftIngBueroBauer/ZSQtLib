@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -350,7 +350,7 @@ public: // instance methods
     @param [in] i_physValRect
         Rectangle to be set in parent coordinates, depending on the Y scale orientation
         relative to the top left or bottom left corner of parent item's bounding rectangle.
-        The passed rectangle may be rotated (the angle may be in range 0 .. 360°).
+        The passed rectangle may be rotated (the angle may be in range 0 .. 360Â°).
 */
 void CGraphObjRect::setRect(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
@@ -2209,11 +2209,11 @@ void CGraphObjRect::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
                 break;
             }
             case ESelectionPoint::RotateTop: {
-                // The angle returned by getAngleDegree is counted counterclockwise with 0° at 3 o'clock.
+                // The angle returned by getAngleDegree is counted counterclockwise with 0Â° at 3 o'clock.
                 double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
-                // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
+                // setRotationAngle expects the angle counted clockwise with 0Â° at 3 o'clock.
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateTop is at 270°.
+                // RotateTop is at 270Â°.
                 fAngle_degree -= 270.0;
                 fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
                 setRotationAngle(fAngle_degree);
@@ -2222,7 +2222,7 @@ void CGraphObjRect::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
             case ESelectionPoint::RotateBottom: {
                 double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateBottom is at 90°.
+                // RotateBottom is at 90Â°.
                 fAngle_degree -= 90.0;
                 fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
                 setRotationAngle(fAngle_degree);

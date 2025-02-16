@@ -542,10 +542,15 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
 
     bool bEventHandled = false;
     QPoint ptPosThis = pos();
+    #if QT_VERSION < 0x060000
     QPoint ptEvLocalPos = i_pEv->localPos().toPoint();
     QPoint ptEvGlobalPos = i_pEv->globalPos();
-    QPoint ptEvSceenPos = i_pEv->screenPos().toPoint();
     QPoint ptEvWindowPos = i_pEv->windowPos().toPoint();
+    #else
+    QPoint ptEvLocalPos = i_pEv->position().toPoint();
+    QPoint ptEvGlobalPos = i_pEv->globalPosition().toPoint();
+    QPoint ptEvWindowPos = i_pEv->scenePosition().toPoint();
+    #endif
     m_modelIdxSelectedOnMousePressEvent = indexAt(i_pEv->pos());
     if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());

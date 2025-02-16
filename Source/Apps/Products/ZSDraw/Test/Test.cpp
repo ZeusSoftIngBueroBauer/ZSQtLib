@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -186,10 +186,18 @@ CTest::~CTest()
 
     delete m_pPhysValRectRectangle;
     m_pPhysValRectRectangle = nullptr;
-    delete m_pPhysValRectCrossVerticalBar;
-    m_pPhysValRectCrossVerticalBar = nullptr;
-    delete m_pPhysValRectCrossHorizontalBar;
-    m_pPhysValRectCrossHorizontalBar = nullptr;
+    delete m_pPhysValRectBigCrossVerticalBar;
+    m_pPhysValRectBigCrossVerticalBar = nullptr;
+    delete m_pPhysValRectBigCrossHorizontalBar;
+    m_pPhysValRectBigCrossHorizontalBar = nullptr;
+    delete m_pPhysValRectSmallCross1VerticalBar;
+    m_pPhysValRectSmallCross1VerticalBar = nullptr;
+    delete m_pPhysValRectSmallCross1HorizontalBar;
+    m_pPhysValRectSmallCross1HorizontalBar = nullptr;
+    delete m_pPhysValRectSmallCross2VerticalBar;
+    m_pPhysValRectSmallCross2VerticalBar = nullptr;
+    delete m_pPhysValRectSmallCross2HorizontalBar;
+    m_pPhysValRectSmallCross2HorizontalBar = nullptr;
 
     delete m_pPhysValRectEllipse;
     m_pPhysValRectEllipse = nullptr;
@@ -212,8 +220,12 @@ CTest::~CTest()
     m_pPhysValRectCheckmark = nullptr;
     delete m_pPhysValRectSmallRect;
     m_pPhysValRectSmallRect = nullptr;
-    delete m_pPhysValRectCross;
-    m_pPhysValRectCross = nullptr;
+    delete m_pPhysValRectBigCross;
+    m_pPhysValRectBigCross = nullptr;
+    delete m_pPhysValRectSmallCross1;
+    m_pPhysValRectSmallCross1 = nullptr;
+    delete m_pPhysValRectSmallCross2;
+    m_pPhysValRectSmallCross2 = nullptr;
     delete m_pPhysValRectPolygons;
     m_pPhysValRectPolygons = nullptr;
     delete m_pPhysValRectTopGroup;
@@ -266,8 +278,12 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // Rectangles
     //-----------
     m_pPhysValRectRectangle = new CPhysValRect(*m_pDrawingScene);
-    m_pPhysValRectCrossVerticalBar = new CPhysValRect(*m_pDrawingScene);
-    m_pPhysValRectCrossHorizontalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectBigCrossVerticalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectBigCrossHorizontalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallCross1VerticalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallCross1HorizontalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallCross2VerticalBar = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallCross2HorizontalBar = new CPhysValRect(*m_pDrawingScene);
 
     // Ellipses
     //----------
@@ -289,7 +305,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallRect = new CPhysValRect(*m_pDrawingScene);
-    m_pPhysValRectCross = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectBigCross = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallCross1 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectSmallCross2 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectPolygons = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
@@ -4984,15 +5002,35 @@ void CTest::initObjectCoors()
     *m_pPhysValRectRectangle = CPhysValRect(*m_pDrawingScene);
     m_physValAngleRectangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
-    m_ptPosRectCrossVerticalBar = QPointF();
-    m_rectRectCrossVerticalBar = QRectF();
-    *m_pPhysValRectCrossVerticalBar = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleCrossVerticalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosRectBigCrossVerticalBar = QPointF();
+    m_rectRectBigCrossVerticalBar = QRectF();
+    *m_pPhysValRectBigCrossVerticalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleBigCrossVerticalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
-    m_ptPosRectCrossHorizontalBar = QPointF();
-    m_rectRectCrossHorizontalBar = QRectF();
-    *m_pPhysValRectCrossHorizontalBar = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleCrossHorizontalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosRectBigCrossHorizontalBar = QPointF();
+    m_rectRectBigCrossHorizontalBar = QRectF();
+    *m_pPhysValRectBigCrossHorizontalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleBigCrossHorizontalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRectSmallCross1VerticalBar = QPointF();
+    m_rectRectSmallCross1VerticalBar = QRectF();
+    *m_pPhysValRectSmallCross1VerticalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallCross1VerticalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRectSmallCross1HorizontalBar = QPointF();
+    m_rectRectSmallCross1HorizontalBar = QRectF();
+    *m_pPhysValRectSmallCross1HorizontalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallCross1HorizontalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRectSmallCross2VerticalBar = QPointF();
+    m_rectRectSmallCross2VerticalBar = QRectF();
+    *m_pPhysValRectSmallCross2VerticalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallCross2VerticalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRectSmallCross2HorizontalBar = QPointF();
+    m_rectRectSmallCross2HorizontalBar = QRectF();
+    *m_pPhysValRectSmallCross2HorizontalBar = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallCross2HorizontalBar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Ellipses
     //----------
@@ -5051,10 +5089,20 @@ void CTest::initObjectCoors()
     *m_pPhysValRectSmallRect = CPhysValRect(*m_pDrawingScene);
     m_physValAngleSmallRect = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
-    m_ptPosCross = QPointF();
-    m_sizeCross = QSizeF();
-    *m_pPhysValRectCross = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleCross = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosBigCross = QPointF();
+    m_sizeBigCross = QSizeF();
+    *m_pPhysValRectBigCross = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleBigCross = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosSmallCross1 = QPointF();
+    m_sizeSmallCross1 = QSizeF();
+    *m_pPhysValRectSmallCross1 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallCross1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosSmallCross2 = QPointF();
+    m_sizeSmallCross2 = QSizeF();
+    *m_pPhysValRectSmallCross2 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleSmallCross2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosPolygons = QPointF();
     m_sizePolygons = QSizeF();
@@ -5205,8 +5253,8 @@ QPointF CTest::getSelectionPointCoors(
         pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     }
     else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
-        // ESelectionPoint::RotateTop: 270° (clockwise counted)
-        // ESelectionPoint::RotateBottom: 90° (clockwise counted)
+        // ESelectionPoint::RotateTop: 270Â° (clockwise counted)
+        // ESelectionPoint::RotateBottom: 90Â° (clockwise counted)
         // Original position
         double fAngle_degree = i_physValRect.angle().getVal(Units.Angle.Degree);
         fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
@@ -5316,8 +5364,8 @@ QPointF CTest::getSelectionPointCoors(
 //        o_ptSelPtRectNew = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
 //    }
 //    else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
-//        // ESelectionPoint::RotateTop: 270° (clockwise counted)
-//        // ESelectionPoint::RotateBottom: 90° (clockwise counted)
+//        // ESelectionPoint::RotateTop: 270Â° (clockwise counted)
+//        // ESelectionPoint::RotateBottom: 90Â° (clockwise counted)
 //        // Original position
 //        double fAngle_degree = i_physValRectCurr.angle().getVal(Units.Angle.Degree);
 //        fAngle_degree += i_selPt == ESelectionPoint::RotateTop ? 270.0 : 90.0;
