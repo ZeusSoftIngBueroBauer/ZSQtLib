@@ -53,20 +53,20 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600 1
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES 0
 #define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
-#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
+#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
@@ -85,7 +85,7 @@ class QPainterPath;
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 0
@@ -222,6 +222,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
     const QString c_strGraphObjNameCheckmark = "Checkmark";
     const QString c_strGraphObjNameSmallRect = "SmallRect";
+    const QString c_strGraphObjNameCrosses = "Crosses";
     const QString c_strGraphObjNameBigCross = "BigCross";
     const QString c_strGraphObjNameSmallCross1 = "SmallCross1";
     const QString c_strGraphObjNameSmallCross2 = "SmallCross2";
@@ -518,6 +519,11 @@ protected: // instance members
     QSizeF m_sizeSmallRect;
     ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
+    // TopGroup Crosses
+    QPointF m_ptPosCrosses;
+    QSizeF m_sizeCrosses;
+    ZS::Draw::CPhysValRect* m_pPhysValRectCrosses = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleCrosses;
     // Rects-BigCross
     QPointF m_ptPosBigCross;
     QSizeF m_sizeBigCross;

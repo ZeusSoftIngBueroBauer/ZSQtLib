@@ -220,6 +220,9 @@ CTest::~CTest()
     m_pPhysValRectCheckmark = nullptr;
     delete m_pPhysValRectSmallRect;
     m_pPhysValRectSmallRect = nullptr;
+
+    delete m_pPhysValRectCrosses;
+    m_pPhysValRectCrosses = nullptr;
     delete m_pPhysValRectBigCross;
     m_pPhysValRectBigCross = nullptr;
     delete m_pPhysValRectSmallCross1;
@@ -305,6 +308,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallRect = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectCrosses = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectBigCross = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallCross1 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallCross2 = new CPhysValRect(*m_pDrawingScene);
@@ -2696,9 +2700,9 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
 
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGroupName = i_pTestStep->getConfigValue("GroupName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupName);
 
     QStringList strlstGraphObjsAddToGroup = i_pTestStep->getConfigValue("AddToGroup").toStringList();
 
@@ -2714,7 +2718,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactory->createGraphObj(m_pDrawingScene, drawSettings));
         if (pGraphObjGroup != nullptr) {
             m_pDrawingScene->addGraphObj(pGraphObjGroup);
-            pGraphObjGroup->rename(strGraphObjName);
+            pGraphObjGroup->rename(strGroupName);
             for (const QString& strGraphObjNameChild : strlstGraphObjsAddToGroup) {
                 strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjNameChild);
                 CGraphObj* pGraphObjChild = m_pDrawingScene->findGraphObj(strKeyInTree);
@@ -4341,6 +4345,24 @@ void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep
             }
             pGraphObjGroup->setWidth(physVal);
         }
+        else if (strMethod.compare("setWidthByMovingLeftCenter", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("LeftCenter").toPointF();
+            if (i_pTestStep->hasConfigValue("LeftCenter.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("LeftCenter.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setWidthByMovingLeftCenter(physValPoint);
+        }
+        else if (strMethod.compare("setWidthByMovingRightCenter", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("RightCenter").toPointF();
+            if (i_pTestStep->hasConfigValue("RightCenter.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("RightCenter.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setWidthByMovingRightCenter(physValPoint);
+        }
         else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
             CPhysVal physVal(unit);
             if (i_pTestStep->hasConfigValue("Height.unit")) {
@@ -4354,6 +4376,24 @@ void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep
                 physVal = strVal;
             }
             pGraphObjGroup->setHeight(physVal);
+        }
+        else if (strMethod.compare("setHeightByMovingTopCenter", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("TopCenter").toPointF();
+            if (i_pTestStep->hasConfigValue("TopCenter.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("TopCenter.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setHeightByMovingTopCenter(physValPoint);
+        }
+        else if (strMethod.compare("setHeightByMovingBottomCenter", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("BottomCenter").toPointF();
+            if (i_pTestStep->hasConfigValue("BottomCenter.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("BottomCenter.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setHeightByMovingBottomCenter(physValPoint);
         }
 
         if (pGraphObjGroup != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
@@ -5088,6 +5128,11 @@ void CTest::initObjectCoors()
     m_sizeSmallRect = QSizeF();
     *m_pPhysValRectSmallRect = CPhysValRect(*m_pDrawingScene);
     m_physValAngleSmallRect = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosCrosses = QPointF();
+    m_sizeCrosses = QSizeF();
+    *m_pPhysValRectCrosses = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleCrosses = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosBigCross = QPointF();
     m_sizeBigCross = QSizeF();
