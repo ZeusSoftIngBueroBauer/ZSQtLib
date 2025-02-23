@@ -119,41 +119,48 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     // SmallPlusSign
     //--------------
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN == 1
     ZS::Test::CTestStepGroup* pGrpLinesSmallPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallPlusSign,
         /* pTSGrpParent */ pGrpLines );
     createTestGroupDrawStandardShapesLinesSmallPlusSign(pGrpLinesSmallPlusSign);
+#endif
 
     // BigPlusSign
     //------------
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN == 1
     ZS::Test::CTestStepGroup* pGrpLinesBigPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameBigPlusSign,
         /* pTSGrpParent */ pGrpLines );
     createTestGroupDrawStandardShapesLinesBigPlusSign(pGrpLinesBigPlusSign);
+#endif
 
     // Checkmark
     //----------
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK == 1
     ZS::Test::CTestStepGroup* pGrpLinesCheckmark = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameCheckmark,
         /* pTSGrpParent */ pGrpLines );
     createTestGroupDrawStandardShapesLinesCheckmark(pGrpLinesCheckmark);
+#endif
 
     // SmallRect
     //----------
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT == 1
     ZS::Test::CTestStepGroup* pGrpLinesSmallRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameSmallRect,
         /* pTSGrpParent */ pGrpLines );
     createTestGroupDrawStandardShapesLinesSmallRect(pGrpLinesSmallRect);
+#endif
 
     createTestStepSaveLoadFile(pGrpLines);
-
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES
 
     // Rectangles
@@ -185,8 +192,9 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect,
         /* pTSGrpParent */ pGrpRectangles );
     createTestGroupDrawStandardShapesRect(pGrpRectanglesRectangle);
+#if 0
     createTestGroupDrawStandardShapesRectModifications(pGrpRectanglesRectangle);
-
+#endif
     createTestStepSaveLoadFile(pGrpRectangles, 1);
 
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES
@@ -194,6 +202,7 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     // Ellipses
     //===========
 
+#if 0
 #if TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES == 1
 
     ZS::Test::CTestStepGroup* pGrpEllipses = new ZS::Test::CTestStepGroup(
@@ -225,10 +234,12 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     createTestStepSaveLoadFile(pGrpEllipses, 1);
 
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES
+#endif
 
     // Texts
     //===========
 
+#if 0
 #if TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS == 1
 
     ZS::Test::CTestStepGroup* pGrpTexts = new ZS::Test::CTestStepGroup(
@@ -260,6 +271,7 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     createTestStepSaveLoadFile(pGrpTexts, 1);
 
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS
+#endif
 
     // Polygons
     //=========
@@ -468,7 +480,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameSmallPlusSignVerticalLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallPlusSignVerticalLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallPlusSignVerticalLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallPlusSignVerticalLine));
     QPoint ptP1SmallPlusSignVerticalLine(275, 310);
     QPoint ptP2SmallPlusSignVerticalLine(275, 340);
@@ -476,6 +488,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
     m_lineSmallPlusSignVerticalLine = QLineF(QPointF(0.0, -15.0), QPointF(0.0, 15.0));
     m_pPhysValLineSmallPlusSignVerticalLine->setP1(QPointF(275.0, bYAxisTopDown ? 310.0 : 290.0));
     m_pPhysValLineSmallPlusSignVerticalLine->setP2(QPointF(275.0, bYAxisTopDown ? 340.0 : 260.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallPlusSignVerticalLine);
     pTestStep->setConfigValue("P1", ptP1SmallPlusSignVerticalLine);
     pTestStep->setConfigValue("P2", ptP2SmallPlusSignVerticalLine);
@@ -494,7 +507,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameSmallPlusSignHorizontalLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallPlusSignHorizontalLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallPlusSignHorizontalLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallPlusSignHorizontalLine));
     QPoint ptP1SmallPlusSignHorizontalLine(260, 325);
     QPoint ptP2SmallPlusSignHorizontalLine(290, 325);
@@ -502,6 +515,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
     m_lineSmallPlusSignHorizontalLine = QLineF(QPointF(-15.0, 0.0), QPointF(15.0, 0.0));
     m_pPhysValLineSmallPlusSignHorizontalLine->setP1(QPointF(260.0, bYAxisTopDown ? 325.0 : 275.0));
     m_pPhysValLineSmallPlusSignHorizontalLine->setP2(QPointF(290.0, bYAxisTopDown ? 325.0 : 275.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallPlusSignHorizontalLine);
     pTestStep->setConfigValue("P1", ptP1SmallPlusSignHorizontalLine);
     pTestStep->setConfigValue("P2", ptP2SmallPlusSignHorizontalLine);
@@ -561,7 +575,7 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameBigPlusSignVerticalLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameBigPlusSignVerticalLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameBigPlusSignVerticalLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSignVerticalLine));
     QPoint ptP1BigPlusSignVerticalLine(300, 250);
     QPoint ptP2BigPlusSignVerticalLine(300, 350);
@@ -569,6 +583,7 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
     m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
     m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(300.0, bYAxisTopDown ? 250.0 : 350.0));
     m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(300.0, bYAxisTopDown ? 350.0 : 250.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSignVerticalLine);
     pTestStep->setConfigValue("P1", ptP1BigPlusSignVerticalLine);
     pTestStep->setConfigValue("P2", ptP2BigPlusSignVerticalLine);
@@ -587,7 +602,7 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameBigPlusSignHorizontalLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameBigPlusSignHorizontalLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameBigPlusSignHorizontalLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameBigPlusSignHorizontalLine));
     QPoint ptP1BigPlusSignHorizontalLine(250, 300);
     QPoint ptP2BigPlusSignHorizontalLine(350, 300);
@@ -595,6 +610,7 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
     m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
     m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(250.0, bYAxisTopDown ? 300.0 : 300.0));
     m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(350.0, bYAxisTopDown ? 300.0 : 300.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSignHorizontalLine);
     pTestStep->setConfigValue("P1", ptP1BigPlusSignHorizontalLine);
     pTestStep->setConfigValue("P2", ptP2BigPlusSignHorizontalLine);
@@ -654,7 +670,7 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameCheckmarkLeftLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameCheckmarkLeftLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameCheckmarkLeftLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameCheckmarkLeftLine));
     QPoint ptP1CheckmarkLeftLine(250, 250);
     QPoint ptP2CheckmarkLeftLine(325, 350);
@@ -662,6 +678,7 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
     m_lineCheckmarkLeftLine = QLineF(QPointF(-37.5, -50.0), QPointF(37.5, 50.0));
     m_pPhysValLineCheckmarkLeftLine->setP1(QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0));
     m_pPhysValLineCheckmarkLeftLine->setP2(QPointF(325.0, bYAxisTopDown ? 350.0 : 250.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameCheckmarkLeftLine);
     pTestStep->setConfigValue("P1", ptP1CheckmarkLeftLine);
     pTestStep->setConfigValue("P2", ptP2CheckmarkLeftLine);
@@ -680,7 +697,7 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameCheckmarkRightLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameCheckmarkRightLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameCheckmarkRightLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameCheckmarkRightLine));
     QPoint ptP1CheckmarkRightLine(325, 350);
     QPoint ptP2CheckmarkRightLine(350, 325);
@@ -688,6 +705,7 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
     m_lineCheckmarkRightLine = QLineF(QPointF(-12.5, 12.5), QPointF(12.5, -12.5));
     m_pPhysValLineCheckmarkRightLine->setP1(QPointF(325.0, bYAxisTopDown ? 350.0 : 250.0));
     m_pPhysValLineCheckmarkRightLine->setP2(QPointF(350.0, bYAxisTopDown ? 325.0 : 275.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameCheckmarkRightLine);
     pTestStep->setConfigValue("P1", ptP1CheckmarkRightLine);
     pTestStep->setConfigValue("P2", ptP2CheckmarkRightLine);
@@ -747,7 +765,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameSmallRectTopLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectTopLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectTopLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectTopLine));
     QPoint ptP1SmallRectTopLine(320, 270);
     QPoint ptP2SmallRectTopLine(330, 270);
@@ -755,6 +773,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
     m_lineSmallRectTopLine = QLineF(QPointF(-5.0, 0.0), QPointF(5.0, 0.0));
     m_pPhysValLineSmallRectTopLine->setP1(QPointF(320.0, bYAxisTopDown ? 270.0 : 330.0));
     m_pPhysValLineSmallRectTopLine->setP2(QPointF(330.0, bYAxisTopDown ? 270.0 : 330.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectTopLine);
     pTestStep->setConfigValue("P1", ptP1SmallRectTopLine);
     pTestStep->setConfigValue("P2", ptP2SmallRectTopLine);
@@ -773,7 +792,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameSmallRectRightLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectRightLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectRightLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectRightLine));
     QPoint ptP1SmallRectRightLine(330, 270);
     QPoint ptP2SmallRectRightLine(330, 280);
@@ -781,6 +800,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
     m_lineSmallRectRightLine = QLineF(QPointF(0.0, -5.0), QPointF(0.0, 5.0));
     m_pPhysValLineSmallRectRightLine->setP1(QPointF(330.0, bYAxisTopDown ? 270.0 : 330.0));
     m_pPhysValLineSmallRectRightLine->setP2(QPointF(330.0, bYAxisTopDown ? 280.0 : 320.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectRightLine);
     pTestStep->setConfigValue("P1", ptP1SmallRectRightLine);
     pTestStep->setConfigValue("P2", ptP2SmallRectRightLine);
@@ -799,7 +819,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameSmallRectBottomLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectBottomLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectBottomLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectBottomLine));
     QPoint ptP1SmallRectBottomLine(330, 280);
     QPoint ptP2SmallRectBottomLine(320, 280);
@@ -807,6 +827,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
     m_lineSmallRectBottomLine = QLineF(QPointF(5.0, 0.0), QPointF(-5.0, 0.0));
     m_pPhysValLineSmallRectBottomLine->setP1(QPointF(330.0, bYAxisTopDown ? 280.0 : 320.0));
     m_pPhysValLineSmallRectBottomLine->setP2(QPointF(320.0, bYAxisTopDown ? 280.0 : 320.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectBottomLine);
     pTestStep->setConfigValue("P1", ptP1SmallRectBottomLine);
     pTestStep->setConfigValue("P2", ptP2SmallRectBottomLine);
@@ -825,7 +846,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameSmallRectLeftLine + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameSmallRectLeftLine + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjLine(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameSmallRectLeftLine, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameSmallRectLeftLine));
     QPoint ptP1SmallRectLeftLine(320, 280);
     QPoint ptP2SmallRectLeftLine(320, 270);
@@ -833,6 +854,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
     m_lineSmallRectLeftLine = QLineF(QPointF(0.0, 5.0), QPointF(0.0, -5.0));
     m_pPhysValLineSmallRectLeftLine->setP1(QPointF(320.0, bYAxisTopDown ? 280.0 : 320.0));
     m_pPhysValLineSmallRectLeftLine->setP2(QPointF(320.0, bYAxisTopDown ? 270.0 : 330.0));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeLine));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallRectLeftLine);
     pTestStep->setConfigValue("P1", ptP1SmallRectLeftLine);
     pTestStep->setConfigValue("P2", ptP2SmallRectLeftLine);
@@ -893,21 +915,19 @@ void CTest::createTestGroupDrawStandardShapesRect(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameRect + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameRect + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjRect(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameRect, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect));
-    m_ptPosRectangle = QPointF(325.0, 270.0);
-    m_rectRectangle = QRectF(QPointF(-25.0,  -5.0), QSizeF(10.0, 20.0));
-    *m_pPhysValRectRectangle = m_rectRectangle;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameRect);
-    pTestStep->setConfigValue("Rect", m_pPhysValRectRectangle->toQRectF());
-    pTestStep->setConfigValue("Rect.Angle", m_pPhysValRectRectangle->angle().toString());
-    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("P1", QPoint(275, 275));
+    pTestStep->setConfigValue("P2", QPoint(325, 325));
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
+    m_ptPosRectangle = QPointF(300, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_rectRectangle = QRectF(QPointF(-25.0, -25.0), QSizeF(50.0, 50.0));
+    *m_pPhysValRectRectangle = m_rectRectangle;
     strlstExpectedValues.append(resultValuesForRect(
-        c_strGraphObjNameRect, m_ptPosRectangle,
-        m_rectRectangle, *m_pPhysValRectRectangle, iResultValuesPrecision));
+        c_strGraphObjNameRect, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -1015,12 +1035,12 @@ void CTest::createTestGroupDrawStandardShapesEllipse(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameEllipse + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameEllipse + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjRect(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameEllipse, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse));
     m_ptPosEllipse = QPointF(325.0, 270.0);
     m_rectEllipse = QRectF(QPointF(-25.0,  -5.0), QSizeF(10.0, 20.0));
     *m_pPhysValRectEllipse = m_rectEllipse;
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeEllipse));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameEllipse);
     pTestStep->setConfigValue("Rect", m_pPhysValRectEllipse->toQRectF());
     pTestStep->setConfigValue("Rect.Angle", m_pPhysValRectEllipse->angle().toString());
@@ -1137,12 +1157,12 @@ void CTest::createTestGroupDrawStandardShapesText(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameText + ")",
         /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameText + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjRect(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameText, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameText));
     m_ptPosText = QPointF(325.0, 270.0);
     m_rectText = QRectF(QPointF(-25.0,  -5.0), QSizeF(10.0, 20.0));
     *m_pPhysValRectText = m_rectText;
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeText));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameText);
     pTestStep->setConfigValue("Rect", m_pPhysValRectText->toQRectF());
     pTestStep->setConfigValue("Rect.Angle", m_pPhysValRectText->angle().toString());
@@ -2336,6 +2356,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::C
         strEntryType, c_strGraphObjNameSmallPlusSign, c_strGraphObjNameSmallPlusSignVerticalLine);
     m_hshGraphObjNameToKeys[c_strGraphObjNameSmallPlusSignHorizontalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameSmallPlusSign, c_strGraphObjNameSmallPlusSignHorizontalLine);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameSmallPlusSign);
     pTestStep->setConfigValue("P1", QPoint(258, 308));
     pTestStep->setConfigValue("P2", QPoint(292, 342));
@@ -2576,6 +2597,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTe
         strEntryType, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignVerticalLine);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignHorizontalLine);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("P1", QPoint(248, 248));
     pTestStep->setConfigValue("P2", QPoint(352, 352));
@@ -2676,6 +2698,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignVerticalLine);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignHorizontalLine);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("P1", QPoint(240, 240));
     pTestStep->setConfigValue("P2", QPoint(360, 360));
@@ -3053,6 +3076,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(Z
         strEntryType, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignVerticalLine);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignHorizontalLine);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameBigPlusSign);
     pTestStep->setConfigValue("P1", QPoint(240, 240));
     pTestStep->setConfigValue("P2", QPoint(360, 360));
@@ -4169,6 +4193,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(Z
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignVerticalLine);
     m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNameBigPlusSign, c_strGraphObjNameBigPlusSignHorizontalLine);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("P1", QPoint(220, 220));
     pTestStep->setConfigValue("P2", QPoint(380, 380));

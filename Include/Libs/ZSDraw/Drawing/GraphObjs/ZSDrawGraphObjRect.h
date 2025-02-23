@@ -65,6 +65,10 @@ public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
+    void setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit);
+    void setRect(const QPointF& i_pTL, const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit);
+    void setRect(const CPhysValPoint& i_physValTL, const CPhysValPoint& i_physValBR);
+    void setRect(const CPhysValPoint& i_physValTL, const CPhysValSize& i_physValSize);
     CPhysValRect getRect() const;
     CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit) const;
     void setCenter(const QPointF& i_pt);

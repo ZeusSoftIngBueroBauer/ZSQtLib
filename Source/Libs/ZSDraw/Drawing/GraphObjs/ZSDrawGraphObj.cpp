@@ -4254,7 +4254,7 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
                 // events may be accepted.
                 pGraphicsItemThis->setAcceptHoverEvents(false);
             }
-            // Immeadiately select the object to create the selection points.
+            // Immediately select the object to create the selection points.
             // Following mouse move press, mouse move and mouse release events will
             // be forwarded by the scene to the selection point responsible for
             // resizing the obejct (the top most selection point most recently created).

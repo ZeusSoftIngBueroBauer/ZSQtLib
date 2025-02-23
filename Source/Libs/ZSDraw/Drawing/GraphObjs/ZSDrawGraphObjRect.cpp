@@ -357,7 +357,7 @@ void CGraphObjRect::setRect(const CPhysValRect& i_physValRect)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValRect.toString();
+        strMthInArgs = "{" + i_physValRect.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -429,6 +429,78 @@ void CGraphObjRect::setRect(const CPhysValRect& i_physValRect)
     if (bGeometryOnSceneChanged) {
         emit_geometryOnSceneChanged();
     }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjRect::setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "TL {" + qPoint2Str(i_pTL) + "}, BR {" + qPoint2Str(i_pBR) + "} " + i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRect(CPhysValRect(*m_pDrawingScene, i_pTL, i_pBR, i_unit));
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjRect::setRect(const QPointF& i_pTL, const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "TL {" + qPoint2Str(i_pTL) + "}, Size {" + qSize2Str(i_size) + "} " + i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRect(CPhysValRect(*m_pDrawingScene, i_pTL, i_size, i_unit));
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjRect::setRect(const CPhysValPoint& i_physValTL, const CPhysValPoint& i_physValBR)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "TL {" + i_physValTL.toString() + "}, BR {" + i_physValBR.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRect(CPhysValRect(i_physValTL, i_physValBR));
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjRect::setRect(const CPhysValPoint& i_physValTL, const CPhysValSize& i_physValSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "TL {" + i_physValTL.toString() + "}, Size {" + i_physValSize.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    setRect(CPhysValRect(i_physValTL, i_physValSize));
 }
 
 //------------------------------------------------------------------------------
@@ -1916,7 +1988,8 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphObjStates(mthTracer);
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
     CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
@@ -1972,8 +2045,8 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
             if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
-                showSelectionPoints(c_uSelectionPointsPolygonPoints);
-                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
             }
             else if (m_editMode == EEditMode::ModifyingBoundingRect) {
                 hideSelectionPoints(c_uSelectionPointsPolygonPoints);
@@ -1987,6 +2060,7 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
             //bringSelectionPointsToFront();
         }
         else {
+            setEditMode(EEditMode::None);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             //m_editMode = EEditMode::None;

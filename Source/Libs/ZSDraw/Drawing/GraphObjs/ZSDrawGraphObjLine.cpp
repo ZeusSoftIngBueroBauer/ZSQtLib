@@ -355,7 +355,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValLine.toString();
+        strMthInArgs = "{" + i_physValLine.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -549,7 +549,7 @@ void CGraphObjLine::setLine(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "P1: " + i_physValP1.toString() + ", P2: " + i_physValP2.toString();
+        strMthInArgs = "P1 {" + i_physValP1.toString() + "}, P2 {" + i_physValP2.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2053,7 +2053,8 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphObjStates(mthTracer);
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
     CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);

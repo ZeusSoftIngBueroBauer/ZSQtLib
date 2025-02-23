@@ -170,7 +170,7 @@ CPhysValRect::CPhysValRect(
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
     m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
-    m_size(i_ptTL.x() - i_ptBR.x(), fabs(i_ptBR.y() - i_ptTL.y())),
+    m_size(i_ptBR.x() - i_ptTL.x(), fabs(i_ptBR.y() - i_ptTL.y())),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValRectSelectionPoints(),
     m_arbRectSelectionPointsCalculated()
