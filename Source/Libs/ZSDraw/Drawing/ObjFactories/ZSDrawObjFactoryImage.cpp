@@ -78,6 +78,13 @@ public: // interface methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+int CObjFactoryImage::getNumberOfCreatedGraphObjects() const
+//------------------------------------------------------------------------------
+{
+    return CGraphObjImage::s_iInstCount;
+}
+
+//------------------------------------------------------------------------------
 CGraphObj* CObjFactoryImage::createGraphObj(
     CDrawingScene* i_pDrawingScene,
     const CDrawSettings& i_drawSettings)

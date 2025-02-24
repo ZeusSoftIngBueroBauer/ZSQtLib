@@ -446,6 +446,10 @@ CTreeViewGraphObjs::~CTreeViewGraphObjs()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
+    QObject::disconnect(
+        m_pDrawingScene, &CDrawingScene::selectionChanged,
+        this, &CTreeViewGraphObjs::onDrawingSceneSelectionChanged );
+
     try {
         delete m_pModelIdxTreeGraphObjs;
     }

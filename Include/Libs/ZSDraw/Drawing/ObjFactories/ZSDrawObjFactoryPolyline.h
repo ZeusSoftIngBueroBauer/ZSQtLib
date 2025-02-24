@@ -45,12 +45,13 @@ public: // class methods
     static QString ClassName() { return "CObjFactoryPolyline"; }
 public: // ctors and dtor
     CObjFactoryPolyline( const QPixmap& i_pxmToolIcon = QPixmap() );
-    virtual ~CObjFactoryPolyline();
+    ~CObjFactoryPolyline() override;
 public: // interface methods of base class CObjFactory
-    virtual CGraphObj* createGraphObj(
+    int getNumberOfCreatedGraphObjects() const override;
+    CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings) override;
-    virtual CGraphObj* createGraphObj(
+    CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings) override;

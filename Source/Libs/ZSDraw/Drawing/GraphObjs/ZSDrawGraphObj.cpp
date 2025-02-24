@@ -5241,6 +5241,13 @@ protected: // overridables
 //------------------------------------------------------------------------------
 /*! @brief Creates the selection points if not yet created and adds them to
            the graphics scene.
+
+    @note Selection points should not belong as child to the graphics items for
+          which the selection points are created. Otherwise the "boundingRect" call
+          of groups (which implicitly calls childrenBoundingRect) does not work as
+          expected as the selection points would be included.
+          In addition selection points must be directly added to the graphics scene
+          as they should not be indicated in the index tree.
 */
 void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
@@ -5265,7 +5272,11 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
             bool bShowSelPt = false;
             if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
                 if (i_selPts & c_uSelectionPointsBoundingRectCorner) {
-                    bShowSelPt = true;
+                    // If the object is currently being created the bottom right selection point should become
+                    // the top most selection point to receive the following mouse move events.
+                    if (m_editMode != EEditMode::CreatingByMouseEvents || selPt != ESelectionPoint::BottomRight) {
+                        bShowSelPt = true;
+                    }
                 }
             }
             else if (idxSelPt >= ESelectionPointLineCenterMin && idxSelPt <= ESelectionPointLineCenterMax) {
@@ -5284,23 +5295,11 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
                 }
             }
             if (bShowSelPt) {
-                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-                if (pGraphObjSelPt == nullptr) {
-                    pGraphObjSelPt = new CGraphObjSelectionPoint(
+                if (m_arpSelPtsBoundingRect[idxSelPt] == nullptr) {
+                    CGraphObjSelectionPoint* pGraphObjSelPt = new CGraphObjSelectionPoint(
                         m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, selPt));
                     m_arpSelPtsBoundingRect[idxSelPt] = pGraphObjSelPt;
-
-                    // Please note that selection points should not belong as child to the graphics items
-                    // for which the selection points are created. Otherwise the "boundingRect" call
-                    // of groups (which implicitly calls childrenBoundingRect) does not work as expected
-                    // as the selection points would be included.
-                    // In addition selection points must be directly added to the graphics scene as they
-                    // should not be indicated in the index tree.
                     m_pDrawingScene->addItem(pGraphObjSelPt);
-
-                    // Event filters can only be installed on items in a scene.
-                    //pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
-
                     QObject::connect(
                         pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
                         this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
@@ -5308,6 +5307,23 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
                         pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
                         this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
                 }
+            }
+        }
+        // If the object is currently being created the bottom right selection point should become
+        // the top most selection point to receive the following mouse move events.
+        if ((m_editMode == EEditMode::CreatingByMouseEvents) && (i_selPts & c_uSelectionPointsBoundingRectCorner)) {
+            CEnumSelectionPoint eSelPt = ESelectionPoint::BottomRight;
+            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomRight)] == nullptr) {
+                CGraphObjSelectionPoint* pGraphObjSelPt = new CGraphObjSelectionPoint(
+                    m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, eSelPt.enumerator()));
+                m_arpSelPtsBoundingRect[eSelPt.enumeratorAsInt()] = pGraphObjSelPt;
+                m_pDrawingScene->addItem(pGraphObjSelPt);
+                QObject::connect(
+                    pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                    this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
+                QObject::connect(
+                    pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                    this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
             }
         }
     }
@@ -5382,8 +5398,15 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
 //------------------------------------------------------------------------------
 /*! @brief Creates the selection points if not yet created and adds them to
            the graphics scene.
+
+    @note Selection points should not belong as child to the graphics items for
+          which the selection points are created. Otherwise the "boundingRect" call
+          of groups (which implicitly calls childrenBoundingRect) does not work as
+          expected as the selection points would be included.
+          In addition selection points must be directly added to the graphics scene
+          as they should not be indicated in the index tree.
 */
-void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
+void CGraphObj::showSelectionPointsOfPolygon(const QPolygonF& i_plg)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -5424,18 +5447,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 pGraphObjSelPt = new CGraphObjSelectionPoint(
                     m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
-
-                // Please note that selection points should not belong as child to the graphics items
-                // for which the selection points are created. Otherwise the "boundingRect" call
-                // of groups (which implicitly calls childrenBoundingRect) does not work as expected
-                // as the selection points would be included.
-                // In addition selection points must be directly added to the graphics scene as they
-                // should not be indicated in the index tree.
                 m_pDrawingScene->addItem(pGraphObjSelPt);
-
-                // Event filters can only be installed on items in a scene.
-                //pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
-
                 QObject::connect(
                     pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
                     this, &CGraphObj::onSelectionPointAboutToBeDestroyed);

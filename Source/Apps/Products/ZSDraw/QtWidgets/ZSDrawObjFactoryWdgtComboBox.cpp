@@ -86,6 +86,13 @@ public: // interface methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+int CObjFactoryWdgtComboBox::getNumberOfCreatedGraphObjects() const
+//------------------------------------------------------------------------------
+{
+    return CGraphObjWdgtComboBox::s_iInstCount;
+}
+
+//------------------------------------------------------------------------------
 CGraphObj* CObjFactoryWdgtComboBox::createGraphObj(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings )

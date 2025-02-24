@@ -101,6 +101,7 @@ protected: // ctor
 public: // dtor
     virtual ~CObjFactory();
 public: // interface methods
+    virtual int getNumberOfCreatedGraphObjects() const = 0;
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings) = 0;
@@ -139,6 +140,8 @@ protected: // class methods
     static void saveGraphObjGeometryLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
     static QList<SLabelDscr> loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader);
 protected: // class members
+    /*! Counts the number of created object factories. On creating the first factory, the index tree is created.
+        On destroying the factories, the counter is decremented and if the counter reaches 0 the index is destroyed. */
     static int s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;
 protected: // instance members

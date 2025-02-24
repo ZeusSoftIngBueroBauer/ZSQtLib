@@ -86,6 +86,13 @@ public: // interface methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+int CObjFactoryWdgtPushButton::getNumberOfCreatedGraphObjects() const
+//------------------------------------------------------------------------------
+{
+    return CGraphObjWdgtPushButton::s_iInstCount;
+}
+
+//------------------------------------------------------------------------------
 CGraphObj* CObjFactoryWdgtPushButton::createGraphObj(
     CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings )

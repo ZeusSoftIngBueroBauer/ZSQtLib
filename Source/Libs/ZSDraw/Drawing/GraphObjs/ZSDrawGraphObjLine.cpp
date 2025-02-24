@@ -1922,7 +1922,6 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    bool bCallBaseMouseEventHandler = true;
     if (m_editMode == EEditMode::CreatingByMouseEvents) {
         // The editMode changed signal will be emitted and received by the drawing scene.
         // The drawing scene is informed this way that creation of the object is finished
@@ -1930,10 +1929,9 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // construction showing the selection points at the bounding rectangle.
         setEditMode(EEditMode::ModifyingPolygonPoints);
     }
-    if (bCallBaseMouseEventHandler) {
-        // Forward the mouse event to the LineItems base implementation.
-        QGraphicsLineItem::mouseReleaseEvent(i_pEv);
-    }
+
+    // Forward the mouse event to the items base implementation.
+    QGraphicsLineItem::mouseReleaseEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);

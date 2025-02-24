@@ -45,20 +45,20 @@ public: // class methods
     static QString ClassName() { return "CObjFactoryText"; }
 public: // ctors and dtor
     CObjFactoryText( const QPixmap& i_pxmToolIcon = QPixmap() );
-    virtual ~CObjFactoryText();
+    ~CObjFactoryText() override;
 public: // interface methods of base class CObjFactory
-    virtual CGraphObj* createGraphObj(
+    int getNumberOfCreatedGraphObjects() const override;
+    CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings) override;
-    virtual CGraphObj* createGraphObj(
+    CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings) override;
-public: // interface methods of base class CObjFactory
-    virtual ZS::System::SErrResultInfo saveGraphObj(
+    ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
         QXmlStreamWriter& i_xmlStreamWriter) const override;
-    virtual CGraphObj* loadGraphObj(
+    CGraphObj* loadGraphObj(
         CDrawingScene* i_pDrawingScene,
         CGraphObjGroup* i_pGraphObjGroupParent,
         const QString& i_strObjName,

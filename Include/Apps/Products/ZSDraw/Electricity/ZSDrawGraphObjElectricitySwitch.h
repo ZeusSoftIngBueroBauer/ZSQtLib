@@ -93,8 +93,11 @@ protected: // overridables of base class CGraphObjGroup
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
-protected: // class members
-    /*!< Needed to set an initial unique name when creating a new instance. */
+public: // class members
+    /*!< Needed to set an initial unique name when creating a new instance.
+         Incremented by the ctor but not decremented by the dtor.
+         Used to create a unique name for newly created objects of this type.
+         public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
     CGraphObjConnectionPoint* m_pCnctPt1;

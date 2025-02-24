@@ -192,9 +192,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect,
         /* pTSGrpParent */ pGrpRectangles );
     createTestGroupDrawStandardShapesRect(pGrpRectanglesRectangle);
-#if 0
     createTestGroupDrawStandardShapesRectModifications(pGrpRectanglesRectangle);
-#endif
+
     createTestStepSaveLoadFile(pGrpRectangles, 1);
 
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES
@@ -923,9 +922,11 @@ void CTest::createTestGroupDrawStandardShapesRect(
     pTestStep->setConfigValue("P2", QPoint(325, 325));
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    m_ptPosRectangle = QPointF(300, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
-    m_rectRectangle = QRectF(QPointF(-25.0, -25.0), QSizeF(50.0, 50.0));
-    *m_pPhysValRectRectangle = m_rectRectangle;
+    QSizeF sizeRect = QSizeF(50.0, 50.0);
+    m_ptPosRectangle = QPointF(300, 300.0);
+    m_rectRectangle = QRectF(QPointF(-25.0, -25.0), sizeRect);
+    m_pPhysValRectRectangle->setSize(sizeRect);
+    m_pPhysValRectRectangle->setCenter(QPointF(300, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0));
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -969,21 +970,68 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
     -----------------------------------------------------------------------*/
 
     ZS::Test::CTestStep* pTestStep = nullptr;
-    //QStringList strlstExpectedValues;
-    //QString strObjName;
-    //QString strMethod;
-    //QString strMthArgs;
-    //CPhysValPoint physValPoint(*m_pDrawingScene);
-    //CPhysValLine physValLine(*m_pDrawingScene);
-    //CPhysValPolygon physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
-    //SGraphObjSelectionPoint selPt;
-    //QPointF pt1SelPt;
-    //QPointF pt2SelPt;
+    QStringList strlstExpectedValues;
+    int iResultValuesPrecision = -1;
+    QString strObjName;
+    QString strMethod;
+    QString strMthArgs;
+    CPhysValRect physValRectNew = *m_pPhysValRectRectangle;
+    CEnumSelectionPoint eSelPt;
+    QPointF pt1SelPt;
+    QPointF pt2SelPt;
 
     ZS::Test::CTestStepGroup* pGrpModifyRectangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + c_strGraphObjNameRect,
         /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    // setRotationAngle
+    //-----------------
+
+    eSelPt = bYAxisTopDown ? ESelectionPoint::RotateTop : ESelectionPoint::RotateBottom;
+    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew.setAngle(45.0);
+    strObjName = c_strGraphObjNameRect;
+    strMethod = "setRotationAngle";
+    strMthArgs = physValRectNew.angle().toString();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyRectangle,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
+    m_physValAngleRectangle = physValRectNew.angle();
+    *m_pPhysValRectRectangle = physValRectNew;
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
+    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P1", pt1SelPt);
+    pTestStep->setConfigValue("P2", pt2SelPt);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setWidth
+    //---------
+
+    // setHeight
+    //----------
+
+    // setSize
+    //--------
+
+    // setWidth
+    //---------
+
+    // setHeight
+    //----------
+
 }
 
 //------------------------------------------------------------------------------

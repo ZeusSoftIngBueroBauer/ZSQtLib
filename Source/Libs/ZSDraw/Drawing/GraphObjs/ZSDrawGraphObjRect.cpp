@@ -1887,8 +1887,15 @@ void CGraphObjRect::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
     }
 
+    if (m_editMode == EEditMode::CreatingByMouseEvents) {
+        // The editMode changed signal will be emitted and received by the drawing scene.
+        // The drawing scene is informed this way that creation of the object is finished
+        // and will unselect the current drawing tool and will select the object under
+        // construction showing the selection points at the bounding rectangle.
+        setEditMode(EEditMode::ModifyingBoundingRect);
+    }
+
     // Forward the mouse event to the items base implementation.
-    // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsRectItem::mouseReleaseEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1919,6 +1926,12 @@ void CGraphObjRect::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
+
+    // When double clicking an item, the item will first receive a mouse
+    // press event, followed by a release event (i.e., a click), then a
+    // doubleclick event, and finally a release event.
+    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
+    //QGraphicsRectItem::mouseDoubleClickEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
