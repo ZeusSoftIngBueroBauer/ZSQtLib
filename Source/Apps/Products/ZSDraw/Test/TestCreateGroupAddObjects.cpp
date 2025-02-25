@@ -196,7 +196,6 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     // Ellipses
     //===========
 
-#if 0
 #if TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES == 1
 
     ZS::Test::CTestStepGroup* pGrpEllipses = new ZS::Test::CTestStepGroup(
@@ -228,7 +227,6 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestStepSaveLoadFile(pGrpEllipses, 1);
 
 #endif // TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES
-#endif
 
     // Texts
     //===========
@@ -1023,7 +1021,7 @@ void CTest::createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTe
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
@@ -1055,14 +1053,14 @@ void CTest::createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTe
     m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectRectangle->setSize(sizeRectangle);
     m_pPhysValRectRectangle->setCenter(m_ptPosRectangle);
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectRectangle->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, iDigits));
+        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -1083,7 +1081,7 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypePolyline);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -1295,7 +1293,7 @@ void CTest::createTestGroupAddStandardShapesEllipse(
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -1303,7 +1301,14 @@ void CTest::createTestGroupAddStandardShapesEllipse(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+
+    QString strObjName;
+    QString strMethod = "DrawingScene.addGraphObj";
+    QString strMthArgs;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1314,28 +1319,28 @@ void CTest::createTestGroupAddStandardShapesEllipse(
         Decimals: 2
     -----------------------------------------------------------------------*/
 
-    ZS::Test::CTestStep* pTestStep = nullptr;
-    QStringList strlstExpectedValues;
-
+    strObjName = c_strGraphObjNameEllipse;
+    strMthArgs = strObjName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameEllipse + ")",
-        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameEllipse + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjEllipse(ZS::Test::CTestStep*)) );
-    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameEllipse, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse));
-    m_ptPosEllipse = QPointF(325.0, 270.0);
-    m_rectEllipse = QRectF(QPointF(-25.0,  -5.0), QSizeF(10.0, 20.0));
-    *m_pPhysValRectEllipse = m_rectEllipse;
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameEllipse);
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_ptPosEllipse = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    QSizeF sizeEllipse(50.0, 50.0);
+    m_rectEllipse = QRectF(QPointF(-sizeEllipse.width()/2.0, -sizeEllipse.height()/2.0), sizeEllipse);
+    m_pPhysValRectEllipse->setSize(sizeEllipse);
+    m_pPhysValRectEllipse->setCenter(m_ptPosEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectEllipse->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForRect(
-        c_strGraphObjNameEllipse, m_ptPosEllipse,
-        m_rectEllipse, *m_pPhysValRectEllipse, iDigits));
+    strlstExpectedValues.append(resultValuesForEllipse(
+        c_strGraphObjNameEllipse, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -1357,7 +1362,7 @@ void CTest::createTestGroupAddStandardShapesEllipseModifications(
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypePolyline);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -1365,7 +1370,7 @@ void CTest::createTestGroupAddStandardShapesEllipseModifications(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1378,18 +1383,278 @@ void CTest::createTestGroupAddStandardShapesEllipseModifications(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    //QString strObjName;
-    //QString strMethod;
-    //QString strMthArgs;
-    //int idxPt;
-    //int iCount;
-    //CPhysValPoint physValPoint(*m_pDrawingScene);
+    QString strObjName = c_strGraphObjNameEllipse;
+    QString strMethod;
+    QString strMthArgs;
 
     ZS::Test::CTestStepGroup* pGrpModifyEllipse = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + c_strGraphObjNameEllipse,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + strObjName,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+    // setWidth
+    //---------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    QSizeF sizeEllipse = m_pPhysValRectEllipse->size().toQSizeF();
+    sizeEllipse.setWidth(100.0);
+    strMethod = "setWidth";
+    strMthArgs = QString::number(sizeEllipse.width()) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_ptPosEllipse = QPointF(325.0, 300.0);
+    m_rectEllipse = QRectF(QPointF(-sizeEllipse.width()/2.0, -sizeEllipse.height()/2.0), sizeEllipse);
+    m_pPhysValRectEllipse->setSize(sizeEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Width", m_rectEllipse.width());
+    pTestStep->setConfigValue("Width.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setRotationAngle
+    //-----------------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    m_physValAngleEllipse.setVal(45.0);
+    strMethod = "setRotationAngle";
+    strMthArgs = m_physValAngleEllipse.toString();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_pPhysValRectEllipse->setAngle(m_physValAngleEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Angle", m_physValAngleEllipse.toString());
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Show Label
+    //-----------
+
+    strMethod = "showLabel";
+    strMthArgs = CGraphObj::c_strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::LineCenterPoint, 2).toString()},
+        {"setPos", QPointF(560.0, 195.0)},
+        {"ExpectedText", strObjName}
+    });
+
+    // Show Geometry Labels
+    //---------------------
+
+    strMethod = "showGeometryLabels";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameCenter +
+        ", " + CGraphObj::c_strGeometryLabelNameWidth +
+        ", " + CGraphObj::c_strGeometryLabelNameHeight +
+        ", " + CGraphObj::c_strGeometryLabelNameAngle;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
+        {"setPos", QPointF(280.0, 200.0)},
+        {"ExpectedText", m_pPhysValRectEllipse->center().toString()},
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
+        {"setPos", QPointF(310.0, 300.0)},
+        {"ExpectedText", m_pPhysValRectEllipse->width().toString()},
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
+        {"setPos", QPointF(350.0, bYAxisTopDown ? 310.0 : 290.0)},
+        {"ExpectedText", m_pPhysValRectEllipse->height().toString()},
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", QPointF(350.0, bYAxisTopDown ? 310.0 : 290.0)},
+        {"ExpectedText", m_physValAngleEllipse.toString()},
+    });
+
+    // setHeight
+    //----------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    sizeEllipse = m_pPhysValRectEllipse->size().toQSizeF();
+    sizeEllipse.setHeight(100.0);
+    strMethod = "setHeight";
+    strMthArgs = QString::number(sizeEllipse.height()) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_ptPosEllipse = QPointF(bYAxisTopDown ? 307.322330 : 342.677670, bYAxisTopDown ? 317.677670 : fYAxisMaxVal - 317.677670);
+    m_rectEllipse = QRectF(QPointF(-sizeEllipse.width()/2.0, -sizeEllipse.height()/2.0), sizeEllipse);
+    m_pPhysValRectEllipse->setSize(sizeEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Height", m_rectEllipse.width());
+    pTestStep->setConfigValue("Height.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setSize
+    //--------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    sizeEllipse = QSizeF(150.0, 150.0);
+    strMethod = "setSize";
+    strMthArgs = qSize2Str(sizeEllipse);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_ptPosEllipse = QPointF(bYAxisTopDown ? 307.322330 : 378.033009, bYAxisTopDown ? 353.033009 : fYAxisMaxVal - 317.677670);
+    m_rectEllipse = QRectF(QPointF(-sizeEllipse.width()/2.0, -sizeEllipse.height()/2.0), sizeEllipse);
+    m_pPhysValRectEllipse->setSize(sizeEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Size", m_rectEllipse.size());
+    pTestStep->setConfigValue("Size.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setWidth
+    //---------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    sizeEllipse = m_pPhysValRectEllipse->size().toQSizeF();
+    sizeEllipse.setWidth(50.0);
+    strMethod = "setWidth";
+    strMthArgs = QString::number(sizeEllipse.width()) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_ptPosEllipse = QPointF(bYAxisTopDown ? 271.966991 : 342.677670, bYAxisTopDown ? 317.677670 : fYAxisMaxVal - 353.033009);
+    m_rectEllipse = QRectF(QPointF(-sizeEllipse.width()/2.0, -sizeEllipse.height()/2.0), sizeEllipse);
+    m_pPhysValRectEllipse->setSize(sizeEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Width", m_rectEllipse.width());
+    pTestStep->setConfigValue("Width.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setRotationAngle
+    //-----------------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    m_physValAngleEllipse.setVal(0.0);
+    strMethod = "setRotationAngle";
+    strMthArgs = m_physValAngleEllipse.toString();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_pPhysValRectEllipse->setAngle(m_physValAngleEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Angle", m_physValAngleEllipse.toString());
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // setHeight
+    //----------
+
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;
+    sizeEllipse = m_pPhysValRectEllipse->size().toQSizeF();
+    sizeEllipse.setHeight(50.0);
+    strMethod = "setHeight";
+    strMthArgs = QString::number(sizeEllipse.height()) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyEllipse,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    m_ptPosEllipse = QPointF(bYAxisTopDown ? 271.966991 : 342.677670, bYAxisTopDown ? 267.677670 : fYAxisMaxVal - 303.033009);
+    m_rectEllipse = QRectF(QPointF(-sizeEllipse.width()/2.0, -sizeEllipse.height()/2.0), sizeEllipse);
+    m_pPhysValRectEllipse->setSize(sizeEllipse);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Height", m_rectEllipse.width());
+    pTestStep->setConfigValue("Height.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strObjName, m_ptPosEllipse, m_rectEllipse, *m_pPhysValRectEllipse, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------
