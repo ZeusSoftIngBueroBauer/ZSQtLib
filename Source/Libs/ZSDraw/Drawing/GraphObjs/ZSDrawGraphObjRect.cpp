@@ -1254,7 +1254,7 @@ CPhysValRect CGraphObjRect::getPhysValBoundingRect(const CUnit& i_unit) const
         physValRectBounding = m_pDrawingScene->convert(physValRectBounding, i_unit);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + m_physValRectScaledAndRotated.toString(true) + "}");
+        mthTracer.setMethodReturn("{" + physValRectBounding.toString(true) + "}");
     }
     return physValRectBounding;
 }
@@ -1292,7 +1292,7 @@ public: // overridables of base class CGraphObj (text labels)
 //------------------------------------------------------------------------------
 /*! @brief Returns the list of the possible anchor points for the given label name.
 
-    For the predefined labels of the group the following applies:
+    For the predefined labels of the rectangle the following applies:
 
     - The "Name" label may be anchored to the center point of the bounding rectangle
       and the center points of the border lines.
@@ -1961,7 +1961,7 @@ void CGraphObjRect::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    // Forward the mouse event to the LineItems base implementation.
+    // Forward the mouse event to the graphics item base implementation.
     // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsRectItem::mouseMoveEvent(i_pEv);
 

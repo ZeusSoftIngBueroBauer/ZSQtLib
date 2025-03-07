@@ -404,9 +404,13 @@ public: // type definitions and constants
     static const QString c_strGeometryLabelNameP1;
     static const QString c_strGeometryLabelNameP2;
     static const QString c_strGeometryLabelNameTopLeft;
+    static const QString c_strGeometryLabelNameTopCenter;
     static const QString c_strGeometryLabelNameTopRight;
+    static const QString c_strGeometryLabelNameRightCenter;
     static const QString c_strGeometryLabelNameBottomRight;
+    static const QString c_strGeometryLabelNameBottomCenter;
     static const QString c_strGeometryLabelNameBottomLeft;
+    static const QString c_strGeometryLabelNameLeftCenter;
     static const QString c_strGeometryLabelNameCenter;
     static const QString c_strGeometryLabelNameDX;
     static const QString c_strGeometryLabelNameDY;
