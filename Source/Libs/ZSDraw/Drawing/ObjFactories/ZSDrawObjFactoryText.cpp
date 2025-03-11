@@ -143,6 +143,7 @@ CGraphObj* CObjFactoryText::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeText);
     CGraphObj* pGraphObj = new CGraphObjText(i_pDrawingScene);
+    //pGraphObj->setRect(i_physValPoint, i_physValPoint);
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

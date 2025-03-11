@@ -110,10 +110,6 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
-        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
-        mthTracer.trace(strMthInArgs);
-    }
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeEllipse);
@@ -143,14 +139,11 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
-        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
-        mthTracer.trace(strMthInArgs);
-    }
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeEllipse);
     CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene);
+    pGraphObj->setRect(i_physValPoint, i_physValPoint);
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
