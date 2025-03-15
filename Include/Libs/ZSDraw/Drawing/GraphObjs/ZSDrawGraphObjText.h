@@ -35,12 +35,10 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsTextItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsItem/*QGraphicsTextItem*/
+class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsItem
 //******************************************************************************
 {
 public: // class methods
@@ -65,7 +63,9 @@ public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // replacing methods of QGraphicsTextItem
     void setHtml(const QString& i_strText);
+    QString toHtml() const;
     void setPlainText(const QString& i_strText);
+    QString toPlainText() const;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     CPhysValRect getRect() const;
@@ -114,12 +114,16 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // must overridables of base class CGraphObj
-    //QRectF getBoundingRect() const override;
-    //QRectF getEffectiveBoundingRectOnScene() const override;
-    //CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
-public: // overridables of base class CGraphObj
+    QRectF getBoundingRect() const override;
+    QRectF getEffectiveBoundingRectOnScene() const override;
+    CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
+public: // overridables of base class CGraphObj (text labels)
+    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+public: // overridables of base class CGraphObj (geometry labels)
+    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -138,16 +142,31 @@ protected: // overridables of base class QGraphicsItem
     void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // overridable slots of base class CGraphObj
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+public: // must overridables of base class CGraphObj
+    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
+    virtual void updateTransformedCoorsOnParentGeometryChanged() override;
+    virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
+    QRectF getRectScaled(const QRectF& i_rectOrig) const;
+    CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
+    CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
     QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
 protected: // auxiliary instance methods (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
-    QRectF QGraphicsTextItem_setRect(const QRectF& i_rect);
-    QRectF QGraphicsTextItem_setRect(double i_fX, double i_fY, double i_fWidth, double i_fHeight);
+    QRectF setRectScaled(const QRectF& i_rect);
     CPhysValRect setPhysValRectOrig(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    virtual void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -157,6 +176,7 @@ public: // class members
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
+    QGraphicsTextItem m_graphicsTextItem;
     /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates in local
          coordinates relative to the origin of the item's bounding rectangle.
          This member is set if any shape point is directly set via the method call "setRect"
@@ -168,6 +188,14 @@ protected: // instance members
          m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
          @see base class CGraphObj "Current and Original Coordinates". */
     QRectF m_rectOrig;
+    /*!< The scaled but not rotated rectangle coordinates in local coordinates relative
+         to the origin of the item's bounding rectangle.
+         Other graphics items, like Line, provide methods to set and retrieve the
+         local coordinates (e.g. "setLine", "line").
+         The text item does not have such methods (e.g. "setRect", "rect").
+         The scaled rectangle is returned by the "boundingRect" method of the graphics
+         item to provide the bounding rectangle of the group in local coordinates. */
+    QRectF m_rectScaled;
     /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates with unit
          in parent coordinates relative to the top left or bottom left corner of the parent.
          The rotation angle of the graphics item is separately stored in
@@ -189,8 +217,6 @@ protected: // instance members
 
 }; // class CGraphObjText
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjText_h

@@ -262,8 +262,8 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameText,
         /* pTSGrpParent */ pGrpTexts );
-    createTestGroupAddStandardShapesRect(pGrpTextsText);
-    createTestGroupAddStandardShapesRectModifications(pGrpTextsText);
+    createTestGroupAddStandardShapesText(pGrpTextsText);
+    createTestGroupAddStandardShapesTextModifications(pGrpTextsText);
 
     createTestStepSaveLoadFile(pGrpTexts, 1);
 
@@ -653,7 +653,7 @@ void CTest::createTestGroupAddStandardShapesLinesSmallPlusSign(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -743,7 +743,7 @@ void CTest::createTestGroupAddStandardShapesLinesBigPlusSign(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -833,7 +833,7 @@ void CTest::createTestGroupAddStandardShapesLinesCheckmark(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -923,7 +923,7 @@ void CTest::createTestGroupAddStandardShapesLinesSmallRect(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1742,8 +1742,7 @@ void CTest::createTestGroupAddStandardShapesEllipseModifications(
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesText(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1759,7 +1758,7 @@ void CTest::createTestGroupAddStandardShapesText(
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeText);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -1767,7 +1766,15 @@ void CTest::createTestGroupAddStandardShapesText(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+
+    QString strObjName;
+    QString strMethod = "DrawingScene.addGraphObj";
+    QString strText = "Hello World";
+    QString strMthArgs;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1778,28 +1785,29 @@ void CTest::createTestGroupAddStandardShapesText(
         Decimals: 2
     -----------------------------------------------------------------------*/
 
-    ZS::Test::CTestStep* pTestStep = nullptr;
-    QStringList strlstExpectedValues;
-
+    strObjName = c_strGraphObjNameText;
+    strMthArgs = strObjName + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameText + ")",
-        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameText + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameText, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameText));
-    m_ptPosText = QPointF(325.0, 270.0);
-    m_rectText = QRectF(QPointF(-25.0,  -5.0), QSizeF(10.0, 20.0));
-    *m_pPhysValRectText = m_rectText;
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeRect));
+    m_ptPosText = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    QSizeF sizeText(50.0, 50.0);
+    m_rectText = QRectF(QPointF(-sizeText.width()/2.0, -sizeText.height()/2.0), sizeText);
+    m_pPhysValRectText->setSize(sizeText);
+    m_pPhysValRectText->setCenter(m_ptPosText);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameText);
     pTestStep->setConfigValue("Rect", m_pPhysValRectText->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("Text", strText);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForRect(
-        c_strGraphObjNameText, m_ptPosText,
-        m_rectText, *m_pPhysValRectText, iDigits));
+    strlstExpectedValues.append(resultValuesForText(
+        strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -1829,7 +1837,7 @@ void CTest::createTestGroupAddStandardShapesTextModifications(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1882,7 +1890,7 @@ void CTest::createTestGroupAddStandardShapesPolygonOpenArrow(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1926,10 +1934,10 @@ void CTest::createTestGroupAddStandardShapesPolygonOpenArrow(
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameOpenArrow);
     pTestStep->setConfigValue("Points", m_pPhysValPolygonOpenArrow->toQPolygonF());
     pTestStep->setConfigValue("Points.Unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameOpenArrow, m_ptPosOpenArrow, m_polygonOpenArrow, *m_pPhysValPolygonOpenArrow, iDigits));
+        c_strGraphObjNameOpenArrow, m_ptPosOpenArrow, m_polygonOpenArrow, *m_pPhysValPolygonOpenArrow, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Label
@@ -1977,7 +1985,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangle(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -2013,10 +2021,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangle(
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("Points", m_pPhysValPolygonTriangle->toQPolygonF());
     pTestStep->setConfigValue("Points.Unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Label
@@ -2064,7 +2072,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -2144,14 +2152,14 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"setPos", QPointF(295.0, 330.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', iDigits)}
+        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', iResultValuesPrecision)}
     });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameTriangle},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"setPos", QPointF(230.0, 265.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', iDigits)}
+        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', iResultValuesPrecision)}
     });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameTriangle},
@@ -2201,10 +2209,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Angle", m_physValAngleTriangle.toString());
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Move Labels
@@ -2270,14 +2278,14 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"setPos", QPointF(235.0, 275.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', iDigits)}
+        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', iResultValuesPrecision)}
     });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameTriangle},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"setPos", QPointF(300.0, 200.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', iDigits)}
+        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', iResultValuesPrecision)}
     });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameTriangle},
@@ -2337,10 +2345,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("idxPt", idxPt);
     pTestStep->setConfigValue("point", physValPoint.toQPointF());
     pTestStep->setConfigValue("point.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // insert(0, )
@@ -2374,10 +2382,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("idxPt", idxPt);
     pTestStep->setConfigValue("point", physValPoint.toQPointF());
     pTestStep->setConfigValue("point.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -2440,7 +2448,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         { 25.0, -87.5}
     });
     m_pPhysValPolygonTriangle->insert(idxPt, physValPoint);
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
@@ -2448,12 +2456,12 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("idxPt", idxPt);
     pTestStep->setConfigValue("point", physValPoint.toQPointF());
     pTestStep->setConfigValue("point.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-    iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     // Show Labels
     //------------
@@ -2515,19 +2523,19 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {-30.0, -62.5}
     });
     m_pPhysValPolygonTriangle->append(physValPoint);
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("point", physValPoint.toQPointF());
     pTestStep->setConfigValue("point.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-    //iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    //iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     // Show Labels
     //------------
@@ -2589,10 +2597,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // remove(0, 2)
@@ -2622,10 +2630,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("idxPt", idxPt);
     pTestStep->setConfigValue("count", iCount);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -2655,7 +2663,7 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -2701,10 +2709,10 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
     pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameStar);
     pTestStep->setConfigValue("Points", m_pPhysValPolygonStar->toQPolygonF());
     pTestStep->setConfigValue("Points.Unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -2745,7 +2753,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CT
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
@@ -2831,7 +2839,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Te
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -2948,7 +2956,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTes
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
@@ -3034,7 +3042,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateParent(ZS
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -3357,7 +3365,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications(ZS
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -4479,7 +4487,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSigns(ZS::Test::CTestS
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
@@ -4607,7 +4615,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -5907,7 +5915,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesCheckmark(ZS::Test::CTestS
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
@@ -5995,7 +6003,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesCheckmarkModifications(ZS:
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -8732,7 +8740,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGro
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
@@ -8765,13 +8773,13 @@ void CTest::createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGro
         strEntryType, c_strGraphObjNamePolygons, c_strGraphObjNameStar);
     m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNamePolygons, c_strGraphObjNameTriangle);
-    iDigits = 3;
+    iResultValuesPrecision = 3;
     strlstGraphObjsAddToGroup.clear();
     strlstGraphObjsAddToGroup.append(c_strGraphObjNameStar);
     strlstGraphObjsAddToGroup.append(c_strGraphObjNameTriangle);
     pTestStep->setConfigValue("GroupName", c_strGraphObjNamePolygons);
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // Group
     m_ptPosPolygons = QPointF(437.5, 375.0);
@@ -8779,7 +8787,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGro
     m_pPhysValRectPolygons->setSize(m_sizePolygons);
     m_pPhysValRectPolygons->setCenter(QPointF(437.5, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iDigits));
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
     // Star
     m_ptPosStar = QPointF(62.5, 25.0);
     m_polygonStar = QPolygonF({
@@ -8803,7 +8811,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGro
         {200.0, bYAxisTopDown ? 125.0 : m_sizePolygons.height() - 125.0}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     // Triangle
     m_ptPosTriangle = QPointF(-137.5, -100.0);
     m_polygonTriangle = QPolygonF({
@@ -8817,7 +8825,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGro
         { 25.0, bYAxisTopDown ?   0.0 : m_sizePolygons.height() -  0.0}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Label
@@ -8863,7 +8871,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     double fYAxisMaxVal = 600.0;
 
@@ -8900,7 +8908,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         /* strOperation    */ c_strGraphObjNamePolygons + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupPolygons,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GroupName", c_strGraphObjNamePolygons);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNamePolygons]);
     pTestStep->setConfigValue("Method", strMethod);
@@ -8911,7 +8919,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameStar]);
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // Polygons
     m_ptPosPolygons = QPointF(387.5, 312.5);
@@ -8919,7 +8927,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     m_pPhysValRectPolygons->setSize(m_sizePolygons);
     m_pPhysValRectPolygons->setCenter(QPointF(387.5, bYAxisTopDown ? 312.5 : fYAxisMaxVal - 312.5));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iDigits));
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
     // Star
     m_ptPosStar = QPointF(43.3, 12.5);
     m_polygonStar = QPolygonF({
@@ -8943,7 +8951,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         {138.461538, bYAxisTopDown ?  62.500000 : m_sizePolygons.height() -  62.500000}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     // Triangle
     m_ptPosTriangle = QPointF(-95.2, -50.0);
     m_polygonTriangle = QPolygonF({
@@ -8957,7 +8965,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         {17.307692, bYAxisTopDown ?  0.000000 : m_sizePolygons.height() -  0.000000}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -8973,7 +8981,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         /* strOperation    */ c_strGraphObjNamePolygons + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupPolygons,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GroupName", c_strGraphObjNamePolygons);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNamePolygons]);
     pTestStep->setConfigValue("Method", strMethod);
@@ -8984,7 +8992,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameStar]);
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // Polygons
     m_ptPosPolygons = QPointF(437.5, 375.0);
@@ -8992,7 +9000,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     m_pPhysValRectPolygons->setSize(m_sizePolygons);
     m_pPhysValRectPolygons->setCenter(QPointF(437.5, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iDigits));
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
     // Star
     m_ptPosStar = QPointF(62.5, 25.0);
     m_polygonStar = QPolygonF({
@@ -9016,7 +9024,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         {200.0, bYAxisTopDown ? 125.0 : m_sizePolygons.height() - 125.0}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     // Triangle
     m_ptPosTriangle = QPointF(-137.5, -100.0);
     m_polygonTriangle = QPolygonF({
@@ -9030,7 +9038,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         { 25.0, bYAxisTopDown ?   0.0 : m_sizePolygons.height() -  0.0}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -9050,7 +9058,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNamePolygons, c_strGraphObjNameStar);
     m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameTopGroup, c_strGraphObjNamePolygons, c_strGraphObjNameTriangle);
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     strlstGraphObjsAddToGroup.clear();
     strlstGraphObjsAddToGroup.append(c_strGraphObjNamePolygons);
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
@@ -9061,7 +9069,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameStar]);
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // TopGroup
     m_ptPosTopGroup = QPointF(437.5, 375.0);
@@ -9069,20 +9077,20 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     m_pPhysValRectTopGroup->setCenter(QPointF(437.5, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup, iDigits));
+        c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup, iResultValuesPrecision));
     // Polygons
     m_ptPosPolygons = QPointF(0.0, 0.0);
     m_sizePolygons = m_sizeTopGroup;
     m_pPhysValRectPolygons->setSize(m_sizePolygons);
     m_pPhysValRectPolygons->setCenter(QPointF(162.5, bYAxisTopDown ? 125.0 : m_sizeTopGroup.height() - 125.0));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iDigits));
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
     // Star
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     // Triangle
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // TopGrop.Resize(500, 375)
@@ -9097,7 +9105,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         /* strOperation    */ c_strGraphObjNameTopGroup + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupPolygons,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", strMethod);
@@ -9109,7 +9117,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameStar]);
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // TopGroup
     m_ptPosTopGroup = QPointF(387.5, 312.5);
@@ -9117,14 +9125,14 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     m_pPhysValRectTopGroup->setCenter(QPointF(387.5, bYAxisTopDown ? 312.5 : fYAxisMaxVal - 312.5));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup, iDigits));
+        c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup, iResultValuesPrecision));
     // Polygons
     m_ptPosPolygons = QPointF(0.0, 0.0);
     m_sizePolygons = m_sizeTopGroup;
     m_pPhysValRectPolygons->setSize(m_sizePolygons);
     m_pPhysValRectPolygons->setCenter(QPointF(112.5, bYAxisTopDown ? 62.5 : m_sizeTopGroup.height() - 62.5));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iDigits));
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
     // Star
     m_ptPosStar = QPointF(43.3, 12.5);
     m_polygonStar = QPolygonF({
@@ -9148,7 +9156,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         {138.461538, bYAxisTopDown ?  62.500000 : m_sizePolygons.height() -  62.500000}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     // Triangle
     m_ptPosTriangle = QPointF(-95.2, -50.0);
     m_polygonTriangle = QPolygonF({
@@ -9162,7 +9170,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         {17.307692, bYAxisTopDown ?  0.000000 : m_sizePolygons.height() -  0.000000}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -9178,7 +9186,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         /* strOperation    */ c_strGraphObjNameTopGroup + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupPolygons,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iDigits = 6;
+    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameTopGroup);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTopGroup]);
     pTestStep->setConfigValue("Method", strMethod);
@@ -9190,7 +9198,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameStar]);
     strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
-    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // TopGroup
     m_ptPosTopGroup = QPointF(437.5, 375.0);
@@ -9198,14 +9206,14 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     m_pPhysValRectTopGroup->setSize(m_sizeTopGroup);
     m_pPhysValRectTopGroup->setCenter(QPointF(437.5, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup, iDigits));
+        c_strGraphObjNameTopGroup, m_ptPosTopGroup, *m_pPhysValRectTopGroup, iResultValuesPrecision));
     // Polygons
     m_ptPosPolygons = QPointF(0.0, 0.0);
     m_sizePolygons = m_sizeTopGroup;
     m_pPhysValRectPolygons->setSize(m_sizePolygons);
     m_pPhysValRectPolygons->setCenter(QPointF(162.5, bYAxisTopDown ? 125.0 : m_sizeTopGroup.height() - 125.0));
     strlstExpectedValues.append(resultValuesForGroup(
-        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iDigits));
+        c_strGraphObjNamePolygons, m_ptPosPolygons, *m_pPhysValRectPolygons, iResultValuesPrecision));
     // Star
     m_ptPosStar = QPointF(62.5, 25.0);
     m_polygonStar = QPolygonF({
@@ -9229,7 +9237,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         {200.0, bYAxisTopDown ? 125.0 : m_sizePolygons.height() - 125.0}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iDigits));
+        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, iResultValuesPrecision));
     // Triangle
     m_ptPosTriangle = QPointF(-137.5, -100.0);
     m_polygonTriangle = QPolygonF({
@@ -9243,7 +9251,7 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
         { 25.0, bYAxisTopDown ?   0.0 : m_sizePolygons.height() -  0.0}
     });
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iDigits));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -9267,7 +9275,7 @@ void CTest::createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* 
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
@@ -9520,7 +9528,7 @@ void CTest::createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTe
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------

@@ -82,7 +82,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
@@ -399,7 +399,7 @@ protected: // auxiliary instance methods
         const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
     QStringList resultValuesForText(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
+        const ZS::Draw::CPhysValRect& i_physValRect, const QString& i_srText, int i_iPrecision = -1) const;
     QStringList resultValuesForPolygon(
         const QString& strGraphObjName, const QPointF& i_pos,
         const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;

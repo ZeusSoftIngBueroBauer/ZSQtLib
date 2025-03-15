@@ -461,7 +461,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -474,7 +474,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallPlusSign(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    int iResultValuesPrecision = -1;
+    iResultValuesPrecision = -1;
 
     // Vertical Line
     //--------------
@@ -556,7 +556,7 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -569,7 +569,7 @@ void CTest::createTestGroupDrawStandardShapesLinesBigPlusSign(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    int iResultValuesPrecision = -1;
+    iResultValuesPrecision = -1;
 
     // Vertical Line
     //--------------
@@ -651,7 +651,7 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -664,7 +664,7 @@ void CTest::createTestGroupDrawStandardShapesLinesCheckmark(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    int iResultValuesPrecision = -1;
+    iResultValuesPrecision = -1;
 
     // Left Line
     //----------
@@ -746,7 +746,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -759,7 +759,7 @@ void CTest::createTestGroupDrawStandardShapesLinesSmallRect(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    int iResultValuesPrecision = -1;
+    iResultValuesPrecision = -1;
 
     // Top Line
     //---------
@@ -909,6 +909,7 @@ void CTest::createTestGroupDrawStandardShapesRect(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
+    iResultValuesPrecision = -1;
 
     // Rectangle
     //----------
@@ -1243,6 +1244,7 @@ void CTest::createTestGroupDrawStandardShapesEllipse(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
+    iResultValuesPrecision = -1;
 
     // Ellipse
     //----------
@@ -1565,7 +1567,7 @@ void CTest::createTestGroupDrawStandardShapesText(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1578,7 +1580,7 @@ void CTest::createTestGroupDrawStandardShapesText(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    int iResultValuesPrecision = -1;
+    iResultValuesPrecision = -1;
 
     // Text
     //----------
@@ -1632,7 +1634,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     double fYAxisMaxVal = 600.0;
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -2754,7 +2756,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::C
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
@@ -2772,7 +2774,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::C
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    int iResultValuesPrecision = -1;
+    iResultValuesPrecision = -1;
 
     createTestGroupDrawStandardShapesLinesSmallPlusSign(i_pTestStepGroupParent);
 
@@ -2846,7 +2848,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(ZS::T
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -2861,7 +2863,6 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(ZS::T
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    int iResultValuesPrecision = -1;
     CPhysValRect physValRectSmallPlusSignNew = *m_pPhysValRectSmallPlusSign;
     CEnumSelectionPoint eSelPt;
     QPointF pt1SelPt;
@@ -2875,6 +2876,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(ZS::T
     // Resize SmallPlusSign
     //---------------------
 
+    iResultValuesPrecision = -1;
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomRight : ESelectionPoint::TopRight;
     physValRectSmallPlusSignNew = *m_pPhysValRectSmallPlusSign;
     physValRectSmallPlusSignNew.setSize(QSizeF(30.0, 60.0));
@@ -2995,7 +2997,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTe
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
@@ -3013,10 +3015,10 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTe
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    int iResultValuesPrecision = -1;
 
     createTestGroupDrawStandardShapesLinesBigPlusSign(i_pTestStepGroupParent);
 
+    iResultValuesPrecision = -1;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameBigPlusSign + ")",
@@ -3087,7 +3089,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -3102,7 +3104,6 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    int iResultValuesPrecision = -1;
     CPhysValRect physValRectTopGroupNew = *m_pPhysValRectTopGroup;
     CEnumSelectionPoint eSelPt;
     QPointF pt1SelPt;
@@ -3116,6 +3117,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
     // Create TopGroup
     //----------------
 
+    iResultValuesPrecision = -1;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameTopGroup + ")",
@@ -3425,7 +3427,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(Z
     CUnit unit = drawingSize.unit();
     QString strUnit = unit.symbol();
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /*-----------------------------------------------------------------------
@@ -3440,7 +3442,6 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(Z
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    int iResultValuesPrecision = -1;
     CPhysValRect physValRectTopGroupNew = *m_pPhysValRectTopGroup;
     CPhysValRect physValRectBigPlusSignNew = *m_pPhysValRectBigPlusSign;
     CEnumSelectionPoint eSelPt;
@@ -3455,6 +3456,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(Z
     // Ungroup BigPlusSign
     //----------------------
 
+    iResultValuesPrecision = -1;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene.ungroup(" + c_strGraphObjNameBigPlusSign + ")",

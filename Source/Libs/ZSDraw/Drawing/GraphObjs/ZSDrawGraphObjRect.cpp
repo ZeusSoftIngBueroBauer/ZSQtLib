@@ -140,10 +140,9 @@ CGraphObjRect::CGraphObjRect(CDrawingScene* i_pDrawingScene, const QString& i_st
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    QString strMthInArgs;
-
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ObjName: " + i_strObjName;
     }
@@ -1216,7 +1215,7 @@ QRectF CGraphObjRect::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
@@ -1236,7 +1235,7 @@ CPhysValRect CGraphObjRect::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_unit.symbol();
     }
     CMethodTracer mthTracer(

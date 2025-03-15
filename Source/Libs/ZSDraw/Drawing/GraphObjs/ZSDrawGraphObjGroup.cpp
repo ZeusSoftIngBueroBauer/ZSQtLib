@@ -758,7 +758,7 @@ public: // instance methods
         Rectangle to be set in parent coordinates, depending on the Y scale orientation
         relative to the top left or bottom left corner of parent item's bounding rectangle.
 */
-void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
+void CGraphObjGroup::setRect(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2119,7 +2119,7 @@ QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
@@ -2139,7 +2139,7 @@ CPhysValRect CGraphObjGroup::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_unit.symbol();
     }
     CMethodTracer mthTracer(
@@ -3240,9 +3240,6 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
 
                 // Set the groups rectangle in local coordinate system.
                 setRectScaled(rectF);
-
-                // Please note that GraphicsLineItem::setLine did not update the position of the
-                // item in the parent. This has to be done "manually" afterwards.
 
                 // Move the object to the parent position.
                 // This has to be done after resizing the item which updates the local coordinates

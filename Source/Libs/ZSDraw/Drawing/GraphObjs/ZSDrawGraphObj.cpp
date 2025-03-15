@@ -3743,7 +3743,7 @@ CPhysValRect CGraphObj::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_unit.symbol();
     }
     CMethodTracer mthTracer(

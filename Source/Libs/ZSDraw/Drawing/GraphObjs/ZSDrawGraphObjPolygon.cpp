@@ -1582,7 +1582,7 @@ QRectF CGraphObjPolygon::getEffectiveBoundingRectOnScene() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
@@ -1605,7 +1605,7 @@ CPhysValRect CGraphObjPolygon::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_unit.symbol();
     }
     CMethodTracer mthTracer(
