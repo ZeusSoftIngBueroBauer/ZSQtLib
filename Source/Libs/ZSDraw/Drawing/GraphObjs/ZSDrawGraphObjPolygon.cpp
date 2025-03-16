@@ -4020,21 +4020,30 @@ void CGraphObjPolygon::traceThisPositionInfo(
     if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QPolygonF polygon = this->polygon();
-        QString strRuntimeInfo;
+
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+
+    QPolygonF polygon = this->polygon();
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "GraphObjPolygon {";
+    i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "PhysValPolygon Orig {" + m_physValPolygonOrig.toString() + "} " + m_physValPolygonOrig.unit().symbol()
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". PhysValPolygon Orig {" + m_physValPolygonOrig.toString() + "} " + m_physValPolygonOrig.unit().symbol()
             + ", ScaledRotated {" + m_physValPolygonScaledAndRotated.toString() + "} " + m_physValPolygonScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "ItemPolygon Orig {" + qPolygon2Str(m_polygonOrig) + "}, Scaled {" + qPolygon2Str(polygon) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". ItemPolygon Orig {" + qPolygon2Str(m_polygonOrig) + "}, Scaled {" + qPolygon2Str(polygon) + "}";
         i_mthTracer.trace(strRuntimeInfo);
-        CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
-    }
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }

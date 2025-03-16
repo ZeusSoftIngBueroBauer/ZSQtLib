@@ -1078,6 +1078,9 @@ void CGraphObj::createContextMenu()
 
     Must be overridden to show the context popup menu.
     Usually opened by right clicking on the the object.
+
+    TODO: check if this method can (or should) be replaced by reimplementing
+          QGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 */
 void CGraphObj::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
@@ -8820,18 +8823,28 @@ void CGraphObj::traceThisPositionInfo(
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "RotationAngle: " + m_physValRotationAngle.toString();
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += "GraphicsItem {";
         i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += ". RotationAngle: " + m_physValRotationAngle.toString();
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += ". BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += ". Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
-        i_mthTracer.trace(strRuntimeInfo);
-        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
 }

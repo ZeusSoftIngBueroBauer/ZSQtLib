@@ -1580,31 +1580,35 @@ void CTest::createTestGroupDrawStandardShapesText(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    iResultValuesPrecision = -1;
+
+    QString strObjName = c_strGraphObjNameText;
+    QString strMethod = "DrawingScene.drawGraphObj";
+    QString strText = "Hello World";
+    QString strMthArgs = strObjName + ", " + strText;
 
     // Text
     //----------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameText + ")",
-        /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameText + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
-    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameText, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameText));
-    m_ptPosText = QPointF(325.0, 270.0);
-    m_rectText = QRectF(QPointF(-25.0,  -5.0), QSizeF(10.0, 20.0));
-    *m_pPhysValRectText = m_rectText;
-    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeText));
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameText);
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_ptPosText = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    QSizeF sizeText(50.0, 50.0); // adjusted to text size
+    m_pPhysValRectText->setSize(sizeText);
+    m_pPhysValRectText->setCenter(m_ptPosText);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectText->toQRectF());
-    pTestStep->setConfigValue("Rect.Angle", m_pPhysValRectText->angle().toString());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("Text", strText);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForRect(
-        c_strGraphObjNameText, m_ptPosText,
-        m_rectText, *m_pPhysValRectText, iResultValuesPrecision));
+    strlstExpectedValues.append(resultValuesForText(
+        strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 

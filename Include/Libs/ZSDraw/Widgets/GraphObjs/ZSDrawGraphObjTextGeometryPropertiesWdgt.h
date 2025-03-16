@@ -78,6 +78,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
     void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
+    void onBtnResizeGraphObjToContentClicked(bool i_bChecked = false);
 protected slots:
     void onModelGeometryContentChanged();
 private: // instance members
@@ -95,6 +96,8 @@ private: // instance members
     QVBoxLayout* m_pLytWdgtGeometry;
     QHBoxLayout* m_pLytLineTableViewButtons;
     QPushButton* m_pBtnResizeRowsAndColumnsToContents;
+    QLabel* m_pLblResizeGraphObjToContent;
+    QPushButton* m_pBtnResizeGraphObjToContent;
     QVBoxLayout* m_pLytGeometryTableView;
     ZS::System::GUI::CTableView* m_pTableViewGeometry;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateXVal;

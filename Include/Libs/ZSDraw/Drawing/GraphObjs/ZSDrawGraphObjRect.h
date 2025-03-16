@@ -35,7 +35,9 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsRectItem>
 #endif
 
-namespace ZS::Draw
+namespace ZS
+{
+namespace Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjRect : public CGraphObj, public QGraphicsRectItem
@@ -205,6 +207,8 @@ protected: // instance members
 
 }; // class CGraphObjRect
 
-} // namespace ZS::Draw
+} // namespace Draw
+
+} // namespace ZS
 
 #endif // #ifndef ZSDraw_GraphObjRect_h

@@ -1973,109 +1973,113 @@ QString ZS::System::qItemDataRole2Str( int i_role )
 Enum Qt::ItemFlag
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
+enum ItemFlag {
+    NoItemFlags = 0,
+    ItemIsSelectable = 1,
+    ItemIsEditable = 2,
+    ItemIsDragEnabled = 4,
+    ItemIsDropEnabled = 8,
+    ItemIsUserCheckable = 16,
+    ItemIsEnabled = 32,
+    ItemIsAutoTristate = 64,
+    ItemNeverHasChildren = 128,
+    ItemIsUserTristate = 256
+}; */
 QString ZS::System::qItemFlags2Str( quint32 i_flags )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    /*
-    enum ItemFlag {
-        NoItemFlags = 0,
-        ItemIsSelectable = 1,
-        ItemIsEditable = 2,
-        ItemIsDragEnabled = 4,
-        ItemIsDropEnabled = 8,
-        ItemIsUserCheckable = 16,
-        ItemIsEnabled = 32,
-        ItemIsAutoTristate = 64,
-        ItemNeverHasChildren = 128,
-        ItemIsUserTristate = 256
-    }; */
-
-    if( i_flags == Qt::NoItemFlags )
-    {
+    if (i_flags == Qt::NoItemFlags) {
         str = "---";
     }
-    else // if( i_flags != Qt::NoItemFlags )
-    {
-        if( i_flags & Qt::ItemIsSelectable )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+    else {
+        if (i_flags & Qt::ItemIsSelectable) {
+            if (!str.isEmpty()) str += "|";
             str += "Sel";
         }
-        if( i_flags & Qt::ItemIsEditable )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsEditable) {
+            if (!str.isEmpty()) str += "|";
             str += "Edi";
         }
-        if( i_flags & Qt::ItemIsDragEnabled )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsDragEnabled) {
+            if (!str.isEmpty()) str += "|";
             str += "DgE";
         }
-        if( i_flags & Qt::ItemIsDropEnabled )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsDropEnabled) {
+            if (!str.isEmpty()) str += "|";
             str += "DpE";
         }
-        if( i_flags & Qt::ItemIsUserCheckable )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsUserCheckable) {
+            if (!str.isEmpty()) str += "|";
             str += "UCh";
         }
-        if( i_flags & Qt::ItemIsEnabled )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsEnabled) {
+            if (!str.isEmpty()) str += "|";
             str += "Ena";
         }
-        if( i_flags & Qt::ItemIsAutoTristate )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsAutoTristate) {
+            if (!str.isEmpty()) str += "|";
             str += "AuT";
         }
-        if( i_flags & Qt::ItemNeverHasChildren )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemNeverHasChildren) {
+            if (!str.isEmpty()) str += "|";
             str += "NHC";
         }
-        if( i_flags & Qt::ItemIsUserTristate )
-        {
-            if( !str.isEmpty() )
-            {
-                str += "|";
-            }
+        if (i_flags & Qt::ItemIsUserTristate) {
+            if (!str.isEmpty()) str += "|";
             str += "UsT";
         }
-    } // if( i_flags != Qt::NoItemFlags )
-
+    }
     return str;
 
 } // qItemFlags2Str
+
+
+/*==============================================================================
+Enum Qt::TextInteractionFlags
+==============================================================================*/
+
+/*------------------------------------------------------------------------------
+enum TextInteractionFlag {
+    Qt::NoTextInteraction         =  0, // No interaction with the text is possible.
+    Qt::TextSelectableByMouse     =  1, // Text can be selected with the mouse and copied to the clipboard using a context menu or standard keyboard shortcuts.
+    Qt::TextSelectableByKeyboard  =  2, // Text can be selected with the cursor keys on the keyboard. A text cursor is shown.
+    Qt::LinksAccessibleByMouse    =  4, // Links can be highlighted and activated with the mouse.
+    Qt::LinksAccessibleByKeyboard =  8, // Links can be focused using tab and activated with enter.
+    Qt::TextEditable              = 16  // The text is fully editable.
+}; */
+QString ZS::System::qTextInteractionFlags2Str(Qt::TextInteractionFlags i_flags)
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_flags == Qt::NoTextInteraction) {
+        str = "---";
+    }
+    else {
+        if (i_flags & Qt::TextSelectableByMouse) {
+            if (!str.isEmpty()) str += "|";
+            str += "SelByMouse";
+        }
+        if (i_flags & Qt::TextSelectableByKeyboard) {
+            if (!str.isEmpty()) str += "|";
+            str += "SelByKeyBrd";
+        }
+        if (i_flags & Qt::LinksAccessibleByMouse) {
+            if (!str.isEmpty()) str += "|";
+            str += "AccByMouse";
+        }
+        if (i_flags & Qt::LinksAccessibleByKeyboard) {
+            if (!str.isEmpty()) str += "|";
+            str += "AccByKeyBrd";
+        }
+        if (i_flags & Qt::TextEditable) {
+            if (!str.isEmpty()) str += "|";
+            str += "Editable";
+        }
+    }
+    return str;
+}
 
 /*==============================================================================
 Enum Qt::Key

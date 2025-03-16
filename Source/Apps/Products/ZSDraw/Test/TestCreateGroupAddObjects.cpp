@@ -1769,10 +1769,10 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
 
-    QString strObjName;
+    QString strObjName = c_strGraphObjNameText;
     QString strMethod = "DrawingScene.addGraphObj";
     QString strText = "Hello World";
-    QString strMthArgs;
+    QString strMthArgs = strObjName + ", " + strText;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1783,22 +1783,19 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
         Decimals: 2
     -----------------------------------------------------------------------*/
 
-    strObjName = c_strGraphObjNameText;
-    strMthArgs = strObjName + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
-    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameText, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameText));
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosText = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
-    QSizeF sizeText(50.0, 50.0);
-    m_rectText = QRectF(QPointF(-sizeText.width()/2.0, -sizeText.height()/2.0), sizeText);
-    m_pPhysValRectText->setSize(sizeText);
-    m_pPhysValRectText->setCenter(m_ptPosText);
+    QSizeF sizeText(62.0, 21.0); // adjusted to text size
+    QPointF ptTLText(m_ptPosText.x() - sizeText.width()/2.0, m_ptPosText.y() - sizeText.height()/2.0);
+    *m_pPhysValRectText = QRectF(ptTLText, sizeText);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameText);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRectText->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);

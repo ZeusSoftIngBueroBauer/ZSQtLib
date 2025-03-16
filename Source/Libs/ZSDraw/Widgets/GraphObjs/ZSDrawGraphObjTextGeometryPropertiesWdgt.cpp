@@ -98,6 +98,8 @@ CWdgtGraphObjTextGeometryProperties::CWdgtGraphObjTextGeometryProperties(
     m_pLytWdgtGeometry(nullptr),
     m_pLytLineTableViewButtons(nullptr),
     m_pBtnResizeRowsAndColumnsToContents(nullptr),
+    m_pLblResizeGraphObjToContent(nullptr),
+    m_pBtnResizeGraphObjToContent(nullptr),
     m_pLytGeometryTableView(nullptr),
     m_pTableViewGeometry(nullptr),
     m_pEdtPhysValDelegateXVal(nullptr),
@@ -177,6 +179,20 @@ CWdgtGraphObjTextGeometryProperties::CWdgtGraphObjTextGeometryProperties(
     QObject::connect(
         m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
         this, &CWdgtGraphObjTextGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
+
+    m_pLblResizeGraphObjToContent = new QLabel("Adjust Size To Content");
+    m_pLytLineTableViewButtons->addWidget(m_pLblResizeGraphObjToContent);
+
+    QPixmap pxmResizeGroupToContent(":/ZS/Button/ResizeToContent.png");
+    m_pBtnResizeGraphObjToContent = new QPushButton();
+    m_pBtnResizeGraphObjToContent->setIcon(pxmResizeToContents);
+    m_pBtnResizeGraphObjToContent->setFixedSize(QSize(24, 24));
+    m_pBtnResizeGraphObjToContent->setToolTip("Press to resize the text item to a reasonable size");
+    m_pLytLineTableViewButtons->addWidget(m_pBtnResizeGraphObjToContent);
+    m_pLytLineTableViewButtons->addStretch();
+    QObject::connect(
+        m_pBtnResizeGraphObjToContent, &QPushButton::clicked,
+        this, &CWdgtGraphObjTextGeometryProperties::onBtnResizeGraphObjToContentClicked );
 
     // Table View
     //------------------
@@ -265,6 +281,8 @@ CWdgtGraphObjTextGeometryProperties::~CWdgtGraphObjTextGeometryProperties()
     m_pLytWdgtGeometry = nullptr;
     m_pLytLineTableViewButtons = nullptr;
     m_pBtnResizeRowsAndColumnsToContents = nullptr;
+    m_pLblResizeGraphObjToContent = nullptr;
+    m_pBtnResizeGraphObjToContent = nullptr;
     m_pLytGeometryTableView = nullptr;
     m_pTableViewGeometry = nullptr;
     m_pEdtPhysValDelegateXVal = nullptr;
@@ -469,6 +487,22 @@ void CWdgtGraphObjTextGeometryProperties::onBtnResizeRowsAndColumnsToContentsCli
 
     m_pTableViewGeometry->resizeColumnsToContents();
     m_pTableViewGeometry->resizeRowsToContents();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjTextGeometryProperties::onBtnResizeGraphObjToContentClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnResizeGraphObjToContentClicked",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj != nullptr && m_pGraphObj->type() == EGraphObjTypeText) {
+        CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pGraphObj);
+        pGraphObjText->adjustSize();
+    }
 }
 
 /*==============================================================================

@@ -35,7 +35,9 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsTextItem>
 #endif
 
-namespace ZS::Draw
+namespace ZS
+{
+namespace Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsItem
@@ -53,6 +55,15 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjText();
+signals:
+    /*!< This signal is emitted when the user clicks on a link on a text item that
+         enables Qt::LinksAccessibleByMouse or Qt::LinksAccessibleByKeyboard.
+         @param [in] i_strLink is the link that was clicked. */
+    void linkActivated(CGraphObj* i_pGraphObj, const QString& i_strLink);
+    /*!< This signal is emitted when the user hovers over a link on a text item that
+         enables Qt::LinksAccessibleByMouse.
+         @param [in] i_strLink is the link that was hovered over. */
+    void linkHovered(CGraphObj* i_pGraphObj, const QString& i_strLink);
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
@@ -61,11 +72,26 @@ public: // must overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-public: // replacing methods of QGraphicsTextItem
+public: // providing methods of QGraphicsTextItem
     void setHtml(const QString& i_strText);
     QString toHtml() const;
     void setPlainText(const QString& i_strText);
     QString toPlainText() const;
+public: // providing methods of QGraphicsTextItem
+    void adjustSize();
+    void setDefaultTextColor(const QColor& i_col);
+    QColor defaultTextColor() const;
+    void setDocument(QTextDocument* i_pDoc);
+    QTextDocument* document() const;
+    void setFont(const QFont& i_font);
+    QFont font() const;
+    void setTextWidth(double i_fWidth);
+    double textWidth() const;
+public: // providing methods of QGraphicsTextItem
+    void setTabChangesFocus(bool i_bTabChangesFocus);
+    bool tabChangesFocus() const;
+    void setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
+    Qt::TextInteractionFlags textInteractionFlags() const;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     CPhysValRect getRect() const;
@@ -167,6 +193,11 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+    virtual void traceTextItemPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -217,6 +248,8 @@ protected: // instance members
 
 }; // class CGraphObjText
 
-} // namespace ZS::Draw
+} // namespace Draw
+
+} // namespace ZS
 
 #endif // #ifndef ZSDraw_GraphObjText_h

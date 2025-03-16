@@ -190,7 +190,7 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pBtnResizeGraphObjToContent = new QPushButton();
     m_pBtnResizeGraphObjToContent->setIcon(pxmResizeToContents);
     m_pBtnResizeGraphObjToContent->setFixedSize(QSize(24, 24));
-    m_pBtnResizeGraphObjToContent->setToolTip("Press to resize the rows and columns to their contents");
+    m_pBtnResizeGraphObjToContent->setToolTip("Press to resize the group to its contents");
     m_pLytLineTableViewButtons->addWidget(m_pBtnResizeGraphObjToContent);
     m_pLytLineTableViewButtons->addStretch();
     QObject::connect(

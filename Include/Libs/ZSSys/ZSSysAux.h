@@ -171,6 +171,7 @@ ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );
 ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 ZSSYSDLL_API QString qItemDataRole2Str( int i_iVal );
 ZSSYSDLL_API QString qItemFlags2Str( quint32 i_flags );
+ZSSYSDLL_API QString qTextInteractionFlags2Str(Qt::TextInteractionFlags i_flags);
 
 ZSSYSDLL_API QString qKeyCode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API int char2QKeyCode( const QChar& i_ch );    // e.g. "o", "1", "Z", " ", "?", ..

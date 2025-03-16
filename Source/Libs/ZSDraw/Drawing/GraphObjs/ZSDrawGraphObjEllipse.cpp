@@ -2876,21 +2876,30 @@ void CGraphObjEllipse::traceThisPositionInfo(
     if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QString strRuntimeInfo;
+
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "GraphObjEllipse {";
+    i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
             + ", Scaled {" + m_physValRectScaled.toString() + "} " + m_physValRectScaled.unit().symbol();
             + ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "} " + m_physValRectScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(rect()) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(rect()) + "}";
         i_mthTracer.trace(strRuntimeInfo);
-        CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
-    }
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }

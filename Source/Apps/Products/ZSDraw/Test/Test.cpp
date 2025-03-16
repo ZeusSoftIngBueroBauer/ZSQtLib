@@ -2620,6 +2620,7 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
         if (pGraphObjText != nullptr) {
             pGraphObjText->setPlainText(strText);
             pGraphObjText->setRect(CPhysValRect(*m_pDrawingScene, rect, unit));
+            pGraphObjText->adjustSize();
         }
         pGraphObj->rename(strGraphObjName);
     }
@@ -4702,7 +4703,6 @@ void CTest::initObjectCoors()
     //----------
 
     m_ptPosText = QPointF();
-    m_rectText = QRectF();
     *m_pPhysValRectText = CPhysValRect(*m_pDrawingScene);
     m_physValAngleText = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 

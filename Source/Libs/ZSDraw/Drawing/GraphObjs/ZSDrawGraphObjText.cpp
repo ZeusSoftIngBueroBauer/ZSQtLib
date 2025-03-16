@@ -44,6 +44,7 @@ may result in using the software modules.
 
 #include <QtGui/qevent.h>
 #include <QtGui/QPainter>
+#include <QtGui/QTextDocument>
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSceneEvent>
@@ -343,7 +344,7 @@ void CGraphObjText::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld
 }
 
 /*==============================================================================
-public: // replacing methods of QGraphicsTextItem
+public: // providing methods of QGraphicsTextItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -394,6 +395,233 @@ QString CGraphObjText::toPlainText() const
 //------------------------------------------------------------------------------
 {
     return m_graphicsTextItem.toPlainText();
+}
+
+/*==============================================================================
+public: // providing methods of QGraphicsTextItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Adjusts the text item to a reasonable size.
+*/
+void CGraphObjText::adjustSize()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "adjustSize",
+        /* strAddInfo   */ "" );
+
+    m_graphicsTextItem.adjustSize();
+    QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
+    CPhysValSize physValSize(*m_pDrawingScene, rectBoundingTextItem.size());
+    setSize(physValSize);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the color for unformatted text to col.
+*/
+void CGraphObjText::setDefaultTextColor(const QColor& i_col)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_col.name();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setDefaultTextColor",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setDefaultTextColor(i_col);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the default text color that is used for unformatted text.
+*/
+QColor CGraphObjText::defaultTextColor() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.defaultTextColor();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the text document document on the item.
+*/
+void CGraphObjText::setDocument(QTextDocument* i_pDoc)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pDoc == nullptr ? "null" : i_pDoc->objectName());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setDocument",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setDocument(i_pDoc);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's text document.
+*/
+QTextDocument* CGraphObjText::document() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.document();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the font used to render the text item to font.
+*/
+void CGraphObjText::setFont(const QFont& i_font)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_font.family();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setFont",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setFont(i_font);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's font, which is used to render the text.
+*/
+QFont CGraphObjText::font() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.font();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the preferred width for the item's text.
+
+    If the actual text is wider than the specified width then it will be broken
+    into multiple lines. If width is set to -1 then the text will not be broken
+    into multiple lines unless it is enforced through an explicit line break or a
+    new paragraph.
+
+    The default value is -1.
+
+    Note that QGraphicsTextItem keeps a QTextDocument internally, which is used
+    to calculate the text width.
+*/
+void CGraphObjText::setTextWidth(double i_fWidth)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fWidth);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTextWidth",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setTextWidth(i_fWidth);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the text width.
+
+    The width is calculated with the QTextDocument that QGraphicsTextItem keeps internally.
+*/
+double CGraphObjText::textWidth() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.textWidth();
+}
+
+/*==============================================================================
+public: // providing methods of QGraphicsTextItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief If i_bTabChangesFocus is true, the Tab key will cause the widget to
+           change focus; otherwise, the tab key will insert a tab into the document.
+
+    In some occasions text edits should not allow the user to input tabulators or
+    change indentation using the Tab key, as this breaks the focus chain.
+    The default is false.
+*/
+void CGraphObjText::setTabChangesFocus(bool i_bTabChangesFocus)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bTabChangesFocus);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTabChangesFocus",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setTabChangesFocus(i_bTabChangesFocus);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true if the Tab key will cause the widget to change focus;
+           otherwise, false is returned.
+
+    By default, this behavior is disabled, and this function will return false.
+*/
+bool CGraphObjText::tabChangesFocus() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.tabChangesFocus();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the flags flags to specify how the text item should react to user input.
+
+    The default for a QGraphicsTextItem is Qt::NoTextInteraction. This function also
+    affects the ItemIsFocusable QGraphicsItem flag by setting it if flags is different
+    from Qt::NoTextInteraction and clearing it otherwise.
+
+    By default, the text is read-only. To transform the item into an editor, set the Qt::TextEditable flag.
+*/
+void CGraphObjText::setTextInteractionFlags(Qt::TextInteractionFlags i_flags)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qTextInteractionFlags2Str(i_flags);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTextInteractionFlags",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setTextInteractionFlags(i_flags);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current text interaction flags.
+*/
+Qt::TextInteractionFlags CGraphObjText::textInteractionFlags() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.textInteractionFlags();
 }
 
 /*==============================================================================
@@ -477,6 +705,7 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
                 m_physValRotationAngle = physValAngle;
                 QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
             }
+            m_graphicsTextItem.setPos(getBoundingRect().topLeft());
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
@@ -1720,6 +1949,21 @@ void CGraphObjText::paint(
             i_pPainter->drawLine(ptRctM, ptRotM);
         }
     }
+
+    #if 1
+    QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
+    rectBoundingTextItem = m_graphicsTextItem.mapRectToParent(rectBoundingTextItem);
+    QBrush brushTextItem;
+    brushTextItem.setColor(Qt::lightGray);
+    brushTextItem.setStyle(Qt::SolidPattern);
+    i_pPainter->setBrush(brushTextItem);
+    QPen penTextItem;
+    penTextItem.setColor(Qt::red);
+    penTextItem.setStyle(Qt::SolidLine);
+    i_pPainter->setPen(penTextItem);
+    i_pPainter->drawRect(rectBoundingTextItem);
+    #endif
+
     i_pPainter->restore();
 }
 
@@ -2874,21 +3118,76 @@ void CGraphObjText::traceThisPositionInfo(
     if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QString strRuntimeInfo;
+
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "GraphObjText {";
+    i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
             + ", Scaled {" + m_physValRectScaled.toString() + "} " + m_physValRectScaled.unit().symbol();
             + ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "} " + m_physValRectScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(m_rectScaled) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(m_rectScaled) + "}";
         i_mthTracer.trace(strRuntimeInfo);
-        CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
+
+    traceTextItemPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjText::traceTextItemPositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
     }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        return;
+    }
+    QPointF ptPos = m_graphicsTextItem.pos();
+    QPointF ptScenePos = m_graphicsTextItem.scenePos();
+    QRectF rectBounding = m_graphicsTextItem.boundingRect();
+    QPointF ptCenterPos = rectBounding.center();
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "TextItem {";
+    i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += ". RotationAngle: " + QString::number(m_graphicsTextItem.rotation()) + " " + ZS::System::Math::c_chSymbolDegree;
+    i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += ". BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+    i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += ". Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+    i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }

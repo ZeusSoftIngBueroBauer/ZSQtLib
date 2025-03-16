@@ -509,7 +509,6 @@ protected: // instance members
     //-----------
     // Text
     QPointF m_ptPosText;
-    QRectF m_rectText;
     ZS::Draw::CPhysValRect* m_pPhysValRectText = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleText;
 

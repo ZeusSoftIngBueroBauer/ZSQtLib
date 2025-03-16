@@ -2941,22 +2941,31 @@ void CGraphObjLine::traceThisPositionInfo(
     if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QLineF lineF = line();
-        QString strRuntimeInfo;
+
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+
+    QLineF lineF = line();
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "GraphObjLine {";
+    i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
             + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
             + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += "ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += ". ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
         i_mthTracer.trace(strRuntimeInfo);
-        CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
-    }
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }
