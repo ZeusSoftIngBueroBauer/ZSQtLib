@@ -133,7 +133,7 @@ CGraphObjText::CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeText),
         /* strObjName          */ i_strObjName.isEmpty() ? "Text" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItem(),
-    m_graphicsTextItem(),
+    m_graphicsTextItem(this),
     m_rectOrig(),
     m_rectScaled(),
     m_physValRectOrig(*m_pDrawingScene),

@@ -2612,11 +2612,13 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
             QString strUnit = i_pTestStep->getConfigValue("Rect.Unit").toString();
             unit = strUnit;
         }
+        QString strText = i_pTestStep->getConfigValue("Text").toString();
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(pGraphObj);
         if (pGraphObjText != nullptr) {
+            pGraphObjText->setPlainText(strText);
             pGraphObjText->setRect(CPhysValRect(*m_pDrawingScene, rect, unit));
         }
         pGraphObj->rename(strGraphObjName);

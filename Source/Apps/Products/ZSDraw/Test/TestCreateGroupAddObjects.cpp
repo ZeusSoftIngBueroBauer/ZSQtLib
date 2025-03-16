@@ -236,7 +236,6 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     // Texts
     //===========
 
-#if 0
 #if TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS == 1
 
     ZS::Test::CTestStepGroup* pGrpTexts = new ZS::Test::CTestStepGroup(
@@ -268,7 +267,6 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestStepSaveLoadFile(pGrpTexts, 1);
 
 #endif // TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS
-#endif
 
     // Polygons
     //=========
