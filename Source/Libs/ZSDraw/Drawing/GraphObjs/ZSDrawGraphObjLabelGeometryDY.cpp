@@ -245,10 +245,10 @@ QRectF CGraphObjLabelGeometryDY::boundingRect() const
         rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
     rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.getPenWidth()/2,
-        rctBounding.top() - m_drawSettings.getPenWidth()/2,
-        rctBounding.width() + m_drawSettings.getPenWidth(),
-        rctBounding.height() + m_drawSettings.getPenWidth() );
+        rctBounding.left() - m_drawSettings.penWidth()/2,
+        rctBounding.top() - m_drawSettings.penWidth()/2,
+        rctBounding.width() + m_drawSettings.penWidth(),
+        rctBounding.height() + m_drawSettings.penWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }

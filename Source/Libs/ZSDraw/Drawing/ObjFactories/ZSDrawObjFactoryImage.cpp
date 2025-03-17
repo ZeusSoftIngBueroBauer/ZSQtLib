@@ -103,7 +103,7 @@ CGraphObj* CObjFactoryImage::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    QString strFilePath = getFilePath();
+    QString strFilePath = filePath();
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeImage);
@@ -137,7 +137,7 @@ CGraphObj* CObjFactoryImage::createGraphObj(
         mthTracer.trace(strMthInArgs);
     }
 
-    QString strFilePath = getFilePath();
+    QString strFilePath = filePath();
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeImage);
@@ -187,7 +187,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     // Draw Attributes
     //----------------
 
-    CDrawSettings drawSettings = pGraphObj->getDrawSettings();
+    CDrawSettings drawSettings = pGraphObj->drawSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();

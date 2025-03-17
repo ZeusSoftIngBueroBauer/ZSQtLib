@@ -135,6 +135,7 @@ CGraphObjText::CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strObjName          */ i_strObjName.isEmpty() ? "Text" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItem(),
     m_graphicsTextItem(this),
+    m_margins(1, 1, 1, 1),
     m_rectOrig(),
     m_rectScaled(),
     m_physValRectOrig(*m_pDrawingScene),
@@ -226,7 +227,7 @@ CGraphObjText::CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_st
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 
-    //setTextInteractionFlags(Qt::TextEditorInteraction);
+    m_graphicsTextItem.setTextInteractionFlags(Qt::TextEditorInteraction);
 }
 
 //------------------------------------------------------------------------------
@@ -338,9 +339,73 @@ void CGraphObjText::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld
 
     bool bDrawSettingsChanged = (m_drawSettings != i_drawSettingsOld);
     if (bDrawSettingsChanged) {
+        QFont fnt = m_drawSettings.textFont();
+        fnt.setPixelSize(textSize2SizeInPixels(textSize()));
+        fnt.setBold(isTextStyleBold(textStyle()));
+        fnt.setItalic(isTextStyleItalic(textStyle()));
+        fnt.setStrikeOut(isTextEffectStrikeout(textEffect()));
+        fnt.setUnderline(isTextEffectUnderline(textEffect()));
+        m_graphicsTextItem.setFont(fnt);
+        m_graphicsTextItem.setDefaultTextColor(m_drawSettings.textColor());
         update();
         emit_drawSettingsChanged();
     }
+}
+
+/*==============================================================================
+public: // providing methods of QGraphicsTextItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the color for unformatted text to col.
+*/
+void CGraphObjText::setTextColor(const QColor& i_col, bool i_bImmediatelyApplySetting)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_col.name() + ", Apply: " + bool2Str(i_bImmediatelyApplySetting);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTextColor",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_bImmediatelyApplySetting) {
+        m_graphicsTextItem.setDefaultTextColor(i_col);
+    }
+    CGraphObj::setTextColor(i_col, i_bImmediatelyApplySetting);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the font used to render the text item to font.
+*/
+void CGraphObjText::setFont(const QFont& i_font, bool i_bImmediatelyApplySetting)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_font.family() + ", Apply: " + bool2Str(i_bImmediatelyApplySetting);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setFont",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_bImmediatelyApplySetting) {
+        QFont fnt = i_font;
+        fnt.setPixelSize(textSize2SizeInPixels(textSize()));
+        fnt.setBold(isTextStyleBold(textStyle()));
+        fnt.setItalic(isTextStyleItalic(textStyle()));
+        fnt.setStrikeOut(isTextEffectStrikeout(textEffect()));
+        fnt.setUnderline(isTextEffectUnderline(textEffect()));
+        m_graphicsTextItem.setFont(fnt);
+    }
+    CGraphObj::setFont(i_font, i_bImmediatelyApplySetting);
 }
 
 /*==============================================================================
@@ -397,58 +462,6 @@ QString CGraphObjText::toPlainText() const
     return m_graphicsTextItem.toPlainText();
 }
 
-/*==============================================================================
-public: // providing methods of QGraphicsTextItem
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Adjusts the text item to a reasonable size.
-*/
-void CGraphObjText::adjustSize()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "adjustSize",
-        /* strAddInfo   */ "" );
-
-    m_graphicsTextItem.adjustSize();
-    QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
-    CPhysValSize physValSize(*m_pDrawingScene, rectBoundingTextItem.size());
-    setSize(physValSize);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the color for unformatted text to col.
-*/
-void CGraphObjText::setDefaultTextColor(const QColor& i_col)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_col.name();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setDefaultTextColor",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_graphicsTextItem.setDefaultTextColor(i_col);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the default text color that is used for unformatted text.
-*/
-QColor CGraphObjText::defaultTextColor() const
-//------------------------------------------------------------------------------
-{
-    return m_graphicsTextItem.defaultTextColor();
-}
-
 //------------------------------------------------------------------------------
 /*! @brief Sets the text document document on the item.
 */
@@ -476,76 +489,6 @@ QTextDocument* CGraphObjText::document() const
 //------------------------------------------------------------------------------
 {
     return m_graphicsTextItem.document();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the font used to render the text item to font.
-*/
-void CGraphObjText::setFont(const QFont& i_font)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_font.family();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setFont",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_graphicsTextItem.setFont(i_font);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the item's font, which is used to render the text.
-*/
-QFont CGraphObjText::font() const
-//------------------------------------------------------------------------------
-{
-    return m_graphicsTextItem.font();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the preferred width for the item's text.
-
-    If the actual text is wider than the specified width then it will be broken
-    into multiple lines. If width is set to -1 then the text will not be broken
-    into multiple lines unless it is enforced through an explicit line break or a
-    new paragraph.
-
-    The default value is -1.
-
-    Note that QGraphicsTextItem keeps a QTextDocument internally, which is used
-    to calculate the text width.
-*/
-void CGraphObjText::setTextWidth(double i_fWidth)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fWidth);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setTextWidth",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_graphicsTextItem.setTextWidth(i_fWidth);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the text width.
-
-    The width is calculated with the QTextDocument that QGraphicsTextItem keeps internally.
-*/
-double CGraphObjText::textWidth() const
-//------------------------------------------------------------------------------
-{
-    return m_graphicsTextItem.textWidth();
 }
 
 /*==============================================================================
@@ -629,6 +572,227 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+void CGraphObjText::setMargins(const QMargins& i_margins_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMargins2Str(i_margins_px) + " px";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setMargins",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+void CGraphObjText::setMargins(int i_fLeft_px, int i_fTop_px, int i_fRight_px, int i_fBottom_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Left: " + QString::number(i_fLeft_px) + "px" +
+            ", Top: " + QString::number(i_fTop_px) + "px" +
+            ", Right: " + QString::number(i_fRight_px) + "px" +
+            ", Bottom: " + QString::number(i_fBottom_px) + "px";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setMargins",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+void CGraphObjText::setMarginLeft(int i_fLeft_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fLeft_px) + " px";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setMarginLeft",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+void CGraphObjText::setMarginTop(int i_fTop_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fTop_px) + " px";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setMarginTop",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+void CGraphObjText::setMarginRight(int i_fRight_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fRight_px) + " px";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setMarginRight",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+void CGraphObjText::setMarginBottom(int i_fBottom_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fBottom_px) + " px";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setMarginBottom",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+QMargins CGraphObjText::margins() const
+//------------------------------------------------------------------------------
+{
+    return m_margins;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+int CGraphObjText::marginLeft() const
+//------------------------------------------------------------------------------
+{
+    return m_margins.left();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+int CGraphObjText::marginTop() const
+//------------------------------------------------------------------------------
+{
+    return m_margins.top();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+int CGraphObjText::marginRight() const
+//------------------------------------------------------------------------------
+{
+    return m_margins.right();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
+*/
+int CGraphObjText::marginBottom() const
+//------------------------------------------------------------------------------
+{
+    return m_margins.bottom();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Adjusts the text item to a reasonable size.
+*/
+void CGraphObjText::adjustSize()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "adjustSize",
+        /* strAddInfo   */ "" );
+
+    m_graphicsTextItem.adjustSize();
+    QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
+    TODO: Take margins into account
+    CPhysValSize physValSize(*m_pDrawingScene, rectBoundingTextItem.size());
+    setSize(physValSize);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the preferred width for the item's text.
+
+    If the actual text is wider than the specified width then it will be broken
+    into multiple lines. If width is set to -1 then the text will not be broken
+    into multiple lines unless it is enforced through an explicit line break or a
+    new paragraph.
+
+    The default value is -1.
+
+    Note that QGraphicsTextItem keeps a QTextDocument internally, which is used
+    to calculate the text width.
+*/
+void CGraphObjText::setTextWidth(double i_fWidth)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_fWidth);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setTextWidth",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_graphicsTextItem.setTextWidth(i_fWidth);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the text width.
+
+    The width is calculated with the QTextDocument that QGraphicsTextItem keeps internally.
+*/
+double CGraphObjText::textWidth() const
+//------------------------------------------------------------------------------
+{
+    return m_graphicsTextItem.textWidth();
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the item's rectangle to the given rectangle.
 
     Depending on the Y axis scale orientation of the drawing scene the coordinates
@@ -705,6 +869,9 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
                 m_physValRotationAngle = physValAngle;
                 QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
             }
+
+            TODO: Take margins into account
+
             m_graphicsTextItem.setPos(getBoundingRect().topLeft());
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
@@ -1896,11 +2063,11 @@ void CGraphObjText::paint(
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
-            pn.setWidth(3 + m_drawSettings.getPenWidth());
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
         else {
             pn.setColor(s_highlightColor);
-            pn.setWidth(3 + m_drawSettings.getPenWidth());
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
         pn.setStyle(Qt::SolidLine);
         QPainterPath outline;
@@ -1910,16 +2077,16 @@ void CGraphObjText::paint(
         outline.lineTo(rctBounding.bottomLeft());
         outline.lineTo(rctBounding.topLeft());
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.getPenWidth());
+        pn.setWidth(1 + m_drawSettings.penWidth());
     }
 
-    pn.setColor(m_drawSettings.getPenColor());
-    pn.setWidth(m_drawSettings.getPenWidth());
-    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
+    pn.setColor(m_drawSettings.penColor());
+    pn.setWidth(m_drawSettings.penWidth());
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
 
-    brush.setColor(m_drawSettings.getFillColor());
-    brush.setStyle(fillStyle2QtBrushStyle(m_drawSettings.getFillStyle().enumerator()));
+    brush.setColor(m_drawSettings.fillColor());
+    brush.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle().enumerator()));
     i_pPainter->setBrush(brush);
 
     i_pPainter->drawRect(rctBounding);
@@ -1950,7 +2117,7 @@ void CGraphObjText::paint(
         }
     }
 
-    #if 1
+    #if 0
     QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
     rectBoundingTextItem = m_graphicsTextItem.mapRectToParent(rectBoundingTextItem);
     QBrush brushTextItem;

@@ -374,11 +374,11 @@ void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawS
         /* strAddInfo   */ strMthInArgs );
 
     if (m_drawSettings.isPenUsed()) {
-        if (m_drawSettings.getLineStyle() != ELineStyle::NoLine) {
+        if (m_drawSettings.lineStyle() != ELineStyle::NoLine) {
             QPen pen;
-            pen.setColor( m_drawSettings.getPenColor() );
-            pen.setWidth( m_drawSettings.getPenWidth() );
-            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+            pen.setColor( m_drawSettings.penColor() );
+            pen.setWidth( m_drawSettings.penWidth() );
+            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
             setPen(pen);
         }
         else {
@@ -390,10 +390,10 @@ void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawS
     }
 
     if (m_drawSettings.isFillUsed()) {
-        if (m_drawSettings.getFillStyle() != EFillStyle::NoFill) {
+        if (m_drawSettings.fillStyle() != EFillStyle::NoFill) {
             QBrush brsh;
-            brsh.setColor( m_drawSettings.getFillColor() );
-            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()) );
+            brsh.setColor( m_drawSettings.fillColor() );
+            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.fillStyle()) );
             setBrush(brsh);
         }
         else {
@@ -734,10 +734,10 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
 
     QRectF rctBounding = QGraphicsEllipseItem::boundingRect();
     rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.getPenWidth()/2,
-        rctBounding.top() - m_drawSettings.getPenWidth()/2,
-        rctBounding.width() + m_drawSettings.getPenWidth(),
-        rctBounding.height() + m_drawSettings.getPenWidth() );
+        rctBounding.left() - m_drawSettings.penWidth()/2,
+        rctBounding.top() - m_drawSettings.penWidth()/2,
+        rctBounding.width() + m_drawSettings.penWidth(),
+        rctBounding.height() + m_drawSettings.penWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }

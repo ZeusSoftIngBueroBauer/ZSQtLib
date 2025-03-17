@@ -118,22 +118,22 @@ public: // interface methods
         const QString& i_strObjName,
         QXmlStreamReader& i_xmlStreamReader) = 0;
 public: // instance methods
-    QString getGroupName() const { return m_strGroupName; }
-    EGraphObjType getGraphObjType() const { return m_eGraphObjType; }
-    QString getGraphObjTypeAsString() const { return m_strName; }
+    QString groupName() const { return m_strGroupName; }
+    EGraphObjType graphObjType() const { return m_eGraphObjType; }
+    QString graphObjTypeAsString() const { return m_strName; }
 public: // instance methods
     void setToolIconPixmap( const QPixmap& i_pxm );
-    QPixmap getToolIconPixmap() const { return m_pxmToolIcon; }
+    QPixmap toolIconPixmap() const { return m_pxmToolIcon; }
 public: // instance methods
     void setFileDir( const QString& i_strFileDir );   // The file's path (which may be absolute or relative). This doesn't include the file name.
-    QString getFileDir() const { return m_strFileDir; }
+    QString fileDir() const { return m_strFileDir; }
     void setFileName( const QString& i_strFileName ); // Name of the file, excluding the path. If file name includes a path, the path will be extracted and stored as file path.
-    QString getFileName() const { return m_strFileName; }
+    QString fileName() const { return m_strFileName; }
     void setFilePath( const QString& i_strFilePath ); // File name, including the path (which may be absolute or relative).
-    QString getFilePath() const;
+    QString filePath() const;
 public: // overridables
     virtual bool hasInitialSize() const { return false; }
-    virtual QSizeF getInitialSize() const { return QSizeF(); }
+    virtual QSizeF initialSize() const { return QSizeF(); }
 protected: // class methods
     static void saveGraphObjTextLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
     static QList<SLabelDscr> loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReade);

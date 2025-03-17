@@ -196,7 +196,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     gridSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
-    const CDrawSettings& drawSettings = pGraphObj->getDrawSettings();
+    const CDrawSettings& drawSettings = pGraphObj->drawSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
@@ -227,7 +227,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     // Labels and selection points will not be saved at all (labels are created by their parents).
     for (CGraphObj* pGraphObjChild : pGraphObj->childs()) {
         if (!pGraphObjChild->isSelectionPoint() && !pGraphObjChild->isLabel() && !pGraphObjChild->isConnectionLine()) {
-            QString strFactoryGroupName = pGraphObjChild->getFactoryGroupName();
+            QString strFactoryGroupName = pGraphObjChild->factoryGroupName();
             QString strGraphObjType = pGraphObjChild->typeAsString();
             QString strObjName = pGraphObjChild->name();
             CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
@@ -247,7 +247,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     if (!errResultInfo.isErrorResult()) {
         for (CGraphObj* pGraphObjChild : pGraphObj->childs()) {
             if (pGraphObjChild->isConnectionLine()) {
-                QString strFactoryGroupName = pGraphObjChild->getFactoryGroupName();
+                QString strFactoryGroupName = pGraphObjChild->factoryGroupName();
                 QString strGraphObjType = pGraphObjChild->typeAsString();
                 QString strObjName = pGraphObjChild->name();
                 CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);

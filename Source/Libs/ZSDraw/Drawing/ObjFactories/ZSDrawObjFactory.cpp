@@ -331,7 +331,7 @@ void CObjFactory::setFilePath( const QString& i_strFilePath )
 }
 
 //------------------------------------------------------------------------------
-QString CObjFactory::getFilePath() const
+QString CObjFactory::filePath() const
 //------------------------------------------------------------------------------
 {
     QString strFileDir = m_strFileDir;

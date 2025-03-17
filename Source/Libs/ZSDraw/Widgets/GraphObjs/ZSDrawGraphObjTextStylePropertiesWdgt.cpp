@@ -390,22 +390,22 @@ bool CWdgtGraphObjTextStyleProperties::hasChanges() const
         drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->drawSettings();
     }
 
-    if (m_textColor != drawSettings.getTextColor()) {
+    if (m_textColor != drawSettings.textColor()) {
         bHasChanges = true;
     }
-    else if (m_font != drawSettings.getTextFont()) {
+    else if (m_font != drawSettings.textFont()) {
         bHasChanges = true;
     }
-    else if (m_textStyle != drawSettings.getTextStyle()) {
+    else if (m_textStyle != drawSettings.textStyle()) {
         bHasChanges = true;
     }
-    else if (m_textSize != drawSettings.getTextSize()) {
+    else if (m_textSize != drawSettings.textSize()) {
         bHasChanges = true;
     }
-    else if (m_textEffect != drawSettings.getTextEffect()) {
+    else if (m_textEffect != drawSettings.textEffect()) {
         bHasChanges = true;
     }
 
@@ -461,7 +461,7 @@ void CWdgtGraphObjTextStyleProperties::applySettings(bool i_bImmediatelyApplySet
         }
         else {
             m_pGraphObj->setTextColor(m_textColor, false);
-            m_pGraphObj->setTextFont(m_font, false);
+            m_pGraphObj->setFont(m_font, false);
             m_pGraphObj->setTextSize(m_textSize, false);
             m_pGraphObj->setTextStyle(m_textStyle, false);
             m_pGraphObj->setTextEffect(m_textEffect, false);
@@ -495,14 +495,14 @@ void CWdgtGraphObjTextStyleProperties::fillEditControls()
         drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->drawSettings();
     }
 
-    m_textColor = drawSettings.getTextColor();
-    m_font = drawSettings.getTextFont();
-    m_textSize = drawSettings.getTextSize();
-    m_textStyle = drawSettings.getTextStyle();
-    m_textEffect = drawSettings.getTextEffect();
+    m_textColor = drawSettings.textColor();
+    m_font = drawSettings.textFont();
+    m_textSize = drawSettings.textSize();
+    m_textStyle = drawSettings.textStyle();
+    m_textEffect = drawSettings.textEffect();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);

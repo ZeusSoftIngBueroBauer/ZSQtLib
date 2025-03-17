@@ -298,7 +298,7 @@ void CWdgtFormatGraphObjsFillStyle::resetChanges()
 
     if( m_pGraphObj != nullptr )
     {
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        m_drawSettings = m_pGraphObj->drawSettings();
     }
     else if( m_pDrawingScene != nullptr )
     {
@@ -333,22 +333,22 @@ bool CWdgtFormatGraphObjsFillStyle::hasChanges() const
 
     if( m_pGraphObj != nullptr )
     {
-        if( m_pGraphObj->getFillColor() != m_drawSettings.getFillColor() )
+        if( m_pGraphObj->fillColor() != m_drawSettings.fillColor() )
         {
             bHasChanges = true;
         }
-        else if( m_pGraphObj->getFillStyle() != m_drawSettings.getFillStyle() )
+        else if( m_pGraphObj->fillStyle() != m_drawSettings.fillStyle() )
         {
             bHasChanges = true;
         }
     }
     else if( m_pDrawingScene != nullptr )
     {
-        if( m_pDrawingScene->getFillColor() != m_drawSettings.getFillColor() )
+        if( m_pDrawingScene->fillColor() != m_drawSettings.fillColor() )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getFillStyle() != m_drawSettings.getFillStyle() )
+        else if( m_pDrawingScene->fillStyle() != m_drawSettings.fillStyle() )
         {
             bHasChanges = true;
         }
@@ -501,7 +501,7 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillColorClicked()
     hidePopups();
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getFillColor(),
+        /* clrInitial  */ m_drawSettings.fillColor(),
         /* pWdgtParent */ m_pBtnFillColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
@@ -647,13 +647,13 @@ void CWdgtFormatGraphObjsFillStyle::setFillColor()
 
     QPainter painter(m_pPxmBtnFillColor);
 
-    painter.setPen(m_drawSettings.getFillColor());
+    painter.setPen(m_drawSettings.fillColor());
     painter.setBrush(Qt::NoBrush);
     painter.drawLine(m_lineBtnFillColor1);
     painter.drawLine(m_lineBtnFillColor2);
     painter.drawLine(m_lineBtnFillColor3);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(m_drawSettings.getFillColor());
+    painter.setBrush(m_drawSettings.fillColor());
     painter.drawRect(m_rctBtnFillColor);
 
     m_pBtnFillColor->setIcon(*m_pPxmBtnFillColor);
@@ -694,8 +694,8 @@ void CWdgtFormatGraphObjsFillStyle::setFillStyle()
 
     pxmFillStyle.fill(Qt::white);
 
-    brshStyle = fillStyle2QtBrushStyle(m_drawSettings.getFillStyle());
-    //brsh.setColor(i_drawSettings.getFillColor());
+    brshStyle = fillStyle2QtBrushStyle(m_drawSettings.fillStyle());
+    //brsh.setColor(i_drawSettings.fillColor());
     brsh.setColor(Qt::black);
     brsh.setStyle(brshStyle);
     painter.setBrush(brsh);

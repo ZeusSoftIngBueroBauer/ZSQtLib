@@ -947,7 +947,7 @@ public: // instance methods
 
     The factory group name and the type of the object uniquely define the object factory.
 */
-QString CGraphObj::getFactoryGroupName() const
+QString CGraphObj::factoryGroupName() const
 //------------------------------------------------------------------------------
 {
     return m_strFactoryGroupName;
@@ -1183,7 +1183,7 @@ void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
 /*! @brief Returns the currently used draw settings like pen color, pen style,
            brush style etc. used to paint the object.
 */
-CDrawSettings CGraphObj::getDrawSettings() const
+CDrawSettings CGraphObj::drawSettings() const
 //------------------------------------------------------------------------------
 {
     return m_drawSettings;
@@ -1305,7 +1305,7 @@ void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySettin
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getPenColor() != i_clr) {
+        if (m_drawSettings.penColor() != i_clr) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setPenColor(i_clr);
             if (m_pTree != nullptr) {
@@ -1325,10 +1325,10 @@ void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySettin
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-QColor CGraphObj::getPenColor() const
+QColor CGraphObj::penColor() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getPenColor();
+    return m_drawSettings.penColor();
 }
 
 //------------------------------------------------------------------------------
@@ -1352,7 +1352,7 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getPenWidth() != i_iLineWidth) {
+        if (m_drawSettings.penWidth() != i_iLineWidth) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setPenWidth(i_iLineWidth);
             if (m_pTree != nullptr) {
@@ -1372,10 +1372,10 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-int CGraphObj::getPenWidth() const
+int CGraphObj::penWidth() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getPenWidth();
+    return m_drawSettings.penWidth();
 }
 
 /*==============================================================================
@@ -1403,7 +1403,7 @@ void CGraphObj::setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmedia
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getLineStyle() != i_lineStyle) {
+        if (m_drawSettings.lineStyle() != i_lineStyle) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setLineStyle(i_lineStyle);
             if (m_pTree != nullptr) {
@@ -1423,10 +1423,10 @@ void CGraphObj::setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmedia
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumLineStyle CGraphObj::getLineStyle() const
+CEnumLineStyle CGraphObj::lineStyle() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineStyle();
+    return m_drawSettings.lineStyle();
 }
 
 /*==============================================================================
@@ -1454,7 +1454,7 @@ void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getFillColor() != i_clr) {
+        if (m_drawSettings.fillColor() != i_clr) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setFillColor(i_clr);
             if (m_pTree != nullptr) {
@@ -1474,10 +1474,10 @@ void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-QColor CGraphObj::getFillColor() const
+QColor CGraphObj::fillColor() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getFillColor();
+    return m_drawSettings.fillColor();
 }
 
 //------------------------------------------------------------------------------
@@ -1501,7 +1501,7 @@ void CGraphObj::setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmedia
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getFillStyle() != i_fillStyle) {
+        if (m_drawSettings.fillStyle() != i_fillStyle) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setFillStyle(i_fillStyle);
             if (m_pTree != nullptr) {
@@ -1521,10 +1521,10 @@ void CGraphObj::setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmedia
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumFillStyle CGraphObj::getFillStyle() const
+CEnumFillStyle CGraphObj::fillStyle() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getFillStyle();
+    return m_drawSettings.fillStyle();
 }
 
 /*==============================================================================
@@ -1552,7 +1552,7 @@ void CGraphObj::setLineRecordType( const CEnumLineRecordType& i_recordType, bool
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getLineRecordType() != i_recordType) {
+        if (m_drawSettings.lineRecordType() != i_recordType) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setLineRecordType(i_recordType);
             if (m_pTree != nullptr) {
@@ -1572,10 +1572,10 @@ void CGraphObj::setLineRecordType( const CEnumLineRecordType& i_recordType, bool
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumLineRecordType CGraphObj::getLineRecordType() const
+CEnumLineRecordType CGraphObj::lineRecordType() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineRecordType();
+    return m_drawSettings.lineRecordType();
 }
 
 //------------------------------------------------------------------------------
@@ -1599,7 +1599,7 @@ void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySettin
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getLineExtent() != i_iLineExtent) {
+        if (m_drawSettings.lineExtent() != i_iLineExtent) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setLineExtent(i_iLineExtent);
             if (m_pTree != nullptr) {
@@ -1619,10 +1619,10 @@ void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySettin
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-int CGraphObj::getLineExtent() const
+int CGraphObj::lineExtent() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineExtent();
+    return m_drawSettings.lineExtent();
 }
 
 /*==============================================================================
@@ -1651,7 +1651,7 @@ void CGraphObj::setLineEndStyle(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getLineEndStyle(i_linePoint) != i_endStyle) {
+        if (m_drawSettings.lineEndStyle(i_linePoint) != i_endStyle) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setLineEndStyle(i_linePoint, i_endStyle);
             if (m_pTree != nullptr) {
@@ -1671,10 +1671,10 @@ void CGraphObj::setLineEndStyle(
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumLineEndStyle CGraphObj::getLineEndStyle(const CEnumLinePoint& i_linePoint) const
+CEnumLineEndStyle CGraphObj::lineEndStyle(const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineEndStyle(i_linePoint);
+    return m_drawSettings.lineEndStyle(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1699,7 +1699,7 @@ void CGraphObj::setArrowHeadBaseLineType(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getArrowHeadBaseLineType(i_linePoint) != i_baseLineType) {
+        if (m_drawSettings.arrowHeadBaseLineType(i_linePoint) != i_baseLineType) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setArrowHeadBaseLineType(i_linePoint, i_baseLineType);
             if (m_pTree != nullptr) {
@@ -1719,10 +1719,10 @@ void CGraphObj::setArrowHeadBaseLineType(
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadBaseLineType CGraphObj::getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint) const
+CEnumArrowHeadBaseLineType CGraphObj::arrowHeadBaseLineType( const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getArrowHeadBaseLineType(i_linePoint);
+    return m_drawSettings.arrowHeadBaseLineType(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1747,7 +1747,7 @@ void CGraphObj::setArrowHeadFillStyle(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getArrowHeadFillStyle(i_linePoint) != i_fillStyle) {
+        if (m_drawSettings.arrowHeadFillStyle(i_linePoint) != i_fillStyle) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setArrowHeadFillStyle(i_linePoint, i_fillStyle);
             if (m_pTree != nullptr) {
@@ -1767,11 +1767,11 @@ void CGraphObj::setArrowHeadFillStyle(
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadFillStyle CGraphObj::getArrowHeadFillStyle(
+CEnumArrowHeadFillStyle CGraphObj::arrowHeadFillStyle(
     const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getArrowHeadFillStyle(i_linePoint);
+    return m_drawSettings.arrowHeadFillStyle(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1796,7 +1796,7 @@ void CGraphObj::setArrowHeadWidth(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getArrowHeadWidth(i_linePoint) != i_width) {
+        if (m_drawSettings.arrowHeadWidth(i_linePoint) != i_width) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setArrowHeadWidth(i_linePoint, i_width);
             if (m_pTree != nullptr) {
@@ -1816,10 +1816,10 @@ void CGraphObj::setArrowHeadWidth(
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadWidth CGraphObj::getArrowHeadWidth(const CEnumLinePoint& i_linePoint) const
+CEnumArrowHeadWidth CGraphObj::arrowHeadWidth(const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getArrowHeadWidth(i_linePoint);
+    return m_drawSettings.arrowHeadWidth(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1844,7 +1844,7 @@ void CGraphObj::setArrowHeadLength(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getArrowHeadLength(i_linePoint) != i_length) {
+        if (m_drawSettings.arrowHeadLength(i_linePoint) != i_length) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setArrowHeadLength(i_linePoint, i_length);
             if (m_pTree != nullptr) {
@@ -1864,10 +1864,10 @@ void CGraphObj::setArrowHeadLength(
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadLength CGraphObj::getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadLength CGraphObj::arrowHeadLength( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getArrowHeadLength(i_linePoint);
+    return m_drawSettings.arrowHeadLength(i_linePoint);
 }
 
 /*==============================================================================
@@ -1895,7 +1895,7 @@ void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getTextColor() != i_clr) {
+        if (m_drawSettings.textColor() != i_clr) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setTextColor(i_clr);
             if (m_pTree != nullptr) {
@@ -1915,10 +1915,10 @@ void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-QColor CGraphObj::getTextColor() const
+QColor CGraphObj::textColor() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getTextColor();
+    return m_drawSettings.textColor();
 }
 
 //------------------------------------------------------------------------------
@@ -1927,7 +1927,7 @@ QColor CGraphObj::getTextColor() const
     If further set specific draw settings call will follow the flag
     i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
 */
-void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting )
+void CGraphObj::setFont(const QFont& i_fnt, bool i_bImmediatelyApplySetting)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1938,11 +1938,11 @@ void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setTextFont",
+        /* strMethod    */ "CGraphObj::setFont",
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getTextFont() != i_fnt) {
+        if (m_drawSettings.textFont() != i_fnt) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setTextFont(i_fnt);
             if (m_pTree != nullptr) {
@@ -1962,10 +1962,10 @@ void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-QFont CGraphObj::getTextFont() const
+QFont CGraphObj::font() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getTextFont();
+    return m_drawSettings.textFont();
 }
 
 //------------------------------------------------------------------------------
@@ -1989,7 +1989,7 @@ void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getTextSize() != i_size) {
+        if (m_drawSettings.textSize() != i_size) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setTextSize(i_size);
             if (m_pTree != nullptr) {
@@ -2009,10 +2009,10 @@ void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-ETextSize CGraphObj::getTextSize() const
+ETextSize CGraphObj::textSize() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getTextSize();
+    return m_drawSettings.textSize();
 }
 
 //------------------------------------------------------------------------------
@@ -2036,7 +2036,7 @@ void CGraphObj::setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImmedia
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getTextStyle() != i_textStyle) {
+        if (m_drawSettings.textStyle() != i_textStyle) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setTextStyle(i_textStyle);
             if (m_pTree != nullptr) {
@@ -2056,10 +2056,10 @@ void CGraphObj::setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImmedia
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumTextStyle CGraphObj::getTextStyle() const
+CEnumTextStyle CGraphObj::textStyle() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getTextStyle();
+    return m_drawSettings.textStyle();
 }
 
 //------------------------------------------------------------------------------
@@ -2083,7 +2083,7 @@ void CGraphObj::setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImme
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.getTextEffect() != i_textEffect) {
+        if (m_drawSettings.textEffect() != i_textEffect) {
             CDrawSettings drawSettingsOld = m_drawSettings;
             m_drawSettings.setTextEffect(i_textEffect);
             if (m_pTree != nullptr) {
@@ -2103,10 +2103,10 @@ void CGraphObj::setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImme
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumTextEffect CGraphObj::getTextEffect() const
+CEnumTextEffect CGraphObj::textEffect() const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getTextEffect();
+    return m_drawSettings.textEffect();
 }
 
 /*==============================================================================
@@ -4392,7 +4392,7 @@ public: // overridables
 //            }
 //        }
 //        if (!bIsHit) {
-//            if (pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern) {
+//            if (pGraphicsItem->isSelected() || m_drawSettings.fillStyle() == EFillStyle::SolidPattern) {
 //                bIsHit = pGraphicsItem->contains(i_pt);
 //                if (o_pHitInfo != nullptr) {
 //                    //o_pHitInfo->m_editMode = EEditMode::Move;

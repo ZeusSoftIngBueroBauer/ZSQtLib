@@ -479,13 +479,13 @@ void CGraphObjConnectionPoint::onDrawSettingsChanged(const CDrawSettings& i_draw
 
     if( m_drawSettings.isPenUsed() )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
+        if( m_drawSettings.lineStyle() != ELineStyle::NoLine )
         {
             QPen pen;
 
-            pen.setColor( m_drawSettings.getPenColor() );
-            pen.setWidth( m_drawSettings.getPenWidth() );
-            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+            pen.setColor( m_drawSettings.penColor() );
+            pen.setWidth( m_drawSettings.penWidth() );
+            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
 
             setPen(pen);
         }
@@ -501,12 +501,12 @@ void CGraphObjConnectionPoint::onDrawSettingsChanged(const CDrawSettings& i_draw
 
     if( m_drawSettings.isFillUsed() )
     {
-        if( m_drawSettings.getFillStyle() != EFillStyle::NoFill )
+        if( m_drawSettings.fillStyle() != EFillStyle::NoFill )
         {
             QBrush brsh;
 
-            brsh.setColor( m_drawSettings.getFillColor() );
-            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()) );
+            brsh.setColor( m_drawSettings.fillColor() );
+            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.fillStyle()) );
 
             setBrush(brsh);
         }

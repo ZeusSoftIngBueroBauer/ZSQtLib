@@ -731,11 +731,11 @@ void CGraphObjImage::paint(
             //}
         } // if( m_bIsHit || isSelected() )
 
-        else if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
+        else if( m_drawSettings.lineStyle() != ELineStyle::NoLine )
         {
-            pn.setColor( m_drawSettings.getPenColor() );
-            pn.setWidth( m_drawSettings.getPenWidth() );
-            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+            pn.setColor( m_drawSettings.penColor() );
+            pn.setWidth( m_drawSettings.penWidth() );
+            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
 
             i_pPainter->setPen(pn);
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
@@ -746,11 +746,11 @@ void CGraphObjImage::paint(
 
     else // if( m_pDrawingScene->getMode() == EMode::View )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
+        if( m_drawSettings.lineStyle() != ELineStyle::NoLine )
         {
-            pn.setColor( m_drawSettings.getPenColor() );
-            pn.setWidth( m_drawSettings.getPenWidth() );
-            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+            pn.setColor( m_drawSettings.penColor() );
+            pn.setWidth( m_drawSettings.penWidth() );
+            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
 
             i_pPainter->setPen(pn);
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

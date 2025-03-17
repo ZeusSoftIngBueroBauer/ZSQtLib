@@ -630,8 +630,8 @@ void ZS::Draw::getLineEndArrowPolygons(
     QPolygonF* i_pplgLineEnd )
 //------------------------------------------------------------------------------
 {
-    if ((i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal)
-     || (i_drawSettings.getLineEndStyle(ELinePoint::End) != ELineEndStyle::Normal))
+    if ((i_drawSettings.lineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal)
+     || (i_drawSettings.lineEndStyle(ELinePoint::End) != ELineEndStyle::Normal))
     {
         double fdx = i_line.dx();
         double fdy = i_line.dy();
@@ -667,9 +667,9 @@ void ZS::Draw::getLineEndArrowPolygons(
         #endif
 
         for (CEnumLinePoint linePoint = 0; linePoint < CEnumLinePoint::count(); linePoint++) {
-            CEnumArrowHeadWidth width = i_drawSettings.getArrowHeadWidth(linePoint);
-            CEnumArrowHeadLength length = i_drawSettings.getArrowHeadLength(linePoint);
-            CEnumArrowHeadBaseLineType baseLineType = i_drawSettings.getArrowHeadBaseLineType(linePoint);
+            CEnumArrowHeadWidth width = i_drawSettings.arrowHeadWidth(linePoint);
+            CEnumArrowHeadLength length = i_drawSettings.arrowHeadLength(linePoint);
+            CEnumArrowHeadBaseLineType baseLineType = i_drawSettings.arrowHeadBaseLineType(linePoint);
             QPointF pt;
 
             if ((linePoint == ELinePoint::Start) && (i_pplgLineStart != nullptr)) {
@@ -727,7 +727,7 @@ void ZS::Draw::getLineEndArrowPolygons(
                 *i_pplgLineEnd = plgLineEnd;
             }
         }
-    } // if( i_drawSettings.getLineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal ..
+    } // if( i_drawSettings.lineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal ..
 } // getLineEndArrowPolygons
 
 ////------------------------------------------------------------------------------
@@ -2625,11 +2625,11 @@ QString ZS::Draw::qPolygon2Str( const QPolygonF& i_polygon, const QString& i_str
 //}
 
 //==============================================================================
-namespace ZS { namespace Draw { namespace XmlStreamParser {
+// namespace ZS::Draw::XmlStreamParser
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void raiseErrorAttributeNotDefined(
+void ZS::Draw::XmlStreamParser::raiseErrorAttributeNotDefined(
     QXmlStreamReader& i_xmlStreamReader,
     const QString& i_strElemName,
     const QString& i_strAttrName)
@@ -2640,7 +2640,7 @@ void raiseErrorAttributeNotDefined(
 }
 
 //------------------------------------------------------------------------------
-void raiseErrorAttributeOutOfRange(
+void ZS::Draw::XmlStreamParser::raiseErrorAttributeOutOfRange(
     QXmlStreamReader& i_xmlStreamReader,
     const QString& i_strElemName,
     const QString& i_strAttrName,
@@ -2652,7 +2652,7 @@ void raiseErrorAttributeOutOfRange(
 }
 
 //------------------------------------------------------------------------------
-CEnumScaleDimensionUnit getDimensionUnit(
+CEnumScaleDimensionUnit ZS::Draw::XmlStreamParser::getDimensionUnit(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2682,7 +2682,7 @@ CEnumScaleDimensionUnit getDimensionUnit(
 }
 
 //------------------------------------------------------------------------------
-CEnumYScaleAxisOrientation getYScaleAxisOrientation(
+CEnumYScaleAxisOrientation ZS::Draw::XmlStreamParser::getYScaleAxisOrientation(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2712,7 +2712,7 @@ CEnumYScaleAxisOrientation getYScaleAxisOrientation(
 }
 
 //------------------------------------------------------------------------------
-CEnumNormedPaperSize getNormedPaperSize(
+CEnumNormedPaperSize ZS::Draw::XmlStreamParser::getNormedPaperSize(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2742,7 +2742,7 @@ CEnumNormedPaperSize getNormedPaperSize(
 }
 
 //------------------------------------------------------------------------------
-CEnumOrientation getOrientation(
+CEnumOrientation ZS::Draw::XmlStreamParser::getOrientation(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2772,7 +2772,7 @@ CEnumOrientation getOrientation(
 }
 
 //------------------------------------------------------------------------------
-CEnumLineStyle getLineStyle(
+CEnumLineStyle ZS::Draw::XmlStreamParser::getLineStyle(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2802,7 +2802,7 @@ CEnumLineStyle getLineStyle(
 }
 
 //------------------------------------------------------------------------------
-ETextSize getTextSize(
+ETextSize ZS::Draw::XmlStreamParser::getTextSize(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2832,7 +2832,7 @@ ETextSize getTextSize(
 }
 
 //------------------------------------------------------------------------------
-CEnumTextStyle getTextStyle(
+CEnumTextStyle ZS::Draw::XmlStreamParser::getTextStyle(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2862,7 +2862,7 @@ CEnumTextStyle getTextStyle(
 }
 
 //------------------------------------------------------------------------------
-CEnumTextEffect getTextEffect(
+CEnumTextEffect ZS::Draw::XmlStreamParser::getTextEffect(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2892,7 +2892,7 @@ CEnumTextEffect getTextEffect(
 }
 
 //------------------------------------------------------------------------------
-CUnit getUnit(
+CUnit ZS::Draw::XmlStreamParser::getUnit(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2921,7 +2921,7 @@ CUnit getUnit(
 }
 
 //------------------------------------------------------------------------------
-CPhysVal getPhysVal(
+CPhysVal ZS::Draw::XmlStreamParser::getPhysVal(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2951,7 +2951,7 @@ CPhysVal getPhysVal(
 }
 
 //------------------------------------------------------------------------------
-QFont getFont(
+QFont ZS::Draw::XmlStreamParser::getFont(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -2974,7 +2974,7 @@ QFont getFont(
 }
 
 //------------------------------------------------------------------------------
-QColor getColor(
+QColor ZS::Draw::XmlStreamParser::getColor(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -3001,7 +3001,7 @@ QColor getColor(
 }
 
 //------------------------------------------------------------------------------
-bool getBoolVal(
+bool ZS::Draw::XmlStreamParser::getBoolVal(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -3031,7 +3031,7 @@ bool getBoolVal(
 }
 
 //------------------------------------------------------------------------------
-int getIntVal(
+int ZS::Draw::XmlStreamParser::getIntVal(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -3061,7 +3061,7 @@ int getIntVal(
 }
 
 //------------------------------------------------------------------------------
-std::pair<int, int> getIntPair(
+std::pair<int, int> ZS::Draw::XmlStreamParser::getIntPair(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -3107,7 +3107,7 @@ std::pair<int, int> getIntPair(
 }
 
 //------------------------------------------------------------------------------
-double getDoubleVal(
+double ZS::Draw::XmlStreamParser::getDoubleVal(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
     const QString& i_strElemName,
@@ -3135,5 +3135,3 @@ double getDoubleVal(
     }
     return fVal;
 }
-
-} } } // namespace ZS::Draw::XmlStreamParser

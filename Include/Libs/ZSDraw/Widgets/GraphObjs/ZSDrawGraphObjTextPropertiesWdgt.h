@@ -35,10 +35,11 @@ namespace Draw
 {
 class CDrawingScene;
 class CGraphObjText;
+class CWdgtGraphObjLabelsProperties;
 class CWdgtGraphObjTextGeometryProperties;
 class CWdgtGraphObjFillStyleProperties;
 class CWdgtGraphObjLineStyleProperties;
-class CWdgtGraphObjLabelsProperties;
+class CWdgtGraphObjTextStyleProperties;
 
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtGraphObjTextProperties : public CWdgtGraphObjPropertiesAbstract
@@ -52,7 +53,8 @@ public: // class methods
         Labels,
         Geometry,
         LineStyle,
-        FillStyle
+        FillStyle,
+        TextStyle
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
@@ -76,6 +78,7 @@ protected slots:
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
     void onWdgtFillStyleContentChanged();
+    void onWdgtTextStyleContentChanged();
 protected slots:
     void onGraphObjNameChanged(CGraphObj* i_pGraphObj, const QString& i_strNameNew, const QString& i_strNameOld);
 protected: // instance members
@@ -86,6 +89,7 @@ protected: // instance members
     CWdgtGraphObjTextGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
     CWdgtGraphObjFillStyleProperties* m_pWdgtFillStyle;
+    CWdgtGraphObjTextStyleProperties* m_pWdgtTextStyle;
 
 }; // class CWdgtGraphObjTextProperties
 

@@ -617,7 +617,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter ) const
                 }
                 case EDrawAttributeLineExtent:
                 {
-                    if (!isPenUsed() || getLineRecordType() == ELineRecordType::Normal) {
+                    if (!isPenUsed() || lineRecordType() == ELineRecordType::Normal) {
                         bSave = false;
                     }
                     break;
@@ -628,7 +628,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter ) const
                 case EDrawAttributeLineP1ArrowHeadWidth:
                 case EDrawAttributeLineP1ArrowHeadLength:
                 {
-                    if (!isPenUsed() || getLineEndStyle(ELinePoint::Start) == ELineEndStyle::Normal) {
+                    if (!isPenUsed() || lineEndStyle(ELinePoint::Start) == ELineEndStyle::Normal) {
                         bSave = false;
                     }
                     break;
@@ -639,7 +639,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter ) const
                 case EDrawAttributeLineP2ArrowHeadWidth:
                 case EDrawAttributeLineP2ArrowHeadLength:
                 {
-                    if (!isPenUsed() || getLineEndStyle(ELinePoint::End) == ELineEndStyle::Normal) {
+                    if (!isPenUsed() || lineEndStyle(ELinePoint::End) == ELineEndStyle::Normal) {
                         bSave = false;
                     }
                     break;
@@ -1417,7 +1417,7 @@ void CDrawSettings::setPenColor( const QColor& i_val )
 }
 
 //------------------------------------------------------------------------------
-QColor CDrawSettings::getPenColor() const
+QColor CDrawSettings::penColor() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributePenColor].m_val.value<QColor>();
@@ -1431,7 +1431,7 @@ void CDrawSettings::setPenWidth( int i_val )
 }
 
 //------------------------------------------------------------------------------
-int CDrawSettings::getPenWidth() const
+int CDrawSettings::penWidth() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributePenWidth].m_val.toInt();
@@ -1449,7 +1449,7 @@ void CDrawSettings::setLineStyle( const CEnumLineStyle& i_lineStyle )
 }
 
 //------------------------------------------------------------------------------
-CEnumLineStyle CDrawSettings::getLineStyle() const
+CEnumLineStyle CDrawSettings::lineStyle() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeLineStyle].m_val.toInt();
@@ -1467,7 +1467,7 @@ void CDrawSettings::setFillColor( const QColor& i_val )
 }
 
 //------------------------------------------------------------------------------
-QColor CDrawSettings::getFillColor() const
+QColor CDrawSettings::fillColor() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeFillColor].m_val.value<QColor>();
@@ -1481,7 +1481,7 @@ void CDrawSettings::setFillStyle( const CEnumFillStyle& i_fillStyle )
 }
 
 //------------------------------------------------------------------------------
-CEnumFillStyle CDrawSettings::getFillStyle() const
+CEnumFillStyle CDrawSettings::fillStyle() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeFillStyle].m_val.toInt();
@@ -1499,7 +1499,7 @@ void CDrawSettings::setLineRecordType( const CEnumLineRecordType& i_recordType )
 }
 
 //------------------------------------------------------------------------------
-CEnumLineRecordType CDrawSettings::getLineRecordType() const
+CEnumLineRecordType CDrawSettings::lineRecordType() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeLineRecordType].m_val.toInt();
@@ -1513,7 +1513,7 @@ void CDrawSettings::setLineExtent( int i_iExtent )
 }
 
 //------------------------------------------------------------------------------
-int CDrawSettings::getLineExtent() const
+int CDrawSettings::lineExtent() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeLineExtent].m_val.toInt();
@@ -1535,7 +1535,7 @@ void CDrawSettings::setLineEndStyle( const CEnumLinePoint& i_linePoint, const CE
 }
 
 //------------------------------------------------------------------------------
-CEnumLineEndStyle CDrawSettings::getLineEndStyle( const CEnumLinePoint& i_linePoint ) const
+CEnumLineEndStyle CDrawSettings::lineEndStyle( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1EndStyle;
@@ -1558,7 +1558,7 @@ void CDrawSettings::setArrowHeadBaseLineType(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadBaseLineType CDrawSettings::getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadBaseLineType CDrawSettings::arrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadBaseLineType;
@@ -1581,7 +1581,7 @@ void CDrawSettings::setArrowHeadFillStyle(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadFillStyle CDrawSettings::getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadFillStyle CDrawSettings::arrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadFillStyle;
@@ -1604,7 +1604,7 @@ void CDrawSettings::setArrowHeadWidth(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadWidth CDrawSettings::getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadWidth CDrawSettings::arrowHeadWidth( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadWidth;
@@ -1627,7 +1627,7 @@ void CDrawSettings::setArrowHeadLength(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadLength CDrawSettings::getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadLength CDrawSettings::arrowHeadLength( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadLength;
@@ -1649,7 +1649,7 @@ void CDrawSettings::setTextColor( const QColor& i_val )
 }
 
 //------------------------------------------------------------------------------
-QColor CDrawSettings::getTextColor() const
+QColor CDrawSettings::textColor() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeTextColor].m_val.value<QColor>();
@@ -1663,7 +1663,7 @@ void CDrawSettings::setTextFont( const QFont& i_val )
 }
 
 //------------------------------------------------------------------------------
-QFont CDrawSettings::getTextFont() const
+QFont CDrawSettings::textFont() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeTextFont].m_val.value<QFont>();
@@ -1677,7 +1677,7 @@ void CDrawSettings::setTextStyle( const CEnumTextStyle& i_textStyle )
 }
 
 //------------------------------------------------------------------------------
-CEnumTextStyle CDrawSettings::getTextStyle() const
+CEnumTextStyle CDrawSettings::textStyle() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeTextStyle].m_val.toInt();
@@ -1691,7 +1691,7 @@ void CDrawSettings::setTextSize( ETextSize i_val )
 }
 
 //------------------------------------------------------------------------------
-ETextSize CDrawSettings::getTextSize() const
+ETextSize CDrawSettings::textSize() const
 //------------------------------------------------------------------------------
 {
     return static_cast<ETextSize>(m_arAttributes[EDrawAttributeTextSize].m_val.toInt());
@@ -1705,7 +1705,7 @@ void CDrawSettings::setTextEffect( const CEnumTextEffect& i_textEffect )
 }
 
 //------------------------------------------------------------------------------
-CEnumTextEffect CDrawSettings::getTextEffect() const
+CEnumTextEffect CDrawSettings::textEffect() const
 //------------------------------------------------------------------------------
 {
     return m_arAttributes[EDrawAttributeTextEffect].m_val.toInt();

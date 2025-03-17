@@ -1625,10 +1625,10 @@ QRectF CGraphObjLine::boundingRect() const
         rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
     rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.getPenWidth()/2,
-        rctBounding.top() - m_drawSettings.getPenWidth()/2,
-        rctBounding.width() + m_drawSettings.getPenWidth(),
-        rctBounding.height() + m_drawSettings.getPenWidth() );
+        rctBounding.left() - m_drawSettings.penWidth()/2,
+        rctBounding.top() - m_drawSettings.penWidth()/2,
+        rctBounding.width() + m_drawSettings.penWidth(),
+        rctBounding.height() + m_drawSettings.penWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -1689,22 +1689,22 @@ void CGraphObjLine::paint(
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
-            pn.setWidth(3 + m_drawSettings.getPenWidth());
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
         else {
             pn.setColor(s_highlightColor);
-            pn.setWidth(3 + m_drawSettings.getPenWidth());
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
         pn.setStyle(Qt::SolidLine);
         QPainterPath outline;
         outline.moveTo(lineF.p1());
         outline.lineTo(lineF.p2());
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.getPenWidth());
+        pn.setWidth(1 + m_drawSettings.penWidth());
     }
-    pn.setColor(m_drawSettings.getPenColor());
-    pn.setWidth(m_drawSettings.getPenWidth());
-    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
+    pn.setColor(m_drawSettings.penColor());
+    pn.setWidth(m_drawSettings.penWidth());
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
     i_pPainter->setRenderHints(s_painterRenderHints);
     i_pPainter->drawLine(lineF);
@@ -1717,23 +1717,23 @@ void CGraphObjLine::paint(
     ////i_pPainter->drawLine(lineCenterVer);
     ////#pragma message(__TODO__"To be removed")
 
-    CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-    CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);
+    CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.lineEndStyle(ELinePoint::Start);
+    CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.lineEndStyle(ELinePoint::End);
     if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
-        CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
-        CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
+        CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         i_pPainter->setPen(pn);
         QBrush brsh(pn.color());
         if (lineEndStyleP1 != ELineEndStyle::Normal) {
-            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start)));
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)));
             i_pPainter->setBrush(brsh);
             if (baseLineTypeP1 == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgP1ArrowHead);
             }
             else {
-                if (m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
+                if (m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
                     i_pPainter->setBrush(Qt::white);
                 }
                 else {
@@ -1743,13 +1743,13 @@ void CGraphObjLine::paint(
             }
         }
         if (lineEndStyleP2 != ELineEndStyle::Normal) {
-            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)));
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)));
             i_pPainter->setBrush(brsh);
             if (baseLineTypeP2 == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgP2ArrowHead);
             }
             else {
-                if (m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
+                if (m_drawSettings.arrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
                     i_pPainter->setBrush(Qt::white);
                 }
                 else {
@@ -2449,22 +2449,22 @@ bool CGraphObjLine::lineEndArrowHeadPolygonsNeedUpdate(
 {
     bool bNeedUpdate = false;
 
-    if (i_drawSettingsOld.getLineRecordType() != m_drawSettings.getLineRecordType()) {
+    if (i_drawSettingsOld.lineRecordType() != m_drawSettings.lineRecordType()) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getLineExtent() != m_drawSettings.getLineExtent()) {
+    else if (i_drawSettingsOld.lineExtent() != m_drawSettings.lineExtent()) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getLineEndStyle(i_linePoint) != m_drawSettings.getLineEndStyle(i_linePoint)) {
+    else if (i_drawSettingsOld.lineEndStyle(i_linePoint) != m_drawSettings.lineEndStyle(i_linePoint)) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getArrowHeadBaseLineType(i_linePoint) != m_drawSettings.getArrowHeadBaseLineType(i_linePoint)) {
+    else if (i_drawSettingsOld.arrowHeadBaseLineType(i_linePoint) != m_drawSettings.arrowHeadBaseLineType(i_linePoint)) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getArrowHeadWidth(i_linePoint) != m_drawSettings.getArrowHeadWidth(i_linePoint)) {
+    else if (i_drawSettingsOld.arrowHeadWidth(i_linePoint) != m_drawSettings.arrowHeadWidth(i_linePoint)) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getArrowHeadLength(i_linePoint) != m_drawSettings.getArrowHeadLength(i_linePoint)) {
+    else if (i_drawSettingsOld.arrowHeadLength(i_linePoint) != m_drawSettings.arrowHeadLength(i_linePoint)) {
         bNeedUpdate = true;
     }
     return bNeedUpdate;
@@ -2487,7 +2487,7 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
 
     QLineF lineF = line();
     if (!i_linePoint.isValid() || i_linePoint == ELinePoint::Start) {
-        CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::Start);
+        CEnumLineEndStyle lineEndStyle = m_drawSettings.lineEndStyle(ELinePoint::Start);
         if (lineEndStyle != ELineEndStyle::Normal) {
             getLineEndArrowPolygons(
                 /* line          */ lineF,
@@ -2497,7 +2497,7 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
         }
     }
     if (!i_linePoint.isValid() || i_linePoint == ELinePoint::End) {
-        CEnumLineEndStyle lineEndStyle = m_drawSettings.getLineEndStyle(ELinePoint::End);
+        CEnumLineEndStyle lineEndStyle = m_drawSettings.lineEndStyle(ELinePoint::End);
         if (lineEndStyle != ELineEndStyle::Normal) {
             getLineEndArrowPolygons(
                 /* line          */ lineF,

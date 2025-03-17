@@ -538,8 +538,8 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
     {
         m_dopingType = i_type;
 
-        CDrawSettings drawSettingsLineBaseUp = m_pLinBaseUp->getDrawSettings();
-        CDrawSettings drawSettingsLineBaseDn = m_pLinBaseDn->getDrawSettings();
+        CDrawSettings drawSettingsLineBaseUp = m_pLinBaseUp->drawSettings();
+        CDrawSettings drawSettingsLineBaseDn = m_pLinBaseDn->drawSettings();
 
         if( m_dopingType == EDopingTypeNPN )
         {
@@ -671,37 +671,37 @@ void CGraphObjTransistor::onDrawSettingsChanged(const CDrawSettings& i_drawSetti
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    CDrawSettings drawSettingsLine = m_pLinBase->getDrawSettings();
+    CDrawSettings drawSettingsLine = m_pLinBase->drawSettings();
 
-    drawSettingsLine.setPenColor(m_drawSettings.getPenColor());
-    drawSettingsLine.setPenWidth(m_drawSettings.getPenWidth());
-    drawSettingsLine.setLineStyle(m_drawSettings.getLineStyle());
+    drawSettingsLine.setPenColor(m_drawSettings.penColor());
+    drawSettingsLine.setPenWidth(m_drawSettings.penWidth());
+    drawSettingsLine.setLineStyle(m_drawSettings.lineStyle());
 
     m_pLinBase->setDrawSettings(drawSettingsLine);
 
-    CDrawSettings drawSettingsBody = m_pEllBody->getDrawSettings();
+    CDrawSettings drawSettingsBody = m_pEllBody->drawSettings();
 
-    drawSettingsBody.setPenColor(m_drawSettings.getPenColor());
-    drawSettingsBody.setPenWidth(m_drawSettings.getPenWidth());
-    drawSettingsBody.setLineStyle(m_drawSettings.getLineStyle());
-    drawSettingsBody.setFillColor(m_drawSettings.getFillColor());
-    //drawSettingsBody.setFillStyle(m_drawSettings.getFillStyle()); keep SolidPattern
+    drawSettingsBody.setPenColor(m_drawSettings.penColor());
+    drawSettingsBody.setPenWidth(m_drawSettings.penWidth());
+    drawSettingsBody.setLineStyle(m_drawSettings.lineStyle());
+    drawSettingsBody.setFillColor(m_drawSettings.fillColor());
+    //drawSettingsBody.setFillStyle(m_drawSettings.fillStyle()); keep SolidPattern
 
     m_pEllBody->setDrawSettings(drawSettingsBody);
 
-    CDrawSettings drawSettingsLineBaseUp = m_pLinBaseUp->getDrawSettings();
+    CDrawSettings drawSettingsLineBaseUp = m_pLinBaseUp->drawSettings();
 
-    drawSettingsLineBaseUp.setPenColor(m_drawSettings.getPenColor());
-    drawSettingsLineBaseUp.setPenWidth(m_drawSettings.getPenWidth());
-    drawSettingsLineBaseUp.setLineStyle(m_drawSettings.getLineStyle());
+    drawSettingsLineBaseUp.setPenColor(m_drawSettings.penColor());
+    drawSettingsLineBaseUp.setPenWidth(m_drawSettings.penWidth());
+    drawSettingsLineBaseUp.setLineStyle(m_drawSettings.lineStyle());
 
     m_pLinBaseUp->setDrawSettings(drawSettingsLineBaseUp);
 
-    CDrawSettings drawSettingsLineBaseDn = m_pLinBaseDn->getDrawSettings();
+    CDrawSettings drawSettingsLineBaseDn = m_pLinBaseDn->drawSettings();
 
-    drawSettingsLineBaseDn.setPenColor(m_drawSettings.getPenColor());
-    drawSettingsLineBaseDn.setPenWidth(m_drawSettings.getPenWidth());
-    drawSettingsLineBaseDn.setLineStyle(m_drawSettings.getLineStyle());
+    drawSettingsLineBaseDn.setPenColor(m_drawSettings.penColor());
+    drawSettingsLineBaseDn.setPenWidth(m_drawSettings.penWidth());
+    drawSettingsLineBaseDn.setLineStyle(m_drawSettings.lineStyle());
 
     m_pLinBaseDn->setDrawSettings(drawSettingsLineBaseDn);
 
@@ -709,13 +709,13 @@ void CGraphObjTransistor::onDrawSettingsChanged(const CDrawSettings& i_drawSetti
     m_pLinCnctPt2->setDrawSettings(drawSettingsLine);
     m_pLinCnctPt3->setDrawSettings(drawSettingsLine);
 
-    //CDrawSettings drawSettingsCnctPt = m_pCnctPt1->getDrawSettings();
+    //CDrawSettings drawSettingsCnctPt = m_pCnctPt1->drawSettings();
 
-    //drawSettingsCnctPt.setPenColor(m_drawSettings.getPenColor());
-    //drawSettingsCnctPt.setPenWidth(m_drawSettings.getPenWidth());
-    //drawSettingsCnctPt.setLineStyle(m_drawSettings.getLineStyle());
-    //drawSettingsCnctPt.setFillColor(m_drawSettings.getFillColor()); keep black
-    //drawSettingsCnctPt.setFillStyle(m_drawSettings.getFillStyle()); keep SolidPattern
+    //drawSettingsCnctPt.setPenColor(m_drawSettings.penColor());
+    //drawSettingsCnctPt.setPenWidth(m_drawSettings.penWidth());
+    //drawSettingsCnctPt.setLineStyle(m_drawSettings.lineStyle());
+    //drawSettingsCnctPt.setFillColor(m_drawSettings.fillColor()); keep black
+    //drawSettingsCnctPt.setFillStyle(m_drawSettings.fillStyle()); keep SolidPattern
 
     //m_pCnctPt1->setDrawSettings(drawSettingsCnctPt);
     //m_pCnctPt2->setDrawSettings(drawSettingsCnctPt);

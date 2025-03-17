@@ -364,17 +364,17 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 
     setTextColor(m_drawSettings);
 
-    QFont fnt = m_drawSettings.getTextFont();
+    QFont fnt = m_drawSettings.textFont();
 
     m_pCmbFont->setCurrentFont(fnt);
 
-    ETextSize textSize = m_drawSettings.getTextSize();
+    ETextSize textSize = m_drawSettings.textSize();
 
     m_pCmbSize->setCurrentIndex(textSize);
 
     fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
-    CEnumTextStyle textStyle = m_drawSettings.getTextStyle();
+    CEnumTextStyle textStyle = m_drawSettings.textStyle();
 
     bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
     bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
@@ -385,7 +385,7 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
     fnt.setItalic(bItalic);
     fnt.setBold(bBold);
 
-    CEnumTextEffect textEffect = m_drawSettings.getTextEffect();
+    CEnumTextEffect textEffect = m_drawSettings.textEffect();
 
     bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
     bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
@@ -518,7 +518,7 @@ void CWdgtFormatGraphObjsTextStyle::resetChanges()
 
     if( m_pGraphObj != nullptr )
     {
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        m_drawSettings = m_pGraphObj->drawSettings();
     }
     else if( m_pDrawingScene != nullptr )
     {
@@ -530,17 +530,17 @@ void CWdgtFormatGraphObjsTextStyle::resetChanges()
 
     setTextColor(m_drawSettings);
 
-    QFont fnt = m_drawSettings.getTextFont();
+    QFont fnt = m_drawSettings.textFont();
 
     m_pCmbFont->setCurrentFont(fnt);
 
-    ETextSize textSize = m_drawSettings.getTextSize();
+    ETextSize textSize = m_drawSettings.textSize();
 
     m_pCmbSize->setCurrentIndex(textSize);
 
     fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
-    CEnumTextStyle textStyle = m_drawSettings.getTextStyle();
+    CEnumTextStyle textStyle = m_drawSettings.textStyle();
 
     bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
     bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
@@ -551,7 +551,7 @@ void CWdgtFormatGraphObjsTextStyle::resetChanges()
     fnt.setItalic(bItalic);
     fnt.setBold(bBold);
 
-    CEnumTextEffect textEffect = m_drawSettings.getTextEffect();
+    CEnumTextEffect textEffect = m_drawSettings.textEffect();
 
     bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
     bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);
@@ -580,46 +580,46 @@ bool CWdgtFormatGraphObjsTextStyle::hasChanges() const
 
     if( m_pGraphObj != nullptr )
     {
-        if( m_pGraphObj->getTextColor() != m_drawSettings.getTextColor() )
+        if( m_pGraphObj->textColor() != m_drawSettings.textColor() )
         {
             bHasChanges = true;
         }
-        if( m_pGraphObj->getTextFont() != m_drawSettings.getTextFont() )
+        if( m_pGraphObj->font() != m_drawSettings.textFont() )
         {
             bHasChanges = true;
         }
-        if( m_pGraphObj->getTextSize() != m_drawSettings.getTextSize() )
+        if( m_pGraphObj->textSize() != m_drawSettings.textSize() )
         {
             bHasChanges = true;
         }
-        if( m_pGraphObj->getTextStyle() != m_drawSettings.getTextStyle() )
+        if( m_pGraphObj->textStyle() != m_drawSettings.textStyle() )
         {
             bHasChanges = true;
         }
-        if( m_pGraphObj->getTextEffect() != m_drawSettings.getTextEffect() )
+        if( m_pGraphObj->textEffect() != m_drawSettings.textEffect() )
         {
             bHasChanges = true;
         }
     }
     else if( m_pDrawingScene != nullptr )
     {
-        if( m_pDrawingScene->getTextColor() != m_drawSettings.getTextColor() )
+        if( m_pDrawingScene->textColor() != m_drawSettings.textColor() )
         {
             bHasChanges = true;
         }
-        if( m_pDrawingScene->getTextFont() != m_drawSettings.getTextFont() )
+        if( m_pDrawingScene->textFont() != m_drawSettings.textFont() )
         {
             bHasChanges = true;
         }
-        if( m_pDrawingScene->getTextSize() != m_drawSettings.getTextSize() )
+        if( m_pDrawingScene->textSize() != m_drawSettings.textSize() )
         {
             bHasChanges = true;
         }
-        if( m_pDrawingScene->getTextStyle() != m_drawSettings.getTextStyle() )
+        if( m_pDrawingScene->textStyle() != m_drawSettings.textStyle() )
         {
             bHasChanges = true;
         }
-        if( m_pDrawingScene->getTextEffect() != m_drawSettings.getTextEffect() )
+        if( m_pDrawingScene->textEffect() != m_drawSettings.textEffect() )
         {
             bHasChanges = true;
         }
@@ -664,7 +664,7 @@ void CWdgtFormatGraphObjsTextStyle::onBtnTextColorClicked()
         /* strAddInfo   */ "" );
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getTextColor(),
+        /* clrInitial  */ m_drawSettings.textColor(),
         /* pWdgtParent */ m_pBtnTextColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
@@ -889,10 +889,10 @@ void CWdgtFormatGraphObjsTextStyle::setTextColor( const CDrawSettings& i_drawSet
 
     QPainter painter(m_pPxmBtnTextColor);
 
-    painter.setPen(i_drawSettings.getTextColor());
+    painter.setPen(i_drawSettings.textColor());
     painter.setBrush(Qt::NoBrush);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(i_drawSettings.getTextColor());
+    painter.setBrush(i_drawSettings.textColor());
     painter.drawRect(m_rctBtnTextColor);
 
     m_pBtnTextColor->setIcon(*m_pPxmBtnTextColor);
@@ -918,19 +918,19 @@ void CWdgtFormatGraphObjsTextStyle::setFont( const CDrawSettings& i_drawSettings
     // <ComboBox> Font
     //---------------------
 
-    QFont fnt = i_drawSettings.getTextFont();
+    QFont fnt = i_drawSettings.textFont();
 
     // <ComboBox> Size
     //---------------------
 
-    ETextSize textSize = i_drawSettings.getTextSize();
+    ETextSize textSize = i_drawSettings.textSize();
 
     fnt.setPixelSize( textSize2SizeInPixels(textSize) );
 
     // <CheckBoxes> Font Styles
     //-------------------------
 
-    CEnumTextStyle textStyle = i_drawSettings.getTextStyle();
+    CEnumTextStyle textStyle = i_drawSettings.textStyle();
 
     bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
     bool bBold   = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
@@ -941,7 +941,7 @@ void CWdgtFormatGraphObjsTextStyle::setFont( const CDrawSettings& i_drawSettings
     // <CheckBoxes> Text Effects
     //--------------------------
 
-    CEnumTextEffect textEffect = i_drawSettings.getTextEffect();
+    CEnumTextEffect textEffect = i_drawSettings.textEffect();
 
     bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
     bool bUnderline = (textEffect == ETextEffect::Underline || textEffect == ETextEffect::StrikeoutUnderline);

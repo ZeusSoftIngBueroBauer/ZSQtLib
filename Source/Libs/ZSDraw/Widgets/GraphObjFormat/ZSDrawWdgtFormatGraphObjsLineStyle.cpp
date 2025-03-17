@@ -379,7 +379,7 @@ CWdgtFormatGraphObjsLineStyle::CWdgtFormatGraphObjsLineStyle(
 
     if( m_pEdtPenWidth != nullptr )
     {
-        m_pEdtPenWidth->setText( QString::number(m_drawSettings.getPenWidth()) );
+        m_pEdtPenWidth->setText( QString::number(m_drawSettings.penWidth()) );
     }
 
     if( m_pWdgtLineStyle != nullptr )
@@ -624,7 +624,7 @@ void CWdgtFormatGraphObjsLineStyle::resetChanges()
 
     if( m_pGraphObj != nullptr )
     {
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        m_drawSettings = m_pGraphObj->drawSettings();
     }
     else if( m_pDrawingScene != nullptr )
     {
@@ -638,7 +638,7 @@ void CWdgtFormatGraphObjsLineStyle::resetChanges()
 
     if( m_pEdtPenWidth != nullptr )
     {
-        m_pEdtPenWidth->setText( QString::number(m_drawSettings.getPenWidth()) );
+        m_pEdtPenWidth->setText( QString::number(m_drawSettings.penWidth()) );
     }
 
     if( m_drawSettings.isLineStyleUsed() )
@@ -671,60 +671,60 @@ bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
 
     if( m_pGraphObj != nullptr )
     {
-        if( m_pGraphObj->getPenColor() != m_drawSettings.getPenColor() )
+        if( m_pGraphObj->penColor() != m_drawSettings.penColor() )
         {
             bHasChanges = true;
         }
-        else if( m_pGraphObj->getPenWidth() != m_drawSettings.getPenWidth() )
+        else if( m_pGraphObj->penWidth() != m_drawSettings.penWidth() )
         {
             bHasChanges = true;
         }
         if( !bHasChanges && m_drawSettings.isLineStyleUsed() )
         {
-            if( m_pGraphObj->getLineStyle() != m_drawSettings.getLineStyle() )
+            if( m_pGraphObj->lineStyle() != m_drawSettings.lineStyle() )
             {
                 bHasChanges = true;
             }
         }
         if( !bHasChanges && m_drawSettings.isLineEndStyleUsed() )
         {
-            if( m_pGraphObj->getLineEndStyle( ELinePoint::Start) != m_drawSettings.getLineEndStyle(ELinePoint::Start) )
+            if( m_pGraphObj->lineEndStyle( ELinePoint::Start) != m_drawSettings.lineEndStyle(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadBaseLineType(ELinePoint::Start) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start) )
+            else if( m_pGraphObj->arrowHeadBaseLineType(ELinePoint::Start) != m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadFillStyle(ELinePoint::Start) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) )
+            else if( m_pGraphObj->arrowHeadFillStyle(ELinePoint::Start) != m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadWidth(ELinePoint::Start) != m_drawSettings.getArrowHeadWidth(ELinePoint::Start) )
+            else if( m_pGraphObj->arrowHeadWidth(ELinePoint::Start) != m_drawSettings.arrowHeadWidth(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadLength(ELinePoint::Start) != m_drawSettings.getArrowHeadLength(ELinePoint::Start) )
+            else if( m_pGraphObj->arrowHeadLength(ELinePoint::Start) != m_drawSettings.arrowHeadLength(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndStyle(ELinePoint::End) != m_drawSettings.getLineEndStyle(ELinePoint::End) )
+            else if( m_pGraphObj->lineEndStyle(ELinePoint::End) != m_drawSettings.lineEndStyle(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadBaseLineType(ELinePoint::End) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End) )
+            else if( m_pGraphObj->arrowHeadBaseLineType(ELinePoint::End) != m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadFillStyle(ELinePoint::End) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) )
+            else if( m_pGraphObj->arrowHeadFillStyle(ELinePoint::End) != m_drawSettings.arrowHeadFillStyle(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadWidth(ELinePoint::End) != m_drawSettings.getArrowHeadWidth(ELinePoint::End) )
+            else if( m_pGraphObj->arrowHeadWidth(ELinePoint::End) != m_drawSettings.arrowHeadWidth(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getArrowHeadLength(ELinePoint::End) != m_drawSettings.getArrowHeadLength(ELinePoint::End) )
+            else if( m_pGraphObj->arrowHeadLength(ELinePoint::End) != m_drawSettings.arrowHeadLength(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
@@ -733,55 +733,55 @@ bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
 
     else if( m_pDrawingScene != nullptr )
     {
-        if( m_pDrawingScene->getPenColor() != m_drawSettings.getPenColor() )
+        if( m_pDrawingScene->penColor() != m_drawSettings.penColor() )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getPenWidth() != m_drawSettings.getPenWidth() )
+        else if( m_pDrawingScene->penWidth() != m_drawSettings.penWidth() )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineStyle() != m_drawSettings.getLineStyle() )
+        else if( m_pDrawingScene->lineStyle() != m_drawSettings.lineStyle() )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndStyle( ELinePoint::Start) != m_drawSettings.getLineEndStyle(ELinePoint::Start) )
+        else if( m_pDrawingScene->lineEndStyle( ELinePoint::Start) != m_drawSettings.lineEndStyle(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadBaseLineType(ELinePoint::Start) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start) )
+        else if( m_pDrawingScene->arrowHeadBaseLineType(ELinePoint::Start) != m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadFillStyle(ELinePoint::Start) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) )
+        else if( m_pDrawingScene->arrowHeadFillStyle(ELinePoint::Start) != m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadWidth(ELinePoint::Start) != m_drawSettings.getArrowHeadWidth(ELinePoint::Start) )
+        else if( m_pDrawingScene->arrowHeadWidth(ELinePoint::Start) != m_drawSettings.arrowHeadWidth(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadLength(ELinePoint::Start) != m_drawSettings.getArrowHeadLength(ELinePoint::Start) )
+        else if( m_pDrawingScene->arrowHeadLength(ELinePoint::Start) != m_drawSettings.arrowHeadLength(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndStyle(ELinePoint::End) != m_drawSettings.getLineEndStyle(ELinePoint::End) )
+        else if( m_pDrawingScene->lineEndStyle(ELinePoint::End) != m_drawSettings.lineEndStyle(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadBaseLineType(ELinePoint::End) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End) )
+        else if( m_pDrawingScene->arrowHeadBaseLineType(ELinePoint::End) != m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadFillStyle(ELinePoint::End) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) )
+        else if( m_pDrawingScene->arrowHeadFillStyle(ELinePoint::End) != m_drawSettings.arrowHeadFillStyle(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadWidth(ELinePoint::End) != m_drawSettings.getArrowHeadWidth(ELinePoint::End) )
+        else if( m_pDrawingScene->arrowHeadWidth(ELinePoint::End) != m_drawSettings.arrowHeadWidth(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getArrowHeadLength(ELinePoint::End) != m_drawSettings.getArrowHeadLength(ELinePoint::End) )
+        else if( m_pDrawingScene->arrowHeadLength(ELinePoint::End) != m_drawSettings.arrowHeadLength(ELinePoint::End) )
         {
             bHasChanges = true;
         }
@@ -1253,7 +1253,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnPenColorClicked()
         /* strAddInfo   */ strMthInArgs );
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getPenColor(),
+        /* clrInitial  */ m_drawSettings.penColor(),
         /* pWdgtParent */ m_pBtnPenColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
@@ -1880,8 +1880,8 @@ void CWdgtFormatGraphObjsLineStyle::setPenColor( const CDrawSettings& i_drawSett
         /* strAddInfo   */ strMthInArgs );
 
     QPainter painter(m_pPxmBtnPenColor);
-    painter.setPen(i_drawSettings.getPenColor());
-    painter.setBrush(i_drawSettings.getPenColor());
+    painter.setPen(i_drawSettings.penColor());
+    painter.setBrush(i_drawSettings.penColor());
     painter.drawRect(m_rctBtnPenColor);
     m_pBtnPenColor->setIcon(*m_pPxmBtnPenColor);
 
@@ -1921,7 +1921,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineStyle( const CDrawSettings& i_drawSet
 
     pxmLineStyle.fill(Qt::white);
 
-    penStyle = lineStyle2QtPenStyle(i_drawSettings.getLineStyle());
+    penStyle = lineStyle2QtPenStyle(i_drawSettings.lineStyle());
     pen.setStyle(penStyle);
     pen.setColor(Qt::black);
     pen.setWidth(3);
@@ -1961,9 +1961,9 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
         /* strMethod    */ "setLineEndStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumLineEndStyle          lineEndStyle        = i_drawSettings.getLineEndStyle(i_linePoint);
-    CEnumArrowHeadBaseLineType lineEndBaseLineType = i_drawSettings.getArrowHeadBaseLineType(i_linePoint);
-    CEnumArrowHeadFillStyle    lineEndFillStyle    = i_drawSettings.getArrowHeadFillStyle(i_linePoint);
+    CEnumLineEndStyle          lineEndStyle        = i_drawSettings.lineEndStyle(i_linePoint);
+    CEnumArrowHeadBaseLineType lineEndBaseLineType = i_drawSettings.arrowHeadBaseLineType(i_linePoint);
+    CEnumArrowHeadFillStyle    lineEndFillStyle    = i_drawSettings.arrowHeadFillStyle(i_linePoint);
 
     QPixmap  pxmLineEnd(24,24);
     QPainter painter;
@@ -2102,8 +2102,8 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         /* strMethod    */ "setLineEndSize",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumArrowHeadWidth  lineEndWidth  = i_drawSettings.getArrowHeadWidth(i_linePoint);
-    CEnumArrowHeadLength lineEndLength = i_drawSettings.getArrowHeadLength(i_linePoint);
+    CEnumArrowHeadWidth  lineEndWidth  = i_drawSettings.arrowHeadWidth(i_linePoint);
+    CEnumArrowHeadLength lineEndLength = i_drawSettings.arrowHeadLength(i_linePoint);
 
     QPolygonF plgArrowHead;
 

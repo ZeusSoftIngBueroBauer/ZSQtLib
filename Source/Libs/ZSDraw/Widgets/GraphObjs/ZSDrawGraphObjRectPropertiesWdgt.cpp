@@ -133,7 +133,7 @@ CWdgtGraphObjRectProperties::CWdgtGraphObjRectProperties(
 
     m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Rect", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
     QObject::connect(
         m_pWdgtLabels, &CWdgtGraphObjLabelsProperties::contentChanged,
@@ -148,7 +148,7 @@ CWdgtGraphObjRectProperties::CWdgtGraphObjRectProperties(
 
     m_pWdgtLineStyle = new CWdgtGraphObjLineStyleProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Rect", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLineStyle);
     QObject::connect(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
@@ -156,7 +156,7 @@ CWdgtGraphObjRectProperties::CWdgtGraphObjRectProperties(
 
     m_pWdgtFillStyle = new CWdgtGraphObjFillStyleProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Group", i_strObjName);
+        "StandardShapes::Rect", i_strObjName);
     m_pLyt->addWidget(m_pWdgtFillStyle);
     QObject::connect(
         m_pWdgtFillStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,

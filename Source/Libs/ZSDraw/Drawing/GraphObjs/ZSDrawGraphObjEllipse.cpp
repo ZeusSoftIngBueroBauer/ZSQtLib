@@ -1671,11 +1671,11 @@ void CGraphObjEllipse::paint(
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         if (isSelected()) {
             pn.setColor(s_selectionColor);
-            pn.setWidth(3 + m_drawSettings.getPenWidth());
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
         else {
             pn.setColor(s_highlightColor);
-            pn.setWidth(3 + m_drawSettings.getPenWidth());
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
         pn.setStyle(Qt::SolidLine);
         QPainterPath outline;
@@ -1685,16 +1685,16 @@ void CGraphObjEllipse::paint(
         outline.lineTo(rctBounding.bottomLeft());
         outline.lineTo(rctBounding.topLeft());
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.getPenWidth());
+        pn.setWidth(1 + m_drawSettings.penWidth());
     }
 
-    pn.setColor(m_drawSettings.getPenColor());
-    pn.setWidth(m_drawSettings.getPenWidth());
-    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
+    pn.setColor(m_drawSettings.penColor());
+    pn.setWidth(m_drawSettings.penWidth());
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
 
-    brush.setColor(m_drawSettings.getFillColor());
-    brush.setStyle(fillStyle2QtBrushStyle(m_drawSettings.getFillStyle().enumerator()));
+    brush.setColor(m_drawSettings.fillColor());
+    brush.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle().enumerator()));
     i_pPainter->setBrush(brush);
 
     i_pPainter->drawEllipse(rctBounding);

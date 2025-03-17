@@ -72,26 +72,38 @@ public: // must overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
+public: // overridables of base class CGraphObj
+    void setTextColor(const QColor& i_col, bool i_bImmediatelyApplySetting = true) override;
+    void setFont(const QFont& i_font, bool i_bImmediatelyApplySetting = true) override;
 public: // providing methods of QGraphicsTextItem
     void setHtml(const QString& i_strText);
     QString toHtml() const;
     void setPlainText(const QString& i_strText);
     QString toPlainText() const;
 public: // providing methods of QGraphicsTextItem
-    void adjustSize();
-    void setDefaultTextColor(const QColor& i_col);
-    QColor defaultTextColor() const;
     void setDocument(QTextDocument* i_pDoc);
     QTextDocument* document() const;
-    void setFont(const QFont& i_font);
-    QFont font() const;
-    void setTextWidth(double i_fWidth);
-    double textWidth() const;
 public: // providing methods of QGraphicsTextItem
     void setTabChangesFocus(bool i_bTabChangesFocus);
     bool tabChangesFocus() const;
     void setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
     Qt::TextInteractionFlags textInteractionFlags() const;
+public: // instance methods
+    void setMargins(const QMargins& i_margins_px);
+    void setMargins(int i_fLeft_px, int i_fTop_px, int i_fRight_px, int i_fBottom_px);
+    void setMarginLeft(int i_fLeft_px);
+    void setMarginTop(int i_fTop_px);
+    void setMarginRight(int i_fRight_px);
+    void setMarginBottom(int i_fBottom_px);
+    QMargins margins() const;
+    int marginLeft() const;
+    int marginTop() const;
+    int marginRight() const;
+    int marginBottom() const;
+public: // instance methods
+    void adjustSize();
+    void setTextWidth(double i_fWidth);
+    double textWidth() const;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     CPhysValRect getRect() const;
@@ -207,7 +219,14 @@ public: // class members
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
+    /*!< The aggregated text item. The class could not have been derived from QGraphicsTextItem
+         as CGraphObj and QGraphicsTextItem both are derviced from QObject. */
     QGraphicsTextItem m_graphicsTextItem;
+    /*!< The margins to the surrounding rectangle. The margin must be at least one pixel.
+         Otherwise mouse press events would be forwarded to the text editor of the text item
+         and the text item graphic object cannot be selected or highlighted and cannot be
+         moved, resized or rotated by mouse events. */
+    QMargins m_margins;
     /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates in local
          coordinates relative to the origin of the item's bounding rectangle.
          This member is set if any shape point is directly set via the method call "setRect"

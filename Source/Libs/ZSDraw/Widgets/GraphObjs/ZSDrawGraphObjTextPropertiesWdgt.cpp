@@ -25,10 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextPropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextGeometryPropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjTextStylePropertiesWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
@@ -82,6 +83,9 @@ QString CWdgtGraphObjTextProperties::widgetName(EWidget i_widget)
     else if (i_widget == EWidget::FillStyle) {
         str = "FillStyle";
     }
+    else if (i_widget == EWidget::TextStyle) {
+        str = "TextStyle";
+    }
     return str;
 }
 
@@ -105,7 +109,8 @@ CWdgtGraphObjTextProperties::CWdgtGraphObjTextProperties(
     m_pWdgtLabels(nullptr),
     m_pWdgtGeometry(nullptr),
     m_pWdgtLineStyle(nullptr),
-    m_pWdgtFillStyle(nullptr)
+    m_pWdgtFillStyle(nullptr),
+    m_pWdgtTextStyle(nullptr)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -133,7 +138,7 @@ CWdgtGraphObjTextProperties::CWdgtGraphObjTextProperties(
 
     m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Text", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
     QObject::connect(
         m_pWdgtLabels, &CWdgtGraphObjLabelsProperties::contentChanged,
@@ -148,7 +153,7 @@ CWdgtGraphObjTextProperties::CWdgtGraphObjTextProperties(
 
     m_pWdgtLineStyle = new CWdgtGraphObjLineStyleProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Text", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLineStyle);
     QObject::connect(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
@@ -156,11 +161,19 @@ CWdgtGraphObjTextProperties::CWdgtGraphObjTextProperties(
 
     m_pWdgtFillStyle = new CWdgtGraphObjFillStyleProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Group", i_strObjName);
+        "StandardShapes::Text", i_strObjName);
     m_pLyt->addWidget(m_pWdgtFillStyle);
     QObject::connect(
         m_pWdgtFillStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,
         this, &CWdgtGraphObjTextProperties::onWdgtFillStyleContentChanged);
+
+    m_pWdgtTextStyle = new CWdgtGraphObjTextStyleProperties(
+        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
+        "StandardShapes::Text", i_strObjName);
+    m_pLyt->addWidget(m_pWdgtTextStyle);
+    QObject::connect(
+        m_pWdgtTextStyle, &CWdgtGraphObjTextStyleProperties::contentChanged,
+        this, &CWdgtGraphObjTextProperties::onWdgtTextStyleContentChanged);
 
     // <Buttons>
     //==========
@@ -191,6 +204,7 @@ CWdgtGraphObjTextProperties::~CWdgtGraphObjTextProperties()
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
     m_pWdgtFillStyle = nullptr;
+    m_pWdgtTextStyle = nullptr;
 }
 
 /*==============================================================================
@@ -222,6 +236,9 @@ void CWdgtGraphObjTextProperties::expand(EWidget i_widget, bool i_bExpand)
     }
     else if (i_widget == EWidget::FillStyle) {
         m_pWdgtFillStyle->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::TextStyle) {
+        m_pWdgtTextStyle->expand(i_bExpand);
     }
 }
 
@@ -259,6 +276,7 @@ bool CWdgtGraphObjTextProperties::setKeyInTree(const QString& i_strKeyInTree)
             m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
             m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
             m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
+            m_pWdgtTextStyle->setKeyInTree(i_strKeyInTree);
         }
         if (m_pGraphObj != nullptr) {
             QObject::connect(
@@ -297,7 +315,9 @@ bool CWdgtGraphObjTextProperties::hasErrors() const
     if (!bHasErrors) {
         bHasErrors = m_pWdgtFillStyle->hasErrors();
     }
-
+    if (!bHasErrors) {
+        bHasErrors = m_pWdgtTextStyle->hasErrors();
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasErrors);
     }
@@ -331,6 +351,9 @@ bool CWdgtGraphObjTextProperties::hasChanges() const
         }
         if (!bHasChanges) {
             bHasChanges = m_pWdgtFillStyle->hasChanges();
+        }
+        if (!bHasChanges) {
+            bHasChanges = m_pWdgtTextStyle->hasChanges();
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -372,6 +395,7 @@ void CWdgtGraphObjTextProperties::acceptChanges()
                 m_pWdgtGeometry->acceptChanges();
                 m_pWdgtLineStyle->acceptChanges();
                 m_pWdgtFillStyle->acceptChanges();
+                m_pWdgtTextStyle->acceptChanges();
             }
 
             // If the "contentChanged" signal is no longer blocked and the content of
@@ -402,6 +426,7 @@ void CWdgtGraphObjTextProperties::rejectChanges()
         m_pWdgtGeometry->rejectChanges();
         m_pWdgtLineStyle->rejectChanges();
         m_pWdgtFillStyle->rejectChanges();
+        m_pWdgtTextStyle->rejectChanges();
     }
 
     // If the "contentChanged" signal is no longer blocked and the content of
@@ -483,6 +508,25 @@ void CWdgtGraphObjTextProperties::onWdgtFillStyleContentChanged()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtFillStyleContentChanged",
+        /* strAddInfo   */ "" );
+
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+    else {
+        m_bContentChanged = true;
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjTextProperties::onWdgtTextStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtTextStyleContentChanged",
         /* strAddInfo   */ "" );
 
     if (m_iContentChangedSignalBlockedCounter == 0) {

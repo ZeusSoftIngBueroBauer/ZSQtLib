@@ -482,8 +482,8 @@ CMainWindow::CMainWindow(
     QString strGraphObjType;
     CObjFactory* pObjFactory = pDrawingScene->getCurrentDrawingTool();
     if (pObjFactory != nullptr) {
-        strFactoryGroupName = pObjFactory->getGroupName();
-        strGraphObjType = pObjFactory->getGraphObjTypeAsString();
+        strFactoryGroupName = pObjFactory->groupName();
+        strGraphObjType = pObjFactory->graphObjTypeAsString();
     }
     onDrawingSceneModeChanged(pDrawingScene->getMode());
     onDrawingSceneDrawingToolChanged(strFactoryGroupName, strGraphObjType);
@@ -4145,7 +4145,7 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
         QPixmap pxmEditDrawSettingsLine(":/ZS/Draw/DrawSettingsLineStyle16x16.png");
         QSize sizePxm = pxmEditDrawSettingsLine.size();
         QPainter painter(&pxmEditDrawSettingsLine);
-        QPen pen(i_drawSettings.getPenColor(), 2);
+        QPen pen(i_drawSettings.penColor(), 2);
         painter.setPen(pen);
         painter.setRenderHints(QPainter::Antialiasing, true);
         painter.drawLine(2, 5, sizePxm.width()-6, sizePxm.height()-3);
@@ -4163,14 +4163,14 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
         QLine    lineBtnFillColor3( QPoint(15,7), QPoint(15,8) );
         QRect    rctBtnFillColor(0,11,16,5);
 
-        painter.setPen(i_drawSettings.getFillColor());
+        painter.setPen(i_drawSettings.fillColor());
         painter.setBrush(Qt::NoBrush);
         painter.drawLine(lineBtnFillColor1);
         painter.drawLine(lineBtnFillColor2);
         painter.drawLine(lineBtnFillColor3);
 
         painter.setPen(Qt::NoPen);
-        painter.setBrush(i_drawSettings.getFillColor());
+        painter.setBrush(i_drawSettings.fillColor());
         painter.drawRect(rctBtnFillColor);
 
         iconEditDrawSettingsFill.addPixmap(pxmEditDrawSettingsFill);
@@ -4186,7 +4186,7 @@ void CMainWindow::onDrawingSceneDrawSettingsChanged( const CDrawSettings& i_draw
         QRect rctBtnLineColor(0, 12, 16, 4);
 
         painter.setPen(Qt::NoPen);
-        painter.setBrush(i_drawSettings.getTextColor());
+        painter.setBrush(i_drawSettings.textColor());
         painter.drawRect(rctBtnLineColor);
 
         iconEditDrawSettingsText.addPixmap(pxmEditDrawSettingsText);
@@ -4348,8 +4348,8 @@ void CMainWindow::selectTreeViewObjFactoryNode( ZS::Draw::CObjFactory* i_pObjFac
             else {
                 CIdxTreeEntry* pTreeEntry =
                     dynamic_cast<CIdxTree*>(m_pModelObjFactories->idxTree())->findLeave(
-                        i_pObjFactory->getGroupName(),               // see CObjFactory::registerObjFactory
-                        i_pObjFactory->getGraphObjTypeAsString() );  // see CObjFactory::registerObjFactory
+                        i_pObjFactory->groupName(),               // see CObjFactory::registerObjFactory
+                        i_pObjFactory->graphObjTypeAsString() );  // see CObjFactory::registerObjFactory
                 if( pTreeEntry != nullptr ) {
                     ////QModelIndex modelIdxParent;
 

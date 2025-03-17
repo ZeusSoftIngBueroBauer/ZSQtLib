@@ -625,11 +625,11 @@ void CGraphObjLabel::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
         /* strAddInfo   */ strMthInArgs );
 
     if (m_drawSettings.isPenUsed()) {
-        if (m_drawSettings.getLineStyle() != ELineStyle::NoLine) {
+        if (m_drawSettings.lineStyle() != ELineStyle::NoLine) {
             QPen pen;
-            pen.setColor( m_drawSettings.getPenColor() );
-            pen.setWidth( m_drawSettings.getPenWidth() );
-            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+            pen.setColor( m_drawSettings.penColor() );
+            pen.setWidth( m_drawSettings.penWidth() );
+            pen.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
             setPen(pen);
         }
         else {
@@ -641,10 +641,10 @@ void CGraphObjLabel::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
     }
 
     if (m_drawSettings.isFillUsed()) {
-        if (m_drawSettings.getFillStyle() != EFillStyle::NoFill) {
+        if (m_drawSettings.fillStyle() != EFillStyle::NoFill) {
             QBrush brsh;
-            brsh.setColor( m_drawSettings.getFillColor() );
-            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.getFillStyle()) );
+            brsh.setColor( m_drawSettings.fillColor() );
+            brsh.setStyle( fillStyle2QtBrushStyle(m_drawSettings.fillStyle()) );
             setBrush(brsh);
         }
         else {
@@ -656,10 +656,10 @@ void CGraphObjLabel::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
     }
 
     if (m_drawSettings.isTextUsed()) {
-        QFont fnt = m_drawSettings.getTextFont();
-        CEnumTextEffect textEffect = m_drawSettings.getTextEffect();
-        ETextSize textSize = m_drawSettings.getTextSize();
-        CEnumTextStyle textStyle = m_drawSettings.getTextStyle();
+        QFont fnt = m_drawSettings.textFont();
+        CEnumTextEffect textEffect = m_drawSettings.textEffect();
+        ETextSize textSize = m_drawSettings.textSize();
+        CEnumTextStyle textStyle = m_drawSettings.textStyle();
         bool bItalic = (textStyle == ETextStyle::Italic || textStyle == ETextStyle::BoldItalic);
         bool bBold = (textStyle == ETextStyle::Bold || textStyle == ETextStyle::BoldItalic);
         bool bStrikeout = (textEffect == ETextEffect::Strikeout || textEffect == ETextEffect::StrikeoutUnderline);
@@ -671,7 +671,7 @@ void CGraphObjLabel::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
         fnt.setStrikeOut(bStrikeout);
         fnt.setUnderline(bUnderline);
 
-        setFont(fnt);
+        QGraphicsSimpleTextItem::setFont(fnt);
     }
 }
 
@@ -849,10 +849,10 @@ QRectF CGraphObjLabel::boundingRect() const
         }
     }
     rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.getPenWidth()/2,
-        rctBounding.top() - m_drawSettings.getPenWidth()/2,
-        rctBounding.width() + m_drawSettings.getPenWidth(),
-        rctBounding.height() + m_drawSettings.getPenWidth() );
+        rctBounding.left() - m_drawSettings.penWidth()/2,
+        rctBounding.top() - m_drawSettings.penWidth()/2,
+        rctBounding.width() + m_drawSettings.penWidth(),
+        rctBounding.height() + m_drawSettings.penWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }

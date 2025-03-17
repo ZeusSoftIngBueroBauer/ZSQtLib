@@ -514,11 +514,11 @@ void CGraphObjSwitch::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsO
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    CDrawSettings drawSettingsLine = m_pLinSwitch->getDrawSettings();
+    CDrawSettings drawSettingsLine = m_pLinSwitch->drawSettings();
 
-    drawSettingsLine.setPenColor(m_drawSettings.getPenColor());
-    drawSettingsLine.setPenWidth(m_drawSettings.getPenWidth());
-    drawSettingsLine.setLineStyle(m_drawSettings.getLineStyle());
+    drawSettingsLine.setPenColor(m_drawSettings.penColor());
+    drawSettingsLine.setPenWidth(m_drawSettings.penWidth());
+    drawSettingsLine.setLineStyle(m_drawSettings.lineStyle());
 
     m_pLinSwitch->setDrawSettings(drawSettingsLine);
 

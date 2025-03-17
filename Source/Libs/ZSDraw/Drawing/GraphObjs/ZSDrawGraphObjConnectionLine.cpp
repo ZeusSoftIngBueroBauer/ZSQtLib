@@ -388,13 +388,13 @@ void CGraphObjConnectionLine::onDrawSettingsChanged(const CDrawSettings& i_drawS
 
     if( m_drawSettings.isPenUsed() )
     {
-        if( m_drawSettings.getLineStyle() != ELineStyle::NoLine )
+        if( m_drawSettings.lineStyle() != ELineStyle::NoLine )
         {
             QPen pn;
 
-            pn.setColor( m_drawSettings.getPenColor() );
-            pn.setWidth( m_drawSettings.getPenWidth() );
-            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.getLineStyle()) );
+            pn.setColor( m_drawSettings.penColor() );
+            pn.setWidth( m_drawSettings.penWidth() );
+            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
 
             setPen(pn);
         }
@@ -941,13 +941,13 @@ void CGraphObjConnectionLine::paint(
         i_pPainter->drawPolyline(m_plgCurr);
     }
 
-    CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-    CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
+    CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
+    CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.lineEndStyle(ELinePoint::End);
 
     if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
     {
-        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
-        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
+        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
 
         QBrush brsh;
 
@@ -960,7 +960,7 @@ void CGraphObjConnectionLine::paint(
 
         if( lineEndStyleLineStart != ELineEndStyle::Normal )
         {
-            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start)) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)) );
 
             i_pPainter->setBrush(brsh);
 
@@ -976,7 +976,7 @@ void CGraphObjConnectionLine::paint(
 
         if( lineEndStyleLineEnd != ELineEndStyle::Normal )
         {
-            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)) );
 
             i_pPainter->setBrush(brsh);
 
@@ -2244,8 +2244,8 @@ void CGraphObjConnectionLine::updateLineEndPolygonCoors()
         /* strAddInfo   */ "" );
 
     if (m_bCoorsDirty) {
-        CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
-        CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
+        CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
+        CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.lineEndStyle(ELinePoint::End);
 
         m_plgCurr = polygon();
 
@@ -2253,8 +2253,8 @@ void CGraphObjConnectionLine::updateLineEndPolygonCoors()
         {
             if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
             {
-                CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
-                CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
+                CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
+                CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
 
                 QLineF linFirst( m_plgCurr[0], m_plgCurr[1] );
                 QLineF linLast( m_plgCurr[m_plgCurr.size()-2], m_plgCurr[m_plgCurr.size()-1] );

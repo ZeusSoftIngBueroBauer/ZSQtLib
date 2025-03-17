@@ -1049,7 +1049,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 
     SErrResultInfo errResultInfo;
 
-    QString strFactoryGroupName = i_pGraphObj->getFactoryGroupName();
+    QString strFactoryGroupName = i_pGraphObj->factoryGroupName();
     QString strGraphObjType = i_pGraphObj->typeAsString();
     QString strObjName = i_pGraphObj->name();
 
@@ -1678,8 +1678,8 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
             QObject::connect(
                 m_pObjFactory, &CObjFactory::destroyed,
                 this, &CDrawingScene::onGraphObjFactoryDestroyed );
-            strFactoryGrpName = m_pObjFactory->getGroupName();
-            strGraphObjType = m_pObjFactory->getGraphObjTypeAsString();
+            strFactoryGrpName = m_pObjFactory->groupName();
+            strGraphObjType = m_pObjFactory->graphObjTypeAsString();
         }
         if (bAdjustItemsStates) {
             // The items call returns a list of all items currently under the cursor.
@@ -1776,7 +1776,7 @@ int CDrawingScene::getCurrentDrawingToolGraphObjType() const
 {
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
+        iObjFactoryType = m_pObjFactory->graphObjType();
     }
     return iObjFactoryType;
 }
@@ -2799,7 +2799,7 @@ void CDrawingScene::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySe
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_clr != m_drawSettings.getPenColor()) {
+        if (i_clr != m_drawSettings.penColor()) {
             m_drawSettings.setPenColor(i_clr);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -2827,7 +2827,7 @@ void CDrawingScene::setPenWidth( int i_iPenWidth, bool i_bImmediatelyApplySettin
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_iPenWidth != m_drawSettings.getPenWidth()) {
+        if (i_iPenWidth != m_drawSettings.penWidth()) {
             m_drawSettings.setPenWidth(i_iPenWidth);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -2859,7 +2859,7 @@ void CDrawingScene::setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImm
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_lineStyle != m_drawSettings.getLineStyle()) {
+        if (i_lineStyle != m_drawSettings.lineStyle()) {
             m_drawSettings.setLineStyle(i_lineStyle);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -2891,7 +2891,7 @@ void CDrawingScene::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplyS
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_clr != m_drawSettings.getFillColor()) {
+        if (i_clr != m_drawSettings.fillColor()) {
             m_drawSettings.setFillColor(i_clr);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -2919,7 +2919,7 @@ void CDrawingScene::setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImm
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_fillStyle != m_drawSettings.getFillStyle()) {
+        if (i_fillStyle != m_drawSettings.fillStyle()) {
             m_drawSettings.setFillStyle(i_fillStyle);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -2951,7 +2951,7 @@ void CDrawingScene::setLineRecordType( const CEnumLineRecordType& i_recordType, 
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_recordType != m_drawSettings.getLineRecordType()) {
+        if (i_recordType != m_drawSettings.lineRecordType()) {
             m_drawSettings.setLineRecordType(i_recordType);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -2979,7 +2979,7 @@ void CDrawingScene::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySe
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_iLineExtent != m_drawSettings.getLineExtent()) {
+        if (i_iLineExtent != m_drawSettings.lineExtent()) {
             m_drawSettings.setLineExtent(i_iLineExtent);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3014,7 +3014,7 @@ void CDrawingScene::setLineEndStyle(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_endStyle != m_drawSettings.getLineEndStyle(i_linePoint)) {
+        if (i_endStyle != m_drawSettings.lineEndStyle(i_linePoint)) {
             m_drawSettings.setLineEndStyle(i_linePoint, i_endStyle);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3045,7 +3045,7 @@ void CDrawingScene::setArrowHeadBaseLineType(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_baseLineType != m_drawSettings.getArrowHeadBaseLineType(i_linePoint)) {
+        if (i_baseLineType != m_drawSettings.arrowHeadBaseLineType(i_linePoint)) {
             m_drawSettings.setArrowHeadBaseLineType(i_linePoint, i_baseLineType);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3076,7 +3076,7 @@ void CDrawingScene::setArrowHeadFillStyle(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_fillStyle != m_drawSettings.getArrowHeadFillStyle(i_linePoint)) {
+        if (i_fillStyle != m_drawSettings.arrowHeadFillStyle(i_linePoint)) {
             m_drawSettings.setArrowHeadFillStyle(i_linePoint, i_fillStyle);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3106,7 +3106,7 @@ void CDrawingScene::setArrowHeadWidth(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_width != m_drawSettings.getArrowHeadWidth(i_linePoint)) {
+        if (i_width != m_drawSettings.arrowHeadWidth(i_linePoint)) {
             m_drawSettings.setArrowHeadWidth(i_linePoint, i_width);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3137,7 +3137,7 @@ void CDrawingScene::setArrowHeadLength(
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_length != m_drawSettings.getArrowHeadLength(i_linePoint)) {
+        if (i_length != m_drawSettings.arrowHeadLength(i_linePoint)) {
             m_drawSettings.setArrowHeadLength(i_linePoint, i_length);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3169,7 +3169,7 @@ void CDrawingScene::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplyS
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_clr != m_drawSettings.getTextColor()) {
+        if (i_clr != m_drawSettings.textColor()) {
             m_drawSettings.setTextColor(i_clr);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3197,7 +3197,7 @@ void CDrawingScene::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySet
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_fnt != m_drawSettings.getTextFont()) {
+        if (i_fnt != m_drawSettings.textFont()) {
             m_drawSettings.setTextFont(i_fnt);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3225,7 +3225,7 @@ void CDrawingScene::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetti
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_size != m_drawSettings.getTextSize()) {
+        if (i_size != m_drawSettings.textSize()) {
             m_drawSettings.setTextSize(i_size);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3253,7 +3253,7 @@ void CDrawingScene::setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImm
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_textStyle != m_drawSettings.getTextStyle()) {
+        if (i_textStyle != m_drawSettings.textStyle()) {
             m_drawSettings.setTextStyle(i_textStyle);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3281,7 +3281,7 @@ void CDrawingScene::setTextEffect( const CEnumTextEffect& i_textEffect, bool i_b
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (i_textEffect != m_drawSettings.getTextEffect()) {
+        if (i_textEffect != m_drawSettings.textEffect()) {
             m_drawSettings.setTextEffect(i_textEffect);
             emit_drawSettingsChanged(m_drawSettings);
         }
@@ -3553,7 +3553,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
+        iObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     if (m_pGraphicsItemSelectionArea != nullptr) {
@@ -3727,7 +3727,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
+        iObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     bool bEventHandled = false;
@@ -3892,7 +3892,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
+        iObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     QPointF ptScenePosMouseEvent = i_pEv->scenePos();
@@ -4001,7 +4001,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->getGraphObjType();
+        iObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     if (m_mode == EMode::Edit) {

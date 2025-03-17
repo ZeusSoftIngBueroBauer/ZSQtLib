@@ -183,7 +183,7 @@ public: // operators
     bool operator != ( const CDrawSettings& i_other ) const;
 public: // instance methods
     void setGraphObjType(EGraphObjType i_graphObjType);
-    EGraphObjType getGraphObjType() const { return m_graphObjType; }
+    EGraphObjType graphObjType() const { return m_graphObjType; }
 public: // instance methods
     void save(QSettings& i_settings, const QString& i_strSettingsKey) const;
     void load(QSettings& i_settings, const QString& i_strSettingsKey);
@@ -227,44 +227,44 @@ public: // instance methods
     bool isTextUsed() const;
 public: // instance methods
     void setPenColor( const QColor& );
-    QColor getPenColor() const;
+    QColor penColor() const;
     void setPenWidth( int );
-    int getPenWidth() const;
+    int penWidth() const;
 public: // instance methods
     void setLineStyle( const CEnumLineStyle& i_lineStyle );
-    CEnumLineStyle getLineStyle() const;
+    CEnumLineStyle lineStyle() const;
 public: // instance methods
     void setFillColor( const QColor& i_color );
-    QColor getFillColor() const;
+    QColor fillColor() const;
     void setFillStyle( const CEnumFillStyle& i_fillStyle );
-    CEnumFillStyle getFillStyle() const;
+    CEnumFillStyle fillStyle() const;
 public: // instance methods
     void setLineRecordType( const CEnumLineRecordType& i_recordType );
-    CEnumLineRecordType getLineRecordType() const;
+    CEnumLineRecordType lineRecordType() const;
     void setLineExtent( int i_iExtent );
-    int getLineExtent() const;
+    int lineExtent() const;
 public: // instance methods
     void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle );
-    CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const;
+    CEnumLineEndStyle lineEndStyle( const CEnumLinePoint& i_linePoint ) const;
     void setArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType );
-    CEnumArrowHeadBaseLineType getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const;
+    CEnumArrowHeadBaseLineType arrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const;
     void setArrowHeadFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle );
-    CEnumArrowHeadFillStyle getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const;
+    CEnumArrowHeadFillStyle arrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const;
     void setArrowHeadWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width );
-    CEnumArrowHeadWidth getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const;
+    CEnumArrowHeadWidth arrowHeadWidth( const CEnumLinePoint& i_linePoint ) const;
     void setArrowHeadLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length );
-    CEnumArrowHeadLength getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const;
+    CEnumArrowHeadLength arrowHeadLength( const CEnumLinePoint& i_linePoint ) const;
 public: // instance methods
     void setTextColor( const QColor& );
-    QColor getTextColor() const;
+    QColor textColor() const;
     void setTextFont( const QFont& );
-    QFont getTextFont() const;
+    QFont textFont() const;
     void setTextStyle( const CEnumTextStyle& i_textStyle );
-    CEnumTextStyle getTextStyle() const;
+    CEnumTextStyle textStyle() const;
     void setTextSize( ETextSize i_textSize );
-    ETextSize getTextSize() const;
+    ETextSize textSize() const;
     void setTextEffect( const CEnumTextEffect& i_textEffect );
-    CEnumTextEffect getTextEffect() const;
+    CEnumTextEffect textEffect() const;
 public: // instance methods
     QString toString() const;
 protected: // instance members

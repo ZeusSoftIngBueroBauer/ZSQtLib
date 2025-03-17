@@ -113,7 +113,7 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
                         }
                         else
                         {
-                            varData = pObjFactory->getToolIconPixmap();
+                            varData = pObjFactory->toolIconPixmap();
                         }
                     }
                     break;
@@ -242,8 +242,8 @@ QMimeData* CObjFactoriesModel::mimeData( const QModelIndexList& i_modelIdxList )
 
                 if( pObjFactory != nullptr )
                 {
-                    strObjFactoryGroupName = pObjFactory->getGroupName();
-                    strObjFactoryGraphObjType = pObjFactory->getGraphObjTypeAsString();
+                    strObjFactoryGroupName = pObjFactory->groupName();
+                    strObjFactoryGraphObjType = pObjFactory->graphObjTypeAsString();
 
                     strMimeData = "ObjFactory::";
 

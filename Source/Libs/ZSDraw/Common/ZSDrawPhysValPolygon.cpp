@@ -275,7 +275,7 @@ void CPhysValPolygon::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDr
 //------------------------------------------------------------------------------
 {
     i_pPainter->save();
-    QPen pen(i_drawSettings.getPenColor());
+    QPen pen(i_drawSettings.penColor());
     pen.setStyle(Qt::SolidLine);
     i_pPainter->setPen(pen);
     QPolygonF polygon_px = m_polygonScaledAndRotated;

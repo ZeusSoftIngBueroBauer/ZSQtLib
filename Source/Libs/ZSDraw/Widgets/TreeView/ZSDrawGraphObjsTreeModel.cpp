@@ -182,11 +182,11 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
                 {
                     CObjFactory* pObjFactory = nullptr;
 
-                    pObjFactory = CObjFactory::FindObjFactory(pGraphObj->getFactoryGroupName(), pGraphObj->typeAsString());
+                    pObjFactory = CObjFactory::FindObjFactory(pGraphObj->factoryGroupName(), pGraphObj->typeAsString());
 
                     if( pObjFactory != nullptr )
                     {
-                        QPixmap pxm = pObjFactory->getToolIconPixmap();
+                        QPixmap pxm = pObjFactory->toolIconPixmap();
                         if( pGraphicsItem->isSelected() )
                         {
                             QPainter painter(&pxm);

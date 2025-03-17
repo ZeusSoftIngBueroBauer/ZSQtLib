@@ -469,7 +469,7 @@ void CPhysValRect::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawS
 //------------------------------------------------------------------------------
 {
     i_pPainter->save();
-    QPen pen(i_drawSettings.getPenColor());
+    QPen pen(i_drawSettings.penColor());
     QPointF ptCenter = m_pDrawingScene->convert(center(), Units.Length.px).toQPointF();
     QPointF ptTL = m_pDrawingScene->convert(topLeft(), Units.Length.px).toQPointF();
     QPointF ptTR = m_pDrawingScene->convert(topRight(), Units.Length.px).toQPointF();

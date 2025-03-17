@@ -81,7 +81,7 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
         {
             throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "m_pGraphicsItem" );
         }
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        m_drawSettings = m_pGraphObj->drawSettings();
     }
     else
     {

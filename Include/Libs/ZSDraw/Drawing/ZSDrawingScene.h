@@ -203,44 +203,44 @@ public: // instance methods
     bool updateDrawSettings();
 public: // instance methods
     void setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
-    QColor getPenColor() const { return m_drawSettings.getPenColor(); }
+    QColor penColor() const { return m_drawSettings.penColor(); }
     void setPenWidth( int i_iPenWidth, bool i_bImmediatelyApplySetting = true );
-    int getPenWidth() const { return m_drawSettings.getPenWidth(); }
+    int penWidth() const { return m_drawSettings.penWidth(); }
 public: // instance methods
     void setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting = true );
-    CEnumLineStyle getLineStyle() const { return m_drawSettings.getLineStyle(); }
+    CEnumLineStyle lineStyle() const { return m_drawSettings.lineStyle(); }
 public: // instance methods
     void setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
-    QColor getFillColor() const { return m_drawSettings.getFillColor(); }
+    QColor fillColor() const { return m_drawSettings.fillColor(); }
     void setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    CEnumFillStyle getFillStyle() const { return m_drawSettings.getFillStyle(); }
+    CEnumFillStyle fillStyle() const { return m_drawSettings.fillStyle(); }
 public: // instance methods
     void setLineRecordType( const CEnumLineRecordType& i_recordType, bool i_bImmediatelyApplySetting = true );
-    CEnumLineRecordType getLineRecordType() const { return m_drawSettings.getLineRecordType(); }
+    CEnumLineRecordType lineRecordType() const { return m_drawSettings.lineRecordType(); }
     void setLineExtent( int i_iExtent, bool i_bImmediatelyApplySetting = true );
-    int  getLineExtent() const { return m_drawSettings.getLineExtent(); }
+    int  lineExtent() const { return m_drawSettings.lineExtent(); }
 public: // instance methods
     void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle, bool i_bImmediatelyApplySetting = true );
-    CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndStyle(i_linePoint); }
+    CEnumLineEndStyle lineEndStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.lineEndStyle(i_linePoint); }
     void setArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true );
-    CEnumArrowHeadBaseLineType getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadBaseLineType(i_linePoint); }
+    CEnumArrowHeadBaseLineType arrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.arrowHeadBaseLineType(i_linePoint); }
     void setArrowHeadFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    CEnumArrowHeadFillStyle getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadFillStyle(i_linePoint); }
+    CEnumArrowHeadFillStyle arrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.arrowHeadFillStyle(i_linePoint); }
     void setArrowHeadWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_arrowWidth, bool i_bImmediatelyApplySetting = true );
-    CEnumArrowHeadWidth getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadWidth(i_linePoint); }
+    CEnumArrowHeadWidth arrowHeadWidth( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.arrowHeadWidth(i_linePoint); }
     void setArrowHeadLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_arrowLength, bool i_bImmediatelyApplySetting = true );
-    CEnumArrowHeadLength getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadLength(i_linePoint); }
+    CEnumArrowHeadLength arrowHeadLength( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.arrowHeadLength(i_linePoint); }
 public: // instance methods
     void setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
-    QColor getTextColor() const { return m_drawSettings.getTextColor(); }
+    QColor textColor() const { return m_drawSettings.textColor(); }
     void setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting = true );
-    QFont getTextFont() const { return m_drawSettings.getTextFont(); }
+    QFont textFont() const { return m_drawSettings.textFont(); }
     void setTextSize( const ETextSize i_textSize, bool i_bImmediatelyApplySetting = true );
-    ETextSize getTextSize() const { return m_drawSettings.getTextSize(); }
+    ETextSize textSize() const { return m_drawSettings.textSize(); }
     void setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImmediatelyApplySetting = true );
-    CEnumTextStyle getTextStyle() const { return m_drawSettings.getTextStyle(); }
+    CEnumTextStyle textStyle() const { return m_drawSettings.textStyle(); }
     void setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImmediatelyApplySetting = true );
-    CEnumTextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
+    CEnumTextEffect textEffect() const { return m_drawSettings.textEffect(); }
 public: // overridables of base class QGraphicsScene
     virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
     virtual void dragMoveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;

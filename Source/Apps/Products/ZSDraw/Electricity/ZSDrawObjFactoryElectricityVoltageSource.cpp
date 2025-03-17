@@ -194,7 +194,7 @@ SErrResultInfo CObjFactoryVoltageSource::saveGraphObj(
     // Draw Attributes
     //----------------
 
-    CDrawSettings drawSettings = pGraphObj->getDrawSettings();
+    CDrawSettings drawSettings = pGraphObj->drawSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();

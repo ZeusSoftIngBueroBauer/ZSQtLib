@@ -149,7 +149,7 @@ CDlgFormatGraphObjs::CDlgFormatGraphObjs(
 
     if( m_pGraphObj != nullptr)
     {
-        drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->drawSettings();
     }
 
     m_pListWdgt = new QListWidget();

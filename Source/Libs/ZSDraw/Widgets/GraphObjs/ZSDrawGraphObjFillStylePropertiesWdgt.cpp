@@ -318,13 +318,13 @@ bool CWdgtGraphObjFillStyleProperties::hasChanges() const
         drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->drawSettings();
     }
 
-    if (m_fillColor != drawSettings.getFillColor()) {
+    if (m_fillColor != drawSettings.fillColor()) {
         bHasChanges = true;
     }
-    else if (m_fillStyle != drawSettings.getFillStyle()) {
+    else if (m_fillStyle != drawSettings.fillStyle()) {
         bHasChanges = true;
     }
 
@@ -408,11 +408,11 @@ void CWdgtGraphObjFillStyleProperties::fillEditControls()
         drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->drawSettings();
     }
 
-    m_fillColor = drawSettings.getFillColor();
-    m_fillStyle = drawSettings.getFillStyle();
+    m_fillColor = drawSettings.fillColor();
+    m_fillStyle = drawSettings.fillStyle();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
