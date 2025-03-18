@@ -672,8 +672,8 @@ CDrawingScene* CGraphObj::drawingScene() const
     @return nullptr, if the object is neither a selection point, a label or is not
             added as a child to a group, pointer to parent otherwise.
 */
-//------------------------------------------------------------------------------
 CGraphObjGroup* CGraphObj::parentGroup() const
+//------------------------------------------------------------------------------
 {
     return dynamic_cast<CGraphObjGroup*>(m_pParentBranch);
 }

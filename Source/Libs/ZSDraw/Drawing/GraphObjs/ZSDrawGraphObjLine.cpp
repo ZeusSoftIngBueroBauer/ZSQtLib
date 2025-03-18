@@ -2121,9 +2121,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             else /*if (m_editMode == EEditMode::None)*/ {
                 hideSelectionPoints();
             }
-            // Not necessary to bring selection points to front as item has been already brought
-            // to front and "showSelectionPoints" sets zValue of selection points above item.
-            //bringSelectionPointsToFront();
         }
         else {
             setEditMode(EEditMode::None);
@@ -2156,6 +2153,10 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);

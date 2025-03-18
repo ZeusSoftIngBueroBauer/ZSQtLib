@@ -327,17 +327,19 @@ namespace Draw {
 enum class EEditMode
 //==============================================================================
 {
-    None = 0, /*!< No edit mode is selected. */
-    CreatingByMouseEvents = 1, /*!< The object has been initially created by a mouse press event
-                                    and is still under construction by following mouse events.
-                                    For example:
-                                    - Resizing a line by moving the line end point.
-                                    - Resizing a rectangle by moving the bottom right corner.
-                                    - Adding points to poly lines. */
-    ModifyingBoundingRect = 2, /*!< An object is about to be modified by resizing the bounding rectangle. */
-    ModifyingPolygonPoints = 3 /*!< An object with specific polygon points (polygons, lines) is about
-                                    to be modified. In this mode points can be added e.g. by clicking
-                                    on a line segment or existing polygon points can be moved. */
+    None = 0,                   /*!< No edit mode is selected. */
+    CreatingByMouseEvents = 1,  /*!< The object has been initially created by a mouse press event
+                                     and is still under construction by following mouse events.
+                                     For example:
+                                     - Resizing a line by moving the line end point.
+                                     - Resizing a rectangle by moving the bottom right corner.
+                                     - Adding points to poly lines. */
+    ModifyingBoundingRect = 2,  /*!< An object is about to be modified by resizing the bounding rectangle. */
+    ModifyingPolygonPoints = 3, /*!< An object with specific polygon points (polygons, lines) is about
+                                     to be modified. In this mode points can be added e.g. by clicking
+                                     on a line segment or existing polygon points can be moved. */
+    ModifyingContent = 4        /*!< The interior (content) of the object is about to be modified.
+                                     This mode is used by the text grahics item to edit the text. */
 };
 } }
 

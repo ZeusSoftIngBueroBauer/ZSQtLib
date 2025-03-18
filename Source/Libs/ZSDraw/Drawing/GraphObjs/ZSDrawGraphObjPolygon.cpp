@@ -2819,7 +2819,10 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
         /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
-    traceGraphObjStates(mthTracer);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -2890,9 +2893,6 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
             else /*if (m_editMode == EEditMode::None)*/ {
                 hideSelectionPoints();
             }
-            // Not necessary as item has been brought to front and "showSelectionPoints"
-            // sets zValue of selection points above item.
-            //bringSelectionPointsToFront();
         }
         else {
             setEditMode(EEditMode::None);
@@ -2923,6 +2923,10 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);

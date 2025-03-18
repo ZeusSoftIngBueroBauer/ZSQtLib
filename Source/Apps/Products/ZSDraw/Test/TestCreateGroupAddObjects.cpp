@@ -261,8 +261,9 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameText,
         /* pTSGrpParent */ pGrpTexts );
+    createTestGroupAddStandardShapesRect(pGrpTextsText);
     createTestGroupAddStandardShapesText(pGrpTextsText);
-    createTestGroupAddStandardShapesTextModifications(pGrpTextsText);
+    //createTestGroupAddStandardShapesTextModifications(pGrpTextsText);
 
     createTestStepSaveLoadFile(pGrpTexts, 1);
 
@@ -1790,7 +1791,7 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_ptPosText = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_ptPosText = QPointF(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
     QSizeF sizeText(62.0, 21.0); // adjusted to text size
     QPointF ptTLText(m_ptPosText.x() - sizeText.width()/2.0, m_ptPosText.y() - sizeText.height()/2.0);
     *m_pPhysValRectText = QRectF(ptTLText, sizeText);

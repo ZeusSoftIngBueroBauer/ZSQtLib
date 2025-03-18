@@ -2541,7 +2541,7 @@ QRectF CGraphObjGroup::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = getBoundingRect();
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect){
+    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect) {
         if (pGraphObjSelPt != nullptr) {
             QRectF rctSelPt = pGraphObjSelPt->boundingRect();
             QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
@@ -3027,7 +3027,10 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
-    traceGraphObjStates(mthTracer);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -3107,12 +3110,9 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             //bringSelectionPointsToFront();
         }
         else {
+            setEditMode(EEditMode::None);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
-            //m_editMode = EEditMode::None;
-            //m_editResizeMode = EEditResizeMode::None;
-            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
-            //m_idxSelPtSelectedPolygon = -1;
         }
         bSelectedChanged = true;
         bTreeEntryChanged = true;
@@ -3140,6 +3140,10 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);

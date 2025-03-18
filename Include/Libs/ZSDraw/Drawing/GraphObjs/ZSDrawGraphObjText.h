@@ -40,6 +40,82 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
+class ZSDRAWDLL_API CGraphicsTextItem : public QGraphicsTextItem
+//******************************************************************************
+{
+public: // class methods
+    /*! Returns the namespace the class belongs to. */
+    static QString NameSpace() { return "ZS::Draw"; }
+    /*! Returns the class name. */
+    static QString ClassName() { return "CGraphicsTextItem"; }
+public: // ctors and dtor
+    explicit CGraphicsTextItem(QGraphicsItem* i_pParentItem = nullptr);
+    explicit CGraphicsTextItem(const QString& i_strText, QGraphicsItem* i_pParentItem = nullptr);
+    ~CGraphicsTextItem() override;
+public: // instance methods
+    void setPath(const QString& i_strPath);
+    QString path() const;
+public: // instance methods
+    QString toHtml() const;
+    void setHtml(const QString& i_strHtml);
+    QString toPlainText() const;
+    void setPlainText(const QString& i_strText);
+public: // instance methods
+    QFont font() const;
+    void setFont(const QFont& i_font);
+    void setDefaultTextColor(const QColor& i_col);
+    QColor defaultTextColor() const;
+public: // instance methods
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    bool contains(const QPointF& i_pt) const override;
+    void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pOption, QWidget* i_pWidget) override;
+public: // instance methods
+    bool isObscuredBy(const QGraphicsItem*i_pItem) const override;
+    QPainterPath opaqueArea() const override;
+    void setTextWidth(qreal i_fWidth_px);
+    qreal textWidth() const;
+    void adjustSize();
+    void setDocument(QTextDocument* i_pDocument);
+    QTextDocument* document() const;
+    void setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
+    Qt::TextInteractionFlags textInteractionFlags() const;
+    void setTabChangesFocus(bool i_bTabChangesFocus);
+    bool tabChangesFocus() const;
+    void setOpenExternalLinks(bool i_bOpen);
+    bool openExternalLinks() const;
+    void setTextCursor(const QTextCursor& i_cursor);
+    QTextCursor textCursor() const;
+protected: // instance methods
+    bool sceneEvent(QEvent* i_pEv) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent* i_pEv) override;
+    void keyPressEvent(QKeyEvent* i_pEv) override;
+    void keyReleaseEvent(QKeyEvent* i_pEv) override;
+    void focusInEvent(QFocusEvent* i_pEv) override;
+    void focusOutEvent(QFocusEvent* i_pEv) override;
+    void dragEnterEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dragLeaveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dragMoveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dropEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void inputMethodEvent(QInputMethodEvent* i_pEv) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+protected: // instance methods
+    QVariant inputMethodQuery(Qt::InputMethodQuery i_query) const override;
+protected: // instance members (method tracing)
+    QString m_strPath;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
+};
+
+//******************************************************************************
 class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsItem
 //******************************************************************************
 {
@@ -151,6 +227,8 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+public: // overridables of base class CGraphObj
+    void setEditMode(const CEnumEditMode& i_eMode) override;
 public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
     QRectF getEffectiveBoundingRectOnScene() const override;
@@ -199,6 +277,9 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
+    QPointF QGraphicsTextItem_setPos(const QPointF& i_pos);
+    double QGraphicsTextItem_setTextWidth(double i_fWidth_px);
+    Qt::TextInteractionFlags QGraphicsTextItem_setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -221,7 +302,7 @@ protected: // class members
 protected: // instance members
     /*!< The aggregated text item. The class could not have been derived from QGraphicsTextItem
          as CGraphObj and QGraphicsTextItem both are derviced from QObject. */
-    QGraphicsTextItem m_graphicsTextItem;
+    CGraphicsTextItem m_graphicsTextItem;
     /*!< The margins to the surrounding rectangle. The margin must be at least one pixel.
          Otherwise mouse press events would be forwarded to the text editor of the text item
          and the text item graphic object cannot be selected or highlighted and cannot be

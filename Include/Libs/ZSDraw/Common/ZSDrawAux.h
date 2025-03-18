@@ -80,6 +80,8 @@ ZSDRAWDLL_API bool isGraphicsSceneMouseEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv );
 ZSDRAWDLL_API bool isGraphicsSceneResizeEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv );
+ZSDRAWDLL_API bool isGraphicsSceneContextMenuEvent( QEvent* i_pEv );
+ZSDRAWDLL_API QString qGraphicsSceneContextMenuEvent2Str( QGraphicsSceneContextMenuEvent* i_pEv );
 
 // QPolygon is defined in QtGui. If available in QtCore some methods should be moved to ZS::System::Math.
 
