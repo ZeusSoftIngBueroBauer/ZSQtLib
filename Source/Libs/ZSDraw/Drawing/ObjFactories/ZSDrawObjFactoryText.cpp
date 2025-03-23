@@ -113,7 +113,7 @@ CGraphObj* CObjFactoryText::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeText);
-    CGraphObj* pGraphObj = new CGraphObjText(i_pDrawingScene);
+    CGraphObjText* pGraphObj = new CGraphObjText(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -142,8 +142,8 @@ CGraphObj* CObjFactoryText::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeText);
-    CGraphObj* pGraphObj = new CGraphObjText(i_pDrawingScene);
-    //pGraphObj->setRect(i_physValPoint, i_physValPoint);
+    CGraphObjText* pGraphObj = new CGraphObjText(i_pDrawingScene);
+    pGraphObj->setRect(i_physValPoint, i_physValPoint);
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -203,6 +203,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAngle, physValRect.angle().toString());
     i_xmlStreamWriter.writeEndElement();
 
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameText, pGraphObj->toPlainText());
     i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
 
     if (!i_pGraphObj->getLabelNames().isEmpty()) {
@@ -347,6 +348,10 @@ CGraphObj* CObjFactoryText::loadGraphObj(
                             pGraphObj->setRect(physValRect);
                         }
                     }
+                }
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameText) {
+                    QString strElemText = i_xmlStreamReader.readElementText();
+                    pGraphObj->setPlainText(strElemText);
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
                     QString strElemText = i_xmlStreamReader.readElementText();

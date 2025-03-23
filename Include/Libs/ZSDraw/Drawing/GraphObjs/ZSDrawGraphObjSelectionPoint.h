@@ -59,7 +59,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjSelectionPoint"; }
 public: // class methods
-    static double GetDefaultRadiusInPx();
+    static double defaultRadiusInPx();
 public: // ctors and dtor
     CGraphObjSelectionPoint(CDrawingScene* i_pDrawingScene, const SGraphObjSelectionPoint& i_selPt);
     virtual ~CGraphObjSelectionPoint();
@@ -76,30 +76,17 @@ public: // instance methods
 public: // instance methods
     void setRadiusInPx( double i_fRadius_px );
     double getRadiusInPx() const;
-//public: // instance methods (replacing the methods of base class QGraphicsItem)
-//    void setSelected( bool i_bSelected );
-//    bool isSelected() const;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-//public: // must overridables of base class CGraphObj
-//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
-    //virtual void setIsHit( bool /*i_bHit*/ ) override {}
-    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
-    //void setCursor( const QCursor& cursor );
 public: // overridables of base class QGraphicsItem
     virtual bool contains(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {}
-protected: // overridables of base class CGraphObj
-    //virtual void updateToolTip() override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
@@ -114,28 +101,24 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected slots: // overridables of base class CGraphObj
-    //void onGraphObjParentScenePosChanged( CGraphObj* i_pGraphObjParent ) override;
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // auxiliary instance methods
     void updatePosition();
-protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    //void traceInternalStates(
-    //    ZS::System::CMethodTracer& i_mthTracer,
-    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
     /*!< Default radius to be used for painting the selection points. */
     static double s_fRadius_px;
+    /*!< Default pen width to be used for painting the border of the selection points. */
+    static int s_iPenWidth_px;
+    /*!< Default color to be used for painting the border of the selection points. */
+    static QColor s_colPen;
 protected: // instance members
     /*!< Defines the type of the selection point. */
     SGraphObjSelectionPoint m_selPt;
     /*!< Radius for drawing the selection point. */
     double m_fRadius_px;
-    /*!< True if the selection point is selected for changing the shape of the graphical object. */
-    //bool m_bSelected;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
     bool m_bUpdatePositionInProgress;
 

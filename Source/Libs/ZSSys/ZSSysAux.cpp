@@ -1546,13 +1546,6 @@ QString ZS::System::qDropActions2Str( int i_actions )
     return strAction;
 }
 
-//------------------------------------------------------------------------------
-QString ZS::System::qEvent2Str( QEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    return qEventType2Str(i_pEv->type());
-}
-
 /*==============================================================================
 Enum QEvent:Type
 ==============================================================================*/
@@ -1872,6 +1865,13 @@ QString ZS::System::qEventType2Str( int i_type, bool i_bShort )
         str = "? (=" + QString::number(i_type) + ")";
     }
     return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qEvent2Str( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return "Type: " + qEventType2Str(i_pEv->type()) + ", Accepted: " + bool2Str(i_pEv->isAccepted());
 }
 
 /*==============================================================================
@@ -2518,56 +2518,33 @@ static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
 QString ZS::System::qKeyCode2Str( int i_key, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
 {
-    static bool s_bHshKeysInit = false;
-    static QHash<quint32,int> s_hshKeys;
-
-    if( !s_bHshKeysInit )
-    {
-        int     idx;
-        quint32 uHshCode;
-        int     iHshVal;
-
-        for( idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++ )
-        {
+    static QHash<quint32,int> s_hshKeyCode2Index;
+    if (s_hshKeyCode2Index.isEmpty()) {
+        for (int idx = 0; idx < _ZSArrLen(s_arEnumStrQKeyCode); idx++) {
             // Not the variant value has been initialized with the key code but the enum index.
             //uHshCode  = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_val.toULongLong());
-            uHshCode = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_iEnumerator);
-            iHshVal  = idx;
-
-            if( !s_hshKeys.contains(uHshCode) )
-            {
-                s_hshKeys[uHshCode] = iHshVal;
+            quint32 uHshCode = static_cast<quint32>(s_arEnumStrQKeyCode[idx].m_iEnumerator);
+            if (!s_hshKeyCode2Index.contains(uHshCode)) {
+                s_hshKeyCode2Index[uHshCode] = idx;
             }
         }
-
-        s_bHshKeysInit = true;
-
-    } // if( !s_bHshKeysInit )
+    }
 
     QString str;
-    int     idx;
-
-    if( s_hshKeys.contains(i_key) )
-    {
-        idx = s_hshKeys[i_key];
-
-        if( i_alias < s_arEnumStrQKeyCode[idx].m_strlstNames.size() )
-        {
+    if (s_hshKeyCode2Index.contains(i_key)) {
+        int idx = s_hshKeyCode2Index[i_key];
+        if (i_alias < s_arEnumStrQKeyCode[idx].m_strlstNames.size()) {
             str = s_arEnumStrQKeyCode[idx].m_strlstNames[i_alias];
         }
-        else
-        {
+        else {
             str = s_arEnumStrQKeyCode[idx].m_strlstNames[0];
         }
     }
-    else
-    {
+    else {
         str = "Undefined (" + QString::number(i_key) + ", 0x" + QString::number(i_key,16) + ")";
     }
-
     return str;
-
-} // qKeyCode2Str
+}
 
 //------------------------------------------------------------------------------
 int ZS::System::char2QKeyCode( const QChar& i_ch )

@@ -52,6 +52,7 @@ list(APPEND _HeadersDrawing
 )
 
 list(APPEND _HeadersDrawingGraphObjs
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphicsTextItem.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObj.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h
@@ -185,6 +186,7 @@ list(APPEND _SourcesCommon
 )
 
 list(APPEND _SourcesDrawingGraphObjs
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphicsTextItem.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObj.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.cpp

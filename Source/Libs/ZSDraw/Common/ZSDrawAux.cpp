@@ -488,6 +488,20 @@ QGraphicsItem::QGraphicsSceneEvents
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+bool ZS::Draw::isGraphicsSceneEvent( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return (dynamic_cast<QGraphicsSceneEvent*>(i_pEv) != nullptr);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneEvent2Str( QGraphicsSceneEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return "Type: " + qEventType2Str(i_pEv->type()) + ", Accepted: " + bool2Str(i_pEv->isAccepted());
+}
+
+//------------------------------------------------------------------------------
 bool ZS::Draw::isGraphicsSceneDragDropEvent( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -498,7 +512,7 @@ bool ZS::Draw::isGraphicsSceneDragDropEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return qGraphicsSceneEvent2Str(i_pEv) +
         ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
@@ -521,7 +535,7 @@ bool ZS::Draw::isGraphicsSceneHoverEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return qGraphicsSceneEvent2Str(i_pEv) +
         ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
@@ -539,7 +553,7 @@ bool ZS::Draw::isGraphicsSceneMouseEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return qGraphicsSceneEvent2Str(i_pEv) +
         ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
@@ -559,9 +573,43 @@ bool ZS::Draw::isGraphicsSceneResizeEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    return "Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return qGraphicsSceneEvent2Str(i_pEv) +
         ", NewSize {" + qSize2Str(i_pEv->newSize()) + "}" +
         ", OldSize {" + qSize2Str(i_pEv->oldSize()) + "}";
+}
+
+//------------------------------------------------------------------------------
+bool ZS::Draw::isGraphicsSceneContextMenuEvent( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return (dynamic_cast<QGraphicsSceneContextMenuEvent*>(i_pEv) != nullptr);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneContextMenuEventReason2Str( QGraphicsSceneContextMenuEvent::Reason i_reason )
+//------------------------------------------------------------------------------
+{
+    const SEnumEntry s_arEnumStrReasons[] =
+    {
+        SEnumEntry(QGraphicsSceneContextMenuEvent::Mouse, "Mouse"),
+        SEnumEntry(QGraphicsSceneContextMenuEvent::Keyboard, "Keyboard"),
+        SEnumEntry(QGraphicsSceneContextMenuEvent::Other, "Other")
+    };
+    if (i_reason >= 0 && i_reason < _ZSArrLen(s_arEnumStrReasons)) {
+        return SEnumEntry::enumerator2Str(s_arEnumStrReasons, _ZSArrLen(s_arEnumStrReasons), i_reason);
+    }
+    return "? (" + QString::number(i_reason) + ")";
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneContextMenuEvent2Str( QGraphicsSceneContextMenuEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return qGraphicsSceneEvent2Str(i_pEv) +
+        ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
+        ", Reason {" + qGraphicsSceneContextMenuEventReason2Str(i_pEv->reason()) + "}";
 }
 
 /*******************************************************************************

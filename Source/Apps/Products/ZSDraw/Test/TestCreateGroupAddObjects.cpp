@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStep.h"
@@ -1774,6 +1775,7 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
     QString strMethod = "DrawingScene.addGraphObj";
     QString strText = "Hello World";
     QString strMthArgs = strObjName + ", " + strText;
+    QMargins margins = CGraphObjText::defaultMarginsInPx();
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1792,7 +1794,7 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosText = QPointF(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
-    QSizeF sizeText(62.0, 21.0); // adjusted to text size
+    QSizeF sizeText(72.0, 31.0); // adjusted to text size with margins
     QPointF ptTLText(m_ptPosText.x() - sizeText.width()/2.0, m_ptPosText.y() - sizeText.height()/2.0);
     *m_pPhysValRectText = QRectF(ptTLText, sizeText);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);

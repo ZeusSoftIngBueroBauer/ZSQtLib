@@ -49,7 +49,6 @@ class QPaintEvent;
 class QPolygon;
 class QPolygonF;
 class QResizeEvent;
-class QTextCursor;
 
 namespace ZS
 {
@@ -63,7 +62,6 @@ public auxiliary methods
 
 ZSSYSGUIDLL_API QString qColor2Str(const QColor& i_clr);
 ZSSYSGUIDLL_API QString qCursor2Str(const QCursor& i_cursor);
-ZSSYSGUIDLL_API QString qTextCursor2Str(const QTextCursor& i_cursor);
 
 ZSSYSGUIDLL_API QString qItemDelegateEndEditHint2Str(QAbstractItemDelegate::EndEditHint i_hint);
 ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
@@ -79,9 +77,12 @@ ZSSYSGUIDLL_API QString qDragEnterEvent2Str(QDragEnterEvent* i_pEv);
 ZSSYSGUIDLL_API QString qDragLeaveEvent2Str(QDragLeaveEvent* i_pEv);
 ZSSYSGUIDLL_API QString qDragMoveEvent2Str(QDragMoveEvent* i_pEv);
 ZSSYSGUIDLL_API QString qDropEvent2Str(QDropEvent* i_pEv);
-ZSSYSGUIDLL_API QString qFocusEvent2Str(const QFocusEvent* i_pEv);
-ZSSYSGUIDLL_API QString qInputMethodEvent2Str(const QInputMethodEvent* i_pEv);
+ZSSYSGUIDLL_API QString qFocusEvent2Str(QFocusEvent* i_pEv);
 ZSSYSGUIDLL_API QString qInputMethodQuery2Str(Qt::InputMethodQuery i_query);
+ZSSYSGUIDLL_API QString qInputMethodEventAttributeType2Str(QInputMethodEvent::AttributeType i_attributeType);
+ZSSYSGUIDLL_API QString qInputMethodEventAttribute2Str(const QInputMethodEvent::Attribute& i_attribute);
+ZSSYSGUIDLL_API QString qInputMethodEventAttributes2Str(const QList<QInputMethodEvent::Attribute>& i_attributes);
+ZSSYSGUIDLL_API QString qInputMethodEvent2Str(QInputMethodEvent* i_pEv);
 ZSSYSGUIDLL_API QString qKeyEvent2Str(QKeyEvent* i_pEv);
 ZSSYSGUIDLL_API QKeyEvent* str2QKeyEvent(const QString& i_str, QEvent::Type i_type);
 ZSSYSGUIDLL_API QString qMouseEvent2Str(QMouseEvent* i_pEv);

@@ -978,39 +978,6 @@ protected: // instance members
     QAction* m_pActionMenuContextModifyPoints;
     QAction* m_pActionMenuContextDeletePoint;
 protected: // !!! OBSOLETE !!! instance members
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    /*!< Flag to indicate that the coordinates need to be updated. */
-    bool m_bCoorsDirty;
-    /*!< Current item coordinates and transform values:
-         In item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0). */
-    QRectF m_rctCurr;
-    /*!< Concerning range see "Draw::getAngleRad" */
-    double m_fRotAngleCurr_deg;
-    /*!< In item's coordinate system. */
-    QPointF m_ptRotOriginCurr;
-    /*!< Original item coordinates and transform values:
-        - after initially creating the item
-        - changing position, size and rotation angle of objects with no parents
-        - on adding items to groups
-        - explicitly calling method "acceptCurrentAsOriginalCoors" */
-    bool m_bHasValidOrigCoors;
-    QSizeF m_sizOrig;
-    /*!< Concerning range see "Draw::getAngleRad" */
-    double m_fRotAngleOrig_deg;
-    /*!< In item's coordinate system. */
-    QPointF m_ptRotOriginOrig;
-    /*!< Coordinates stored on mouse press events:
-         In scene's coordinate system (for moving by my mouse move events). */
-    QPointF m_ptScenePosOnMousePressEvent;
-    /*!< In item's coordinate system (for resizing by mouse move events). */
-    //QRectF m_rctOnMousePressEvent;
-    /*!< In scene's coordinate system (for rotation by mouse move events). */
-    //QPointF m_ptRotOriginOnMousePressEvent;
-    /*!< Counts how ofter the "itemChange" method has been blocked from updating
-         the original object coordinates. A value greater than 0 for the counter means
-         that the itemChange method must not update the original coordinates as they
-         have been expliticely set by a method call whereupon the objects, transformed
-         item coordinates in pixels should be updated by itemChange. */
     /*!< Simulation Functions. */
     //QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
     //QList<SGraphObjMouseEventFct> m_arMouseReleaseEventFunctions;
@@ -1018,7 +985,6 @@ protected: // !!! OBSOLETE !!! instance members
     //QList<SGraphObjMouseEventFct> m_arMouseMoveEventFunctions;
     //QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
     //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
-#endif
 protected: // instance members
     /*!< Hit info on mouse events. Set e.g. on right clicking an object to set which
          point of the object was hit before opening the context menu. */

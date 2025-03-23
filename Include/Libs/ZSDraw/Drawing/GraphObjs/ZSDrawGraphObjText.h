@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObjText_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphicsTextItem.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsTextItem>
@@ -40,82 +41,6 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CGraphicsTextItem : public QGraphicsTextItem
-//******************************************************************************
-{
-public: // class methods
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw"; }
-    /*! Returns the class name. */
-    static QString ClassName() { return "CGraphicsTextItem"; }
-public: // ctors and dtor
-    explicit CGraphicsTextItem(QGraphicsItem* i_pParentItem = nullptr);
-    explicit CGraphicsTextItem(const QString& i_strText, QGraphicsItem* i_pParentItem = nullptr);
-    ~CGraphicsTextItem() override;
-public: // instance methods
-    void setPath(const QString& i_strPath);
-    QString path() const;
-public: // instance methods
-    QString toHtml() const;
-    void setHtml(const QString& i_strHtml);
-    QString toPlainText() const;
-    void setPlainText(const QString& i_strText);
-public: // instance methods
-    QFont font() const;
-    void setFont(const QFont& i_font);
-    void setDefaultTextColor(const QColor& i_col);
-    QColor defaultTextColor() const;
-public: // instance methods
-    QRectF boundingRect() const override;
-    QPainterPath shape() const override;
-    bool contains(const QPointF& i_pt) const override;
-    void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pOption, QWidget* i_pWidget) override;
-public: // instance methods
-    bool isObscuredBy(const QGraphicsItem*i_pItem) const override;
-    QPainterPath opaqueArea() const override;
-    void setTextWidth(qreal i_fWidth_px);
-    qreal textWidth() const;
-    void adjustSize();
-    void setDocument(QTextDocument* i_pDocument);
-    QTextDocument* document() const;
-    void setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
-    Qt::TextInteractionFlags textInteractionFlags() const;
-    void setTabChangesFocus(bool i_bTabChangesFocus);
-    bool tabChangesFocus() const;
-    void setOpenExternalLinks(bool i_bOpen);
-    bool openExternalLinks() const;
-    void setTextCursor(const QTextCursor& i_cursor);
-    QTextCursor textCursor() const;
-protected: // instance methods
-    bool sceneEvent(QEvent* i_pEv) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent* i_pEv) override;
-    void keyPressEvent(QKeyEvent* i_pEv) override;
-    void keyReleaseEvent(QKeyEvent* i_pEv) override;
-    void focusInEvent(QFocusEvent* i_pEv) override;
-    void focusOutEvent(QFocusEvent* i_pEv) override;
-    void dragEnterEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    void dragLeaveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    void dragMoveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    void dropEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    void inputMethodEvent(QInputMethodEvent* i_pEv) override;
-    void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
-    void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
-protected: // instance methods
-    QVariant inputMethodQuery(Qt::InputMethodQuery i_query) const override;
-protected: // instance members (method tracing)
-    QString m_strPath;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
-};
-
-//******************************************************************************
 class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsItem
 //******************************************************************************
 {
@@ -124,6 +49,8 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjText"; }
+public: // class methods
+    static QMargins defaultMarginsInPx();
 public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
@@ -182,6 +109,10 @@ public: // instance methods
     double textWidth() const;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
+    void setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit);
+    void setRect(const QPointF& i_pTL, const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit);
+    void setRect(const CPhysValPoint& i_physValTL, const CPhysValPoint& i_physValBR);
+    void setRect(const CPhysValPoint& i_physValTL, const CPhysValSize& i_physValSize);
     CPhysValRect getRect() const;
     CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit) const;
     void setCenter(const QPointF& i_pt);
@@ -265,6 +196,8 @@ public: // must overridables of base class CGraphObj
     virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     virtual void updateTransformedCoorsOnParentGeometryChanged() override;
     virtual void updateTransformedCoorsOnItemPositionChanged() override;
+protected slots:
+    void onGraphicsTextItemFocusChanged(QFocusEvent* i_pEv);
 protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
@@ -298,6 +231,8 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // class members
+    /*!< Default radius to be used for painting the selection points. */
+    static QMargins s_marginsDefault;
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< The aggregated text item. The class could not have been derived from QGraphicsTextItem

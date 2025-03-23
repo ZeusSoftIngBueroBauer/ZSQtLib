@@ -404,14 +404,15 @@ namespace Draw {
 typedef uint16_t TSelectionPointTypes;
 
 const TSelectionPointTypes c_uSelectionPointsNone = 0x00;
-const TSelectionPointTypes c_uSelectionPointsBoundingRectCorner     = 0x01;
-const TSelectionPointTypes c_uSelectionPointsBoundingRectLineCenter = 0x02;  // Center points of surrounding frame lines
-const TSelectionPointTypes c_uSelectionPointsBoundingRectCenter     = 0x04;
-const TSelectionPointTypes c_uSelectionPointsBoundingRectRotate     = 0x10;
-const TSelectionPointTypes c_uSelectionPointsBoundingRectAll        = 0x1f;
-const TSelectionPointTypes c_uSelectionPointsPolygonPoints          = 0x20;
-const TSelectionPointTypes c_uSelectionPointsLineCenter             = 0x40;
-const TSelectionPointTypes c_uSelectionPointsAll                    = 0x7f;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectCorner             = 0x01;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectLineCenter         = 0x02;  // Center points of surrounding frame lines
+const TSelectionPointTypes c_uSelectionPointsBoundingRectCenter             = 0x04;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectRotate             = 0x10;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectAll                = 0x1f;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectAllExcludingCenter = 0x1b;
+const TSelectionPointTypes c_uSelectionPointsPolygonPoints                  = 0x20;
+const TSelectionPointTypes c_uSelectionPointsLineCenter                     = 0x40;
+const TSelectionPointTypes c_uSelectionPointsAll                            = 0x7f;
 
 ZSDRAWDLL_API QString selectionPointTypes2Str( TSelectionPointTypes i_selPts );
 } }

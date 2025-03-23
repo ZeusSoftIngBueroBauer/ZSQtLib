@@ -4436,6 +4436,10 @@ void CGraphObj::setIsHighlighted(bool i_bIsHighlighted)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::setIsHighlighted",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
 
     if (m_bIsHighlighted != i_bIsHighlighted) {
         m_bIsHighlighted = i_bIsHighlighted;
@@ -4444,11 +4448,10 @@ void CGraphObj::setIsHighlighted(bool i_bIsHighlighted)
             m_pDrawingScene->update();
             pGraphicsItemThis->update(pGraphicsItemThis->boundingRect());
         }
-        if (m_bIsHighlighted) {
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                tracePositionInfo(mthTracer);
-            }
-        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
 }
 
@@ -8641,12 +8644,7 @@ void CGraphObj::QGraphicsItem_setCursor(const QCursor& i_cursor)
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
-        if (i_cursor.shape() == Qt::SizeAllCursor) {
-            pGraphicsItemThis->setCursor(i_cursor);
-        }
-        else {
-            pGraphicsItemThis->setCursor(i_cursor);
-        }
+        pGraphicsItemThis->setCursor(i_cursor);
     }
 }
 
@@ -8925,7 +8923,28 @@ void CGraphObj::traceGraphicsItemStates(
             strRuntimeInfo += "IsSelected: " + bool2Str(pGraphicsItemThis->isSelected()) +
                 ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
                 ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled()) +
+                ", HasCursor: " + bool2Str(pGraphicsItemThis->hasCursor()) +
+                ", HasFocus: " + bool2Str(pGraphicsItemThis->hasFocus()) +
                 ", MouseGrabber: " + QString(pGraphObjMouseGrabber == nullptr ? "null" : pGraphObjMouseGrabber->path());
+            i_mthTracer.trace(strRuntimeInfo);
+        }
+        if (i_strFilter.isEmpty() || i_strFilter.contains("SelectedItems")) {
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
+            strRuntimeInfo += "SelectedItems [" + QString::number(arpGraphicsItemsSelected.size()) + "]";
+            if (!arpGraphicsItemsSelected.isEmpty()) {
+                strRuntimeInfo += "(";
+                for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
+                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+                    if (pGraphObj != nullptr) {
+                        if (!strRuntimeInfo.endsWith("(")) strRuntimeInfo += ", ";
+                        strRuntimeInfo += pGraphObj->path();
+                    }
+                }
+                strRuntimeInfo += ")";
+            }
             i_mthTracer.trace(strRuntimeInfo);
         }
         if (i_strFilter.isEmpty() || i_strFilter.contains("HoverEvents")) {

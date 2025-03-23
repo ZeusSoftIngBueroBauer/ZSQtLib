@@ -103,13 +103,6 @@ QString ZS::System::GUI::qCursor2Str(const QCursor& i_cursor)
     return str;
 }
 
-//------------------------------------------------------------------------------
-QString ZS::System::GUI::qTextCursor2Str(const QTextCursor& i_cursor)
-//------------------------------------------------------------------------------
-{
-    return ;
-}
-
 /*==============================================================================
 Enum QAbstractItemDelegate::EndEditHint
 ==============================================================================*/
@@ -286,7 +279,7 @@ QString ZS::System::GUI::qDropAction2Str( int i_iVal, EEnumEntryAliasStr /*i_ali
 QString ZS::System::GUI::qDragEnterEvent2Str(QDragEnterEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return "Type: " + qEventType2Str(i_pEv->type()) +
+    return qEvent2Str(i_pEv) +
         ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
@@ -299,14 +292,14 @@ QString ZS::System::GUI::qDragEnterEvent2Str(QDragEnterEvent* i_pEv)
 QString ZS::System::GUI::qDragLeaveEvent2Str(QDragLeaveEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return qEventType2Str(i_pEv->type());
+    return qEvent2Str(i_pEv);
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qDragMoveEvent2Str(QDragMoveEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return "Type: " + qEventType2Str(i_pEv->type()) +
+    return qEvent2Str(i_pEv) +
         ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
@@ -319,8 +312,7 @@ QString ZS::System::GUI::qDragMoveEvent2Str(QDragMoveEvent* i_pEv)
 QString ZS::System::GUI::qDropEvent2Str(QDropEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return "Type: " + qEventType2Str(i_pEv->type()) +
-        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return qEvent2Str(i_pEv) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
         ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
         ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
@@ -329,14 +321,158 @@ QString ZS::System::GUI::qDropEvent2Str(QDropEvent* i_pEv)
 }
 
 //------------------------------------------------------------------------------
+QString ZS::System::GUI::qFocusEvent2Str(QFocusEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    return qEvent2Str(i_pEv) +
+        ", Reason: " + qFocusReason2Str(i_pEv->reason()) +
+        ", GotFocus: " + bool2Str(i_pEv->gotFocus()) +
+        ", LostFocus: " + bool2Str(i_pEv->lostFocus());
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qInputMethodQuery2Str(Qt::InputMethodQuery i_query)
+//------------------------------------------------------------------------------
+{
+    QString str = "0x" + QString::number(static_cast<uint32_t>(i_query), 16);
+    if (i_query == 0x00) {
+        str += " (None)";
+    }
+    else {
+        str += " (";
+        if (i_query & Qt::ImEnabled) {
+            if (!str.endsWith("(")) str += "|";
+            str += "Enabled";
+        }
+        if (i_query & Qt::ImCursorRectangle) {
+            if (!str.endsWith("(")) str += "|";
+            str += "CursorRectangle";
+        }
+        if (i_query & Qt::ImFont) {
+            if (!str.endsWith("(")) str += "|";
+            str += "Font";
+        }
+        if (i_query & Qt::ImCursorPosition) {
+            if (!str.endsWith("(")) str += "|";
+            str += "CursorPosition";
+        }
+        if (i_query & Qt::ImSurroundingText) {
+            if (!str.endsWith("(")) str += "|";
+            str += "SurroundingText";
+        }
+        if (i_query & Qt::ImCurrentSelection) {
+            if (!str.endsWith("(")) str += "|";
+            str += "CurrentSelection";
+        }
+        if (i_query & Qt::ImMaximumTextLength) {
+            if (!str.endsWith("(")) str += "|";
+            str += "MaximumTextLength";
+        }
+        if (i_query & Qt::ImAnchorPosition) {
+            if (!str.endsWith("(")) str += "|";
+            str += "AnchorPosition";
+        }
+        if (i_query & Qt::ImHints) {
+            if (!str.endsWith("(")) str += "|";
+            str += "Hints";
+        }
+        if (i_query & Qt::ImPreferredLanguage) {
+            if (!str.endsWith("(")) str += "|";
+            str += "PreferredLanguage";
+        }
+        if (i_query & Qt::ImPlatformData) {
+            if (!str.endsWith("(")) str += "|";
+            str += "PlatformData";
+        }
+        if (i_query & Qt::ImAbsolutePosition) {
+            if (!str.endsWith("(")) str += "|";
+            str += "AbsolutePosition";
+        }
+        if (i_query & Qt::ImTextBeforeCursor) {
+            if (!str.endsWith("(")) str += "|";
+            str += "TextBeforeCursor";
+        }
+        if (i_query & Qt::ImTextAfterCursor) {
+            if (!str.endsWith("(")) str += "|";
+            str += "TextAfterCursor";
+        }
+        if (i_query & Qt::ImEnterKeyType) {
+            if (!str.endsWith("(")) str += "|";
+            str += "EnterKeyType";
+        }
+        if (i_query & Qt::ImAnchorRectangle) {
+            if (!str.endsWith("(")) str += "|";
+            str += "AnchorRectangle";
+        }
+        if (i_query & Qt::ImInputItemClipRectangle) {
+            if (!str.endsWith("(")) str += "|";
+            str += "InputItemClipRectangle";
+        }
+        str += ")";
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qInputMethodEventAttributeType2Str(QInputMethodEvent::AttributeType i_attributeType)
+//------------------------------------------------------------------------------
+{
+    const SEnumEntry s_arEnumStr[] = {
+        /* 0 */ SEnumEntry(QInputMethodEvent::TextFormat, "TextFormat" ),
+        /* 1 */ SEnumEntry(QInputMethodEvent::Cursor,  "Cursor" ),
+        /* 2 */ SEnumEntry(QInputMethodEvent::Language, "Language" ),
+        /* 3 */ SEnumEntry(QInputMethodEvent::Ruby, "Ruby" ),
+        /* 4 */ SEnumEntry(QInputMethodEvent::Selection, "Selection" )
+    };
+    return SEnumEntry::enumerator2Str(s_arEnumStr, _ZSArrLen(s_arEnumStr), i_attributeType);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qInputMethodEventAttribute2Str(const QInputMethodEvent::Attribute& i_attribute)
+//------------------------------------------------------------------------------
+{
+    return "Type: " + qInputMethodEventAttributeType2Str(i_attribute.type) +
+        ", Start: " + QString::number(i_attribute.start) +
+        ", Len: " + QString::number(i_attribute.length) +
+        ", Value: " + i_attribute.value.toString();
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qInputMethodEventAttributes2Str(const QList<QInputMethodEvent::Attribute>& i_attributes)
+//------------------------------------------------------------------------------
+{
+    QString str = "[" + QString::number(i_attributes.size()) + "]";
+    if (!i_attributes.empty()) {
+        str += "(";
+        for (const QInputMethodEvent::Attribute& attribute : i_attributes) {
+            if (!str.endsWith("(")) str += ", ";
+            str += "{" + qInputMethodEventAttribute2Str(attribute) + "}";
+        }
+        str += ")";
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qInputMethodEvent2Str(QInputMethodEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    return qEvent2Str(i_pEv) +
+        ", Attributes: " + qInputMethodEventAttributes2Str(i_pEv->attributes()) +
+        ", CommitStr: " + i_pEv->commitString() +
+        ", PreEditStr: " + i_pEv->preeditString() +
+        ", Replacement {Start: " + QString::number(i_pEv->replacementStart()) +
+            ", Len: " + QString::number(i_pEv->replacementLength()) + "}";
+}
+
+//------------------------------------------------------------------------------
 QString ZS::System::GUI::qKeyEvent2Str(QKeyEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return "Type: " + qEventType2Str(i_pEv->type()) +
-        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return "Type: " + qEvent2Str(i_pEv) +
         ", Key: " + qKeyCode2Str(i_pEv->key()) +
         ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
-        ", Text: " + i_pEv->text() +
+        //", Text: " + i_pEv->text() + May return not printable content
         ", AutoRepeat: " + bool2Str(i_pEv->isAutoRepeat()) +
         QString(i_pEv->isAutoRepeat() ? ": Count: " + QString::number(i_pEv->count()) : "");
 }
@@ -414,8 +550,7 @@ QKeyEvent* ZS::System::GUI::str2QKeyEvent( const QString& i_str, QEvent::Type i_
 QString ZS::System::GUI::qMouseEvent2Str(QMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return "Type: " + qEventType2Str(i_pEv->type()) +
-        ", Accepted: " + bool2Str(i_pEv->isAccepted()) +
+    return qEvent2Str(i_pEv) +
         ", Button: " + qMouseButton2Str(i_pEv->button()) +
         ", Buttons: " + qMouseButtons2Str(i_pEv->buttons()) +
         ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
@@ -469,7 +604,7 @@ QString ZS::System::GUI::qPainterRenderHints2Str(QPainter::RenderHints i_painter
 QString ZS::System::GUI::qPaintEvent2Str(QPaintEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    return "Type: " + qEventType2Str(i_pEv->type()) +
+    return qEvent2Str(i_pEv) +
         ", Rect {" + qRect2Str(i_pEv->rect()) + "}";
         //", Region {" + qRegion2Str(i_pEv->region()) + "}";
 }
@@ -478,8 +613,7 @@ QString ZS::System::GUI::qPaintEvent2Str(QPaintEvent* i_pEv)
 QString ZS::System::GUI::qResizeEvent2Str(QResizeEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
-    QString str =
-        "Type: " + qEventType2Str(i_pEv->type()) +
+    QString str = qEvent2Str(i_pEv) +
         ", Size {" + qSize2Str(i_pEv->size()) + "}" +
         ", OldSize {" + qSize2Str(i_pEv->oldSize()) + "}";
     return str;
