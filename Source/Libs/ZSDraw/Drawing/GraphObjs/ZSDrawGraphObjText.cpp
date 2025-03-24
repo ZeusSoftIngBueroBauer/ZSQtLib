@@ -2455,8 +2455,15 @@ void CGraphObjText::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
     }
 
+    if (m_editMode == EEditMode::CreatingByMouseEvents) {
+        // The editMode changed signal will be emitted and received by the drawing scene.
+        // The drawing scene is informed this way that creation of the object is finished
+        // and will unselect the current drawing tool and will select the object under
+        // construction showing the selection points at the bounding rectangle.
+        setEditMode(EEditMode::ModifyingBoundingRect);
+    }
+
     // Forward the mouse event to the items base implementation.
-    // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsItem::mouseReleaseEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -2488,7 +2495,11 @@ void CGraphObjText::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    setEditMode(EEditMode::ModifyingContent);
+    // When double clicking an item, the item will first receive a mouse
+    // press event, followed by a release event (i.e., a click), then a
+    // doubleclick event, and finally a release event.
+    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
+    //QGraphicsRectItem::mouseDoubleClickEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
@@ -2657,8 +2668,8 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
             if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
-                showSelectionPoints(c_uSelectionPointsPolygonPoints);
-                hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
+                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                showSelectionPoints(c_uSelectionPointsBoundingRectAllExcludingCenter);
             }
             else if (m_editMode == EEditMode::ModifyingBoundingRect || m_editMode == EEditMode::ModifyingContent) {
                 hideSelectionPoints(c_uSelectionPointsPolygonPoints);

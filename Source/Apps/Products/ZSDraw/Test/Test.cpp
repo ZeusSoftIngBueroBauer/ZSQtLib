@@ -2768,7 +2768,9 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+
     QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -2863,6 +2865,24 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
             m_pDrawingView->mouseReleaseEvent(pMouseEv);
             delete pMouseEv;
             pMouseEv = nullptr;
+            if (graphObjType == EGraphObjTypeText) {
+                i_pTestStep->setConfigValue("Method", "setPlainText");
+            }
+            else {
+                i_pTestStep->setConfigValue("Method", "setResultValues");
+            }
+            triggerDoTestStep();
+        }
+        else if (strMethod == "setPlainText") {
+            int iInstCount = pObjFactory->getNumberOfCreatedGraphObjects();
+            QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(iInstCount-1));
+            QStringList strlstResultValues;
+            CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+            if (pGraphObjText != nullptr) {
+                QString strText = i_pTestStep->getConfigValue("Text").toString();
+                pGraphObjText->setPlainText(strText);
+                pGraphObjText->adjustSize();
+            }
             i_pTestStep->setConfigValue("Method", "setResultValues");
             triggerDoTestStep();
         }
