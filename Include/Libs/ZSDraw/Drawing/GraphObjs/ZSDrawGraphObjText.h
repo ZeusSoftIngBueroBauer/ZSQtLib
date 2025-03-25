@@ -93,11 +93,11 @@ public: // providing methods of QGraphicsTextItem
     Qt::TextInteractionFlags textInteractionFlags() const;
 public: // instance methods
     void setMargins(const QMargins& i_margins_px);
-    void setMargins(int i_fLeft_px, int i_fTop_px, int i_fRight_px, int i_fBottom_px);
-    void setMarginLeft(int i_fLeft_px);
-    void setMarginTop(int i_fTop_px);
-    void setMarginRight(int i_fRight_px);
-    void setMarginBottom(int i_fBottom_px);
+    void setMargins(int i_iLeft_px, int i_iTop_px, int i_iRight_px, int i_iBottom_px);
+    void setMarginLeft(int i_iLeft_px);
+    void setMarginTop(int i_iTop_px);
+    void setMarginRight(int i_iRight_px);
+    void setMarginBottom(int i_iBottom_px);
     QMargins margins() const;
     int marginLeft() const;
     int marginTop() const;

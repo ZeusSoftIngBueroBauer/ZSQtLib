@@ -2620,7 +2620,25 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
         if (pGraphObjText != nullptr) {
             pGraphObjText->setPlainText(strText);
             pGraphObjText->setRect(CPhysValRect(*m_pDrawingScene, rect, unit));
-            pGraphObjText->adjustSize();
+            QMargins margins = CGraphObjText::defaultMarginsInPx();
+            if (i_pTestStep->hasConfigValue("Margins.Left")) {
+                int iMarginLeft = i_pTestStep->getConfigValue("Margins.Left").toInt();
+                int iMarginTop = i_pTestStep->getConfigValue("Margins.Top").toInt();
+                int iMarginRight = i_pTestStep->getConfigValue("Margins.Right").toInt();
+                int iMarginBottom = i_pTestStep->getConfigValue("Margins.Bottom").toInt();
+                margins = QMargins(iMarginLeft, iMarginTop, iMarginRight, iMarginBottom);
+                pGraphObjText->setMargins(margins);
+            }
+            if (i_pTestStep->hasConfigValue("TextWidth")) {
+                double fTextWidth = i_pTestStep->getConfigValue("TextWidth").toDouble();
+                pGraphObjText->setTextWidth(fTextWidth);
+            }
+            if (i_pTestStep->hasConfigValue("AdjustSize")) {
+                bool bAdjustSize = i_pTestStep->getConfigValue("AdjustSize").toBool();
+                if (bAdjustSize) {
+                    pGraphObjText->adjustSize();
+                }
+            }
         }
         pGraphObj->rename(strGraphObjName);
     }

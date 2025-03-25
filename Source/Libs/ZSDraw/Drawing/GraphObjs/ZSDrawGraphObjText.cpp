@@ -600,20 +600,34 @@ void CGraphObjText::setMargins(const QMargins& i_margins_px)
         /* strObjName   */ path(),
         /* strMethod    */ "setMargins",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
+
+    if (m_margins != i_margins_px) {
+        m_margins = i_margins_px;
+        QRectF rectBounding = getBoundingRect();
+        QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
+        QGraphicsTextItem_setPos(ptTLTextItem);
+        QGraphicsTextItem_setTextWidth(rectBounding.width());
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjText::setMargins(int i_fLeft_px, int i_fTop_px, int i_fRight_px, int i_fBottom_px)
+void CGraphObjText::setMargins(int i_iLeft_px, int i_iTop_px, int i_iRight_px, int i_iBottom_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Left: " + QString::number(i_fLeft_px) + "px" +
-            ", Top: " + QString::number(i_fTop_px) + "px" +
-            ", Right: " + QString::number(i_fRight_px) + "px" +
-            ", Bottom: " + QString::number(i_fBottom_px) + "px";
+        strMthInArgs = "Left: " + QString::number(i_iLeft_px) + "px" +
+            ", Top: " + QString::number(i_iTop_px) + "px" +
+            ", Right: " + QString::number(i_iRight_px) + "px" +
+            ", Bottom: " + QString::number(i_iBottom_px) + "px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -621,17 +635,19 @@ void CGraphObjText::setMargins(int i_fLeft_px, int i_fTop_px, int i_fRight_px, i
         /* strObjName   */ path(),
         /* strMethod    */ "setMargins",
         /* strAddInfo   */ strMthInArgs );
+
+    setMargins(QMargins(i_iLeft_px, i_iTop_px, i_iRight_px, i_iBottom_px));
 }
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjText::setMarginLeft(int i_fLeft_px)
+void CGraphObjText::setMarginLeft(int i_iLeft_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fLeft_px) + " px";
+        strMthInArgs = QString::number(i_iLeft_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -639,17 +655,21 @@ void CGraphObjText::setMarginLeft(int i_fLeft_px)
         /* strObjName   */ path(),
         /* strMethod    */ "setMarginLeft",
         /* strAddInfo   */ strMthInArgs );
+
+    QMargins margins = this->margins();
+    margins.setLeft(i_iLeft_px);
+    setMargins(margins);
 }
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjText::setMarginTop(int i_fTop_px)
+void CGraphObjText::setMarginTop(int i_iTop_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fTop_px) + " px";
+        strMthInArgs = QString::number(i_iTop_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -657,17 +677,21 @@ void CGraphObjText::setMarginTop(int i_fTop_px)
         /* strObjName   */ path(),
         /* strMethod    */ "setMarginTop",
         /* strAddInfo   */ strMthInArgs );
+
+    QMargins margins = this->margins();
+    margins.setTop(i_iTop_px);
+    setMargins(margins);
 }
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjText::setMarginRight(int i_fRight_px)
+void CGraphObjText::setMarginRight(int i_iRight_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fRight_px) + " px";
+        strMthInArgs = QString::number(i_iRight_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -675,17 +699,21 @@ void CGraphObjText::setMarginRight(int i_fRight_px)
         /* strObjName   */ path(),
         /* strMethod    */ "setMarginRight",
         /* strAddInfo   */ strMthInArgs );
+
+    QMargins margins = this->margins();
+    margins.setRight(i_iRight_px);
+    setMargins(margins);
 }
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjText::setMarginBottom(int i_fBottom_px)
+void CGraphObjText::setMarginBottom(int i_iBottom_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fBottom_px) + " px";
+        strMthInArgs = QString::number(i_iBottom_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -693,6 +721,10 @@ void CGraphObjText::setMarginBottom(int i_fBottom_px)
         /* strObjName   */ path(),
         /* strMethod    */ "setMarginBottom",
         /* strAddInfo   */ strMthInArgs );
+
+    QMargins margins = this->margins();
+    margins.setBottom(i_iBottom_px);
+    setMargins(margins);
 }
 
 //------------------------------------------------------------------------------
@@ -798,14 +830,14 @@ void CGraphObjText::setTextWidth(double i_fWidth)
 
     QGraphicsTextItem_setTextWidth(i_fWidth);
 
-    QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
-    QSizeF size = rectBoundingTextItem.size();
-    if (!m_margins.isNull()) {
-        size.setWidth(m_margins.left() + m_margins.right());
-        size.setHeight(m_margins.top() + m_margins.bottom());
-    }
-    CPhysValSize physValSize(*m_pDrawingScene, size);
-    setSize(physValSize);
+    //QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();
+    //QSizeF size = rectBoundingTextItem.size();
+    //if (!m_margins.isNull()) {
+    //    size.setWidth(m_margins.left() + m_margins.right());
+    //    size.setHeight(m_margins.top() + m_margins.bottom());
+    //}
+    //CPhysValSize physValSize(*m_pDrawingScene, size);
+    //setSize(physValSize);
 }
 
 //------------------------------------------------------------------------------
@@ -904,7 +936,6 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
             QRectF rectBounding = getBoundingRect();
             QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
             QGraphicsTextItem_setPos(ptTLTextItem);
-            QGraphicsTextItem_setTextWidth(rectBounding.width());
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.

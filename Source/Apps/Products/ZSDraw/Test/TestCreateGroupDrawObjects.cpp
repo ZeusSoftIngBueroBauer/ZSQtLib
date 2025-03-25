@@ -1672,7 +1672,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6;//bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     eSelPt = bYAxisTopDown ? ESelectionPoint::RotateTop : ESelectionPoint::RotateBottom;
     physValRectNew = *m_pPhysValRectText;
@@ -1695,6 +1695,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    physValRectNew.setAngle(44.4);
     m_physValAngleText = physValRectNew.angle();
     *m_pPhysValRectText = physValRectNew;
     strlstExpectedValues.clear();
@@ -1705,7 +1706,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     QSizeF sizeRectangle = m_pPhysValRectText->size().toQSizeF();
     sizeRectangle.setWidth(100.0);
@@ -1730,9 +1731,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(317.661165, 317.661165);
-    m_pPhysValRectText->setSize(QSizeF(99.953319, 50.0));
-    m_pPhysValRectText->setCenter(QPointF(317.661165, bYAxisTopDown ? 317.661165 : 282.338835));
+    m_ptPosText = QPointF(309.997208, bYAxisTopDown ? 409.301185 : fYAxisMaxVal - 171.698815);
+    m_pPhysValRectText->setSize(QSizeF(100.000528, 31.0));
+    m_pPhysValRectText->setCenter(QPointF(309.997208, bYAxisTopDown ? 409.301185 : 171.698815));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
@@ -1741,7 +1742,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     sizeRectangle = m_pPhysValRectText->size().toQSizeF();
     sizeRectangle.setHeight(100.0);
@@ -1766,9 +1767,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 300.0 : 335.322330, bYAxisTopDown ? 335.322330 : 300.0);
-    m_pPhysValRectText->setSize(QSizeF(99.953319, 99.953319));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 300.0 : 335.322330, bYAxisTopDown ? 335.322330 : 300.0));
+    m_ptPosText = QPointF(bYAxisTopDown ? 285.793768 : 334.102629, bYAxisTopDown ? 433.988694 : fYAxisMaxVal - 196.286345);
+    m_pPhysValRectText->setSize(QSizeF(100.000528, bYAxisTopDown ? 100.145634 : 99.865606));
+    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 285.793768 : 334.102629, bYAxisTopDown ? 433.988694 : 196.286345));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
@@ -1777,7 +1778,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     // setSize
     //--------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     sizeRectangle = QSizeF(150.0, 150.0);
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomRight : ESelectionPoint::TopRight;
@@ -1801,9 +1802,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 300.0 : 370.822330, bYAxisTopDown ? 370.822330 : 300.0);
-    m_pPhysValRectText->setSize(QSizeF(150.157900, 150.157900));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 300.000000 : 370.822330, bYAxisTopDown ? 370.822330 : 300.000000));
+    m_ptPosText = QPointF(bYAxisTopDown ? 286.072242 : 369.721135, bYAxisTopDown ? 469.114650 : fYAxisMaxVal - 196.817221);
+    m_pPhysValRectText->setSize(QSizeF(bYAxisTopDown ? 149.579586 : 150.125641, bYAxisTopDown ? 149.920712 : 150.494770));
+    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 286.072242 : 369.721135, bYAxisTopDown ? 469.114650 : 196.817221));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
@@ -1812,7 +1813,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     sizeRectangle.setWidth(50.0);
     eSelPt = ESelectionPoint::RightCenter;
@@ -1836,9 +1837,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 264.5 : 335.322330, bYAxisTopDown ? 335.322330 : 264.5);
-    m_pPhysValRectText->setSize(QSizeF(49.748737, 150.157900));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 264.5 : 335.322330, bYAxisTopDown ? 335.322330 : 335.5));
+    m_ptPosText = QPointF(bYAxisTopDown ? 250.484220 : 334.108118, bYAxisTopDown ? 434.224432 : fYAxisMaxVal - 231.731943);
+    m_pPhysValRectText->setSize(QSizeF(bYAxisTopDown ? 49.903418 : 50.379467, bYAxisTopDown ? 149.920712 : 150.494770));
+    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 250.484220 : 334.108118, bYAxisTopDown ? 434.224432 : 231.731943));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
@@ -1847,7 +1848,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     sizeRectangle.setHeight(50.0);
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomCenter : ESelectionPoint::TopCenter;
@@ -1871,9 +1872,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 299.750000 : 300.072330, bYAxisTopDown ? 300.072330 : 299.749000);
-    m_pPhysValRectText->setSize(QSizeF(49.748737, 50.455844));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 299.750000 : 300.072330, bYAxisTopDown ? 300.072330 : 300.250000));
+    m_ptPosText = QPointF(bYAxisTopDown ? 285.570478 : 298.899336, bYAxisTopDown ? 398.436450 : fYAxisMaxVal - 195.818985);
+    m_pPhysValRectText->setSize(QSizeF(bYAxisTopDown ? 49.903418 : 50.379467, bYAxisTopDown ? 49.684487 : 49.908510));
+    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 285.570478 : 298.899336, bYAxisTopDown ? 398.436450 : 195.818985));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, iResultValuesPrecision));
