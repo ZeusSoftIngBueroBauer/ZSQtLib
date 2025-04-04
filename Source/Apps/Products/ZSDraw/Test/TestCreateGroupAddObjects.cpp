@@ -9098,11 +9098,11 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
         Decimals: 2
     -----------------------------------------------------------------------*/
 
-    m_strTextBigCrossVerticalBar = "BCV-INRI";
+    m_strTextBigCrossVerticalBar = "BCV\n-\nINRI";
     m_strTextBigCrossHorizontalBar = "BCH-INRI";
-    m_strTextSmallCross1VerticalBar = "SC1V-INRI";
+    m_strTextSmallCross1VerticalBar = "SC1V\n-\nINRI";
     m_strTextSmallCross1HorizontalBar = "SC1H-INRI";
-    m_strTextSmallCross2VerticalBar = "SC2V-INRI";
+    m_strTextSmallCross2VerticalBar = "SC2V\n-\nINRI";
     m_strTextSmallCross2HorizontalBar = "SC2H-INRI";
 
     // BigCross-VerticalBar
@@ -9110,7 +9110,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
 
     strObjName = c_strGraphObjNameBigCrossVerticalBar;
     strText = m_strTextBigCrossVerticalBar;
-    strMthArgs = strObjName + ", " + strText;
+    strMthArgs = strObjName; // + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -9120,6 +9120,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRectBigCrossVerticalBar = QPointF(400.0, 300.0);
     QSizeF sizeRectangle(20.0, 200.0);
+    QMargins margins(1, 1, 1, 1);
     m_rectRectBigCrossVerticalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectBigCrossVerticalBar->setSize(sizeRectangle);
     m_pPhysValRectBigCrossVerticalBar->setCenter(QPointF(m_ptPosRectBigCrossVerticalBar.x(), bYAxisTopDown ? m_ptPosRectBigCrossVerticalBar.y() : fYAxisMaxVal - m_ptPosRectBigCrossVerticalBar.y()));
@@ -9128,11 +9129,11 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     pTestStep->setConfigValue("Rect", m_pPhysValRectBigCrossVerticalBar->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("Margins.Left", 1);
-    pTestStep->setConfigValue("Margins.Top", 1);
-    pTestStep->setConfigValue("Margins.Right", 1);
-    pTestStep->setConfigValue("Margins.Bottom", 1);
-    pTestStep->setConfigValue("TextWidth", 6);
+    pTestStep->setConfigValue("Margins.Left", margins.left());
+    pTestStep->setConfigValue("Margins.Top", margins.top());
+    pTestStep->setConfigValue("Margins.Right", margins.right());
+    pTestStep->setConfigValue("Margins.Bottom", margins.bottom());
+    pTestStep->setConfigValue("TextWidth", sizeRectangle.width() - margins.left() - margins.right());
     pTestStep->setConfigValue("AdjustSize", false);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
@@ -9147,7 +9148,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
 
     strObjName = c_strGraphObjNameBigCrossHorizontalBar;
     strText = m_strTextBigCrossHorizontalBar;
-    strMthArgs = strObjName + ", " + strText;
+    strMthArgs = strObjName; // + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -9165,15 +9166,17 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     pTestStep->setConfigValue("Rect", m_pPhysValRectBigCrossHorizontalBar->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("Margins.Left", 1);
-    pTestStep->setConfigValue("Margins.Top", 1);
-    pTestStep->setConfigValue("Margins.Right", 1);
-    pTestStep->setConfigValue("Margins.Bottom", 1);
+    pTestStep->setConfigValue("Margins.Left", margins.left());
+    pTestStep->setConfigValue("Margins.Top", margins.top());
+    pTestStep->setConfigValue("Margins.Right", margins.right());
+    pTestStep->setConfigValue("Margins.Bottom", margins.bottom());
     pTestStep->setConfigValue("AdjustSize", false);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
-        strObjName, m_ptPosRectBigCrossHorizontalBar, *m_pPhysValRectBigCrossHorizontalBar, m_strTextBigCrossHorizontalBar, iResultValuesPrecision));
+        strObjName, m_ptPosRectBigCrossHorizontalBar,
+        *m_pPhysValRectBigCrossHorizontalBar, strText,
+        iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Group BigCross
@@ -9228,7 +9231,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
 
     strObjName = c_strGraphObjNameSmallCross1VerticalBar;
     strText = m_strTextSmallCross1VerticalBar;
-    strMthArgs = strObjName + ", " + strText;
+    strMthArgs = strObjName; // + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -9237,7 +9240,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRectSmallCross1VerticalBar = QPointF(250.0, 375.0);
-    sizeRectangle = QSizeF(5.0, 50.0);
+    sizeRectangle = QSizeF(15.0, 100.0);
     m_rectRectSmallCross1VerticalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectSmallCross1VerticalBar->setSize(sizeRectangle);
     m_pPhysValRectSmallCross1VerticalBar->setCenter(QPointF(m_ptPosRectSmallCross1VerticalBar.x(), bYAxisTopDown ? m_ptPosRectSmallCross1VerticalBar.y() : fYAxisMaxVal - m_ptPosRectSmallCross1VerticalBar.y()));
@@ -9246,17 +9249,17 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     pTestStep->setConfigValue("Rect", m_pPhysValRectSmallCross1VerticalBar->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("Margins.Left", 1);
-    pTestStep->setConfigValue("Margins.Top", 1);
-    pTestStep->setConfigValue("Margins.Right", 1);
-    pTestStep->setConfigValue("Margins.Bottom", 1);
-    pTestStep->setConfigValue("TextWidth", 6);
+    pTestStep->setConfigValue("Margins.Left", margins.left());
+    pTestStep->setConfigValue("Margins.Top", margins.top());
+    pTestStep->setConfigValue("Margins.Right", margins.right());
+    pTestStep->setConfigValue("Margins.Bottom", margins.bottom());
+    pTestStep->setConfigValue("TextWidth", sizeRectangle.width() - margins.left() - margins.right());
     pTestStep->setConfigValue("AdjustSize", false);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosRectSmallCross1VerticalBar,
-        *m_pPhysValRectSmallCross1VerticalBar, m_strTextBigCrossVerticalBar,
+        *m_pPhysValRectSmallCross1VerticalBar, strText,
         iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -9265,7 +9268,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
 
     strObjName = c_strGraphObjNameSmallCross1HorizontalBar;
     strText = m_strTextSmallCross1HorizontalBar;
-    strMthArgs = strObjName + ", " + strText;
+    strMthArgs = strObjName; // + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -9274,7 +9277,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRectSmallCross1HorizontalBar = QPointF(250.0, 360.0);
-    sizeRectangle = QSizeF(50.0, 5.0);
+    sizeRectangle = QSizeF(100.0, 15.0);
     m_rectRectSmallCross1HorizontalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectSmallCross1HorizontalBar->setSize(sizeRectangle);
     m_pPhysValRectSmallCross1HorizontalBar->setCenter(QPointF(m_ptPosRectSmallCross1HorizontalBar.x(), bYAxisTopDown ? m_ptPosRectSmallCross1HorizontalBar.y() : fYAxisMaxVal - m_ptPosRectSmallCross1HorizontalBar.y()));
@@ -9283,16 +9286,16 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     pTestStep->setConfigValue("Rect", m_pPhysValRectSmallCross1HorizontalBar->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("Margins.Left", 1);
-    pTestStep->setConfigValue("Margins.Top", 1);
-    pTestStep->setConfigValue("Margins.Right", 1);
-    pTestStep->setConfigValue("Margins.Bottom", 1);
+    pTestStep->setConfigValue("Margins.Left", margins.left());
+    pTestStep->setConfigValue("Margins.Top", margins.top());
+    pTestStep->setConfigValue("Margins.Right", margins.right());
+    pTestStep->setConfigValue("Margins.Bottom", margins.bottom());
     pTestStep->setConfigValue("AdjustSize", false);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosRectSmallCross1HorizontalBar,
-        *m_pPhysValRectSmallCross1HorizontalBar, m_strTextBigCrossHorizontalBar,
+        *m_pPhysValRectSmallCross1HorizontalBar, strText,
         iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -9348,7 +9351,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
 
     strObjName = c_strGraphObjNameSmallCross2VerticalBar;
     strText = m_strTextSmallCross2VerticalBar;
-    strMthArgs = strObjName + ", " + strText;
+    strMthArgs = strObjName; // + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -9357,7 +9360,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRectSmallCross2VerticalBar = QPointF(550.0, 375.0);
-    sizeRectangle = QSizeF(5.0, 50.0);
+    sizeRectangle = QSizeF(15.0, 100.0);
     m_rectRectSmallCross2VerticalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectSmallCross2VerticalBar->setSize(sizeRectangle);
     m_pPhysValRectSmallCross2VerticalBar->setCenter(QPointF(m_ptPosRectSmallCross2VerticalBar.x(), bYAxisTopDown ? m_ptPosRectSmallCross2VerticalBar.y() : fYAxisMaxVal - m_ptPosRectSmallCross2VerticalBar.y()));
@@ -9366,17 +9369,17 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     pTestStep->setConfigValue("Rect", m_pPhysValRectSmallCross2VerticalBar->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("Margins.Left", 1);
-    pTestStep->setConfigValue("Margins.Top", 1);
-    pTestStep->setConfigValue("Margins.Right", 1);
-    pTestStep->setConfigValue("Margins.Bottom", 1);
-    pTestStep->setConfigValue("TextWidth", 6);
+    pTestStep->setConfigValue("Margins.Left", margins.left());
+    pTestStep->setConfigValue("Margins.Top", margins.top());
+    pTestStep->setConfigValue("Margins.Right", margins.right());
+    pTestStep->setConfigValue("Margins.Bottom", margins.bottom());
+    pTestStep->setConfigValue("TextWidth", sizeRectangle.width() - margins.left() - margins.right());
     pTestStep->setConfigValue("AdjustSize", false);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosRectSmallCross2VerticalBar,
-        *m_pPhysValRectSmallCross2VerticalBar, m_strTextSmallCross2VerticalBar,
+        *m_pPhysValRectSmallCross2VerticalBar, strText,
         iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -9385,7 +9388,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
 
     strObjName = c_strGraphObjNameSmallCross2HorizontalBar;
     strText = m_strTextSmallCross2HorizontalBar;
-    strMthArgs = strObjName + ", " + strText;
+    strMthArgs = strObjName; // + ", " + strText;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -9394,7 +9397,7 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRectSmallCross2HorizontalBar = QPointF(550.0, 360.0);
-    sizeRectangle = QSizeF(50.0, 5.0);
+    sizeRectangle = QSizeF(100.0, 15.0);
     m_rectRectSmallCross2HorizontalBar = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRectSmallCross2HorizontalBar->setSize(sizeRectangle);
     m_pPhysValRectSmallCross2HorizontalBar->setCenter(QPointF(m_ptPosRectSmallCross2HorizontalBar.x(), bYAxisTopDown ? m_ptPosRectSmallCross2HorizontalBar.y() : fYAxisMaxVal - m_ptPosRectSmallCross2HorizontalBar.y()));
@@ -9403,16 +9406,16 @@ void CTest::createTestGroupAddStandardShapesGroupTextsCrosses(ZS::Test::CTestSte
     pTestStep->setConfigValue("Rect", m_pPhysValRectSmallCross2HorizontalBar->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("Margins.Left", 1);
-    pTestStep->setConfigValue("Margins.Top", 1);
-    pTestStep->setConfigValue("Margins.Right", 1);
-    pTestStep->setConfigValue("Margins.Bottom", 1);
+    pTestStep->setConfigValue("Margins.Left", margins.left());
+    pTestStep->setConfigValue("Margins.Top", margins.top());
+    pTestStep->setConfigValue("Margins.Right", margins.right());
+    pTestStep->setConfigValue("Margins.Bottom", margins.bottom());
     pTestStep->setConfigValue("AdjustSize", false);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosRectSmallCross2HorizontalBar,
-        *m_pPhysValRectSmallCross2HorizontalBar, m_strTextSmallCross2HorizontalBar,
+        *m_pPhysValRectSmallCross2HorizontalBar, strText,
         iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 

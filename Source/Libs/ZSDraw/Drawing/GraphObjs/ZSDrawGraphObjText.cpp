@@ -609,7 +609,8 @@ void CGraphObjText::setMargins(const QMargins& i_margins_px)
         QRectF rectBounding = getBoundingRect();
         QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
         QGraphicsTextItem_setPos(ptTLTextItem);
-        QGraphicsTextItem_setTextWidth(rectBounding.width());
+        double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
+        QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -936,6 +937,8 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
             QRectF rectBounding = getBoundingRect();
             QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
             QGraphicsTextItem_setPos(ptTLTextItem);
+            double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
+            QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
@@ -3683,7 +3686,7 @@ void CGraphObjText::traceTextItemPositionInfo(
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
-    strRuntimeInfo += ". TextWidth: " + QString::number(m_graphicsTextItem.textWidth()) + " px";
+    strRuntimeInfo += ". TextWidth: " + QString::number(m_graphicsTextItem.textWidthNoMethodTrace()) + " px";
     i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

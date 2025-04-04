@@ -111,6 +111,8 @@ protected: // instance methods
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
 protected: // instance methods
     QVariant inputMethodQuery(Qt::InputMethodQuery i_query) const override;
+public: // call methods without method tracing
+    qreal textWidthNoMethodTrace() const;
 protected: // auxiliary instance methods (method tracing)
     void QGraphicsItem_setCursor(const QCursor& i_cursor);
     void QGraphicsItem_unsetCursor();

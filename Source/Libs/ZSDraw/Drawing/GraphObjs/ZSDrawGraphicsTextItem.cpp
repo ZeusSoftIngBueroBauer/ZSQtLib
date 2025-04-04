@@ -531,7 +531,13 @@ void CGraphicsTextItem::adjustSize()
         /* strObjName   */ path(),
         /* strMethod    */ "adjustSize",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.trace("OldSize: " + qRect2Str(boundingRect()), ELogDetailLevel::None, ELogDetailLevel::None);
+    }
     QGraphicsTextItem::adjustSize();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.trace("NewSize: " + qRect2Str(boundingRect()), ELogDetailLevel::None, ELogDetailLevel::None);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1127,6 +1133,17 @@ QVariant CGraphicsTextItem::inputMethodQuery(Qt::InputMethodQuery i_query) const
         mthTracer.setMethodReturn(var.toString());
     }
     return var;
+}
+
+/*==============================================================================
+public: // call methods without method tracing
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+qreal CGraphicsTextItem::textWidthNoMethodTrace() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsTextItem::textWidth();
 }
 
 /*==============================================================================
