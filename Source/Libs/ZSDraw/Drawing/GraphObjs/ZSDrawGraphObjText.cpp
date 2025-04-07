@@ -934,11 +934,11 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
                 QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
             }
 
-            QRectF rectBounding = getBoundingRect();
-            QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
-            QGraphicsTextItem_setPos(ptTLTextItem);
-            double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
-            QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
+            //QRectF rectBounding = getBoundingRect();
+            //QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
+            //QGraphicsTextItem_setPos(ptTLTextItem);
+            //double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
+            //QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
@@ -3377,12 +3377,12 @@ QRectF CGraphObjText::setRectOrig(const QRectF& i_rect)
            coordinates relative to the origin of the groups bounding rectangle.
 
     Other graphics items, like Line, provide methods to set and retrieve the local
-    coordinates (e.g. "setLine", "line"). The group item does not have such methods
-    (e.g. "setRect", "rect"). To provide the bounding rectangle of the group in
+    coordinates (e.g. "setLine", "line"). The text item does not have such methods
+    (e.g. "setRect", "rect"). To provide the bounding rectangle of the text in
     local coordinates this member is maintained.
 
     The scaled rectangle is returned by the "boundingRect" method of the graphics
-    item to provide the bounding rectangle of the group in local coordinates.
+    item to provide the bounding rectangle of the text in local coordinates.
 
     @param [in] i_rect
         Rectangle coordinates in local coordinates to be set.
@@ -3405,6 +3405,13 @@ QRectF CGraphObjText::setRectScaled(const QRectF& i_rect)
 
     QRectF rectPrev = m_rectScaled;
     m_rectScaled = i_rect;
+
+    QRectF rectBounding = getBoundingRect();
+    QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
+    QGraphicsTextItem_setPos(ptTLTextItem);
+    double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
+    QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
     }
@@ -3688,6 +3695,42 @@ void CGraphObjText::traceTextItemPositionInfo(
     else strRuntimeInfo = " . ";
     strRuntimeInfo += ". TextWidth: " + QString::number(m_graphicsTextItem.textWidthNoMethodTrace()) + " px";
     i_mthTracer.trace(strRuntimeInfo);
+
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = ". -+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = ". +- ";
+    else strRuntimeInfo = " . . ";
+    strRuntimeInfo += "Document {";
+    i_mthTracer.trace(strRuntimeInfo);
+    if (m_graphicsTextItem.document() == nullptr) {
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = ". -+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = ". +- ";
+        else strRuntimeInfo = " . . ";
+        strRuntimeInfo += ". null";
+        i_mthTracer.trace(strRuntimeInfo);
+    }
+    else {
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = ". -+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = ". +- ";
+        else strRuntimeInfo = " . . ";
+        strRuntimeInfo += ". TextWidth: " + QString::number(m_graphicsTextItem.document()->textWidth()) + " px";
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = ". -+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = ". +- ";
+        else strRuntimeInfo = " . . ";
+        strRuntimeInfo += ". IdealWidth: " + QString::number(m_graphicsTextItem.document()->idealWidth()) + " px";
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = ". -+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = ". +- ";
+        else strRuntimeInfo = " . . ";
+        strRuntimeInfo += ". Size {" + qSize2Str(m_graphicsTextItem.document()->size()) + "} px";
+        i_mthTracer.trace(strRuntimeInfo);
+    }
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
+
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
