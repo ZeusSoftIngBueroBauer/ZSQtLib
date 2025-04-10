@@ -934,11 +934,12 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
                 QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
             }
 
-            //QRectF rectBounding = getBoundingRect();
-            //QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
-            //QGraphicsTextItem_setPos(ptTLTextItem);
-            //double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
-            //QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
+            // The aggregated graphics text item needs to be positioned relative to the top left corner.
+            QRectF rectBounding = getBoundingRect();
+            QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
+            QGraphicsTextItem_setPos(ptTLTextItem);
+            double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
+            QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
@@ -2837,6 +2838,13 @@ void CGraphObjText::onGraphObjParentGeometryOnSceneChanged(
                 if (ptPos != ptPosPrev) {
                     QGraphicsItem_setPos(ptPos);
                 }
+
+                // The aggregated graphics text item needs to be positioned relative to the top left corner.
+                // But neither the text width nor the font size is changed so that the text and its new line
+                // breaks remain the same.
+                QRectF rectBounding = getBoundingRect();
+                QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
+                QGraphicsTextItem_setPos(ptTLTextItem);
             }
             // If the geometry of the parent on the scene of this item changes, also the geometry
             // on the scene of this item is changed.
@@ -3405,12 +3413,6 @@ QRectF CGraphObjText::setRectScaled(const QRectF& i_rect)
 
     QRectF rectPrev = m_rectScaled;
     m_rectScaled = i_rect;
-
-    QRectF rectBounding = getBoundingRect();
-    QPointF ptTLTextItem(rectBounding.left() + m_margins.left(), rectBounding.top() + m_margins.top());
-    QGraphicsTextItem_setPos(ptTLTextItem);
-    double fTextWidth_px = rectBounding.width() - m_margins.left() - m_margins.right();
-    QGraphicsTextItem_setTextWidth(fTextWidth_px > 0.0 ? fTextWidth_px : -1.0);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
