@@ -212,6 +212,9 @@ CTest::~CTest()
     delete m_pPhysValPolygonStar;
     m_pPhysValPolygonStar = nullptr;
 
+    delete m_pPhysValConnectionPoint1;
+    m_pPhysValConnectionPoint1 = nullptr;
+
     delete m_pPhysValRectSmallPlusSign;
     m_pPhysValRectSmallPlusSign = nullptr;
     delete m_pPhysValRectBigPlusSign;
@@ -301,6 +304,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValPolygonOpenArrow = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonTriangle = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonStar = new CPhysValPolygon(*m_pDrawingScene);
+
+    // Connection Points
+    //------------------
+    m_pPhysValConnectionPoint1 = new CPhysValPoint(*m_pDrawingScene);
 
     // Groups
     //-------
@@ -2703,6 +2710,110 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepAddGraphObjConnectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    if (pObjFactory != nullptr) {
+        QPointF ptPos = i_pTestStep->getConfigValue("Point").value<QPointF>();
+        CUnit unit = drawingSize.unit();
+        if (i_pTestStep->hasConfigValue("Point.Unit")) {
+            QString strUnit = i_pTestStep->getConfigValue("Point.Unit").toString();
+            unit = strUnit;
+        }
+        CDrawSettings drawSettings(graphObjType);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
+        m_pDrawingScene->addGraphObj(pGraphObj);
+        CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObj);
+        if (pGraphObjConnectionPoint != nullptr) {
+            pGraphObjConnectionPoint->setPosition(CPhysValPoint(*m_pDrawingScene, ptPos, unit));
+        }
+        pGraphObj->rename(strGraphObjName);
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepAddGraphObjConnectionLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    QString strKeyInTreeP1 = i_pTestStep->getConfigValue("P1").toString();
+    QString strKeyInTreeP2 = i_pTestStep->getConfigValue("P2").toString();
+
+    if (pObjFactory != nullptr) {
+        CDrawSettings drawSettings(EGraphObjTypeConnectionLine);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
+        m_pDrawingScene->addGraphObj(pGraphObj);
+        CGraphObjConnectionLine* pGraphObjConnectionLine = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
+        if (pGraphObjConnectionLine != nullptr) {
+            //pGraphObjConnectionLine->setP1(strKeyInTreeP1);
+            //pGraphObjConnectionLine->setP2(strKeyInTreeP2);
+        }
+        pGraphObj->rename(strGraphObjName);
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -4762,6 +4873,12 @@ void CTest::initObjectCoors()
     *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
     m_physValAngleStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
+    // Connection Points
+    //------------------
+
+    m_ptPosConnectionPoint1 = QPointF();
+    *m_pPhysValConnectionPoint1 = CPhysValPoint(*m_pDrawingScene);
+
     // Groups
     //-------
 
@@ -5171,6 +5288,26 @@ QStringList CTest::resultValuesForGraphObj(
                     pGraphObjPolygon->polygon(), pGraphObjPolygon->getPolygon(), i_iPrecision);
             }
         }
+        else if (i_pGraphObj->isConnectionPoint()) {
+            const CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<const CGraphObjConnectionPoint*>(i_pGraphObj);
+            if (pGraphObjConnectionPoint != nullptr) {
+                strlstResultValues = resultValuesForConnectionPoint(
+                    i_pGraphObj->name(), pGraphicsItem->pos(),
+                    pGraphObjConnectionPoint->position(), i_iPrecision);
+            }
+        }
+        else if (i_pGraphObj->isConnectionLine()) {
+            const CGraphObjConnectionLine* pGraphObjConnectionLine = dynamic_cast<const CGraphObjConnectionLine*>(i_pGraphObj);
+            if (pGraphObjConnectionLine != nullptr) {
+                CGraphObjConnectionPoint* pGraphObjConnectionPointP1 = pGraphObjConnectionLine->getConnectionPoint(ELinePoint::Start);
+                CGraphObjConnectionPoint* pGraphObjConnectionPointP2 = pGraphObjConnectionLine->getConnectionPoint(ELinePoint::End);
+                QString strKeyInTreeP1 = pGraphObjConnectionPointP1 == nullptr ? "" : pGraphObjConnectionPointP1->keyInTree();
+                QString strKeyInTreeP2 = pGraphObjConnectionPointP2 == nullptr ? "" : pGraphObjConnectionPointP2->keyInTree();
+                strlstResultValues = resultValuesForConnectionLine(
+                    i_pGraphObj->name(), strKeyInTreeP1, strKeyInTreeP2,
+                    pGraphObjConnectionLine->polygon(), pGraphObjConnectionLine->getPolygon(), i_iPrecision);
+            }
+        }
         else if (i_pGraphObj->isGroup()) {
             const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
             if (pGraphObjGroup != nullptr) {
@@ -5361,6 +5498,55 @@ QStringList CTest::resultValuesForPolygon(
             strGraphObjName + ".position {" + i_physValPolygon.center().toString(false, ", ", 1) + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
+        });
+    }
+    return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForConnectionPoint(
+    const QString& strGraphObjName, const QPointF& i_pos,
+    const ZS::Draw::CPhysValPoint& i_physValPoint, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+            strGraphObjName + ".position {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol(),
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".position {" + i_physValPoint.toString(false, ", ", 1) + "} " + i_physValPoint.unit().symbol(),
+        });
+    }
+    return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForConnectionLine(
+    const QString& strGraphObjName, const QString& i_strKeyInTreeP1, const QString& i_strKeyInTreeP2,
+    const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding(i_polygonItemCoors.boundingRect());
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".P1: " + i_strKeyInTreeP1,
+            strGraphObjName + ".P2: " + i_strKeyInTreeP2,
+            strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors) + "} px",
+            strGraphObjName + ".getPolygon {" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol(),
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".P1: " + i_strKeyInTreeP1,
+            strGraphObjName + ".P2: " + i_strKeyInTreeP2,
+            strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors, ", ", 'f', i_iPrecision) + "} px",
+            strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
         });
     }
     return strlst;

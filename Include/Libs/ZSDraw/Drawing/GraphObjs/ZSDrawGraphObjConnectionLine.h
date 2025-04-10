@@ -58,28 +58,15 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables
-    virtual bool setConnectionPoint( ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt ); // Connects the specified line point with the specified connection point by appending the line to the connection point. Returns false if the line is already connected with the specified connection point.
-    virtual ELinePoint getConnectionLinePoint( CGraphObjConnectionPoint* i_pCnctPt );               // Returns the line point (start or end) which is connected to the specified connection point.
-    virtual CGraphObjConnectionPoint* getConnectionPoint( ELinePoint i_linePoint );
+    virtual bool setConnectionPoint( ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt );
+    virtual ELinePoint getConnectionLinePoint( CGraphObjConnectionPoint* i_pCnctPt ) const;
+    virtual CGraphObjConnectionPoint* getConnectionPoint( ELinePoint i_linePoint ) const;
 public: // replacing methods of QGraphicsRectItem
     void setPolygon( const QPolygonF& i_plg );
+    CPhysValPolygon getPolygon() const;
+    CPhysValPolygon getPolygon(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettings) override;
-public: // overridables of base class CGraphObj
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    virtual void acceptCurrentAsOriginalCoors() override;
-#endif
-//public: // must overridables of base class CGraphObj
-//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
-public: // must overridables of base class CGraphObj
-    //virtual void setIsHit( bool i_bHit ) override;
-public: // overridables of base class CGraphObj
-    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
-public: // reimplementing methods of base class QGraphicItem
-    //void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj
@@ -88,8 +75,6 @@ public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
-protected: // overridables of base class QGraphicsItem
-    //virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
     virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
@@ -119,6 +104,28 @@ protected: // instance members
     QPolygonF m_plgLineStart;
     QPolygonF m_plgLineEnd;
     QVector<CGraphObjConnectionPoint*> m_arpCnctPts;
+protected: // instance members
+    QPolygonF m_polygonOrig;
+    CPhysValPolygon m_physValPolygonOrig;
+    CPhysValPolygon m_physValPolygonScaledAndRotated;
+    QPolygonF m_plgLineStartArrowHead;
+    QPolygonF m_plgLineEndArrowHead;
+    /*!< On inserting points the polygon is retrieved, modified and afterwards set by invoking "setPolygon".
+         The indices of the inserted points are stored before invoking setPolygon and cleared afterwards.
+         This way the setPolygon method can update the labels correspondingly.
+         The first element contains the index of the first inserted point,
+         the second element the number of inserted points.
+         Please note that points may not be added or removed at the same time by the same "setPolygon" call
+         and either m_idxsAdded or m_idxsRemoved may refer to valid element indices but not both at the same time. */
+    QPair<int, int> m_idxsAdded;
+    /*!< On removing points the polygon is retrieved, modified and afterwards set by invoking "setPolygon".
+         The indices of the removed points are stored before invoking setPolygon and cleared afterwards.
+         This way the setPolygon method can update the labels correspondingly.
+         The first element contains the index of the first removed point,
+         the second element the number of removed points.
+         Please note that points may not be added or removed at the same time by the same "setPolygon" call
+         and either m_idxsAdded or m_idxsRemoved may refer to valid element indices but not both at the same time. */
+    QPair<int, int> m_idxsRemoved;
 
 }; // class CGraphObjConnectionLine
 

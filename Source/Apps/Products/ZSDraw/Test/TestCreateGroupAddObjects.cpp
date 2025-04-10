@@ -323,6 +323,40 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
 #endif // TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS
 
+    // Connections
+    //============
+
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONS == 1
+
+    ZS::Test::CTestStepGroup* pGrpConnections = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Connections",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
+
+    initInstCounts();
+    initObjectCoors();
+
+    // Connections
+    //------------
+
+    ZS::Test::CTestStepGroup* pGrpConnect2Points = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Connect2Points",
+        /* pTSGrpParent */ pGrpConnections );
+    createTestGroupAddStandardShapesConnect2Points(pGrpConnect2Points);
+
+    createTestStepSaveLoadFile(pGrpConnections, 1);
+
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONS
+
     // Groups
     //=======
 
@@ -3067,6 +3101,86 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
         {"LabelName", CGraphObj::c_strLabelName},
         {"setPos", QPointF(540.0, 320.0)},
         {"ExpectedText", c_strGraphObjNameStar}
+    });
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAddStandardShapesConnect2Points(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddStandardShapesConnect2Points",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strGraphObjType;
+    QString strGraphObjName;
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fYAxisMaxVal = 600.0;
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
+    -----------------------------------------------------------------------*/
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
+    strGraphObjName = c_strGraphObjNameConnectionPoint1;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    m_ptPosConnectionPoint1 = QPointF(400.0, 400.0);
+    *m_pPhysValConnectionPoint1 = QPointF(400.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Point", m_pPhysValConnectionPoint1->toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionPoint(
+        strGraphObjName, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Show Labels
+    //------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ strGraphObjName + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", strGraphObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(540.0, 320.0)},
+        {"ExpectedText", strGraphObjName}
     });
 }
 

@@ -91,7 +91,14 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
     m_plgOrig(),
     m_plgLineStart(),
     m_plgLineEnd(),
-    m_arpCnctPts(CEnumLinePoint::count())
+    m_arpCnctPts(CEnumLinePoint::count()),
+    m_polygonOrig(),
+    m_physValPolygonOrig(*m_pDrawingScene),
+    m_physValPolygonScaledAndRotated(*m_pDrawingScene),
+    m_plgLineStartArrowHead(),
+    m_plgLineEndArrowHead(),
+    m_idxsAdded(),
+    m_idxsRemoved()
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -122,8 +129,6 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
 CGraphObjConnectionLine::~CGraphObjConnectionLine()
 //------------------------------------------------------------------------------
 {
-    m_bDtorInProgress = true;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -131,6 +136,7 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
 
     for (int idxLinePt = 0; idxLinePt < m_arpCnctPts.size(); idxLinePt++) {
@@ -140,7 +146,7 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
         }
         m_arpCnctPts[idxLinePt] = nullptr;
     }
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -200,6 +206,12 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Connects the specified line point with the specified connection point
+           by appending the line to the connection point.
+
+    @return true if the specified line point is connected with the specified connection point,
+            false on error (e.g. if the line is already connected with the specified connection point).
+*/
 bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt )
 //------------------------------------------------------------------------------
 {
@@ -274,39 +286,32 @@ bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraph
 } // setConnectionPoint
 
 //------------------------------------------------------------------------------
-ELinePoint CGraphObjConnectionLine::getConnectionLinePoint( CGraphObjConnectionPoint* i_pCnctPt )
+/*! @brief Returns the line point (start or end) which is connected to the specified connection point.
+*/
+ELinePoint CGraphObjConnectionLine::getConnectionLinePoint(CGraphObjConnectionPoint* i_pCnctPt) const
 //------------------------------------------------------------------------------
 {
     ELinePoint linePoint = ELinePoint::None;
-    int        idxLinePtTmp;
-
-    for( idxLinePtTmp = 0; idxLinePtTmp < m_arpCnctPts.size(); idxLinePtTmp++ )
-    {
+    for (int idxLinePtTmp = 0; idxLinePtTmp < m_arpCnctPts.size(); idxLinePtTmp++) {
         CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[idxLinePtTmp];
-
-        if( pGraphObjCnctPt == i_pCnctPt )
-        {
+        if (pGraphObjCnctPt == i_pCnctPt) {
             linePoint = static_cast<ELinePoint>(idxLinePtTmp);
             break;
         }
     }
     return linePoint;
-
-} // getConnectionLinePoint
+}
 
 //------------------------------------------------------------------------------
-CGraphObjConnectionPoint* CGraphObjConnectionLine::getConnectionPoint( ELinePoint i_linePoint )
+CGraphObjConnectionPoint* CGraphObjConnectionLine::getConnectionPoint(ELinePoint i_linePoint) const
 //------------------------------------------------------------------------------
 {
     CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-
-    if( static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size() )
-    {
+    if (static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size()) {
         pGraphObjCnctPt = m_arpCnctPts[static_cast<int>(i_linePoint)];
     }
     return pGraphObjCnctPt;
-
-} // getConnectionPoint
+}
 
 /*==============================================================================
 public: // replacing methods of QGraphicsRectItem
@@ -364,6 +369,25 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
     } // if( i_plg.size() >= 2 )
 
 } // setPolygon
+
+//------------------------------------------------------------------------------
+CPhysValPolygon CGraphObjConnectionLine::getPolygon() const
+//------------------------------------------------------------------------------
+{
+    return getPolygon(m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPolygon CGraphObjConnectionLine::getPolygon(const ZS::PhysVal::CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (parentGroup() != nullptr) {
+        return parentGroup()->convert(m_physValPolygonScaledAndRotated, i_unit);
+    }
+    else {
+        return m_pDrawingScene->convert(m_physValPolygonScaledAndRotated, i_unit);
+    }
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
