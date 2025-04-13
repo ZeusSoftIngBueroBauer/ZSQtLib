@@ -27,13 +27,7 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjConnectionPoint_h
 #define ZSDraw_GraphObjConnectionPoint_h
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsEllipseItem>
-#else
-#include <QtWidgets/QGraphicsEllipseItem>
-#endif
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h"
 
 namespace ZS
 {
@@ -42,7 +36,7 @@ namespace Draw
 class CGraphObjConnectionLine;
 
 //******************************************************************************
-class ZSDRAWDLL_API CGraphObjConnectionPoint : public CGraphObj, public QGraphicsEllipseItem
+class ZSDRAWDLL_API CGraphObjConnectionPoint : public CGraphObjEllipse
 //******************************************************************************
 {
 public: // class methods
@@ -51,63 +45,52 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjConnectionPoint"; }
 public: // class methods
-    static double GetDefaultOuterCircleRadiusInPx() { return s_fOuterCircleRadius_px; }
-    static double GetDefaultInnerCircleRadiusInPx() { return s_fInnerCircleRadius_px; }
+    static QPainter::RenderHints painterRenderHints();
+    static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
+    static void resetPainterRenderHints();
+public: // class methods
+    static double defaultRadiusInPx();
+    static double defaultInnerCircleRadiusInPx();
 public: // ctors and dtor
     CGraphObjConnectionPoint(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
-    virtual ~CGraphObjConnectionPoint();
+    ~CGraphObjConnectionPoint() override;
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone() override;
+    CGraphObj* clone() override;
+public: // instance methods
+    QString pathNameOfLinkedObject() const;
+    QString myPathName() const;
+public: // instance methods
+    SGraphObjSelectionPoint getSelectionPoint() const;
+public: // instance methods
+    bool appendConnectionLine( CGraphObjConnectionLine* i_pGraphObjCnctLine ); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
+    void removeConnectionLine( CGraphObjConnectionLine* i_pGraphObjCnctLine );
+    int findConnectionLineIdx( CGraphObjConnectionLine* i_pGraphObjCnctLine );
+    int getConnectionLinesCount() const;
+    CGraphObjConnectionLine* getConnectionLine( int i_iLineIdx );
 public: // overridables
-    virtual bool appendConnectionLine( CGraphObjConnectionLine* i_pGraphObjCnctLine ); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
-    virtual void removeConnectionLine( CGraphObjConnectionLine* i_pGraphObjCnctLine );
-    virtual int findConnectionLineIdx( CGraphObjConnectionLine* i_pGraphObjCnctLine );
-    virtual int getConnectionLinesCount() const;
-    virtual CGraphObjConnectionLine* getConnectionLine( int i_iLineIdx );
-public: // replacing methods of QGraphicsEllipseItem
-    void setRect( const QRectF& i_rct );
-    void setRect( qreal i_x, qreal i_y, qreal i_width, qreal i_height );
-public: // overridables
-    void setInnerCircleWidthInPerCent( double i_fWidth_perCent );
-    void setInnerCircleWidthInPx( double i_fWidth_px );
-    double getInnerCircleWidthInPerCent();
-    double getInnerCircleWidthInPx();
+    void setInnerCircleRadiusInPerCent(double i_fRadius_perCent);
+    void setInnerCircleRadiusInPx(double i_fRadius_px);
+    double getInnerCircleRadiusInPerCent();
+    double getInnerCircleRadiusInPx();
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-//public: // must overridables of base class CGraphObj
-//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
-public: // must overridables of base class CGraphObj
-    //virtual void setIsHit( bool i_bHit ) override;
-public: // overridables of base class CGraphObj
-    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
-public: // reimplementing methods of base class QGraphicItem
-    //void setCursor( const QCursor& cursor );
-protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {}
-public: // overridables of base class CGraphObj
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const override;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    //virtual bool sceneEvent( QEvent* i_pEv ) override;
-    //virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
+    void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-protected: // overridables of base class QGraphicsItem
-    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+    QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -115,11 +98,23 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // class members
-    static double s_fOuterCircleRadius_px;
+    static QPainter::RenderHints s_painterRenderHints;
+    static double s_fRadius_px;
     static double s_fInnerCircleRadius_px;
+    /*!< Default pen width to be used for painting the border of the selection points. */
+    static int s_iPenWidth_px;
+    /*!< Default color to be used for painting the border of the selection points. */
+    static QColor s_colPen;
 protected: // instance members
+    /*!< List with connection lines linked to the connection point. */
     QList<CGraphObjConnectionLine*> m_lstConnectionLines;
-    double m_fInnerCircleWidth_perCent;
+    /*!< Radius for drawing the connection point. */
+    double m_fRadius_px;
+    /*!< Inner circle radius for drawing the connection point. */
+    double m_fInnerCircleRadius_perCent;
+    /*!< Defines the type of the selecton point, the linked object and the position at the linked
+         object the selection point is linked to. */
+    SGraphObjSelectionPoint m_selPt;
 
 }; // class CGraphObjConnectionPoint
 

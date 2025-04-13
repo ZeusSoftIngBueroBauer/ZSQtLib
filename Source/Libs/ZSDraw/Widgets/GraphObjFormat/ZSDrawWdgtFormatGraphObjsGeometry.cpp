@@ -785,8 +785,8 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
                 CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObj);
                 if( pGraphObjCnctLine != nullptr )
                 {
-                    QPolygonF plg = pGraphObjCnctLine->mapFromScene(m_plg);
-                    pGraphObjCnctLine->setPolygon(plg);
+                    //QPolygonF plg = pGraphObjCnctLine->mapFromScene(m_plg);
+                    //pGraphObjCnctLine->setPolygon(plg);
                 }
             }
         }

@@ -469,23 +469,18 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
             "Polygon size " + QString::number(i_physValPolygon.count()) + " is less than 2");
     }
 
-    QPointF ptPosPrev = pos();
-
-    // Depending on the Y scale orientation of the drawing scene the polygon coordinates
-    // have been passed either relative to the top left or bottom right corner of the
-    // parent item's bounding rectangle.
-    // The coordinates need to be transformed into the local coordinate system of the graphical
-    // object whose origin point is the center of the objects bounding rectangle.
-
-    QPolygonF polygon;
-    CPhysVal physValAngle;
-    QPointF ptPos = getItemPosAndLocalCoors(i_physValPolygon, polygon, physValAngle);
-
     bool bGeometryOnSceneChanged = false;
-
-    // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
-    // or if the coordinates have been changed ...
     if (m_physValPolygonScaledAndRotated != i_physValPolygon) {
+        // Depending on the Y scale orientation of the drawing scene the polygon coordinates
+        // have been passed either relative to the top left or bottom right corner of the
+        // parent item's bounding rectangle.
+        // The coordinates need to be transformed into the local coordinate system of the graphical
+        // object whose origin point is the center of the objects bounding rectangle.
+        QPointF ptPosPrev = pos();
+        QPolygonF polygon;
+        CPhysVal physValAngle;
+        QPointF ptPos = getItemPosAndLocalCoors(i_physValPolygon, polygon, physValAngle);
+
         // If the added or removed indices are unknown, we must assume something.
         if ((i_physValPolygon.count() > m_physValPolygonOrig.count()) && (m_idxsAdded.second <= 0)) {
             // In case the number of points have been increased, labels will be added at the end.
@@ -2265,7 +2260,6 @@ void CGraphObjPolygon::paint(
             outline.lineTo(polygon[0]);
         }
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.penWidth());
     }
     i_pPainter->setRenderHints(s_painterRenderHints);
     pn.setColor(m_drawSettings.penColor());
@@ -3510,68 +3504,6 @@ CPhysValPolygon CGraphObjPolygon::getPhysValPolygonScaled(const CPhysValPolygon&
         mthTracer.setMethodReturn("{" + physValPolygon.toString() + "} " + physValPolygon.unit().symbol());
     }
     return physValPolygon;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Calculates the item position relative to the parent item or drawing scene
-           as well as the item coordinates in local coordinates.
-
-    @param [in] i_physValPolygon
-        Polyline in parent coordinates, depending on the Y scale orientation
-        relative to the top left or bottom left corner of parent item's bounding
-        rectangle. If the item belongs to a parent group the passed polygon
-        must have been resized and the center must have been moved according to the
-        parents scale factors.
-    @param [out] o_polygon
-        Polygon in local coordinates.
-    @param [out] o_physValAngle
-        The rotatian angle of the passed rectangle.
-*/
-QPointF CGraphObjPolygon::getItemPosAndLocalCoors(
-    const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon, CPhysVal& o_physValAngle) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "getItemPosAndLocalCoors",
-        /* strAddInfo   */ strMthInArgs );
-
-    // First determine the position of the item in the parent's (scene or group) coordinate system.
-    CPhysValPolygon physValPolygonTmp(i_physValPolygon);
-    // For the graphics item the rotation angle is set explicitly applied to the unrotated coordinates.
-    o_physValAngle = physValPolygonTmp.angle();
-    physValPolygonTmp.setAngle(0.0);
-    if (parentGroup() != nullptr) {
-        physValPolygonTmp = parentGroup()->convert(physValPolygonTmp, Units.Length.px);
-    }
-    else {
-        physValPolygonTmp = m_pDrawingScene->convert(physValPolygonTmp, Units.Length.px);
-    }
-    o_polygon = physValPolygonTmp.toQPolygonF();
-
-    // Transform the parent coordinates into local coordinate system.
-    // The origin is the center point of the polygon's bounding rectangle.
-    QPointF ptPos = physValPolygonTmp.center().toQPointF(); // polygon here still in parent or scene coordinates
-    for (int idxPt = 0; idxPt < o_polygon.size(); ++idxPt) {
-        o_polygon[idxPt] = o_polygon[idxPt] - ptPos; // polygon points now in local coordinates
-    }
-
-    if (parentGroup() != nullptr) {
-        ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "Polygon {" + qPolygon2Str(o_polygon) + "}, Angle: " + o_physValAngle.toString();
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
-    }
-    return ptPos;
 }
 
 //------------------------------------------------------------------------------

@@ -104,7 +104,7 @@ void CGraphObjEllipse::resetPainterRenderHints()
 }
 
 /*==============================================================================
-public: // ctors and dtor
+public: // ctors
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -141,10 +141,9 @@ CGraphObjEllipse::CGraphObjEllipse(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    QString strMthInArgs;
-
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ObjName: " + i_strObjName;
     }
@@ -190,7 +189,6 @@ CGraphObjEllipse::CGraphObjEllipse(
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameTopCenter) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopCenter);
@@ -223,6 +221,47 @@ CGraphObjEllipse::CGraphObjEllipse(
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 }
+
+/*==============================================================================
+protected: // ctor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Constructor used to create a class derived from CGraphObjEllipse.
+
+    @param [in] i_pDrawingScene
+        Pointer to drawing scene from which the object is created.
+
+    @param [in] i_strObjName
+        Name of the graphical object.
+        Names of graphical objects must be unique below its parent.
+        If an empty string is passed a unique name is created by adding the current
+        number of objects taken from s_iInstCount to the graphical object type.
+*/
+CGraphObjEllipse::CGraphObjEllipse(
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strFactoryGroupName,
+    EGraphObjType i_type,
+    const QString& i_strType,
+    const QString& i_strObjName) :
+//------------------------------------------------------------------------------
+    CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ i_strFactoryGroupName,
+        /* type                */ i_type,
+        /* strType             */ i_strType,
+        /* strObjName          */ i_strObjName),
+    QGraphicsEllipseItem(),
+    m_rectOrig(),
+    m_physValRectOrig(*m_pDrawingScene),
+    m_physValRectScaled(*m_pDrawingScene),
+    m_physValRectScaledAndRotated(*m_pDrawingScene)
+{
+}
+
+/*==============================================================================
+public: // dtor
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 CGraphObjEllipse::~CGraphObjEllipse()
@@ -370,21 +409,18 @@ void CGraphObjEllipse::setRect( const CPhysValRect& i_physValRect )
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-    QPointF ptPosPrev = pos();
-
-    // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
-    // have been passed either relative to the top left or bottom left corner of the
-    // parent item's bounding rectangle.
-    // The coordinates need to be transformed into the local coordinate system of the graphical
-    // object whose origin point is the center of the objects bounding rectangle.
-
-    QRectF rectF;
-    CPhysVal physValAngle;
-    QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
-
     bool bGeometryOnSceneChanged = false;
-
     if (m_physValRectScaledAndRotated != i_physValRect) {
+        // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
+        // have been passed either relative to the top left or bottom left corner of the
+        // parent item's bounding rectangle.
+        // The coordinates need to be transformed into the local coordinate system of the graphical
+        // object whose origin point is the center of the objects bounding rectangle.
+        QPointF ptPosPrev = pos();
+        QRectF rectF;
+        CPhysVal physValAngle;
+        QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
+
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
@@ -1685,7 +1721,6 @@ void CGraphObjEllipse::paint(
         outline.lineTo(rctBounding.bottomLeft());
         outline.lineTo(rctBounding.topLeft());
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.penWidth());
     }
 
     pn.setColor(m_drawSettings.penColor());
@@ -1754,6 +1789,7 @@ void CGraphObjEllipse::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -1782,6 +1818,7 @@ void CGraphObjEllipse::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
@@ -1801,9 +1838,17 @@ void CGraphObjEllipse::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
 
     QGraphicsItem_unsetCursor();
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
@@ -2580,68 +2625,6 @@ CPhysValRect CGraphObjEllipse::getPhysValRectScaled(const CPhysValRect& i_physVa
         mthTracer.setMethodReturn("{" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }
     return physValRect;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Calculates the item position relative to the parent item or drawing scene
-           as well as the item coordinates in local coordinates.
-
-    @param [in] i_physValRect
-        Rectangle in parent coordinates, depending on the Y scale orientation
-        relative to the top left or bottom left corner of parent item's bounding
-        rectangle. If the item belongs to a parent group the passed rectangle
-        must have been resized and the center must have been moved according to the
-        parents scale factors.
-    @param [out] o_rectF
-        Rectangle coordinates in local coordinates.
-    @param [out] o_physValAngle
-        The rotatian angle of the passed rectangle.
-*/
-QPointF CGraphObjEllipse::getItemPosAndLocalCoors(
-    const CPhysValRect& i_physValRect, QRectF& o_rect, CPhysVal& o_physValAngle) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "getItemPosAndLocalCoors",
-        /* strAddInfo   */ strMthInArgs );
-
-    // First determine the position of the item in the parent's (scene or group) coordinate system.
-    CPhysValRect physValRectTmp(i_physValRect);
-    // For the graphics item the rotation angle is set explicitly applied to the unrotated coordinates.
-    o_physValAngle = physValRectTmp.angle();
-    physValRectTmp.setAngle(0.0);
-    if (parentGroup() != nullptr) {
-        physValRectTmp = parentGroup()->convert(physValRectTmp, Units.Length.px);
-    }
-    else {
-        physValRectTmp = m_pDrawingScene->convert(physValRectTmp, Units.Length.px);
-    }
-    o_rect = QRectF(physValRectTmp.topLeft().toQPointF(), physValRectTmp.size().toQSizeF());
-
-    // Transform the parent coordinates into local coordinate system.
-    // The origin is the center point of the rectangle.
-    QPointF ptPos = o_rect.center(); // rect here still in parent or scene coordinates
-    QPointF ptTL = o_rect.topLeft() - ptPos;
-    QPointF ptBR = o_rect.bottomRight() - ptPos;
-    o_rect = QRectF(ptTL, ptBR); // rect now in local coordinates
-
-    if (parentGroup() != nullptr) {
-        ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "Rect {" + qRect2Str(o_rect) + "}, Angle: " + o_physValAngle.toString();
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
-    }
-    return ptPos;
 }
 
 /*==============================================================================

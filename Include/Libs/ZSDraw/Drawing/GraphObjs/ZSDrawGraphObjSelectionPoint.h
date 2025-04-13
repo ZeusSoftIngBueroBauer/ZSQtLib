@@ -62,49 +62,48 @@ public: // class methods
     static double defaultRadiusInPx();
 public: // ctors and dtor
     CGraphObjSelectionPoint(CDrawingScene* i_pDrawingScene, const SGraphObjSelectionPoint& i_selPt);
-    virtual ~CGraphObjSelectionPoint();
+    ~CGraphObjSelectionPoint() override;
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone() override;
+    CGraphObj* clone() override;
 public: // instance methods
     QString pathNameOfLinkedObject() const;
     QString myPathName() const;
 public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
-    void setShapePoint( int i_idxPt );
+    //void setShapePoint( int i_idxPt );
 public: // instance methods
     void setRadiusInPx( double i_fRadius_px );
     double getRadiusInPx() const;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
+    void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
-    virtual QRectF getBoundingRect() const override;
+    QRectF getBoundingRect() const override;
 public: // overridables of base class CGraphObj
-    virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
-public: // reimplementing methods of base class QGraphicItem
+    QCursor getProposedCursor(const QPointF& i_pt) const override;
 public: // overridables of base class QGraphicsItem
-    virtual bool contains(const QPointF& i_pt) const override;
+    bool contains(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {}
+    void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {}
 public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const override;
-    virtual QPainterPath shape() const override;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+protected: // overridables of base class QGraphicsItem
+    QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected slots: // overridables of base class CGraphObj
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
-protected: // overridables of base class QGraphicsItem
-    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // auxiliary instance methods
     void updatePosition();
 protected: // class members
@@ -115,7 +114,10 @@ protected: // class members
     /*!< Default color to be used for painting the border of the selection points. */
     static QColor s_colPen;
 protected: // instance members
-    /*!< Defines the type of the selection point. */
+    /*!< Defines the type of the selection point, the linked object and the position at the linked
+         object the selection point is linked to.
+         Selection points are differentiated into selection points on the bounding
+         rectangle around the graphical object or into polygon shape points. */
     SGraphObjSelectionPoint m_selPt;
     /*!< Radius for drawing the selection point. */
     double m_fRadius_px;

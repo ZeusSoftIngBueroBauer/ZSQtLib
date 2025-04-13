@@ -885,21 +885,18 @@ void CGraphObjText::setRect(const CPhysValRect& i_physValRect)
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-    QPointF ptPosPrev = pos();
-
-    // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
-    // have been passed either relative to the top left or bottom left corner of the
-    // parent item's bounding rectangle.
-    // The coordinates need to be transformed into the local coordinate system of the graphical
-    // object whose origin point is the center of the objects bounding rectangle.
-
-    QRectF rectF;
-    CPhysVal physValAngle;
-    QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
-
     bool bGeometryOnSceneChanged = false;
-
     if (m_physValRectScaledAndRotated != i_physValRect) {
+        // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
+        // have been passed either relative to the top left or bottom left corner of the
+        // parent item's bounding rectangle.
+        // The coordinates need to be transformed into the local coordinate system of the graphical
+        // object whose origin point is the center of the objects bounding rectangle.
+        QPointF ptPosPrev = pos();
+        QRectF rectF;
+        CPhysVal physValAngle;
+        QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
+
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
@@ -2280,7 +2277,6 @@ void CGraphObjText::paint(
         outline.lineTo(rctBounding.bottomLeft());
         outline.lineTo(rctBounding.topLeft());
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.penWidth());
     }
 
     pn.setColor(m_drawSettings.penColor());
@@ -3280,68 +3276,6 @@ CPhysValRect CGraphObjText::getPhysValRectScaled(const CPhysValRect& i_physValRe
         mthTracer.setMethodReturn("{" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }
     return physValRect;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Calculates the item position relative to the parent item or drawing scene
-           as well as the item coordinates in local coordinates.
-
-    @param [in] i_physValRect
-        Rectangle in parent coordinates, depending on the Y scale orientation
-        relative to the top left or bottom left corner of parent item's bounding
-        rectangle. If the item belongs to a parent group the passed rectangle
-        must have been resized and the center must have been moved according to the
-        parents scale factors.
-    @param [out] o_rectF
-        Rectangle coordinates in local coordinates.
-    @param [out] o_physValAngle
-        The rotatian angle of the passed rectangle.
-*/
-QPointF CGraphObjText::getItemPosAndLocalCoors(
-    const CPhysValRect& i_physValRect, QRectF& o_rect, CPhysVal& o_physValAngle) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "getItemPosAndLocalCoors",
-        /* strAddInfo   */ strMthInArgs );
-
-    // First determine the position of the item in the parent's (scene or group) coordinate system.
-    CPhysValRect physValRectTmp(i_physValRect);
-    // For the graphics item the rotation angle is set explicitly applied to the unrotated coordinates.
-    o_physValAngle = physValRectTmp.angle();
-    physValRectTmp.setAngle(0.0);
-    if (parentGroup() != nullptr) {
-        physValRectTmp = parentGroup()->convert(physValRectTmp, Units.Length.px);
-    }
-    else {
-        physValRectTmp = m_pDrawingScene->convert(physValRectTmp, Units.Length.px);
-    }
-    o_rect = QRectF(physValRectTmp.topLeft().toQPointF(), physValRectTmp.size().toQSizeF());
-
-    // Transform the parent coordinates into local coordinate system.
-    // The origin is the center point of the rectangle.
-    QPointF ptPos = o_rect.center(); // rect here still in parent or scene coordinates
-    QPointF ptTL = o_rect.topLeft() - ptPos;
-    QPointF ptBR = o_rect.bottomRight() - ptPos;
-    o_rect = QRectF(ptTL, ptBR); // rect now in local coordinates
-
-    if (parentGroup() != nullptr) {
-        ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "Rect {" + qRect2Str(o_rect) + "}, Angle: " + o_physValAngle.toString();
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
-    }
-    return ptPos;
 }
 
 /*==============================================================================

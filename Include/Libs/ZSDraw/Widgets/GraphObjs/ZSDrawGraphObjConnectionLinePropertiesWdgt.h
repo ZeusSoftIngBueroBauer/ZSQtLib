@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjEllipsePropertiesWdgt_h
-#define ZSDraw_DrawGraphObjEllipsePropertiesWdgt_h
+#ifndef ZSDraw_DrawGraphObjConnectionLinePropertiesWdgt_h
+#define ZSDraw_DrawGraphObjConnectionLinePropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -34,20 +34,20 @@ namespace ZS
 namespace Draw
 {
 class CDrawingScene;
-class CGraphObjEllipse;
-class CWdgtGraphObjEllipseGeometryProperties;
+class CGraphObjConnectionLine;
+class CWdgtGraphObjConnectionLineGeometryProperties;
 class CWdgtGraphObjFillStyleProperties;
 class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjLabelsProperties;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjEllipseProperties : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjConnectionLineProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtGraphObjEllipseProperties"; }
+    static QString ClassName() { return "CWdgtGraphObjConnectionLineProperties"; }
     enum class EWidget {
         Labels,
         Geometry,
@@ -56,12 +56,12 @@ public: // class methods
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
-    CWdgtGraphObjEllipseProperties(
+    CWdgtGraphObjConnectionLineProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strObjName,
         bool i_bAddApplyResetButtons,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjEllipseProperties();
+    virtual ~CWdgtGraphObjConnectionLineProperties();
 public: // instance methods
     void expand(EWidget i_widget, bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -71,6 +71,8 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void fillEditControls() override;
 protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
@@ -83,14 +85,14 @@ protected: // instance members
     QHBoxLayout* m_pLytHeadLine;
     QLabel* m_pLblHeadLine;
     CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
-    CWdgtGraphObjEllipseGeometryProperties* m_pWdgtGeometry;
+    CWdgtGraphObjConnectionLineGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
     CWdgtGraphObjFillStyleProperties* m_pWdgtFillStyle;
 
-}; // class CWdgtGraphObjEllipseProperties
+}; // class CWdgtGraphObjConnectionLineProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjEllipsePropertiesWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjConnectionLinePropertiesWdgt_h

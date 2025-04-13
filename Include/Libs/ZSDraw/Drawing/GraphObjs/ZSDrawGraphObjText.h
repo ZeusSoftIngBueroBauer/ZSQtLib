@@ -202,7 +202,6 @@ protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
-    QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
 protected: // auxiliary instance methods (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
     QRectF setRectScaled(const QRectF& i_rect);

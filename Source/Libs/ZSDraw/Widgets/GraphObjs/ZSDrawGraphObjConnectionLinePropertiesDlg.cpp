@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionLinePropertiesDlg.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -49,7 +49,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CDlgGraphObjLineProperties : public ZS::System::GUI::CDialog
+class CDlgGraphObjConnectionLineProperties : public ZS::System::GUI::CDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -57,32 +57,30 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgGraphObjLineProperties* CDlgGraphObjLineProperties::CreateInstance(
-    const QString&  i_strDlgTitle,
-    CGraphObjLine*  i_pGraphObjLine,
-    QWidget*        i_pWdgtParent,
+CDlgGraphObjConnectionLineProperties* CDlgGraphObjConnectionLineProperties::CreateInstance(
+    const QString& i_strDlgTitle,
+    CGraphObjConnectionLine* i_pGraphObjConnectionLine,
+    QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if (GetInstance(i_pGraphObjLine) != nullptr )
-    {
-        QString strKey = buildPathStr("::", NameSpace(), "Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjLine->keyInTree());
+    if (GetInstance(i_pGraphObjConnectionLine) != nullptr) {
+        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs::Connections", ClassName(), i_pGraphObjConnectionLine->keyInTree());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
-
-    return new CDlgGraphObjLineProperties(
+    return new CDlgGraphObjConnectionLineProperties(
         /* strDlgTitle   */ i_strDlgTitle,
-        /* pGraphObjLine */ i_pGraphObjLine,
+        /* pGraphObjLine */ i_pGraphObjConnectionLine,
         /* pWdgtParent   */ i_pWdgtParent,
         /* wFlags        */ i_wFlags );
 }
 
 //------------------------------------------------------------------------------
-CDlgGraphObjLineProperties* CDlgGraphObjLineProperties::GetInstance( CGraphObjLine* i_pGraphObjLine )
+CDlgGraphObjConnectionLineProperties* CDlgGraphObjConnectionLineProperties::GetInstance(CGraphObjConnectionLine* i_pGraphObjConnectionLine)
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgGraphObjLineProperties*>(
-        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjLine->keyInTree()));
+    return dynamic_cast<CDlgGraphObjConnectionLineProperties*>(
+        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs::Connections", ClassName(), i_pGraphObjConnectionLine->keyInTree()));
 }
 
 /*==============================================================================
@@ -90,23 +88,23 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
-    const QString&  i_strDlgTitle,
-    CGraphObjLine*  i_pGraphObjLine,
-    QWidget*        i_pWdgtParent,
+CDlgGraphObjConnectionLineProperties::CDlgGraphObjConnectionLineProperties(
+    const QString& i_strDlgTitle,
+    CGraphObjConnectionLine* i_pGraphObjConnectionLine,
+    QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes",
+        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::Connections",
         /* strClassName */ ClassName(),
         /* strObjName   */ "theInst",
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
-    m_pGraphObjLine(i_pGraphObjLine),
+    m_pGraphObjConnectionLine(i_pGraphObjConnectionLine),
     m_pLyt(nullptr),
     m_pScrollArea(nullptr),
-    m_pWdgtLineSettings(nullptr),
+    m_pWdgtConnectionLineSettings(nullptr),
     // Buttons
     m_pLytLineBtns(nullptr),
     m_pBtnOk(nullptr),
@@ -117,7 +115,7 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Title: " + i_strDlgTitle
-            + ", View: " + QString(i_pGraphObjLine == nullptr ? "null" : i_pGraphObjLine->objectName());
+            + ", GraphObj: " + QString(i_pGraphObjConnectionLine == nullptr ? "null" : i_pGraphObjConnectionLine->objectName());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -127,8 +125,8 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
         /* strAddInfo   */ strMthInArgs );
 
     QObject::connect(
-        m_pGraphObjLine, &CGraphObj::destroyed,
-        this, &CDlgGraphObjLineProperties::onGraphObjDestroyed);
+        m_pGraphObjConnectionLine, &CGraphObj::destroyed,
+        this, &CDlgGraphObjConnectionLineProperties::onGraphObjDestroyed);
 
     QVBoxLayout* m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -136,18 +134,18 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
     // Style Widgets
     //==============
 
-    CDrawingScene* pDrawingScene = m_pGraphObjLine->drawingScene();
+    CDrawingScene* pDrawingScene = m_pGraphObjConnectionLine->drawingScene();
 
     m_pScrollArea = new QScrollArea();
     m_pScrollArea->setWidgetResizable(true);
     m_pLyt->addWidget(m_pScrollArea, 1);
 
-    m_pWdgtLineSettings = new CWdgtGraphObjLineProperties(pDrawingScene, "DlgGraphObjLineProperties", false);
-    m_pWdgtLineSettings->setKeyInTree(m_pGraphObjLine->keyInTree());
-    m_pScrollArea->setWidget(m_pWdgtLineSettings);
+    m_pWdgtConnectionLineSettings = new CWdgtGraphObjConnectionLineProperties(pDrawingScene, "DlgGraphObjConnectionLineProperties", false);
+    m_pWdgtConnectionLineSettings->setKeyInTree(m_pGraphObjConnectionLine->keyInTree());
+    m_pScrollArea->setWidget(m_pWdgtConnectionLineSettings);
     QObject::connect(
-        m_pWdgtLineSettings, &CWdgtGraphObjLineProperties::contentChanged,
-        this, &CDlgGraphObjLineProperties::onWdgtLineSettingsContentChanged);
+        m_pWdgtConnectionLineSettings, &CWdgtGraphObjConnectionLineProperties::contentChanged,
+        this, &CDlgGraphObjConnectionLineProperties::onWdgtConnectionLineSettingsContentChanged);
 
     // Dialog buttons
     //================
@@ -163,27 +161,27 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
     m_pBtnOk->setDefault(true);
     QObject::connect(
         m_pBtnOk, &QPushButton::clicked,
-        this, &CDlgGraphObjLineProperties::onBtnOkClicked);
+        this, &CDlgGraphObjConnectionLineProperties::onBtnOkClicked);
 
     m_pBtnApply = new QPushButton("Accept");
     m_pBtnApply->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnApply);
     QObject::connect(
         m_pBtnApply, &QPushButton::clicked,
-        this, &CDlgGraphObjLineProperties::onBtnApplyClicked);
+        this, &CDlgGraphObjConnectionLineProperties::onBtnApplyClicked);
 
     m_pBtnReset = new QPushButton("Reset");
     m_pBtnReset->setEnabled(false);
     m_pLytLineBtns->addWidget(m_pBtnReset);
     QObject::connect(
         m_pBtnReset, &QPushButton::clicked,
-        this, &CDlgGraphObjLineProperties::onBtnResetClicked);
+        this, &CDlgGraphObjConnectionLineProperties::onBtnResetClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytLineBtns->addWidget(m_pBtnCancel);
     QObject::connect(
         m_pBtnCancel, &QPushButton::clicked,
-        this, &CDlgGraphObjLineProperties::onBtnCancelClicked);
+        this, &CDlgGraphObjConnectionLineProperties::onBtnCancelClicked);
 
     // Geometry of dialog
     //-------------------
@@ -194,7 +192,7 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
 } // ctor
 
 //------------------------------------------------------------------------------
-CDlgGraphObjLineProperties::~CDlgGraphObjLineProperties()
+CDlgGraphObjConnectionLineProperties::~CDlgGraphObjConnectionLineProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -204,10 +202,10 @@ CDlgGraphObjLineProperties::~CDlgGraphObjLineProperties()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjLine = nullptr;
+    m_pGraphObjConnectionLine = nullptr;
     m_pLyt = nullptr;
     m_pScrollArea = nullptr;
-    m_pWdgtLineSettings = nullptr;
+    m_pWdgtConnectionLineSettings = nullptr;
     // Buttons
     m_pLytLineBtns = nullptr;
     m_pBtnOk = nullptr;
@@ -222,12 +220,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::setCurrentWidget(CWdgtGraphObjLineProperties::EWidget i_widget)
+void CDlgGraphObjConnectionLineProperties::setCurrentWidget(CWdgtGraphObjConnectionLineProperties::EWidget i_widget)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CWdgtGraphObjLineProperties::widgetName(i_widget);
+        strMthInArgs = CWdgtGraphObjConnectionLineProperties::widgetName(i_widget);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -236,7 +234,7 @@ void CDlgGraphObjLineProperties::setCurrentWidget(CWdgtGraphObjLineProperties::E
         /* strMethod    */ "setCurrentWidget",
         /* strAddInfo   */ strMthInArgs );
 
-    m_pWdgtLineSettings->expand(i_widget, true);
+    m_pWdgtConnectionLineSettings->expand(i_widget, true);
 }
 
 /*==============================================================================
@@ -244,7 +242,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::onBtnOkClicked(bool /*i_bChecked*/)
+void CDlgGraphObjConnectionLineProperties::onBtnOkClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -254,12 +252,12 @@ void CDlgGraphObjLineProperties::onBtnOkClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnOkClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLineSettings->acceptChanges();
+    m_pWdgtConnectionLineSettings->acceptChanges();
     QDialog::accept();
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::onBtnApplyClicked(bool /*i_bChecked*/)
+void CDlgGraphObjConnectionLineProperties::onBtnApplyClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -269,17 +267,17 @@ void CDlgGraphObjLineProperties::onBtnApplyClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnApplyClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLineSettings->acceptChanges();
+    m_pWdgtConnectionLineSettings->acceptChanges();
 
     // After accepting changes there should be no changes anymore.
     // Code just added for the sake of clarification.
-    bool bHasChanges = m_pWdgtLineSettings->hasChanges();
+    bool bHasChanges = m_pWdgtConnectionLineSettings->hasChanges();
     m_pBtnApply->setEnabled(bHasChanges);
     m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::onBtnResetClicked(bool /*i_bChecked*/)
+void CDlgGraphObjConnectionLineProperties::onBtnResetClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -289,17 +287,17 @@ void CDlgGraphObjLineProperties::onBtnResetClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnResetClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLineSettings->rejectChanges();
+    m_pWdgtConnectionLineSettings->rejectChanges();
 
     // After rejecting changes there should be no changes anymore.
     // Code just added for the sake of clarification.
-    bool bHasChanges = m_pWdgtLineSettings->hasChanges();
+    bool bHasChanges = m_pWdgtConnectionLineSettings->hasChanges();
     m_pBtnApply->setEnabled(bHasChanges);
     m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::onBtnCancelClicked(bool /*i_bChecked*/)
+void CDlgGraphObjConnectionLineProperties::onBtnCancelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -309,7 +307,7 @@ void CDlgGraphObjLineProperties::onBtnCancelClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnCancelClicked",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLineSettings->rejectChanges();
+    m_pWdgtConnectionLineSettings->rejectChanges();
     QDialog::reject();
 }
 
@@ -318,23 +316,23 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::onWdgtLineSettingsContentChanged()
+void CDlgGraphObjConnectionLineProperties::onWdgtConnectionLineSettingsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strObjName,
-        /* strMethod    */ "onWdgtLineSettingsContentChanged",
+        /* strMethod    */ "onWdgtConnectionLineSettingsContentChanged",
         /* strAddInfo   */ "" );
 
-    bool bHasChanges = m_pWdgtLineSettings->hasChanges();
+    bool bHasChanges = m_pWdgtConnectionLineSettings->hasChanges();
     m_pBtnApply->setEnabled(bHasChanges);
     m_pBtnReset->setEnabled(bHasChanges);
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineProperties::onGraphObjDestroyed(QObject*)
+void CDlgGraphObjConnectionLineProperties::onGraphObjDestroyed(QObject*)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -344,7 +342,7 @@ void CDlgGraphObjLineProperties::onGraphObjDestroyed(QObject*)
         /* strMethod    */ "onGraphObjDestroyed",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjLine = nullptr;
+    m_pGraphObjConnectionLine = nullptr;
 
     QDialog::reject();
 }

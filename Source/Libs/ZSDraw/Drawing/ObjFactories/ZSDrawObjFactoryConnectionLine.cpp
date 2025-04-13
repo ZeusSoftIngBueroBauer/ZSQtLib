@@ -348,7 +348,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
         plg = pGraphObj->mapFromScene(plg);
 
-        pGraphObj->setPolygon(plg);
+        //pGraphObj->setPolygon(plg);
 
         pGraphObj->setStackingOrderValue(fZValue);
 

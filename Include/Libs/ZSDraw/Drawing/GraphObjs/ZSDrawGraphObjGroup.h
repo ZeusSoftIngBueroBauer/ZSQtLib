@@ -252,7 +252,6 @@ protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
-    QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
     void paintGridLines(QPainter* i_pPainter);
     void paintGridLabelsDivisionLines(QPainter* i_pPainter);
     void paintGridLabels(QPainter* i_pPainter);

@@ -2726,7 +2726,7 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
-    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameConnections;
 
     QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
     EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
@@ -2779,7 +2779,7 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
-    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameConnections;
 
     QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
     EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);

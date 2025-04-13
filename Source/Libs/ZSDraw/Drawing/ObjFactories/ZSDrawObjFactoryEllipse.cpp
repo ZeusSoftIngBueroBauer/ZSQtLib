@@ -179,7 +179,7 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
 
     CGraphObjEllipse* pGraphObj = dynamic_cast<CGraphObjEllipse*>(i_pGraphObj);
     if (pGraphObj == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
+        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjEllipse == nullptr" );
     }
 
     const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
@@ -218,8 +218,7 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
         mthTracer.setMethodReturn(errResultInfo);
     }
     return errResultInfo;
-
-} // saveGraphObj
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryEllipse::loadGraphObj(
@@ -435,5 +434,4 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
         mthTracer.setMethodReturn(strMthRet);
     }
     return pGraphObj;
-
-} // loadGraphObj
+}

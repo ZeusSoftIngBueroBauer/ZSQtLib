@@ -65,7 +65,7 @@ CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::CreateInstance(
 //------------------------------------------------------------------------------
 {
     if (GetInstance(i_pGraphObjPolygon) != nullptr) {
-        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs", ClassName(), i_pGraphObjPolygon->keyInTree());
+        QString strKey = buildPathStr("::", NameSpace(), "Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjPolygon->keyInTree());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
     return new CDlgGraphObjPolygonProperties(
@@ -80,7 +80,7 @@ CDlgGraphObjPolygonProperties* CDlgGraphObjPolygonProperties::GetInstance(CGraph
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CDlgGraphObjPolygonProperties*>(
-        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs", ClassName(), i_pGraphObjPolygon->keyInTree()));
+        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjPolygon->keyInTree()));
 }
 
 /*==============================================================================
@@ -96,7 +96,7 @@ CDlgGraphObjPolygonProperties::CDlgGraphObjPolygonProperties(
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes::Polygon",
+        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes",
         /* strClassName */ ClassName(),
         /* strObjName   */ "theInst",
         /* pWdgtParent  */ i_pWdgtParent,

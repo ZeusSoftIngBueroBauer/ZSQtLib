@@ -188,7 +188,6 @@ protected: // auxiliary instance methods
     QPolygonF getPolygonScaled(const QPolygonF& i_polygonOrig) const;
     CPhysValPolygon getPhysValPolygonOrig(const QPolygonF& i_polygonOrig) const;
     CPhysValPolygon getPhysValPolygonScaled(const CPhysValPolygon& i_physValPolygonOrig) const;
-    QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon, ZS::PhysVal::CPhysVal& o_physValAngle) const;
     void normalize(); // removes "unnecessary" points
 protected: // auxiliary instance methods
     int getNumberOfPredefinedPolygonPointLabelNames() const;

@@ -62,7 +62,8 @@ public: // overridables
     virtual ELinePoint getConnectionLinePoint( CGraphObjConnectionPoint* i_pCnctPt ) const;
     virtual CGraphObjConnectionPoint* getConnectionPoint( ELinePoint i_linePoint ) const;
 public: // replacing methods of QGraphicsRectItem
-    void setPolygon( const QPolygonF& i_plg );
+    void setPolygon(const CPhysValPolygon& i_physValPolygon);
+    void setPolygon(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPolygon getPolygon() const;
     CPhysValPolygon getPolygon(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables of base class CGraphObj
@@ -89,6 +90,8 @@ protected: // overridables of base class QGraphicsItem
 protected: // instance methods
     virtual void normalize(); // removes "unnecessary" points
     virtual void updateLineEndPolygonCoors();
+protected: // auxiliary instance methods (method tracing)
+    void QGraphicsItem_prepareGeometryChange() override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.

@@ -748,6 +748,10 @@ public: // overridables
     virtual void updateTransformedCoorsOnItemPositionChanged();
 protected: // auxiliary instance methods
     QRectF getEffectiveBoundingRectOnScene(const CPhysValRect& i_physValRectBounding) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValPoint& i_physValPoint, QPointF& o_pt) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValLine& i_physValLine, QLineF& o_line) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValPolygon& i_physValPolygon, QPolygonF& o_polygon, ZS::PhysVal::CPhysVal& o_physValAngle) const;
 protected: // overridables
     //virtual void updateTransform();
     //virtual void updateToolTip();

@@ -155,6 +155,7 @@ const QString c_strXmlElemNameGraphObj = "GraphObj";
 const QString c_strXmlElemNameGridSettings = "GridSettings";
 const QString c_strXmlElemNameDrawSettings = "DrawSettings";
 const QString c_strXmlElemNameGeometry = "Geometry";
+const QString c_strXmlElemNamePosition = "Position";
 const QString c_strXmlElemNameShapePoints = "ShapePoints";
 const QString c_strXmlElemNameShapePointP = "P";
 const QString c_strXmlElemNameShapePointP1 = "P1";

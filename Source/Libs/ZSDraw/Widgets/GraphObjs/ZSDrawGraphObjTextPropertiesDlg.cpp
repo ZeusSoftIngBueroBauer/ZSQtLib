@@ -66,7 +66,7 @@ CDlgGraphObjTextProperties* CDlgGraphObjTextProperties::CreateInstance(
 {
     if (GetInstance(i_pGraphObjText) != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs", ClassName(), i_pGraphObjText->keyInTree());
+        QString strKey = buildPathStr("::", NameSpace(), "Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjText->keyInTree());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
@@ -82,7 +82,7 @@ CDlgGraphObjTextProperties* CDlgGraphObjTextProperties::GetInstance( CGraphObjTe
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CDlgGraphObjTextProperties*>(
-        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs", ClassName(), i_pGraphObjText->keyInTree()));
+        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjText->keyInTree()));
 }
 
 /*==============================================================================
@@ -98,7 +98,7 @@ CDlgGraphObjTextProperties::CDlgGraphObjTextProperties(
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes::Line",
+        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes",
         /* strClassName */ ClassName(),
         /* strObjName   */ "theInst",
         /* pWdgtParent  */ i_pWdgtParent,

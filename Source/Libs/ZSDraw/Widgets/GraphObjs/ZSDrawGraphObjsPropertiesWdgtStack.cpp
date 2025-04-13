@@ -25,6 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionLinePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionPointPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjEllipsePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
@@ -269,6 +271,14 @@ CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPr
         }
         else if (eGraphObjType == EGraphObjTypePolyline || eGraphObjType == EGraphObjTypePolygon) {
             pWidget = new CWdgtGraphObjPolygonProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeConnectionPoint) {
+            pWidget = new CWdgtGraphObjConnectionPointProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeConnectionLine) {
+            pWidget = new CWdgtGraphObjConnectionLineProperties(
                 m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
         }
         else {

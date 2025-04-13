@@ -169,37 +169,20 @@ public: // must overridables of base class CGraphObj
 CGraphObj* CGraphObjConnectionLine::clone()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "clone",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(m_pDrawingScene, m_strName);
     pGraphObj->setDrawSettings(m_drawSettings);
-
     QPointF ptPos = pos();
-
-    pGraphObj->setPolygon( polygon() );
+    pGraphObj->setPolygon(getPolygon());
     pGraphObj->setPos(ptPos);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    pGraphObj->setRotationAngleInDegree(m_fRotAngleCurr_deg);
-#endif
-    //pGraphObj->setScaleFactors(m_fScaleFacXCurr,m_fScaleFacYCurr);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    pGraphObj->acceptCurrentAsOriginalCoors();
-#endif
-
     return pGraphObj;
-
-} // clone
+}
 
 /*==============================================================================
 public: // overridables
@@ -318,14 +301,13 @@ public: // replacing methods of QGraphicsRectItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
+void CGraphObjConnectionLine::setPolygon(const CPhysValPolygon& i_physValPolygon)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qPolygon2Str(i_plg) + "}";
+        strMthInArgs = "{" + i_physValPolygon.toString(true) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -333,6 +315,7 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
         /* strMethod    */ "setPolygon",
         /* strAddInfo   */ strMthInArgs );
 
+#if 0
     if( i_plg.size() >= 2 )
     {
         QPolygonF plg = i_plg;
@@ -367,8 +350,26 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
         //updateToolTip();
 
     } // if( i_plg.size() >= 2 )
-
+#endif
 } // setPolygon
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionLine::setPolygon(const QPolygonF& i_polygon, const ZS::PhysVal::CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "[" + QString::number(i_polygon.count()) + "](" + qPolygon2Str(i_polygon) + ") " + i_unit.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setLine",
+        /* strAddInfo   */ strMthInArgs );
+
+    setPolygon(CPhysValPolygon(*m_pDrawingScene, i_polygon, i_unit));
+}
 
 //------------------------------------------------------------------------------
 CPhysValPolygon CGraphObjConnectionLine::getPolygon() const
@@ -2326,3 +2327,23 @@ void CGraphObjConnectionLine::updateLineEndPolygonCoors()
     m_bCoorsDirty = false;
 
 } // updateLineEndPolygonCoors
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+
+    As the prepareGeometryChange method is a protected method of QGraphicsItem
+    this method must be reimplemented by the derived classes.
+*/
+void CGraphObjConnectionLine::QGraphicsItem_prepareGeometryChange()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsItem_prepareGeometryChange",
+        /* strAddInfo   */ "" );
+
+    prepareGeometryChange();
+}

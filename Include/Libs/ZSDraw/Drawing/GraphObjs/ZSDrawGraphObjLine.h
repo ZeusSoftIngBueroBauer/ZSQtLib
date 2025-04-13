@@ -204,7 +204,6 @@ protected: // auxiliary instance methods
     QLineF getLineScaled(const QLineF& i_lineOrig) const;
     CPhysValLine getPhysValLineOrig(const QLineF& i_lineOrig) const;
     CPhysValLine getPhysValLineScaled(const CPhysValLine& i_physValLineOrig) const;
-    QPointF getItemPosAndLocalCoors(const CPhysValLine& i_physValLine, QLineF& o_line) const;
 protected: // auxiliary instance methods (method tracing)
     QLineF setLineOrig(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(const QLineF& i_line);

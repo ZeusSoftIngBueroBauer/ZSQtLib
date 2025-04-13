@@ -109,7 +109,7 @@ protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition
         const SGraphObjSelectionPoint& i_selPt1,
         const SGraphObjSelectionPoint& i_selPt2);
 public: // dtor
-    virtual ~CGraphObjLabel();
+    ~CGraphObjLabel() override;
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj

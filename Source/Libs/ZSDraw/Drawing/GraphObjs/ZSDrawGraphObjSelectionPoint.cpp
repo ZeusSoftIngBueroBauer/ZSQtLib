@@ -88,8 +88,7 @@ public: // ctors and dtor
 /*! @brief Constructor for selection points at (bounding) rectangles.
 */
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    const SGraphObjSelectionPoint& i_selPt) :
+    CDrawingScene* i_pDrawingScene, const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -145,8 +144,6 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
 //------------------------------------------------------------------------------
 {
-    m_bDtorInProgress = true;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -154,6 +151,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
 
     // Selection points have been "directly" added to the graphics scene and not by
@@ -229,7 +227,8 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point.
+/*! @brief Returns the type of the selection point, the linked object and the
+           position at the linked object the selection point is linked to.
 
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
@@ -240,6 +239,7 @@ SGraphObjSelectionPoint CGraphObjSelectionPoint::getSelectionPoint() const
     return m_selPt;
 }
 
+#if 0
 //------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::setShapePoint( int i_idxPt )
 //------------------------------------------------------------------------------
@@ -260,6 +260,7 @@ void CGraphObjSelectionPoint::setShapePoint( int i_idxPt )
     }
     m_selPt.m_idxPt = i_idxPt;
 }
+#endif
 
 /*==============================================================================
 public: // instance methods
@@ -490,12 +491,6 @@ void CGraphObjSelectionPoint::paint(
 
     QGraphicsEllipseItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    //if ((spanAngle() != 0) && (qAbs(spanAngle()) % (360 * 16) == 0)) {
-    //    i_pPainter->drawEllipse(rect());
-    //}
-    //else {
-    //    i_pPainter->drawPie(rect(), startAngle(), spanAngle());
-    //}
     i_pPainter->restore();
 }
 
@@ -517,7 +512,7 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ myPathName(),
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -528,7 +523,7 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
 }
@@ -547,14 +542,14 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ myPathName(),
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
     QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
@@ -577,7 +572,7 @@ void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ myPathName(),
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -588,7 +583,7 @@ void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
 }
@@ -627,7 +622,7 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (pGraphicsItemParent != nullptr) {
         m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
         // Note: By calling the mouse event method of the parent object, the selection point might
-        //       be destroyed. This means that after invoking calling the parents mouse event method
+        //       be destroyed. This means that after invoking the parents mouse event method
         //       the selection point MUST NOT access any instance members anymore.
     }
     i_pEv->accept();
@@ -740,7 +735,7 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ myPathName(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
@@ -759,56 +754,13 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     // on the other hand this would have unwanted side effects like moving the
     // object which again would move the selection point and so on.
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
-}
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    updatePosition();
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
-        /* strMethod    */ "onGraphObjParentZValueChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    // The selectin point should be drawn after the parent object is drawn.
-    double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints);
 }
 
 /*==============================================================================
@@ -873,6 +825,49 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ myPathName(),
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    updatePosition();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ myPathName(),
+        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    // The selectin point should be drawn after the parent object is drawn.
+    double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints);
 }
 
 /*==============================================================================

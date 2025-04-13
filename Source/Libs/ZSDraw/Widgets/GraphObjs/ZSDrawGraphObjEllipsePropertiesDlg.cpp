@@ -66,7 +66,7 @@ CDlgGraphObjEllipseProperties* CDlgGraphObjEllipseProperties::CreateInstance(
 {
     if (GetInstance(i_pGraphObjEllipse) != nullptr )
     {
-        QString strKey = buildPathStr("::", NameSpace(), "Widgets", "GraphObjs", ClassName(), i_pGraphObjEllipse->keyInTree());
+        QString strKey = buildPathStr("::", NameSpace(), "Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjEllipse->keyInTree());
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated, strKey);
     }
 
@@ -82,7 +82,7 @@ CDlgGraphObjEllipseProperties* CDlgGraphObjEllipseProperties::GetInstance( CGrap
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CDlgGraphObjEllipseProperties*>(
-        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs", ClassName(), i_pGraphObjEllipse->keyInTree()));
+        CDialog::GetInstance(NameSpace() + "::Widgets::GraphObjs::StandardShapes", ClassName(), i_pGraphObjEllipse->keyInTree()));
 }
 
 /*==============================================================================
@@ -98,7 +98,7 @@ CDlgGraphObjEllipseProperties::CDlgGraphObjEllipseProperties(
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes::Line",
+        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes",
         /* strClassName */ ClassName(),
         /* strObjName   */ "theInst",
         /* pWdgtParent  */ i_pWdgtParent,

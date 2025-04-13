@@ -367,20 +367,17 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-    QPointF ptPosPrev = pos();
-
-    // Depending on the Y scale orientation of the drawing scene the line coordinates
-    // have been passed either relative to the top left or bottom right corner of the
-    // parent item's bounding rectangle.
-    // The coordinates need to be transformed into the local coordinate system of the graphical
-    // object whose origin point is the center of the objects bounding rectangle.
-
-    QLineF lineF;
-    QPointF ptPos = getItemPosAndLocalCoors(i_physValLine, lineF);
-
     bool bGeometryOnSceneChanged = false;
-
     if (m_physValLineScaledAndRotated != i_physValLine) {
+        // Depending on the Y scale orientation of the drawing scene the line coordinates
+        // have been passed either relative to the top left or bottom right corner of the
+        // parent item's bounding rectangle.
+        // The coordinates need to be transformed into the local coordinate system of the graphical
+        // object whose origin point is the center of the objects bounding rectangle.
+        QPointF ptPosPrev = pos();
+        QLineF lineF;
+        QPointF ptPos = getItemPosAndLocalCoors(i_physValLine, lineF);
+
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
@@ -1700,7 +1697,6 @@ void CGraphObjLine::paint(
         outline.moveTo(lineF.p1());
         outline.lineTo(lineF.p2());
         i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.penWidth());
     }
     pn.setColor(m_drawSettings.penColor());
     pn.setWidth(m_drawSettings.penWidth());
@@ -2654,63 +2650,6 @@ CPhysValLine CGraphObjLine::getPhysValLineScaled(const CPhysValLine& i_physValLi
         mthTracer.setMethodReturn("{" + physValLine.toString() + "} " + physValLine.unit().symbol());
     }
     return physValLine;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Calculates the item position relative to the parent item or drawing scene
-           as well as the item coordinates local coordinates.
-
-    @param [in] i_physValLine
-        Line in parent coordinates, depending on the Y scale orientation
-        relative to the top left or bottom left corner of parent item's bounding
-        rectangle. If the item belongs to a parent group the passed line
-        must have been resized and the center must have been moved according to the
-        parents scale factors.
-    @param [out] o_line
-        Line in local coordinates.
-*/
-QPointF CGraphObjLine::getItemPosAndLocalCoors(
-    const CPhysValLine& i_physValLine, QLineF& o_line) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "getItemPosAndLocalCoors",
-        /* strAddInfo   */ strMthInArgs );
-
-    // First determine the position of the item in the parent's (scene or group) coordinate system.
-    CPhysValLine physValLineTmp(i_physValLine);
-    if (parentGroup() != nullptr) {
-        physValLineTmp = parentGroup()->convert(physValLineTmp, Units.Length.px);
-    }
-    else {
-        physValLineTmp = m_pDrawingScene->convert(physValLineTmp, Units.Length.px);
-    }
-    o_line = QLineF(physValLineTmp.p1().toQPointF(), physValLineTmp.p2().toQPointF());
-
-    // Transform the parent coordinates into local coordinate system.
-    // The origin is the center point of the line.
-    QPointF ptPos = o_line.center(); // line here still in parent or scene coordinates
-    QPointF p1 = o_line.p1() - ptPos;
-    QPointF p2 = o_line.p2() - ptPos;
-    o_line = QLineF(p1, p2); // line now in local coordinates
-
-    if (parentGroup() != nullptr) {
-        ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "Line {" + qLine2Str(o_line) + "}";
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
-    }
-    return ptPos;
 }
 
 /*==============================================================================
