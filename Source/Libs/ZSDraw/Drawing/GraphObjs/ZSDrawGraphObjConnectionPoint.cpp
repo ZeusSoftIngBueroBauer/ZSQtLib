@@ -78,10 +78,7 @@ protected: // class members
 
 QPainter::RenderHints CGraphObjConnectionPoint::s_painterRenderHints = QPainter::Antialiasing;
 
-double CGraphObjConnectionPoint::s_fRadius_px = 5.0;
-double CGraphObjConnectionPoint::s_fInnerCircleRadius_px = 2.0;
-int CGraphObjConnectionPoint::s_iPenWidth_px = 2;
-QColor CGraphObjConnectionPoint::s_colPen = Qt::black;
+double CGraphObjConnectionPoint::s_fDefaultWidth_px = 7.0;
 
 /*==============================================================================
 public: // class methods
@@ -113,17 +110,10 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CGraphObjConnectionPoint::defaultRadiusInPx()
+double CGraphObjConnectionPoint::defaultWidthInPx()
 //------------------------------------------------------------------------------
 {
-    return s_fRadius_px;
-}
-
-//------------------------------------------------------------------------------
-double CGraphObjConnectionPoint::defaultInnerCircleRadiusInPx()
-//------------------------------------------------------------------------------
-{
-    return s_fInnerCircleRadius_px;
+    return s_fDefaultWidth_px;
 }
 
 /*==============================================================================
@@ -141,8 +131,6 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
         /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
     m_lstConnectionLines(),
-    m_fInnerCircleRadius_perCent(100.0*(s_fInnerCircleRadius_px/s_fRadius_px)),
-    m_fRadius_px(s_fRadius_px),
     m_selPt()
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -172,6 +160,8 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
+
+    CGraphObjEllipse::setRect(QPointF(0.0, 0.0), QSizeF(s_fDefaultWidth_px, s_fDefaultWidth_px), Units.Length.px);
 }
 
 //------------------------------------------------------------------------------
@@ -373,101 +363,6 @@ CGraphObjConnectionLine* CGraphObjConnectionPoint::getConnectionLine(int i_iLine
 }
 
 /*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setInnerCircleRadiusInPerCent(double i_fRadius_perCent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Radius: " + QString::number(i_fRadius_perCent) + " %";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setInnerCircleRadiusInPerCent",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_fInnerCircleRadius_perCent != i_fRadius_perCent) {
-        m_fInnerCircleRadius_perCent = i_fRadius_perCent;
-        update();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setInnerCircleRadiusInPx(double i_fRadius_px)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Radius: " + QString::number(i_fRadius_px) + " px";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setInnerCircleRadiusInPx",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QRectF rctBounding = pGraphicsItem->boundingRect();
-        if (rctBounding.width() != 0.0) {
-            m_fInnerCircleRadius_perCent = 100.0 * fabs(i_fRadius_px / (rctBounding.width()/2.0));
-        }
-        else {
-            m_fInnerCircleRadius_perCent = 100.0;
-        }
-        update();
-    }
-}
-
-//------------------------------------------------------------------------------
-double CGraphObjConnectionPoint::getInnerCircleRadiusInPerCent()
-//------------------------------------------------------------------------------
-{
-    return m_fInnerCircleRadius_perCent;
-}
-
-//------------------------------------------------------------------------------
-double CGraphObjConnectionPoint::getInnerCircleRadiusInPx()
-//------------------------------------------------------------------------------
-{
-    double fWidth = 0.0;
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QRectF rctBounding = pGraphicsItem->boundingRect();
-        if (rctBounding.width() != 0.0) {
-            fWidth = (m_fInnerCircleRadius_perCent/100.0) * (rctBounding.width()/2.0);
-        }
-    }
-    return fWidth;
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ strMthInArgs );
-}
-
-/*==============================================================================
 public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -541,48 +436,45 @@ void CGraphObjConnectionPoint::paint(
     QBrush brush;
     QRectF rctBounding = getBoundingRect();
 
-    if (m_fInnerCircleRadius_perCent < 100.0) {
-        if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-            if (isSelected()) {
-                pn.setColor(s_selectionColor);
-                pn.setWidth(3 + m_drawSettings.penWidth());
-            }
-            else {
-                pn.setColor(s_highlightColor);
-                pn.setWidth(3 + m_drawSettings.penWidth());
-            }
-            pn.setStyle(Qt::SolidLine);
-            QPainterPath outline;
-            outline.moveTo(rctBounding.topLeft());
-            outline.lineTo(rctBounding.topRight());
-            outline.lineTo(rctBounding.bottomRight());
-            outline.lineTo(rctBounding.bottomLeft());
-            outline.lineTo(rctBounding.topLeft());
-            i_pPainter->strokePath(outline, pn);
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        if (isSelected()) {
+            pn.setColor(s_selectionColor);
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
+        else {
+            pn.setColor(s_highlightColor);
+            pn.setWidth(3 + m_drawSettings.penWidth());
+        }
+        pn.setStyle(Qt::SolidLine);
+        QPainterPath outline;
+        outline.moveTo(rctBounding.topLeft());
+        outline.lineTo(rctBounding.topRight());
+        outline.lineTo(rctBounding.bottomRight());
+        outline.lineTo(rctBounding.bottomLeft());
+        outline.lineTo(rctBounding.topLeft());
+        i_pPainter->strokePath(outline, pn);
     }
+    pn.setColor(m_drawSettings.penColor());
+    pn.setWidth(m_drawSettings.penWidth());
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
+    i_pPainter->setPen(pn);
+    i_pPainter->setBrush(Qt::NoBrush);
+    i_pPainter->drawEllipse(rctBounding);
 
-    double fInnerCircleRadius_px = getInnerCircleRadiusInPx();
-    if (fInnerCircleRadius_px >= 1.0) {
-        if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-            if (isSelected()) {
-                pn.setColor(s_selectionColor);
-                pn.setWidth(3 + m_drawSettings.penWidth());
-            }
-            else {
-                pn.setColor(s_highlightColor);
-                pn.setWidth(3 + m_drawSettings.penWidth());
-            }
-            pn.setStyle(Qt::SolidLine);
-        }
+    double fInnerWidth_px = getWidth(Units.Length.px).getVal() / 2.0;
+    if (fInnerWidth_px >= 1.0) {
+        pn.setColor(m_drawSettings.fillColor());
+        pn.setWidth(1);
+        pn.setStyle(Qt::SolidLine);
         i_pPainter->setPen(pn);
+        brush.setColor(m_drawSettings.fillColor());
+        brush.setStyle(Qt::SolidPattern);
         i_pPainter->setBrush(brush);
-
         QRectF rctInnerCircle;
-        rctInnerCircle.setLeft(rctBounding.center().x() - fInnerCircleRadius_px);
-        rctInnerCircle.setTop(rctBounding.center().y() - fInnerCircleRadius_px);
-        rctInnerCircle.setWidth(2.0 * fInnerCircleRadius_px);
-        rctInnerCircle.setHeight(2.0 * fInnerCircleRadius_px);
+        rctInnerCircle.setLeft(rctBounding.center().x() - fInnerWidth_px/2.0);
+        rctInnerCircle.setTop(rctBounding.center().y() - fInnerWidth_px/2.0);
+        rctInnerCircle.setWidth(fInnerWidth_px);
+        rctInnerCircle.setHeight(fInnerWidth_px);
         i_pPainter->drawEllipse(rctInnerCircle);
     }
 

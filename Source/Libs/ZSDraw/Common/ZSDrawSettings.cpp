@@ -112,56 +112,56 @@ class CDrawSettings
 static const SDrawAttribute s_arDrawAttributesDefaultValsGraphObjTypeUndefined[EDrawAttributeCount] =
 //------------------------------------------------------------------------------
 {   // For Undefined GraphObjTypes (used by the drawing scene) each of the attributes is used as default:
-    /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-    /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-    /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true ),
-    /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true ),
-    /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-    /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true ),
-    /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, true ),
-    /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-    /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-    /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-    /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-    /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-    /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-    /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-    /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-    /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-    /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-    /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), true ),
-    /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), true ),
-    /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), true ),
-    /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, true ),
-    /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), true )
+    /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+    /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+    /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true),
+    /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true),
+    /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+    /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true),
+    /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, true),
+    /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+    /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+    /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+    /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+    /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+    /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+    /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+    /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+    /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+    /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+    /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), true),
+    /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), true),
+    /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), true),
+    /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, true),
+    /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), true)
 };
 
 //------------------------------------------------------------------------------
 static const SDrawAttribute s_arDrawAttributesDefaultValsGraphObjTypeUserDefined[EDrawAttributeCount] =
 //------------------------------------------------------------------------------
 {   // For UserDefined GraphObjTypes none of the attributes is used as default:
-    /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), false ),
-    /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, false),
-    /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false ),
-    /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false ),
-    /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), false ),
-    /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-    /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-    /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-    /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-    /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-    /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-    /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-    /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-    /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-    /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-    /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-    /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-    /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-    /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-    /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-    /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-    /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+    /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), false),
+    /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, false),
+    /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),
+    /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false),
+    /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), false),
+    /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+    /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+    /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+    /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+    /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+    /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+    /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+    /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+    /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+    /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+    /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+    /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+    /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+    /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+    /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+    /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+    /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
 };
 
 //------------------------------------------------------------------------------
@@ -169,244 +169,244 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
 //------------------------------------------------------------------------------
 {
     /*  1 EGraphObjTypeLine            */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, true ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, true),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  2 EGraphObjTypeRect            */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  3 EGraphObjTypeEllipse         */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  4 EGraphObjTypePolygon         */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  5 EGraphObjTypePolyline        */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, true ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, true),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  6 EGraphObjTypeText            */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), true ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), true ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), true ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, true ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), true )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), true),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), true),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), true),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, true),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), true)
     /*                                 */ },
     /*  7 EGraphObjTypeImage           */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  8 EGraphObjTypeConnectionPoint */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::black), true ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::SolidPattern), true ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, false ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::blue), true),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::SolidPattern), true),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), false),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, false),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /*  9 EGraphObjTypeConnectionLine  */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, true ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), false),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::SolidLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, true),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), true),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), true),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), true),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), true),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), true),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ },
     /* 10 EGraphObjTypeGroup           */ {
-        /*  0 PenColor                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true ),
-        /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
-        /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true ),
-        /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::DotLine), true ),
-        /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true ),
-        /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineExtent, 1, true ),
-        /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 12 LineP2EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),
-        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false ),
-        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false ),
-        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false ),
-        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false ),
-        /* 17 TextColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false ),
-        /* 18 TextFont                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false ),
-        /* 19 TextStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false ),
-        /* 20 TextSize                     */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false ),
-        /* 21 TextEffect                   */ SDrawAttribute( XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false )
+        /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
+        /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
+        /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), true),
+        /*  3 FillStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillStyle, static_cast<int>(EFillStyle::NoFill), true),
+        /*  4 LineStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineStyle, static_cast<int>(ELineStyle::DotLine), true),
+        /*  5 LineRecordType               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineRecordType, static_cast<int>(ELineRecordType::Normal), true),
+        /*  6 LineExtent                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineExtent, 1, true),
+        /*  7 LineP1EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /*  8 LineP1ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /*  9 LineP1ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 10 LineP1ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 11 LineP1ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP1ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 12 LineP2EndStyle               */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2EndStyle, static_cast<int>(ELineEndStyle::Normal), false),
+        /* 13 LineP2ArrowHeadBaseLineType  */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadBaseLineType, static_cast<int>(EArrowHeadBaseLineType::NoLine), false),
+        /* 14 LineP2ArrowHeadFillStyle     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadFillStyle, static_cast<int>(EArrowHeadFillStyle::NoFill), false),
+        /* 15 LineP2ArrowHeadWidth         */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadWidth, static_cast<int>(EArrowHeadWidth::Medium), false),
+        /* 16 LineP2ArrowHeadLength        */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameLineP2ArrowHeadLength, static_cast<int>(EArrowHeadLength::Medium), false),
+        /* 17 TextColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextColor, QColor(Qt::black), false),
+        /* 18 TextFont                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFont, QFont("Arial"), false),
+        /* 19 TextStyle                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextStyle, static_cast<int>(ETextStyle::Normal), false),
+        /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, false),
+        /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), false)
     /*                                 */ }
 };
 
@@ -1728,7 +1728,7 @@ QString CDrawSettings::toString() const
                 QString strAttr = drawAttribute2Str(iAttribute);
                 strAttr = strAttr.remove("Pen");
                 if (!str.endsWith("{")) str += ", ";
-                str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                str += strAttr + ": " + attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
         }
@@ -1741,7 +1741,7 @@ QString CDrawSettings::toString() const
                 QString strAttr = drawAttribute2Str(iAttribute);
                 strAttr = strAttr.remove("Fill");
                 if (!str.endsWith("{")) str += ", ";
-                str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                str += strAttr + ": " + attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
         }
@@ -1754,7 +1754,7 @@ QString CDrawSettings::toString() const
             QString strAttr = drawAttribute2Str(iAttribute);
             strAttr = strAttr.remove("Line");
             if (!str.endsWith("{")) str += ", ";
-            str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+            str += strAttr + ": " + attributeValue2Str(iAttribute);
             iSectionsPrint++;
         }
         if (isLineEndStyleUsed()) {
@@ -1764,7 +1764,7 @@ QString CDrawSettings::toString() const
                 QString strAttr = drawAttribute2Str(iAttribute);
                 strAttr = strAttr.remove(XmlStreamParser::c_strXmlElemNameLineP1EndStyle);
                 if (!str.endsWith("{")) str += ", ";
-                str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                str += strAttr + ": " + attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
             str += ", ArrowHead {";
@@ -1773,7 +1773,7 @@ QString CDrawSettings::toString() const
                     QString strAttr = drawAttribute2Str(iAttribute);
                     strAttr = strAttr.remove("LineP1ArrowHead");
                     if (!str.endsWith("{")) str += ", ";
-                    str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                    str += strAttr + ": " + attributeValue2Str(iAttribute);
                     iSectionsPrint++;
                 }
             }
@@ -1783,7 +1783,7 @@ QString CDrawSettings::toString() const
                 QString strAttr = drawAttribute2Str(iAttribute);
                 strAttr = strAttr.remove(XmlStreamParser::c_strXmlElemNameLineP2EndStyle);
                 if (!str.endsWith("{")) str += ", ";
-                str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                str += strAttr + ": " + attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
             str += ", ArrowHead {";
@@ -1792,7 +1792,7 @@ QString CDrawSettings::toString() const
                     QString strAttr = drawAttribute2Str(iAttribute);
                     strAttr = strAttr.remove("LineP2ArrowHead");
                     if (!str.endsWith("{")) str += ", ";
-                    str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                    str += strAttr + ": " + attributeValue2Str(iAttribute);
                     iSectionsPrint++;
                 }
             }
@@ -1806,7 +1806,7 @@ QString CDrawSettings::toString() const
                     strAttr = strAttr.remove("Line");
                     strAttr = strAttr.remove("RecordType");
                     if (!str.endsWith("{")) str += ", ";
-                    str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                    str += strAttr + ": " + attributeValue2Str(iAttribute);
                     iSectionsPrint++;
                 }
             }
@@ -1821,7 +1821,7 @@ QString CDrawSettings::toString() const
                 QString strAttr = drawAttribute2Str(iAttribute);
                 strAttr = strAttr.remove("Text");
                 if (!str.endsWith("{")) str += ", ";
-                str += ", " + strAttr + ": " + attributeValue2Str(iAttribute);
+                str += strAttr + ": " + attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
         }

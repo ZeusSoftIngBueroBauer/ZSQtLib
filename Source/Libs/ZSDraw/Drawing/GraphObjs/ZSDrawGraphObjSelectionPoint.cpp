@@ -66,17 +66,17 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-double CGraphObjSelectionPoint::defaultRadiusInPx()
+double CGraphObjSelectionPoint::defaultWidthInPx()
 //------------------------------------------------------------------------------
 {
-    return s_fRadius_px;
+    return s_fDefaultWidth_px;
 }
 
 /*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-double CGraphObjSelectionPoint::s_fRadius_px = 4.0;
+double CGraphObjSelectionPoint::s_fDefaultWidth_px = 7.0;
 int CGraphObjSelectionPoint::s_iPenWidth_px = 2;
 QColor CGraphObjSelectionPoint::s_colPen = Qt::black;
 
@@ -97,9 +97,9 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
         /* strObjName          */ "SelPt." + i_selPt.name(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
-    QGraphicsEllipseItem(QRectF(-s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px)),
+    QGraphicsEllipseItem(QRectF(-s_fDefaultWidth_px/2.0, -s_fDefaultWidth_px/2.0, s_fDefaultWidth_px, s_fDefaultWidth_px)),
     m_selPt(i_selPt),
-    m_fRadius_px(s_fRadius_px),
+    m_fWidth_px(s_fDefaultWidth_px),
     m_bUpdatePositionInProgress(false)
 {
     createTraceAdminObjs("SelectionPoints::" + ClassName());
@@ -161,7 +161,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
         m_pDrawingScene->removeItem(this);
     }
 
-    m_fRadius_px = 0.0;
+    m_fWidth_px = 0.0;
     m_bUpdatePositionInProgress = false;
 
 } // dtor
@@ -267,30 +267,30 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setRadiusInPx( double i_fRadius_px )
+void CGraphObjSelectionPoint::setWidthInPx( double i_fWidth_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Radius:" + QString::number(i_fRadius_px);
+        strMthInArgs = QString::number(i_fWidth_px);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ myPathName(),
-        /* strMethod    */ "setRadiusInPx",
+        /* strMethod    */ "setWidthInPx",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_fRadius_px != i_fRadius_px) {
-        m_fRadius_px = i_fRadius_px;
+    if (m_fWidth_px != i_fWidth_px) {
+        m_fWidth_px = i_fWidth_px;
     }
 }
 
 //------------------------------------------------------------------------------
-double CGraphObjSelectionPoint::getRadiusInPx() const
+double CGraphObjSelectionPoint::getWidthInPx() const
 //------------------------------------------------------------------------------
 {
-    return m_fRadius_px;
+    return m_fWidth_px;
 }
 
 /*==============================================================================

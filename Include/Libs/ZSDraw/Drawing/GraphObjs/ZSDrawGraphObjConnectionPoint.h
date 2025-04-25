@@ -49,8 +49,7 @@ public: // class methods
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
 public: // class methods
-    static double defaultRadiusInPx();
-    static double defaultInnerCircleRadiusInPx();
+    static double defaultWidthInPx();
 public: // ctors and dtor
     CGraphObjConnectionPoint(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     ~CGraphObjConnectionPoint() override;
@@ -69,13 +68,6 @@ public: // instance methods
     int findConnectionLineIdx( CGraphObjConnectionLine* i_pGraphObjCnctLine );
     int getConnectionLinesCount() const;
     CGraphObjConnectionLine* getConnectionLine( int i_iLineIdx );
-public: // overridables
-    void setInnerCircleRadiusInPerCent(double i_fRadius_perCent);
-    void setInnerCircleRadiusInPx(double i_fRadius_px);
-    double getInnerCircleRadiusInPerCent();
-    double getInnerCircleRadiusInPx();
-public: // overridables of base class CGraphObj
-    void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -99,19 +91,10 @@ public: // class members
     static qint64 s_iInstCount;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
-    static double s_fRadius_px;
-    static double s_fInnerCircleRadius_px;
-    /*!< Default pen width to be used for painting the border of the selection points. */
-    static int s_iPenWidth_px;
-    /*!< Default color to be used for painting the border of the selection points. */
-    static QColor s_colPen;
+    static double s_fDefaultWidth_px;
 protected: // instance members
     /*!< List with connection lines linked to the connection point. */
     QList<CGraphObjConnectionLine*> m_lstConnectionLines;
-    /*!< Radius for drawing the connection point. */
-    double m_fRadius_px;
-    /*!< Inner circle radius for drawing the connection point. */
-    double m_fInnerCircleRadius_perCent;
     /*!< Defines the type of the selecton point, the linked object and the position at the linked
          object the selection point is linked to. */
     SGraphObjSelectionPoint m_selPt;

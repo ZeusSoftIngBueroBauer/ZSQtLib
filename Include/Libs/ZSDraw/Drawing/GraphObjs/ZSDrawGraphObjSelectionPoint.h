@@ -59,7 +59,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjSelectionPoint"; }
 public: // class methods
-    static double defaultRadiusInPx();
+    static double defaultWidthInPx();
 public: // ctors and dtor
     CGraphObjSelectionPoint(CDrawingScene* i_pDrawingScene, const SGraphObjSelectionPoint& i_selPt);
     ~CGraphObjSelectionPoint() override;
@@ -74,8 +74,8 @@ public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
     //void setShapePoint( int i_idxPt );
 public: // instance methods
-    void setRadiusInPx( double i_fRadius_px );
-    double getRadiusInPx() const;
+    void setWidthInPx(double i_fWidth_px);
+    double getWidthInPx() const;
 public: // overridables of base class CGraphObj
     void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
@@ -108,7 +108,7 @@ protected: // auxiliary instance methods
     void updatePosition();
 protected: // class members
     /*!< Default radius to be used for painting the selection points. */
-    static double s_fRadius_px;
+    static double s_fDefaultWidth_px;
     /*!< Default pen width to be used for painting the border of the selection points. */
     static int s_iPenWidth_px;
     /*!< Default color to be used for painting the border of the selection points. */
@@ -120,7 +120,7 @@ protected: // instance members
          rectangle around the graphical object or into polygon shape points. */
     SGraphObjSelectionPoint m_selPt;
     /*!< Radius for drawing the selection point. */
-    double m_fRadius_px;
+    double m_fWidth_px;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
     bool m_bUpdatePositionInProgress;
 
