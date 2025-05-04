@@ -25,13 +25,13 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
-#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionPointPropertiesDlg.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -63,7 +63,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CGraphObjConnectionPoint : public CGraphObj, public QGraphicsEllipseItem
+class CGraphObjConnectionPoint : public CGraphObjEllipse
 *******************************************************************************/
 
 /*==============================================================================
@@ -154,7 +154,40 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     addLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
 
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    addGeometryLabel(c_strGeometryLabelNameCenter, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
+
+    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        if (strLabelName == c_strGeometryLabelNameCenter) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameWidth) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameHeight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameAngle) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameTopLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
+        }
+        else if (strLabelName == c_strGeometryLabelNameTopRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
+        }
+    }
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
@@ -224,6 +257,43 @@ CGraphObj* CGraphObjConnectionPoint::clone()
 }
 
 /*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/* @brief
+
+    Must be overridden to create a user defined dialog.
+*/
+void CGraphObjConnectionPoint::openFormatGraphObjsDialog()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "openFormatGraphObjsDialog",
+        /* strAddInfo   */ "" );
+
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Connection Point";
+    CDlgGraphObjConnectionPointProperties* pDlg = CDlgGraphObjConnectionPointProperties::GetInstance(this);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgGraphObjConnectionPointProperties::CreateInstance(strDlgTitle, this);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->setModal(false);
+        pDlg->show();
+    }
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
+}
+
+/*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
@@ -288,7 +358,7 @@ bool CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_p
 
     bool bConnected = false;
     if (i_pGraphObjCnctLine != nullptr) {
-        int idxLineTmp = findConnectionLineIdx(i_pGraphObjCnctLine);
+        int idxLineTmp = getConnectionLineIdx(i_pGraphObjCnctLine);
         // If the connection line is not yet connected with me ...
         if (idxLineTmp < 0) {
             m_lstConnectionLines.append(i_pGraphObjCnctLine);
@@ -317,7 +387,7 @@ void CGraphObjConnectionPoint::removeConnectionLine(CGraphObjConnectionLine* i_p
         /* strAddInfo   */ strMthInArgs );
 
     if (i_pGraphObjCnctLine != nullptr) {
-        int iLineIdx = findConnectionLineIdx(i_pGraphObjCnctLine);
+        int iLineIdx = getConnectionLineIdx(i_pGraphObjCnctLine);
         if (iLineIdx < 0 || iLineIdx >= m_lstConnectionLines.count()) {
             // If a connection line is destroyed by the dtor of the connection point
             // "removeConnectionLine" is called as a reentry by the dtor of the connection line.
@@ -329,7 +399,7 @@ void CGraphObjConnectionPoint::removeConnectionLine(CGraphObjConnectionLine* i_p
 }
 
 //------------------------------------------------------------------------------
-int CGraphObjConnectionPoint::findConnectionLineIdx(CGraphObjConnectionLine* i_pGraphObjCnctLine)
+int CGraphObjConnectionPoint::getConnectionLineIdx(CGraphObjConnectionLine* i_pGraphObjCnctLine)
 //------------------------------------------------------------------------------
 {
     int idxLine = -1;
@@ -428,6 +498,11 @@ void CGraphObjConnectionPoint::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceDrawSettings(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     i_pPainter->save();
     i_pPainter->setRenderHints(s_painterRenderHints);
@@ -750,9 +825,6 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-
     QVariant valChanged = i_value;
 
     bool bGeometryChanged = false;
@@ -780,6 +852,13 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
             if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
                 tracePositionInfo(mthTracer, EMethodDir::Enter);
             }
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
+            // If the item is not a group and as long as the item is not added as a child to
+            // a group, the current (transformed) and original coordinates are equal.
+            // If the item is a child of a group, the current (transformed) coordinates are only
+            // taken over as the original coordinates if initially creating the item or when
+            // adding the item to or removing the item from a group.
+            updateTransformedCoorsOnItemPositionChanged();
             bGeometryChanged = true;
         }
         bTreeEntryChanged = true;

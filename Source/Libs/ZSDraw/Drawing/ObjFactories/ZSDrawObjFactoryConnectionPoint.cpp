@@ -237,7 +237,7 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene, i_strObjName);
     i_pDrawingScene->addGraphObj(pGraphObj, i_pGraphObjGroupParent);
 
-    CDrawSettings drawSettings(EGraphObjTypeEllipse);
+    CDrawSettings drawSettings(EGraphObjTypeConnectionPoint);
     CPhysValPoint physValPointCenter(*i_pDrawingScene);
     CPhysValSize physValSize(*i_pDrawingScene);
     double fZValue = 0.0;

@@ -220,6 +220,46 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
 }
 
 /*==============================================================================
+protected: // ctor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Constructor used to create a class derived from CGraphObjPolygon.
+
+    @param [in] i_pDrawingScene
+        Pointer to drawing scene from which the object is created.
+
+    @param [in] i_strObjName
+        Name of the graphical object.
+        Names of graphical objects must be unique below its parent.
+        If an empty string is passed a unique name is created by adding the current
+        number of objects taken from s_iInstCount to the graphical object type.
+*/
+CGraphObjPolygon::CGraphObjPolygon(
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strFactoryGroupName,
+    EGraphObjType i_type,
+    const QString& i_strType,
+    const QString& i_strObjName) :
+//------------------------------------------------------------------------------
+    CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ i_strFactoryGroupName,
+        /* type                */ i_type,
+        /* strType             */ i_strType,
+        /* strObjName          */ i_strObjName),
+    QGraphicsPolygonItem(),
+    m_polygonOrig(),
+    m_physValPolygonOrig(*m_pDrawingScene),
+    m_physValPolygonScaledAndRotated(*m_pDrawingScene),
+    m_plgLineStartArrowHead(),
+    m_plgLineEndArrowHead(),
+    m_idxsAdded(),
+    m_idxsRemoved()
+{
+}
+
+/*==============================================================================
 public: // dtor
 ==============================================================================*/
 
@@ -2231,6 +2271,11 @@ void CGraphObjPolygon::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceDrawSettings(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     QPolygonF polygon = this->polygon();
     if (polygon.size() < 2) {
@@ -2818,9 +2863,6 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-
     QVariant valChanged = i_value;
 
     bool bGeometryChanged = false;
@@ -2831,7 +2873,9 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
-            tracePositionInfo(mthTracer, EMethodDir::Enter);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                tracePositionInfo(mthTracer, EMethodDir::Enter);
+            }
             updateLineEndArrowHeadPolygons();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
@@ -2902,7 +2946,9 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
     }
 
     if (bGeometryChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            tracePositionInfo(mthTracer, EMethodDir::Leave);
+        }
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {

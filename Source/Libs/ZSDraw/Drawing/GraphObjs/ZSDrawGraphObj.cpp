@@ -184,6 +184,7 @@ CGraphObj::CGraphObj(
     m_iTraceParentGroupPositionInfoInfoBlockedCounter(0),
     m_iTraceGraphicsItemStatesInfoBlockedCounter(0),
     m_iTraceGraphObjStatesInfoBlockedCounter(0),
+    m_iTraceDrawSettingsInfoBlockedCounter(0),
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
@@ -384,6 +385,7 @@ CGraphObj::~CGraphObj()
     m_iTraceParentGroupPositionInfoInfoBlockedCounter = 0;
     m_iTraceGraphicsItemStatesInfoBlockedCounter = 0;
     m_iTraceGraphObjStatesInfoBlockedCounter = 0;
+    m_iTraceDrawSettingsInfoBlockedCounter = 0;
     // Method Tracing
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
@@ -9237,4 +9239,19 @@ void CGraphObj::traceGraphObjStates(
             ", IgnoreParentGeometryChange: " + QString::number(m_iIgnoreParentGeometryChange) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::traceDrawSettings( CMethodTracer& i_mthTracer, EMethodDir i_mthDir) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTraceDrawSettingsInfoBlockedCounter > 0) {
+        return;
+    }
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = "   ";
+    strRuntimeInfo += "DrawSettings {" + m_drawSettings.toString() + "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }

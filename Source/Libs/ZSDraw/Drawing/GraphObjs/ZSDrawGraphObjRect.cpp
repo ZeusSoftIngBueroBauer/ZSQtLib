@@ -1668,6 +1668,11 @@ void CGraphObjRect::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceDrawSettings(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     i_pPainter->save();
     i_pPainter->setRenderHints(s_painterRenderHints);

@@ -57,32 +57,34 @@ public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
+public: // must overridables of base class CGraphObj
+    void openFormatGraphObjsDialog() override;
 public: // instance methods
     QString pathNameOfLinkedObject() const;
     QString myPathName() const;
 public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
 public: // instance methods
-    bool appendConnectionLine( CGraphObjConnectionLine* i_pGraphObjCnctLine ); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
-    void removeConnectionLine( CGraphObjConnectionLine* i_pGraphObjCnctLine );
-    int findConnectionLineIdx( CGraphObjConnectionLine* i_pGraphObjCnctLine );
+    bool appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
+    void removeConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine);
+    int getConnectionLineIdx(CGraphObjConnectionLine* i_pGraphObjCnctLine);
     int getConnectionLinesCount() const;
     CGraphObjConnectionLine* getConnectionLine( int i_iLineIdx );
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
-    void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
+    void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr) override;
 protected: // overridables of base class QGraphicsItem
-    void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
-    void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
-    QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+    QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.

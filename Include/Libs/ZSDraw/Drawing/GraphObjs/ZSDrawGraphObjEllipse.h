@@ -52,7 +52,7 @@ public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
-public: // ctors and dtor
+public: // ctors
     CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes, e.g. CGraphObjConnectionPoint)
     CGraphObjEllipse(

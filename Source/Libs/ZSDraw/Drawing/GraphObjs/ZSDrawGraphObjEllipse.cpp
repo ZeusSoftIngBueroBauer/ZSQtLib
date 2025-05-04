@@ -180,29 +180,17 @@ CGraphObjEllipse::CGraphObjEllipse(
         }
     }
 
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopCenter);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameRightCenter);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomCenter);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameLeftCenter);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
-        if (strLabelName == c_strGeometryLabelNameTopCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameRightCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::RightCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameBottomCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameLeftCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::LeftCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameCenter) {
+        if (strLabelName == c_strGeometryLabelNameCenter) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameWidth) {
@@ -213,6 +201,18 @@ CGraphObjEllipse::CGraphObjEllipse(
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameTopLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
+        }
+        else if (strLabelName == c_strGeometryLabelNameTopRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
         }
     }
 
@@ -1697,6 +1697,11 @@ void CGraphObjEllipse::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceDrawSettings(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
     i_pPainter->save();
     i_pPainter->setRenderHints(s_painterRenderHints);

@@ -814,6 +814,9 @@ public: // overridable auxiliary instance methods (method tracing)
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         const QString& i_strFilter = "",
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    virtual void traceDrawSettings(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined) const;
 protected: // class members
     static QColor s_selectionColor;
     static QColor s_highlightColor;
@@ -1026,6 +1029,7 @@ protected: // instance members
     int m_iTraceParentGroupPositionInfoInfoBlockedCounter;
     int m_iTraceGraphicsItemStatesInfoBlockedCounter;
     int m_iTraceGraphObjStatesInfoBlockedCounter;
+    int m_iTraceDrawSettingsInfoBlockedCounter;
 protected: // instance members (method tracing)
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */

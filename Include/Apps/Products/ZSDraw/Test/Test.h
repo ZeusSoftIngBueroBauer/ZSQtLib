@@ -257,8 +257,12 @@ public: // type definition and constants
     const QString c_strGraphObjNameStar = "Star";
     const QString c_strGraphObjNameTriangle = "Triangle";
     // Connection Points
-    //-----------------
+    //------------------
     const QString c_strGraphObjNameConnectionPoint1 = "CnctPt1";
+    const QString c_strGraphObjNameConnectionPoint2 = "CnctPt2";
+    // Connection Lines
+    //-----------------
+    const QString c_strGraphObjNameConnectionLineCnctPt1CnctPt2 = "CnctLine-CnctPt1-CnctPt2";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -560,6 +564,13 @@ protected: // instance members
     //------------------
     QPointF m_ptPosConnectionPoint1;
     ZS::Draw::CPhysValPoint* m_pPhysValConnectionPoint1 = nullptr;
+    QPointF m_ptPosConnectionPoint2;
+    ZS::Draw::CPhysValPoint* m_pPhysValConnectionPoint2 = nullptr;
+
+    // Connection Lines
+    //-----------------
+    QPolygonF m_polygonConnectionLineCnctPt1CnctPt2;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = nullptr;
 
     // Groups
     //-------

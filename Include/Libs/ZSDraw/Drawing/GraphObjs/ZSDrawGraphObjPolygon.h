@@ -59,8 +59,15 @@ public: // class methods
     static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 public: // ctors
     CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType i_type, const QString& i_strObjName = "");
+protected: // ctor (used by derived classes, e.g. CGraphObjConnectionLine)
+    CGraphObjPolygon(
+        CDrawingScene* i_pDrawingScene,
+        const QString& i_strFactoryGroupName,
+        EGraphObjType i_type,
+        const QString& i_strType,
+        const QString& i_strObjName);
 public: // dtor
-    virtual ~CGraphObjPolygon();
+    ~CGraphObjPolygon() override;
 public: // instance methods
     void setType(EGraphObjType i_graphObjType);
 public: // overridables of base class QGraphicsItem
