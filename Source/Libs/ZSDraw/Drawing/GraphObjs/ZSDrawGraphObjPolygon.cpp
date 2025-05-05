@@ -609,13 +609,13 @@ void CGraphObjPolygon::setPolygon(const QPolygonF& i_polygon, const ZS::PhysVal:
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "[" + QString::number(i_polygon.count()) + "](" + qPolygon2Str(i_polygon) + ") " + i_unit.symbol();
+        strMthInArgs = "{" + qPolygon2Str(i_polygon) + " " + i_unit.symbol() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setLine",
+        /* strMethod    */ "setPolygon",
         /* strAddInfo   */ strMthInArgs );
 
     setPolygon(CPhysValPolygon(*m_pDrawingScene, i_polygon, i_unit));
@@ -2274,7 +2274,6 @@ void CGraphObjPolygon::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
-        traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
     QPolygonF polygon = this->polygon();
@@ -2317,7 +2316,7 @@ void CGraphObjPolygon::paint(
         i_pPainter->setBrush(brsh);
         i_pPainter->drawPolygon(polygon);
     }
-    else if (m_type == EGraphObjTypePolyline) {
+    else {
         i_pPainter->drawPolyline(polygon);
     }
 

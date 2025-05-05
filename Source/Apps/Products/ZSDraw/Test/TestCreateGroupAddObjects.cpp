@@ -3217,8 +3217,8 @@ void CTest::createTestGroupAddStandardShapesConnect2Points(
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt1", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint1]);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt2", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint2]);
-    pTestStep->setConfigValue("Points", m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->toQPolygonF());
-    pTestStep->setConfigValue("Points.Unit", strUnit);
+    //pTestStep->setConfigValue("Points", m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->toQPolygonF());
+    //pTestStep->setConfigValue("Points.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(

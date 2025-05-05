@@ -255,7 +255,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
 //------------------------------------------------------------------------------
 {
     if (i_pDrawingScene == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr");
     }
 
     QString strMthInArgs;
@@ -445,5 +445,4 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
         mthTracer.setMethodReturn(strMthRet);
     }
     return pGraphObj;
-
-} // loadGraphObj
+}

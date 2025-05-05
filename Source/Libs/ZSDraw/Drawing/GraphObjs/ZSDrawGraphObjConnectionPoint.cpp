@@ -130,8 +130,8 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
         /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
-    m_lstConnectionLines(),
-    m_selPt()
+    m_selPt(),
+    m_lstConnectionLines()
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -355,6 +355,9 @@ bool CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_p
         /* strObjName   */ path(),
         /* strMethod    */ "appendConnectionLine",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceConnectionLines(mthTracer, EMethodDir::Enter);
+    }
 
     bool bConnected = false;
     if (i_pGraphObjCnctLine != nullptr) {
@@ -365,8 +368,12 @@ bool CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_p
             bConnected = true;
         }
     }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceConnectionLines(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bool2Str(bConnected));
+        mthTracer.setMethodReturn(bConnected);
     }
     return bConnected;
 }
@@ -385,6 +392,9 @@ void CGraphObjConnectionPoint::removeConnectionLine(CGraphObjConnectionLine* i_p
         /* strObjName   */ path(),
         /* strMethod    */ "removeConnectionLine",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceConnectionLines(mthTracer, EMethodDir::Enter);
+    }
 
     if (i_pGraphObjCnctLine != nullptr) {
         int iLineIdx = getConnectionLineIdx(i_pGraphObjCnctLine);
@@ -395,6 +405,9 @@ void CGraphObjConnectionPoint::removeConnectionLine(CGraphObjConnectionLine* i_p
         else {
             m_lstConnectionLines.removeAt(iLineIdx);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceConnectionLines(mthTracer, EMethodDir::Leave);
     }
 }
 
@@ -500,7 +513,6 @@ void CGraphObjConnectionPoint::paint(
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
-        traceGraphObjStates(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
@@ -908,4 +920,81 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::traceGraphObjStates(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
+    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        return;
+    }
+
+    CGraphObj::traceGraphObjStates(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "SelPt {" + m_selPt.toString() + "}";
+    i_mthTracer.trace(strRuntimeInfo);
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::traceConnectionLines(CMethodTracer& i_mthTracer, EMethodDir i_mthDir) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTraceConnectionLinesBlockedCounter > 0) {
+        return;
+    }
+
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "ConnectionLines [" + QString::number(m_lstConnectionLines.size()) + "]";
+    i_mthTracer.trace(strRuntimeInfo);
+    if (!m_lstConnectionLines.isEmpty()) {
+        for (const CGraphObjConnectionLine* pGraphObjCnctLine : m_lstConnectionLines) {
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            if (pGraphObjCnctLine == nullptr) {
+                strRuntimeInfo += "null";
+            }
+            else {
+                strRuntimeInfo += pGraphObjCnctLine->path() + " {CnctPt1: ";
+                CGraphObjConnectionPoint* pCnctPtStart = pGraphObjCnctLine->getConnectionPoint(ELinePoint::Start);
+                if (pCnctPtStart == nullptr) {
+                    strRuntimeInfo += "null";
+                }
+                else {
+                    strRuntimeInfo += pCnctPtStart->path();
+                }
+                strRuntimeInfo += ", CnctPt2: ";
+                CGraphObjConnectionPoint* pCnctPtEnd = pGraphObjCnctLine->getConnectionPoint(ELinePoint::End);
+                if (pCnctPtEnd == nullptr) {
+                    strRuntimeInfo += "null";
+                }
+                else {
+                    strRuntimeInfo += pCnctPtEnd->path();
+                }
+                strRuntimeInfo += "}";
+            }
+            i_mthTracer.trace(strRuntimeInfo);
+        }
+    }
 }

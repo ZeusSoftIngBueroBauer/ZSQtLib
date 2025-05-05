@@ -85,6 +85,16 @@ protected: // overridables of base class QGraphicsItem
     void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceGraphObjStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+protected: // auxiliary instance methods (method tracing)
+    void traceConnectionLines(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined) const;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -95,11 +105,13 @@ protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
     static double s_fDefaultWidth_px;
 protected: // instance members
-    /*!< List with connection lines linked to the connection point. */
-    QList<CGraphObjConnectionLine*> m_lstConnectionLines;
     /*!< Defines the type of the selecton point, the linked object and the position at the linked
          object the selection point is linked to. */
     SGraphObjSelectionPoint m_selPt;
+    /*!< List with connection lines linked to the connection point. */
+    QList<CGraphObjConnectionLine*> m_lstConnectionLines;
+    /*!< Counter to block debug trace outputs for connection lines. */
+    int m_iTraceConnectionLinesBlockedCounter = 0;
 
 }; // class CGraphObjConnectionPoint
 

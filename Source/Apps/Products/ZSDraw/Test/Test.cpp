@@ -2815,7 +2815,9 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
         if (pGraphObjConnectionLine != nullptr) {
             pGraphObjConnectionLine->setConnectionPoint(ELinePoint::Start, pCnctPt1);
             pGraphObjConnectionLine->setConnectionPoint(ELinePoint::End, pCnctPt2);
-            pGraphObjConnectionLine->setPolygon(polygon, drawingSize.unit());
+            if (!polygon.isEmpty()) {
+                pGraphObjConnectionLine->setPolygon(polygon, drawingSize.unit());
+            }
         }
         pGraphObj->rename(strGraphObjName);
     }

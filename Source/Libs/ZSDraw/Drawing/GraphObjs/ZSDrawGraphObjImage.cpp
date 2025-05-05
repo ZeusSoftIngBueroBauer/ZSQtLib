@@ -651,7 +651,6 @@ void CGraphObjImage::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
-        traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
     QStyleOptionGraphicsItem styleOption = *i_pStyleOption;

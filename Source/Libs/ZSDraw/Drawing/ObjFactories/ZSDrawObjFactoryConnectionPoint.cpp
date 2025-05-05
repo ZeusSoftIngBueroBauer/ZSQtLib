@@ -97,8 +97,7 @@ int CObjFactoryConnectionPoint::getNumberOfCreatedGraphObjects() const
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;

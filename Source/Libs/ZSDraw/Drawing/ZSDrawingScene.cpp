@@ -1012,11 +1012,9 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
                 ++itIdxTree;
             }
         }
-
         xmlStreamWriter.writeEndElement();  // Drawing
         xmlStreamWriter.writeEndDocument();
-
-    } // if( !errResultInfo.isErrorResult() )
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);

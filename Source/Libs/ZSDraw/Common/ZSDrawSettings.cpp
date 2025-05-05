@@ -1761,10 +1761,8 @@ QString CDrawSettings::toString() const
             str += ", EndStyle P1 {";
             iAttribute = EDrawAttributeLineP1EndStyle;
             if (IsAttributeUsed(m_graphObjType, iAttribute)) {
-                QString strAttr = drawAttribute2Str(iAttribute);
-                strAttr = strAttr.remove(XmlStreamParser::c_strXmlElemNameLineP1EndStyle);
                 if (!str.endsWith("{")) str += ", ";
-                str += strAttr + ": " + attributeValue2Str(iAttribute);
+                str += attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
             str += ", ArrowHead {";
@@ -1780,10 +1778,8 @@ QString CDrawSettings::toString() const
             str += "}} P2 {";
             iAttribute = EDrawAttributeLineP2EndStyle;
             if (IsAttributeUsed(m_graphObjType, iAttribute)) {
-                QString strAttr = drawAttribute2Str(iAttribute);
-                strAttr = strAttr.remove(XmlStreamParser::c_strXmlElemNameLineP2EndStyle);
                 if (!str.endsWith("{")) str += ", ";
-                str += strAttr + ": " + attributeValue2Str(iAttribute);
+                str += attributeValue2Str(iAttribute);
                 iSectionsPrint++;
             }
             str += ", ArrowHead {";
@@ -1799,14 +1795,11 @@ QString CDrawSettings::toString() const
             str += "}}";
         }
         if (isLineRecordTypeUsed()) {
-            str += "RecordType {";
+            str += ", RecordType {";
             for (int iAttribute = EDrawAttributeLineRecordTypeMin; iAttribute <= EDrawAttributeLineRecordTypeMax; ++iAttribute) {
                 if (IsAttributeUsed(m_graphObjType, iAttribute)) {
-                    QString strAttr = drawAttribute2Str(iAttribute);
-                    strAttr = strAttr.remove("Line");
-                    strAttr = strAttr.remove("RecordType");
                     if (!str.endsWith("{")) str += ", ";
-                    str += strAttr + ": " + attributeValue2Str(iAttribute);
+                    str += attributeValue2Str(iAttribute);
                     iSectionsPrint++;
                 }
             }

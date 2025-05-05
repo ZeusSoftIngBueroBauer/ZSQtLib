@@ -116,8 +116,7 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionLine,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),
-        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionLine" + QString::number(s_iInstCount) : i_strObjName),
-    m_arpCnctPts(CEnumLinePoint::count())
+        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionLine" + QString::number(s_iInstCount) : i_strObjName)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -195,12 +194,12 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
     m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
 
-    for (int idxLinePt = 0; idxLinePt < m_arpCnctPts.size(); idxLinePt++) {
-        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[idxLinePt];
+    for (ELinePoint linePoint : m_arpCnctPts.keys()) {
+        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts.value(linePoint);
         if (pGraphObjCnctPt != nullptr) {
             pGraphObjCnctPt->removeConnectionLine(this);
         }
-        m_arpCnctPts[idxLinePt] = nullptr;
+        m_arpCnctPts.remove(linePoint);
     }
 }
 
@@ -296,11 +295,17 @@ bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
         /* strObjName   */ path(),
         /* strMethod    */ "setConnectionPoint",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceConnectionPoints(mthTracer, EMethodDir::Enter);
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
     bool bConnected = false;
 
-    if (static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size() && i_pCnctPt != nullptr) {
-        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[static_cast<int>(i_linePoint)];
+    if (i_pCnctPt != nullptr && (i_linePoint == ELinePoint::Start || i_linePoint == ELinePoint::End)) {
+        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts.value(i_linePoint, nullptr);
         if (pGraphObjCnctPt == i_pCnctPt) {
             bConnected = true;
         }
@@ -308,12 +313,12 @@ bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
             if (pGraphObjCnctPt != nullptr) {
                 pGraphObjCnctPt->removeConnectionLine(this);
                 pGraphObjCnctPt = nullptr;
-                m_arpCnctPts[static_cast<int>(i_linePoint)] = nullptr;
+                m_arpCnctPts.remove(i_linePoint);
             }
             bConnected = i_pCnctPt->appendConnectionLine(this);
             if (bConnected) {
-                m_arpCnctPts[static_cast<int>(i_linePoint)] = i_pCnctPt;
-                pGraphObjCnctPt = m_arpCnctPts[static_cast<int>(i_linePoint)];
+                m_arpCnctPts[i_linePoint] = i_pCnctPt;
+                pGraphObjCnctPt = m_arpCnctPts[i_linePoint];
             }
             else {
                 pGraphObjCnctPt = nullptr;
@@ -349,6 +354,15 @@ bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
             }
         }
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceConnectionPoints(mthTracer, EMethodDir::Leave);
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bConnected);
+    }
     return bConnected;
 }
 
@@ -359,10 +373,10 @@ ELinePoint CGraphObjConnectionLine::getConnectionLinePoint(CGraphObjConnectionPo
 //------------------------------------------------------------------------------
 {
     ELinePoint linePoint = ELinePoint::None;
-    for (int idxLinePtTmp = 0; idxLinePtTmp < m_arpCnctPts.size(); idxLinePtTmp++) {
-        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[idxLinePtTmp];
-        if (pGraphObjCnctPt == i_pCnctPt) {
-            linePoint = static_cast<ELinePoint>(idxLinePtTmp);
+    for (ELinePoint linePointTmp : m_arpCnctPts.keys()) {
+        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[linePointTmp];
+        if (pGraphObjCnctPt != nullptr && pGraphObjCnctPt == i_pCnctPt) {
+            linePoint = linePointTmp;
             break;
         }
     }
@@ -373,11 +387,7 @@ ELinePoint CGraphObjConnectionLine::getConnectionLinePoint(CGraphObjConnectionPo
 CGraphObjConnectionPoint* CGraphObjConnectionLine::getConnectionPoint(ELinePoint i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-    if (static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size()) {
-        pGraphObjCnctPt = m_arpCnctPts[static_cast<int>(i_linePoint)];
-    }
-    return pGraphObjCnctPt;
+    return m_arpCnctPts.value(i_linePoint, nullptr);
 }
 
 /*==============================================================================
@@ -977,4 +987,38 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionLine::traceConnectionPoints(CMethodTracer& i_mthTracer, EMethodDir i_mthDir) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTraceConnectionPointsBlockedCounter > 0) {
+        return;
+    }
+
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "ConnectionPoints [" + QString::number(m_arpCnctPts.size()) + "]";
+    if (!m_arpCnctPts.isEmpty()) {
+        strRuntimeInfo += "(";
+        for (ELinePoint linePoint : m_arpCnctPts.keys()) {
+            const CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[linePoint];
+            if (!strRuntimeInfo.endsWith("(")) strRuntimeInfo += ", ";
+            if (pGraphObjCnctPt == nullptr) {
+                strRuntimeInfo += CEnumLinePoint(linePoint).toString() + ": null";
+            }
+            else {
+                strRuntimeInfo += CEnumLinePoint(linePoint).toString() + ": " + pGraphObjCnctPt->path();
+            }
+        }
+        strRuntimeInfo += ")";
+    }
+    i_mthTracer.trace(strRuntimeInfo);
 }

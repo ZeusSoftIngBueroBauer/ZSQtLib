@@ -78,6 +78,10 @@ protected: // overridables of base class QGraphicsItem
     void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // auxiliary instance methods (method tracing)
+    void traceConnectionPoints(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined) const;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -87,7 +91,11 @@ public: // class members
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
-    QVector<CGraphObjConnectionPoint*> m_arpCnctPts;
+    /*!< Vector with connection points of the connection line.
+         The vector has two elements: Start and End point. */
+    QMap<ELinePoint, CGraphObjConnectionPoint*> m_arpCnctPts;
+    /*!< Counter to block debug trace outputs for connection points. */
+    int m_iTraceConnectionPointsBlockedCounter = 0;
 
 }; // class CGraphObjConnectionLine
 

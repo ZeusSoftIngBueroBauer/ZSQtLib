@@ -206,8 +206,8 @@ protected: // auxiliary instance methods (method tracing)
     QPolygonF QGraphicsPolygonItem_setPolygon(const QPolygonF& i_polygon);
     CPhysValPolygon setPhysValPolygonOrig(const CPhysValPolygon& i_physValPolygon);
     CPhysValPolygon setPhysValPolygonScaledAndRotated(const CPhysValPolygon& i_physValPolygon);
-    void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void QGraphicsItem_prepareGeometryChange() override;
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
