@@ -91,19 +91,19 @@ public: // must overridables of base class QGraphicsItem
     QPainterPath shape() const override;
     void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
-    void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
-    QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+    QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected slots: // overridables of base class CGraphObj
     void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
+    void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent) override;
 protected: // auxiliary instance methods
     void updatePosition();
 protected: // class members

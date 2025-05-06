@@ -137,8 +137,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     QObject::connect(
         m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
@@ -163,8 +162,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
 
     m_fWidth_px = 0.0;
     m_bUpdatePositionInProgress = false;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -832,7 +830,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 }
 
 /*==============================================================================
-protected slots:
+protected slots: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -869,7 +867,7 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    // The selectin point should be drawn after the parent object is drawn.
+    // The selection point should be drawn after the parent object is drawn.
     double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
     setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints);
 }

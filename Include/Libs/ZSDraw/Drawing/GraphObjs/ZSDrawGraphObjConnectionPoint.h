@@ -65,7 +65,7 @@ public: // instance methods
 public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
 public: // instance methods
-    bool appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
+    void appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
     void removeConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine);
     int getConnectionLineIdx(CGraphObjConnectionLine* i_pGraphObjCnctLine);
     int getConnectionLinesCount() const;

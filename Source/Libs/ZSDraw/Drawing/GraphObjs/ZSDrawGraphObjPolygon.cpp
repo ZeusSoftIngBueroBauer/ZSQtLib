@@ -192,6 +192,9 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    // The predefined label names (Name, P1, .., PN) are added (or removed)
+    // on adding (or removing) points to the polygon.
+
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
@@ -503,11 +506,6 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
         /* strMethod    */ "setPolygon",
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
-
-    if (i_physValPolygon.count() < 2) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange,
-            "Polygon size " + QString::number(i_physValPolygon.count()) + " is less than 2");
-    }
 
     bool bGeometryOnSceneChanged = false;
     if (m_physValPolygonScaledAndRotated != i_physValPolygon) {
@@ -2238,11 +2236,11 @@ QPainterPath CGraphObjPolygon::shape() const
         }
     }
     if (!m_plgLineStartArrowHead.isEmpty()) {
-        painterPath.moveTo(mapToScene(m_plgLineStartArrowHead.at(0)));
+        //painterPath.moveTo(mapToScene(m_plgLineStartArrowHead.at(0)));
         painterPath.addPolygon(m_plgLineStartArrowHead);
     }
     if (!m_plgLineEndArrowHead.isEmpty()) {
-        painterPath.moveTo(mapToScene(m_plgLineEndArrowHead.at(0)));
+        //painterPath.moveTo(mapToScene(m_plgLineEndArrowHead.at(0)));
         painterPath.addPolygon(m_plgLineEndArrowHead);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

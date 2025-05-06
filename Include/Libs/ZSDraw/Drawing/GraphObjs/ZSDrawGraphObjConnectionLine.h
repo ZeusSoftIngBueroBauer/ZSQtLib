@@ -64,8 +64,8 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
 public: // overridables
-    virtual bool setConnectionPoint(ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt);
-    virtual ELinePoint getConnectionLinePoint(CGraphObjConnectionPoint* i_pCnctPt) const;
+    virtual bool setConnectionPoint(ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pGraphObjCnctPt);
+    virtual ELinePoint getConnectionLinePoint(CGraphObjConnectionPoint* i_pGraphObjCnctPt) const;
     virtual CGraphObjConnectionPoint* getConnectionPoint(ELinePoint i_linePoint) const;
 protected: // overridables of base class QGraphicsItem
     void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
@@ -78,6 +78,9 @@ protected: // overridables of base class QGraphicsItem
     void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected slots:
+    void onGraphObjConnectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjCnctPt, bool );
+    void onGraphObjConnectionPointZValueChanged(CGraphObj* i_pGraphObjCnctPt);
 protected: // auxiliary instance methods (method tracing)
     void traceConnectionPoints(
         ZS::System::CMethodTracer& i_mthTracer,

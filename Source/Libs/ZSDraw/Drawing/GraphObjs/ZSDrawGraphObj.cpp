@@ -64,7 +64,9 @@ public: // type definitions and constants
 ==============================================================================*/
 
 const double CGraphObj::c_fStackingOrderOffsetLabels = 0.1;
-const double CGraphObj::c_fStackingOrderOffsetSelectionPoints = 0.2;
+const double CGraphObj::c_fStackingOrderOffsetConnectionPoints = 0.2;
+const double CGraphObj::c_fStackingOrderOffsetConnectionLines = 0.3;
+const double CGraphObj::c_fStackingOrderOffsetSelectionPoints = 0.4;
 
 const QString CGraphObj::c_strLabelName = "Name";
 const QString CGraphObj::c_strGeometryLabelNameP = "P";
@@ -2837,136 +2839,6 @@ void CGraphObj::acceptCurrentAsOriginalCoors()
 public: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Maps the given point given in local coordinates relative to the origin
-           point of the item's bounding rectangle to the top left corner of the
-           item's bounding rectangle.
-
-          -3        -2        -1         0         1         2         3
-           0987654321098765432109876543210123456789012345678901234567890
-       -10 +-----------------------------------------------------------+  0
-        -9 |      (-20,-8) => (10,2)                                   |  1
-        -8 |         X                                                 |  2
-        -7 |                                                           |  3
-        -6 |                                                           |  4
-        -5 |                                                           |  5
-        -4 |                                                           |  6
-        -3 |                                                           |  7
-        -2 |                                                           |  8
-        -1 |                       (0,0) => (30,10)                    |  9
-         0 |                             O                             | 10
-         1 |                                                           | 11
-         2 |                                                           | 12
-         3 |                                                           | 13
-         4 |                                                           | 14
-         5 |                                                           | 15
-         6 |                                                           | 16
-         7 |                                         (20,8) => (50,18) | 17
-         8 |                                                 X         | 18
-         9 |                                                           | 19
-        10 +-----------------------------------------------------------+ 20
-           0         1         2         3         4         5         6
-           0123456789012345678901234567890123456789012345678901234567890
-
-    @param [in] i_pt
-        Point in item's local coordinates relative to the origin of the
-        item's bounding rectangle.
-
-    @return Point relative to the top left corner of the item's bounding rectangle.
-*/
-QPointF CGraphObj::mapToTopLeftOfBoundingRect(const QPointF& i_pt) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = getBoundingRect();   // (-30, -10, 60, 20)
-    QPointF ptOrigin = rctBounding.topLeft(); // (-30, -10)
-    return i_pt - ptOrigin;                   // (-20, -8) - (-30, -10) = (10, 2)
-}
-
-//------------------------------------------------------------------------------
-QLineF CGraphObj::mapToTopLeftOfBoundingRect(const QLineF& i_line) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = getBoundingRect();
-    QPointF ptOrigin = rctBounding.topLeft();
-    return QLineF(i_line.p1() - ptOrigin, i_line.p2() - ptOrigin);
-}
-
-//------------------------------------------------------------------------------
-QRectF CGraphObj::mapToTopLeftOfBoundingRect(const QRectF& i_rect) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = getBoundingRect();
-    QPointF ptOrigin = rctBounding.topLeft();
-    return QRectF(i_rect.topLeft() - ptOrigin, i_rect.bottomRight() - ptOrigin);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Maps the given point given in local coordinates relative to the top left
-           corner of the item's bounding rectangle to the center point of the
-           item's bounding rectangle.
-
-          0         1         2         3         4         5         6
-          0123456789012345678901234567890123456789012345678901234567890
-        0 +-----------------------------------------------------------+ -10
-        1 |      (10,2) => (-20,-8)                                   |  -9
-        2 |         X                                                 |  -8
-        3 |                                                           |  -7
-        4 |                                                           |  -6
-        5 |                                                           |  -5
-        6 |                                                           |  -4
-        7 |                                                           |  -3
-        8 |                                                           |  -2
-        9 |                       (30,10) => (0,0)                    |  -1
-       10 |                             O                             |   0
-       11 |                                                           |   1
-       12 |                                                           |   2
-       13 |                                                           |   3
-       14 |                                                           |   4
-       15 |                                                           |   5
-       16 |                                                           |   6
-       17 |                                         (50,18) => (20,8) |   7
-       18 |                                                 X         |   8
-       19 |                                                           |   9
-       20 +-----------------------------------------------------------+  10
-         -3        -2        -1         0         1         2         3
-          0987654321098765432109876543210123456789012345678901234567890
-
-    @param [in] i_pt
-        Point in item's local coordinates relative to the top left corner
-        of the item's bounding rectangle.
-
-    @return Point relative to the center point of the item's bounding rectangle.
-*/
-QPointF CGraphObj::mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = getBoundingRect();   // (-30, -10, 60, 20)
-    QPointF ptOrigin = rctBounding.topLeft(); // (-30, -10)
-    return i_pt + ptOrigin;                   // (10, 2) + (-30, -10) = (-20, -8)
-}
-
-//------------------------------------------------------------------------------
-QLineF CGraphObj::mapFromTopLeftOfBoundingRect(const QLineF& i_line) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = getBoundingRect();
-    QPointF ptOrigin = rctBounding.topLeft();
-    return QLineF(i_line.p1() + ptOrigin, i_line.p2() + ptOrigin);
-}
-
-//------------------------------------------------------------------------------
-QRectF CGraphObj::mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const
-//------------------------------------------------------------------------------
-{
-    QRectF rctBounding = getBoundingRect();
-    QPointF ptOrigin = rctBounding.topLeft();
-    return QRectF(i_rect.topLeft() + ptOrigin, i_rect.bottomRight() + ptOrigin);
-}
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
 #if 0
 //------------------------------------------------------------------------------
 /*! @brief Maps the given point which is relative to the top left or bottom left
@@ -4221,6 +4093,147 @@ public: // overridables
 //    return fScaleFacY;
 //
 //} // getScaleFacY
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given point given in local coordinates relative to the origin
+           point of the item's bounding rectangle to the top left corner of the
+           item's bounding rectangle.
+
+          -3        -2        -1         0         1         2         3
+           0987654321098765432109876543210123456789012345678901234567890
+       -10 +-----------------------------------------------------------+  0
+        -9 |      (-20,-8) => (10,2)                                   |  1
+        -8 |         X                                                 |  2
+        -7 |                                                           |  3
+        -6 |                                                           |  4
+        -5 |                                                           |  5
+        -4 |                                                           |  6
+        -3 |                                                           |  7
+        -2 |                                                           |  8
+        -1 |                       (0,0) => (30,10)                    |  9
+         0 |                             O                             | 10
+         1 |                                                           | 11
+         2 |                                                           | 12
+         3 |                                                           | 13
+         4 |                                                           | 14
+         5 |                                                           | 15
+         6 |                                                           | 16
+         7 |                                         (20,8) => (50,18) | 17
+         8 |                                                 X         | 18
+         9 |                                                           | 19
+        10 +-----------------------------------------------------------+ 20
+           0         1         2         3         4         5         6
+           0123456789012345678901234567890123456789012345678901234567890
+
+    @param [in] i_pt
+        Point in item's local coordinates relative to the origin of the
+        item's bounding rectangle.
+
+    @return Point relative to the top left corner of the item's bounding rectangle.
+*/
+QPointF CGraphObj::mapToTopLeftOfBoundingRect(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();   // (-30, -10, 60, 20)
+    QPointF ptOrigin = rctBounding.topLeft(); // (-30, -10)
+    return i_pt - ptOrigin;                   // (-20, -8) - (-30, -10) = (10, 2)
+}
+
+//------------------------------------------------------------------------------
+QLineF CGraphObj::mapToTopLeftOfBoundingRect(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QLineF(i_line.p1() - ptOrigin, i_line.p2() - ptOrigin);
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObj::mapToTopLeftOfBoundingRect(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QRectF(i_rect.topLeft() - ptOrigin, i_rect.bottomRight() - ptOrigin);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given point given in local coordinates relative to the top left
+           corner of the item's bounding rectangle to the center point of the
+           item's bounding rectangle.
+
+          0         1         2         3         4         5         6
+          0123456789012345678901234567890123456789012345678901234567890
+        0 +-----------------------------------------------------------+ -10
+        1 |      (10,2) => (-20,-8)                                   |  -9
+        2 |         X                                                 |  -8
+        3 |                                                           |  -7
+        4 |                                                           |  -6
+        5 |                                                           |  -5
+        6 |                                                           |  -4
+        7 |                                                           |  -3
+        8 |                                                           |  -2
+        9 |                       (30,10) => (0,0)                    |  -1
+       10 |                             O                             |   0
+       11 |                                                           |   1
+       12 |                                                           |   2
+       13 |                                                           |   3
+       14 |                                                           |   4
+       15 |                                                           |   5
+       16 |                                                           |   6
+       17 |                                         (50,18) => (20,8) |   7
+       18 |                                                 X         |   8
+       19 |                                                           |   9
+       20 +-----------------------------------------------------------+  10
+         -3        -2        -1         0         1         2         3
+          0987654321098765432109876543210123456789012345678901234567890
+
+    @param [in] i_pt
+        Point in item's local coordinates relative to the top left corner
+        of the item's bounding rectangle.
+
+    @return Point relative to the center point of the item's bounding rectangle.
+*/
+QPointF CGraphObj::mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();   // (-30, -10, 60, 20)
+    QPointF ptOrigin = rctBounding.topLeft(); // (-30, -10)
+    return i_pt + ptOrigin;                   // (10, 2) + (-30, -10) = (-20, -8)
+}
+
+//------------------------------------------------------------------------------
+QLineF CGraphObj::mapFromTopLeftOfBoundingRect(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QLineF(i_line.p1() + ptOrigin, i_line.p2() + ptOrigin);
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObj::mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QRectF(i_rect.topLeft() + ptOrigin, i_rect.bottomRight() + ptOrigin);
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    return parentGroup() == nullptr ? i_physValPoint : parentGroup()->mapToScene(i_physValPoint);
+}
 
 /*==============================================================================
 public: // overridables

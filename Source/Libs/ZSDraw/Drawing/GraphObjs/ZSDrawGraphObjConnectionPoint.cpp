@@ -342,7 +342,7 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine)
+void CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -359,23 +359,17 @@ bool CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_p
         traceConnectionLines(mthTracer, EMethodDir::Enter);
     }
 
-    bool bConnected = false;
     if (i_pGraphObjCnctLine != nullptr) {
         int idxLineTmp = getConnectionLineIdx(i_pGraphObjCnctLine);
         // If the connection line is not yet connected with me ...
         if (idxLineTmp < 0) {
             m_lstConnectionLines.append(i_pGraphObjCnctLine);
-            bConnected = true;
         }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceConnectionLines(mthTracer, EMethodDir::Leave);
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bConnected);
-    }
-    return bConnected;
 }
 
 //------------------------------------------------------------------------------

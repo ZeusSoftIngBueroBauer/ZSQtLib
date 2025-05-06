@@ -1078,9 +1078,10 @@ QRectF CGraphObjLine::getEffectiveBoundingRectOnScene() const
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
         /* strAddInfo   */ "" );
 
+    const QGraphicsItem* pGraphicsItemThis = this;
     QPolygonF plg({
-        mapToScene(line().p1()),
-        mapToScene(line().p2())
+        pGraphicsItemThis->mapToScene(line().p1()),
+        pGraphicsItemThis->mapToScene(line().p2())
     });
     QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

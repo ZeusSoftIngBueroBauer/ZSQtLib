@@ -398,6 +398,8 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
     Q_OBJECT
 public: // type definitions and constants
     static const double c_fStackingOrderOffsetLabels;
+    static const double c_fStackingOrderOffsetConnectionPoints;
+    static const double c_fStackingOrderOffsetConnectionLines;
     static const double c_fStackingOrderOffsetSelectionPoints;
     static const QString c_strLabelName;
     static const QString c_strGeometryLabelNameP;
@@ -604,13 +606,6 @@ public: // overridables
     virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
     virtual void removeAlignment(int i_idx);
     virtual void clearAlignments();
-public: // overridables
-    virtual QPointF mapToTopLeftOfBoundingRect(const QPointF& i_pt) const;
-    virtual QLineF mapToTopLeftOfBoundingRect(const QLineF& i_line) const;
-    virtual QRectF mapToTopLeftOfBoundingRect(const QRectF& i_rect) const;
-    virtual QPointF mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const;
-    virtual QLineF mapFromTopLeftOfBoundingRect(const QLineF& i_line) const;
-    virtual QRectF mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
     virtual QRectF getEffectiveBoundingRectOnScene() const;
@@ -626,6 +621,15 @@ public: // overridables
     virtual ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const;
     virtual ZS::PhysVal::CPhysVal getEffectiveRotationAngleOnScene() const;
     virtual ZS::PhysVal::CPhysVal getEffectiveRotationAngleOnScene(const ZS::PhysVal::CUnit& i_unit) const;
+public: // overridables
+    virtual QPointF mapToTopLeftOfBoundingRect(const QPointF& i_pt) const;
+    virtual QLineF mapToTopLeftOfBoundingRect(const QLineF& i_line) const;
+    virtual QRectF mapToTopLeftOfBoundingRect(const QRectF& i_rect) const;
+    virtual QPointF mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const;
+    virtual QLineF mapFromTopLeftOfBoundingRect(const QLineF& i_line) const;
+    virtual QRectF mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const;
+public: // overridables
+    virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;

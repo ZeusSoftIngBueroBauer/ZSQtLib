@@ -135,17 +135,13 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_strlstPredefinedLabelNames.append(c_strLabelName);
-    addLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    // The predefined label names (Name, P1, .., PN) are added (or removed)
+    // on adding (or removing) points to the polygon.
 
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameCenter) {
@@ -159,18 +155,6 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameTopLeft) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
-        }
-        else if (strLabelName == c_strGeometryLabelNameTopRight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
-        }
-        else if (strLabelName == c_strGeometryLabelNameBottomRight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
-        }
-        else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
         }
     }
 
@@ -281,13 +265,13 @@ public: // overridables
     @return true if the specified line point is connected with the specified connection point,
             false on error (e.g. if the line is already connected with the specified connection point).
 */
-bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt)
+bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pGraphObjCnctPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumLinePoint(i_linePoint).toString();
-        strMthInArgs += ", CnctPoint: " + QString(i_pCnctPt == nullptr ? "nullptr" : i_pCnctPt->name());
+        strMthInArgs = CEnumLinePoint(i_linePoint).toString() +
+            ", CnctPoint: " + QString(i_pGraphObjCnctPt == nullptr ? "nullptr" : i_pGraphObjCnctPt->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -301,59 +285,54 @@ bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
         traceThisPositionInfo(mthTracer, EMethodDir::Enter);
     }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     bool bConnected = false;
 
-    if (i_pCnctPt != nullptr && (i_linePoint == ELinePoint::Start || i_linePoint == ELinePoint::End)) {
-        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts.value(i_linePoint, nullptr);
-        if (pGraphObjCnctPt == i_pCnctPt) {
-            bConnected = true;
+    if (i_pGraphObjCnctPt != nullptr && (i_linePoint == ELinePoint::Start || i_linePoint == ELinePoint::End)) {
+        CGraphObj* pGraphObjThis = this;
+        CPhysValPoint physValPoint = i_pGraphObjCnctPt->getCenter();
+        physValPoint = pGraphObjThis->mapToScene(physValPoint);
+        CGraphObjConnectionPoint* pGraphObjCnctPtPrev = m_arpCnctPts.value(i_linePoint, nullptr);
+        if (pGraphObjCnctPtPrev != nullptr && pGraphObjCnctPtPrev != i_pGraphObjCnctPt ) {
+            pGraphObjCnctPtPrev->removeConnectionLine(this);
+            m_arpCnctPts.remove(i_linePoint);
+            QObject::disconnect(
+                i_pGraphObjCnctPt, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged);
+            QObject::disconnect(
+                i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
         }
-        else {
-            if (pGraphObjCnctPt != nullptr) {
-                pGraphObjCnctPt->removeConnectionLine(this);
-                pGraphObjCnctPt = nullptr;
-                m_arpCnctPts.remove(i_linePoint);
-            }
-            bConnected = i_pCnctPt->appendConnectionLine(this);
-            if (bConnected) {
-                m_arpCnctPts[i_linePoint] = i_pCnctPt;
-                pGraphObjCnctPt = m_arpCnctPts[i_linePoint];
+        if (m_arpCnctPts.value(i_linePoint, nullptr) != i_pGraphObjCnctPt) {
+            m_arpCnctPts[i_linePoint] = i_pGraphObjCnctPt;
+            i_pGraphObjCnctPt->appendConnectionLine(this);
+            QObject::connect(
+                i_pGraphObjCnctPt, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged);
+            QObject::connect(
+                i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
+        }
+        if (i_linePoint == ELinePoint::Start) {
+            if (pGraphObjCnctPtPrev == nullptr) {
+                insert(0, physValPoint);
             }
             else {
-                pGraphObjCnctPt = nullptr;
+                replace(0, physValPoint);
             }
         }
-        if (pGraphObjCnctPt != nullptr) {
-            QGraphicsItem* pGraphicsItemCnctPt = dynamic_cast<QGraphicsItem*>(pGraphObjCnctPt);
-            QPolygonF plg = polygon();
-            ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
-            QPointF ptCnctPtPos = pGraphObjCnctPt->rect().center();
-            QPointF ptCnctPtScenePos = pGraphicsItemCnctPt->mapToScene(ptCnctPtPos);
-            if (linePoint == ELinePoint::Start) {
-                QPointF pt(0.0,0.0);
-                if (plg.size() == 0) {
-                    plg.append(pt);
-                }
-                else {
-                    plg[0] = pt;
-                }
-                QGraphicsPolygonItem::setPolygon(plg);
-                setPos(ptCnctPtScenePos);
+        else if (i_linePoint == ELinePoint::End) {
+            if (pGraphObjCnctPtPrev == nullptr) {
+                append(physValPoint);
             }
-            else if (linePoint == ELinePoint::End && plg.size() >= 1) {
-                QPointF pt = mapFromScene(ptCnctPtScenePos);
-                if (plg.size() == 1) {
-                    plg.append(pt);
-                }
-                else {
-                    int idxPt = plg.size()-1;
-                    plg[idxPt] = pt;
-                }
-                QGraphicsPolygonItem::setPolygon(plg);
+            else {
+                replace(count()-1, physValPoint);
             }
         }
     }
+
+    refCountGuardTrace.decrementAndReleaseCounter();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceConnectionPoints(mthTracer, EMethodDir::Leave);
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
@@ -369,13 +348,13 @@ bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
 //------------------------------------------------------------------------------
 /*! @brief Returns the line point (start or end) which is connected to the specified connection point.
 */
-ELinePoint CGraphObjConnectionLine::getConnectionLinePoint(CGraphObjConnectionPoint* i_pCnctPt) const
+ELinePoint CGraphObjConnectionLine::getConnectionLinePoint(CGraphObjConnectionPoint* i_pGraphObjCnctPt) const
 //------------------------------------------------------------------------------
 {
     ELinePoint linePoint = ELinePoint::None;
     for (ELinePoint linePointTmp : m_arpCnctPts.keys()) {
         CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[linePointTmp];
-        if (pGraphObjCnctPt != nullptr && pGraphObjCnctPt == i_pCnctPt) {
+        if (pGraphObjCnctPt != nullptr && pGraphObjCnctPt == i_pGraphObjCnctPt) {
             linePoint = linePointTmp;
             break;
         }
@@ -389,97 +368,6 @@ CGraphObjConnectionPoint* CGraphObjConnectionLine::getConnectionPoint(ELinePoint
 {
     return m_arpCnctPts.value(i_linePoint, nullptr);
 }
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-///*! @brief Called by the parent graphic item to inform the child about geometry changes.
-//
-//    Connection lines don't belong to groups. But their connection points do.
-//    If a group is moved also the connection points are moved by Qt's graphics scene.
-//    But not the connection lines which are linked to the connection points. The
-//    connection points can be considered as parents of connection lines and
-//    "onGraphObjParentGeometryOnSceneChanged" is called by the connection points if their
-//    position changes.
-//*/
-//void CGraphObjConnectionLine::onGraphObjParentGeometryOnSceneChanged(
-//    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-//    CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjParent);
-//    if (pGraphObjCnctPt != nullptr) {
-//        QGraphicsItem* pGraphicsItemCnctPt = dynamic_cast<QGraphicsItem*>(pGraphObjCnctPt);
-//        QPolygonF plg = polygon();
-//        ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
-//        QPointF ptCnctPtPos = pGraphObjCnctPt->rect().center();
-//        QPointF ptCnctPtScenePos = pGraphicsItemCnctPt->mapToScene(ptCnctPtPos);
-//        QPointF ptItemPosNew = mapFromScene(ptCnctPtScenePos);
-//        if (linePoint == ELinePoint::Start && plg.size() > 0) {
-//            // The origin of the poly line's coordinate system (the item's position)
-//            // is the first line point (in poly line's item's coordinate system the
-//            // first line point is at 0/0). If the first line point is moved it's
-//            // coordinates remain at 0/0 but all other points must be moved to fit into
-//            // the new item's coordinate system.
-//            QPointF ptItemPosOld = plg[0];
-//            setPos(ptCnctPtScenePos);
-//            double dx = ptItemPosNew.x() - ptItemPosOld.x();
-//            double dy = ptItemPosNew.y() - ptItemPosOld.y();
-//            QPointF ptPosOld, ptPosNew;
-//            for (int idxPt = 1; idxPt < plg.size(); idxPt++) {
-//                ptPosOld = plg[idxPt];
-//                ptPosNew.setX( ptPosOld.x() - dx );
-//                ptPosNew.setY( ptPosOld.y() - dy );
-//                plg[idxPt] = ptPosNew;
-//            }
-//            QGraphicsPolygonItem::setPolygon(plg);
-//            for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
-//                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-//                if (pGraphObjSelPt != nullptr) {
-//                    QPointF ptSel = plg[idxSelPt];
-//                    ptSel = pGraphicsItemThis->mapToScene(ptSel);
-//                    pGraphObjSelPt->setPos(ptSel);
-//                }
-//            }
-//        }
-//        else if (linePoint == ELinePoint::End && plg.size() > 1) {
-//            int idxSelPt = plg.size()-1;
-//            plg[idxSelPt] = ptItemPosNew;
-//            QGraphicsPolygonItem::setPolygon(plg);
-//            if (idxSelPt >= 0 && idxSelPt < m_arpSelPtsPolygon.size()) {
-//                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-//                if (pGraphObjSelPt != nullptr) {
-//                    QPointF ptSel = plg[idxSelPt];
-//                    ptSel = pGraphicsItemThis->mapToScene(ptSel);
-//                    pGraphObjSelPt->setPos(ptSel);
-//                }
-//            }
-//        }
-//        normalize();
-//        m_bCoorsDirty = true;
-//        updateLineEndPolygonCoors();
-//        //updateEditInfo();
-//        //updateToolTip();
-//    }
-//
-//    // If the geometry of the parent on the scene of this item changes, also the geometry
-//    // on the scene of this item is changed.
-//    emit_geometryOnSceneChanged();
-//
-//} // onGraphObjParentGeometryOnSceneChanged
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
@@ -987,6 +875,81 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected slots: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Called by the parent graphic item to inform the child about geometry changes.
+
+    Connection lines don't belong to groups. But their connection points do.
+    If a group is moved also the connection points are moved by Qt's graphics scene.
+    But not the connection lines which are linked to the connection points. The
+    connection points can be considered as parents of connection lines and
+    "onGraphObjParentGeometryOnSceneChanged" is called by the connection points if their
+    position changes.
+*/
+void CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjCnctPt, bool )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjCnctPt->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjConnectionPointGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
+
+    CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjCnctPt);
+    if (pGraphObjCnctPt != nullptr) {
+        CGraphObj* pGraphObjThis = this;
+        CPhysValPoint physValPoint = pGraphObjCnctPt->getCenter();
+        physValPoint = pGraphObjThis->mapToScene(physValPoint);
+        ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
+        if (linePoint == ELinePoint::Start) {
+            replace(0, physValPoint);
+        }
+        else if (linePoint == ELinePoint::End) {
+            replace(count()-1, physValPoint);
+        }
+        normalize();
+        updateLineEndArrowHeadPolygons();
+    }
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged(CGraphObj* i_pGraphObjCnctPt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjCnctPt->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjConnectionPointZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    // The connection lines should be drawn above the connection points.
+    double fZValueParent = i_pGraphObjCnctPt->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + 0.1);
 }
 
 /*==============================================================================
