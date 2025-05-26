@@ -192,14 +192,18 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     }
 
     const CDrawGridSettings& gridSettings = pGraphObj->gridSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
-    gridSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
+    if (!gridSettings.isDefault()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
+        gridSettings.save(i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     const CDrawSettings& drawSettings = pGraphObj->drawSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
-    drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
+    if (!drawSettings.isDefault()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
+        drawSettings.save(i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     CPhysValRect physValRect = pGraphObj->getRect(drawingSize.unit());
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
@@ -208,7 +212,9 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAngle, physValRect.angle().toString());
     i_xmlStreamWriter.writeEndElement();
 
-    i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObj->getStackingOrderValue()));
+    if (pGraphObj->getStackingOrderValue() != 0.0) {
+        i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObj->getStackingOrderValue()));
+    }
 
     if (!i_pGraphObj->getLabelNames().isEmpty()) {
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);

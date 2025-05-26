@@ -344,14 +344,15 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     initInstCounts();
     initObjectCoors();
 
-    // Connections
-    //------------
+    // ConnectionLine
+    //---------------
 
-    ZS::Test::CTestStepGroup* pGrpConnect2Points = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pGrpConnectionLine = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Connect2Points",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ConnectionLine",
         /* pTSGrpParent */ pGrpConnections );
-    createTestGroupAddStandardShapesConnect2Points(pGrpConnect2Points);
+    createTestGroupAddStandardShapesConnectionLine(pGrpConnectionLine);
+    createTestGroupAddStandardShapesConnectionLineModifications(pGrpConnectionLine);
 
     createTestStepSaveLoadFile(pGrpConnections, 1);
 
@@ -661,6 +662,33 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestStepSaveLoadFile(pGrpGroupsPolygons, 3);
 
 #endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS
+
+    // Connection Points
+    //------------------
+
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS == 1
+
+    ZS::Test::CTestStepGroup* pGrpGroupsConnectionPoints = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " "  + c_strGraphObjNameConnectionPoints,
+        /* pTSGrpParent */ pGrpGroups );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpGroupsConnectionPoints,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
+
+    initInstCounts();
+    initObjectCoors();
+
+    createTestGroupAddStandardShapesGroupConnectionPoints(pGrpGroupsConnectionPoints);
+    //createTestGroupAddStandardShapesGroupConnectionPointsModifications(pGrpGroupsConnectionPoints);
+    createTestStepSaveLoadFile(pGrpGroupsConnectionPoints, 3);
+
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS
 
     // All
     //----
@@ -3105,7 +3133,7 @@ void CTest::createTestGroupAddStandardShapesPolygonStar(
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddStandardShapesConnect2Points(
+void CTest::createTestGroupAddStandardShapesConnectionLine(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
@@ -3116,7 +3144,7 @@ void CTest::createTestGroupAddStandardShapesConnect2Points(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddStandardShapesConnect2Points",
+        /* strMethod    */ "createTestGroupAddStandardShapesConnectionLine",
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -3217,12 +3245,10 @@ void CTest::createTestGroupAddStandardShapesConnect2Points(
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt1", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint1]);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt2", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint2]);
-    //pTestStep->setConfigValue("Points", m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->toQPolygonF());
-    //pTestStep->setConfigValue("Points.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
-        strGraphObjName, m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint1], m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint2],
+        strGraphObjName, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
         m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -3256,6 +3282,129 @@ void CTest::createTestGroupAddStandardShapesConnect2Points(
         {"setPos", QPointF(330.0, 280.0)},
         {"ExpectedText", c_strGraphObjNameConnectionLineCnctPt1CnctPt2}
     });
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAddStandardShapesConnectionLineModifications(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddStandardShapesConnectionLineModifications",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fYAxisMaxVal = 600.0;
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
+    -----------------------------------------------------------------------*/
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstExpectedValues;
+    QString strGraphObjType;
+    QString strGraphObjName;
+    QString strMethod;
+    QString strMthArgs;
+
+    ZS::Test::CTestStepGroup* pGrpModifyCnctPts = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + c_strGraphObjNameConnectionLineCnctPt1CnctPt2,
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    // move CntPt1
+    //------------
+
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
+    strGraphObjName = c_strGraphObjNameConnectionPoint1;
+    strMethod = "setPosition";
+    m_ptPosConnectionPoint1 = QPointF(300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    *m_pPhysValConnectionPoint1 = QPointF(300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    strMthArgs = qPoint2Str(m_ptPosConnectionPoint1) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyCnctPts,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Pos", m_ptPosConnectionPoint1);
+    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesGraphObjKeyEntry", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt2]);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
+        {-150.0, -50.0},
+        { 150.0,  50.0}
+    });
+    *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
+        {m_pPhysValConnectionPoint1->toQPointF()},
+        {m_pPhysValConnectionPoint2->toQPointF()}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // move CntPt2
+    //------------
+
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
+    strGraphObjName = c_strGraphObjNameConnectionPoint2;
+    strMethod = "setPosition";
+    m_ptPosConnectionPoint2 = QPointF(500.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    *m_pPhysValConnectionPoint2 = QPointF(500.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    strMthArgs = qPoint2Str(m_ptPosConnectionPoint2) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyCnctPts,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Pos", m_ptPosConnectionPoint2);
+    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesGraphObjKeyEntry", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt2]);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
+        {-100.0, -100.0},
+        { 100.0,  100.0}
+    });
+    *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
+        {m_pPhysValConnectionPoint1->toQPointF()},
+        {m_pPhysValConnectionPoint2->toQPointF()}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------
@@ -11139,6 +11288,119 @@ void CTest::createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test:
     strlstExpectedValues.append(resultValuesForPolygon(
         c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddStandardShapesGroupConnectionPoints",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fYAxisMaxVal = 600.0;
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+
+    /*-----------------------------------------------------------------------
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
+    -----------------------------------------------------------------------*/
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+    QStringList strlstGraphObjsAddToGroup;
+    QStringList strlstExpectedValues;
+
+    ZS::Test::CTestStepGroup* pGrpGroupsConnectionPointsAddShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+    createTestGroupAddStandardShapesConnectionLine(pGrpGroupsConnectionPointsAddShapes);
+
+    ZS::Test::CTestStepGroup* pGrpGroupsConnectionPointsModifyShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify Shapes",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+    createTestGroupAddStandardShapesConnectionLineModifications(pGrpGroupsConnectionPointsModifyShapes);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + c_strGraphObjNameConnectionPoints + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjTypeGroup + ", " + c_strGraphObjNameConnectionPoints + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameConnectionPoints, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameConnectionPoints));
+    m_hshGraphObjNameToKeys[c_strGraphObjNameStar] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, c_strGraphObjNameConnectionPoints, c_strGraphObjNameConnectionPoint1);
+    m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, c_strGraphObjNameConnectionPoints, c_strGraphObjNameConnectionPoint2);
+    iResultValuesPrecision = 3;
+    strlstGraphObjsAddToGroup.clear();
+    strlstGraphObjsAddToGroup.append(c_strGraphObjNameConnectionPoint1);
+    strlstGraphObjsAddToGroup.append(c_strGraphObjNameConnectionPoint2);
+    pTestStep->setConfigValue("GroupName", c_strGraphObjNameConnectionPoints);
+    pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    // Group
+    m_ptPosConnectionPoints = QPointF(437.5, 375.0);
+    m_sizeConnectionPoints = QSizeF(325.0, 250.0);
+    m_pPhysValRectConnectionPoints->setSize(m_sizeConnectionPoints);
+    m_pPhysValRectConnectionPoints->setCenter(QPointF(437.5, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameConnectionPoints, m_ptPosConnectionPoints, *m_pPhysValRectConnectionPoints, iResultValuesPrecision));
+    // ConnectionPoint1
+    m_ptPosConnectionPoint1 = QPointF(62.5, 25.0);
+    *m_pPhysValConnectionPoint1 = QPointF(200.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    strlstExpectedValues.append(resultValuesForConnectionPoint(
+        c_strGraphObjNameConnectionPoint1, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, iResultValuesPrecision));
+    // ConnectionPoint2
+    m_ptPosConnectionPoint2 = QPointF(62.5, 25.0);
+    *m_pPhysValConnectionPoint2 = QPointF(200.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    strlstExpectedValues.append(resultValuesForConnectionPoint(
+        c_strGraphObjNameConnectionPoint2, m_ptPosConnectionPoint2, *m_pPhysValConnectionPoint2, iResultValuesPrecision));
+    // ConnectionLine
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Show Label
+    //-----------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameConnectionPoints + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ c_strGraphObjNameConnectionPoints + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionPoints},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoints]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
+        {"setPos", QPointF(420.0, 220.0)},
+        {"ExpectedText", c_strGraphObjNameConnectionPoints}
+    });
 }
 
 //------------------------------------------------------------------------------

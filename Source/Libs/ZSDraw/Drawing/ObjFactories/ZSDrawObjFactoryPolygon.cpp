@@ -209,9 +209,11 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
     }
 
     CDrawSettings drawSettings = pGraphObj->drawSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
-    drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
+    if (!drawSettings.isDefault()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
+        drawSettings.save(i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     CPhysValPolygon physValPolygon = pGraphObj->getPolygon(drawingSize.unit()); // rotated
     CPhysVal physValAngle = physValPolygon.angle();
@@ -227,7 +229,9 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAngle, physValAngle.toString());
     i_xmlStreamWriter.writeEndElement();
 
-    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
+    if (pGraphObj->getStackingOrderValue() != 0.0) {
+        i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
+    }
 
     if (!i_pGraphObj->getLabelNames().isEmpty()) {
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);

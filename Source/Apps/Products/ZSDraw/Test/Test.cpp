@@ -239,6 +239,8 @@ CTest::~CTest()
     m_pPhysValRectSmallCross2 = nullptr;
     delete m_pPhysValRectPolygons;
     m_pPhysValRectPolygons = nullptr;
+    delete m_pPhysValRectConnectionPoints;
+    m_pPhysValRectConnectionPoints = nullptr;
     delete m_pPhysValRectTopGroup;
     m_pPhysValRectTopGroup = nullptr;
 
@@ -331,6 +333,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValRectSmallCross1 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallCross2 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectPolygons = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectConnectionPoints = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
     CDrawGridSettings gridSettings;
@@ -4002,6 +4005,75 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepModifyGraphObjConnectionPointByDirectMethodCalls",
+        /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
+
+    CGraphObjConnectionPoint* pGraphObj = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    if (pGraphObj != nullptr) {
+        if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("Pos").toPointF();
+            if (i_pTestStep->hasConfigValue("Pos.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Pos.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObj->setPosition(physValPoint);
+        }
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QString strGraphObjConnectionLineKeyEntry = i_pTestStep->hasConfigValue("ResultValuesGraphObjKeyEntry") ?
+        i_pTestStep->getConfigValue("ResultValuesGraphObjKeyEntry").toString() : "";
+    QStringList strlstResultValues;
+    if (pGraphObj != nullptr) {
+        if (!strGraphObjConnectionLineKeyEntry.isEmpty()) {
+            CGraphObjConnectionLine* pGraphObjConnectionLine =
+                dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjConnectionLineKeyEntry));
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, iResultValuesPrecision));
+        }
+        else {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        }
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepModifyGraphObjConnectionLineByDirectMethodCalls",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -4976,6 +5048,11 @@ void CTest::initObjectCoors()
     *m_pPhysValRectPolygons = CPhysValRect(*m_pDrawingScene);
     m_physValAnglePolygons = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
+    m_ptPosConnectionPoints = QPointF();
+    m_sizeConnectionPoints = QSizeF();
+    *m_pPhysValRectConnectionPoints = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleConnectionPoints = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
     m_ptPosTopGroup = QPointF();
     m_sizeTopGroup = QSizeF();
     *m_pPhysValRectTopGroup = CPhysValRect(*m_pDrawingScene);
@@ -5350,10 +5427,10 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjConnectionLine != nullptr) {
                 CGraphObjConnectionPoint* pGraphObjConnectionPointP1 = pGraphObjConnectionLine->getConnectionPoint(ELinePoint::Start);
                 CGraphObjConnectionPoint* pGraphObjConnectionPointP2 = pGraphObjConnectionLine->getConnectionPoint(ELinePoint::End);
-                QString strKeyInTreeP1 = pGraphObjConnectionPointP1 == nullptr ? "" : pGraphObjConnectionPointP1->keyInTree();
-                QString strKeyInTreeP2 = pGraphObjConnectionPointP2 == nullptr ? "" : pGraphObjConnectionPointP2->keyInTree();
+                QString strNameCntPt1 = pGraphObjConnectionPointP1 == nullptr ? "" : pGraphObjConnectionPointP1->name();
+                QString strNameCntPt2 = pGraphObjConnectionPointP2 == nullptr ? "" : pGraphObjConnectionPointP2->name();
                 strlstResultValues = resultValuesForConnectionLine(
-                    i_pGraphObj->name(), strKeyInTreeP1, strKeyInTreeP2,
+                    i_pGraphObj->name(), strNameCntPt1, strNameCntPt2,
                     pGraphObjConnectionLine->polygon(), pGraphObjConnectionLine->getPolygon(), i_iPrecision);
             }
         }
@@ -5576,7 +5653,7 @@ QStringList CTest::resultValuesForConnectionPoint(
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForConnectionLine(
-    const QString& strGraphObjName, const QString& i_strKeyInTreeP1, const QString& i_strKeyInTreeP2,
+    const QString& strGraphObjName, const QString& i_strGraphObjNameCntPt1, const QString& i_strGraphObjNameCntPt2,
     const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
@@ -5584,16 +5661,16 @@ QStringList CTest::resultValuesForConnectionLine(
     QStringList strlst;
     if (i_iPrecision < 0) {
         strlst = QStringList({
-            strGraphObjName + ".P1: " + i_strKeyInTreeP1,
-            strGraphObjName + ".P2: " + i_strKeyInTreeP2,
+            strGraphObjName + ".P1: " + i_strGraphObjNameCntPt1,
+            strGraphObjName + ".P2: " + i_strGraphObjNameCntPt2,
             strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors) + "} px",
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol(),
         });
     }
     else {
         strlst = QStringList({
-            strGraphObjName + ".P1: " + i_strKeyInTreeP1,
-            strGraphObjName + ".P2: " + i_strKeyInTreeP2,
+            strGraphObjName + ".P1: " + i_strGraphObjNameCntPt1,
+            strGraphObjName + ".P2: " + i_strGraphObjNameCntPt2,
             strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors, ", ", 'f', i_iPrecision) + "} px",
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
         });

@@ -135,7 +135,7 @@ CIdxTreeEntry::CIdxTreeEntry( EEntryType i_entryType, const QString& i_strName )
     m_mappTreeEntries(),
     m_arpTreeEntries()
 {
-} // ctor
+}
 
 //-----------------------------------------------------------------------------
 /*! Constructs a copy of i_other.
@@ -163,7 +163,7 @@ CIdxTreeEntry::CIdxTreeEntry( const CIdxTreeEntry& i_other ) :
     m_mappTreeEntries(),
     m_arpTreeEntries()
 {
-} // ctor
+}
 
 //-----------------------------------------------------------------------------
 /*! Destroys the index tree entry.
@@ -177,11 +177,9 @@ CIdxTreeEntry::CIdxTreeEntry( const CIdxTreeEntry& i_other ) :
 CIdxTreeEntry::~CIdxTreeEntry()
 //-----------------------------------------------------------------------------
 {
-    if( m_pMtx != nullptr )
-    {
+    if (m_pMtx != nullptr) {
         m_pMtx->lock();
     }
-
     m_bIsAboutToBeDestroyed = true;
 
     clear();
@@ -197,8 +195,7 @@ CIdxTreeEntry::~CIdxTreeEntry()
     //m_strKeyInParentBranch.clear();
     m_idxInParentBranch = 0;
     m_bIsAboutToBeDestroyed = false;
-
-} // dtor
+}
 
 /*=============================================================================
 protected: // destructor
@@ -212,26 +209,24 @@ protected: // destructor
 void CIdxTreeEntry::clear()
 //-----------------------------------------------------------------------------
 {
-    if( m_arpTreeEntries.size() > 0 )
-    {
-        for( int idxEntry = m_arpTreeEntries.size() - 1; idxEntry >= 0; --idxEntry )
-        {
-            CIdxTreeEntry* pTreeEntry = m_arpTreeEntries[idxEntry];
-            try {
-                // The dtor of the childs will recursively call "clear"
-                // until a child is reached which has no child.
-                delete pTreeEntry;
-            }
-            catch(...) {
-            }
-            pTreeEntry = nullptr;
+    // It might be that on deleting an tree entry other, dependent tree entries,
+    // will also be deleted. Thats why the number of child entries of the branch
+    // could change and always the last entry will be deleted.
+    while (!m_arpTreeEntries.empty()) {
+        CIdxTreeEntry* pTreeEntry = m_arpTreeEntries.last();
+        try {
+            // The dtor of the childs will recursively call "clear"
+            // until a child is reached which has no child.
+            delete pTreeEntry;
         }
+        catch(...) {
+        }
+        pTreeEntry = nullptr;
     }
 
     // As "clear" has been called as reentry for the deleted children
     // the map and vector must already be empty.
-    if( m_mappTreeEntries.size() > 0 || m_arpTreeEntries.size() > 0 )
-    {
+    if (m_mappTreeEntries.size() > 0 || m_arpTreeEntries.size() > 0) {
         if( CErrLog::GetInstance() != nullptr ) {
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                 NameSpace(), ClassName(), keyInTree(), "dtor",
@@ -242,12 +237,12 @@ void CIdxTreeEntry::clear()
         m_arpTreeEntries.clear();
     }
 
-    if( m_pTree != nullptr ) {
+    if (m_pTree != nullptr) {
         m_pTree->remove(this);
     }
     m_pTree = nullptr;
 
-    if( m_pParentBranch != nullptr ) {
+    if (m_pParentBranch != nullptr) {
         m_pParentBranch->removeChild(this);
     }
     m_pParentBranch = nullptr;
@@ -255,16 +250,10 @@ void CIdxTreeEntry::clear()
     try {
         delete m_pMtx;
     }
-    catch(...)
-    {
+    catch(...) {
     }
     m_pMtx = nullptr;
-
-} // clear
-
-/*=============================================================================
-public: // operators
-=============================================================================*/
+}
 
 /*=============================================================================
 public: // overridables of base class CIdxTreeEntry
@@ -327,27 +316,18 @@ QString CIdxTreeEntry::path() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     QString strPath;
-
-    if( m_pTree != nullptr )
-    {
+    if (m_pTree != nullptr) {
         CIdxTreeEntry* pParentBranch = m_pParentBranch;
-
         QString strNodeSeparator = m_pTree->nodeSeparator();
-
-        while( pParentBranch != nullptr && pParentBranch != m_pTree->root() )
-        {
+        while (pParentBranch != nullptr && pParentBranch != m_pTree->root()) {
             strPath.insert(0, pParentBranch->name() + strNodeSeparator);
             pParentBranch = pParentBranch->parentBranch();
         }
-    } // if( m_pTree != nullptr )
-
+    }
     strPath += m_strName;
-
     return strPath;
-
-} // path
+}
 
 /*=============================================================================
 public: // instance methods
@@ -377,7 +357,7 @@ QString CIdxTreeEntry::keyInTree() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strKeyInTree;
-    if( isRoot() ) {
+    if (isRoot()) {
         // Just to have something to write into the log file.
         // The root does not really have a key in the tree.
         strKeyInTree = entryTypeSymbol() + ":" + m_strName;
@@ -404,7 +384,7 @@ QString CIdxTreeEntry::parentBranchName() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strName;
-    if( m_pParentBranch != nullptr && !m_pParentBranch->isRoot() ) {
+    if (m_pParentBranch != nullptr && !m_pParentBranch->isRoot()) {
         strName = m_pParentBranch->name();
     }
     return strName;
@@ -422,7 +402,7 @@ QString CIdxTreeEntry::parentBranchPath() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strPath;
-    if( m_pParentBranch != nullptr && !m_pParentBranch->isRoot() ) {
+    if (m_pParentBranch != nullptr && !m_pParentBranch->isRoot()) {
         strPath = m_pParentBranch->path();
     }
     return strPath;
@@ -438,7 +418,7 @@ QString CIdxTreeEntry::parentBranchKeyInTree() const
 {
     QMutexLocker mtxLocker(m_pMtx);
     QString strKeyInTree;
-    if( m_pParentBranch != nullptr ) {
+    if (m_pParentBranch != nullptr) {
         strKeyInTree = m_pParentBranch->keyInTree();
     }
     return strKeyInTree;
@@ -512,17 +492,13 @@ int CIdxTreeEntry::indexInParentBranchsChildListWithSameEntryTypes() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idx = -1;
-
     // To be filtered by entry type
-    if( m_pParentBranch != nullptr )
-    {
+    if (m_pParentBranch != nullptr) {
         idx = m_pParentBranch->indexOfChildInListWithSameEntryTypes(this);
     }
     return idx;
-
-} // indexInParentBranchsChildListWithSameEntryTypes
+}
 
 /*=============================================================================
 public: // instance methods
@@ -543,35 +519,24 @@ QString CIdxTreeEntry::getCalculatedKeyInTree() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
-    QString strEntryType     = entryType2Str(EEnumEntryAliasStrSymbol);
+    QString strEntryType = entryType2Str(EEnumEntryAliasStrSymbol);
     QString strNodeSeparator = m_pTree != nullptr ? m_pTree->nodeSeparator() : "/";
-    QString strKeyInTree     = strEntryType + ":";
+    QString strKeyInTree = strEntryType + ":";
     QString strParentPath;
-
     CIdxTreeEntry* pParentBranch = parentBranch();
-
     CIdxTreeEntry* pRoot = m_pTree != nullptr ? m_pTree->root() : nullptr;
-
-    if( pParentBranch != nullptr && pParentBranch != pRoot )
-    {
+    if (pParentBranch != nullptr && pParentBranch != pRoot) {
         strParentPath = pParentBranch->path();
     }
-    if( !strParentPath.isEmpty() )
-    {
+    if (!strParentPath.isEmpty()) {
         strKeyInTree += strParentPath;
-
-        if( !strKeyInTree.endsWith(strNodeSeparator) )
-        {
+        if (!strKeyInTree.endsWith(strNodeSeparator)) {
             strKeyInTree += strNodeSeparator;
         }
     }
-
     strKeyInTree += name();
-
     return strKeyInTree;
-
-} // getCalculatedKeyInTree
+}
 
 /*=============================================================================
 public: // instance methods
@@ -594,10 +559,39 @@ bool CIdxTreeEntry::isAboutToBeDestroyed() const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     return m_bIsAboutToBeDestroyed;
+}
 
-} // isAboutToBeDestroyed
+/*=============================================================================
+public: // instance methods (for branch entries)
+=============================================================================*/
+
+//-----------------------------------------------------------------------------
+/*! Returns the child entry at the given index.
+*/
+CIdxTreeEntry* CIdxTreeEntry::at( int i_idx ) const
+//-----------------------------------------------------------------------------
+{
+    return m_arpTreeEntries.at(i_idx);
+}
+
+//-----------------------------------------------------------------------------
+/*! Returns a reference to the first child entry or nullptr, if the entry has no childs.
+*/
+CIdxTreeEntry* CIdxTreeEntry::first() const
+//-----------------------------------------------------------------------------
+{
+    return m_arpTreeEntries.empty() ? nullptr : m_arpTreeEntries.first();
+}
+
+//-----------------------------------------------------------------------------
+/*! Returns a reference to the last child entry or nullptr, if the entry has no childs.
+*/
+CIdxTreeEntry* CIdxTreeEntry::last() const
+//-----------------------------------------------------------------------------
+{
+    return m_arpTreeEntries.empty() ? nullptr : m_arpTreeEntries.last();
+}
 
 /*=============================================================================
 public: // instance methods (for branch entries)
@@ -625,32 +619,24 @@ int CIdxTreeEntry::indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = i_pChildTreeEntry->indexInParentBranch();
-
-    if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-    {
+    if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "indexOf",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     CIdxTreeEntry* pTreeEntry = const_cast<CIdxTreeEntry*>(i_pChildTreeEntry);
-
-    if( idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry) )
-    {
+    if (idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry)) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "indexOf",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     return idxInParentBranch;
-
-} // indexOf
+}
 
 //-----------------------------------------------------------------------------
 /*! Returns the index of the given child tree entry in the branch.
@@ -674,37 +660,27 @@ int CIdxTreeEntry::indexOf( const QString& i_strKeyInParentBranch ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = -1;
-
     CIdxTreeEntry* pTreeEntry = m_mappTreeEntries.value(i_strKeyInParentBranch, nullptr);
-
-    if( pTreeEntry != nullptr )
-    {
+    if (pTreeEntry != nullptr) {
         idxInParentBranch = pTreeEntry->indexInParentBranch();
-
-        if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-        {
+        if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                 NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
-
-        if( idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry) )
-        {
+        if (idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry)) {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                 NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
-    } // if( pTreeEntry != nullptr )
-
+    }
     return idxInParentBranch;
-
-} // indexOf
+}
 
 //-----------------------------------------------------------------------------
 /*! Returns the index of the given child tree entry in the branch.
@@ -729,38 +705,28 @@ int CIdxTreeEntry::indexOf( const QString& i_strEntryTypeSymbol, const QString& 
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = -1;
-
     QString strKeyInParentBranch = i_strEntryTypeSymbol + ":" + i_strName;
     CIdxTreeEntry* pTreeEntry = m_mappTreeEntries.value(strKeyInParentBranch, nullptr);
-
-    if( pTreeEntry != nullptr )
-    {
+    if (pTreeEntry != nullptr) {
         idxInParentBranch = pTreeEntry->indexInParentBranch();
-
-        if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-        {
+        if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                 NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
-
-        if( idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry) )
-        {
+        if (idxInParentBranch != m_arpTreeEntries.indexOf(pTreeEntry)) {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                 NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
-    } // if( pTreeEntry != nullptr )
-
+    }
     return idxInParentBranch;
-
-} // indexOf
+}
 
 //-----------------------------------------------------------------------------
 /*! Returns the tree entry for the given key in parent branch.
@@ -809,31 +775,19 @@ int CIdxTreeEntry::indexOfChildInListWithSameEntryTypes( const CIdxTreeEntry* i_
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = -1;
-
     QString strEntryTypeFilter = i_pChildTreeEntry->entryTypeSymbol();
-
-    CIdxTreeEntry* pTreeEntryTmp;
-    int            idxTmp;
-
-    for( idxTmp = 0; idxTmp < m_arpTreeEntries.size(); ++idxTmp )
-    {
-        pTreeEntryTmp = m_arpTreeEntries[idxTmp];
-
-        if( pTreeEntryTmp->entryTypeSymbol() == strEntryTypeFilter )
-        {
+    for (int idxTmp = 0; idxTmp < m_arpTreeEntries.size(); ++idxTmp) {
+        CIdxTreeEntry* pTreeEntryTmp = m_arpTreeEntries[idxTmp];
+        if (pTreeEntryTmp->entryTypeSymbol() == strEntryTypeFilter) {
             ++idxInParentBranch;
         }
-        if( pTreeEntryTmp == i_pChildTreeEntry )
-        {
+        if (pTreeEntryTmp == i_pChildTreeEntry) {
             break;
         }
     }
-
     return idxInParentBranch;
-
-} // indexOfChildInListWithSameEntryTypes
+}
 
 /*=============================================================================
 protected: // instance methods (for branch entries)
@@ -867,41 +821,30 @@ int CIdxTreeEntry::addChild( CIdxTreeEntry* i_pChildTreeEntry )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = -1;
-
     QString strEntryType = i_pChildTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = strEntryType + ":" + i_pChildTreeEntry->name();
-
-    if( i_pChildTreeEntry->parentBranch() != nullptr )
-    {
+    if (i_pChildTreeEntry->parentBranch() != nullptr) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + " already belongs to " + i_pChildTreeEntry->parentBranch()->keyInTree();
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "addChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
-    if( m_mappTreeEntries.contains(strKeyInParentBranch) )
-    {
+    if (m_mappTreeEntries.contains(strKeyInParentBranch)) {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "addChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strKeyInParentBranch);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     idxInParentBranch = m_arpTreeEntries.size();
-
     m_arpTreeEntries.append(i_pChildTreeEntry);
     m_mappTreeEntries.insert(strKeyInParentBranch, i_pChildTreeEntry);
-
     i_pChildTreeEntry->setParentBranch(this);
     i_pChildTreeEntry->setKeyInParentBranch(strKeyInParentBranch);
     i_pChildTreeEntry->setIndexInParentBranch(idxInParentBranch);
-
     return idxInParentBranch;
-
-} // addChild
+}
 
 //-----------------------------------------------------------------------------
 /*! Inserts the given tree entry at the given index as a child of the branch.
@@ -937,58 +880,40 @@ int CIdxTreeEntry::insertChild( int i_iIdx, CIdxTreeEntry* i_pChildTreeEntry )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = -1;
-
     QString strEntryType = i_pChildTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranch = strEntryType + ":" + i_pChildTreeEntry->name();
-
-    if( i_pChildTreeEntry->parentBranch() != nullptr )
-    {
+    if (i_pChildTreeEntry->parentBranch() != nullptr) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + " already belongs to " + i_pChildTreeEntry->parentBranch()->keyInTree();
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "insertChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
-    if( m_mappTreeEntries.contains(strKeyInParentBranch) )
-    {
+    if (m_mappTreeEntries.contains(strKeyInParentBranch)) {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "insertChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strKeyInParentBranch);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
-    if( i_iIdx >= 0 && i_iIdx < m_arpTreeEntries.size() )
-    {
+    if (i_iIdx >= 0 && i_iIdx < m_arpTreeEntries.size()) {
         idxInParentBranch = i_iIdx;
         m_arpTreeEntries.insert(idxInParentBranch, i_pChildTreeEntry);
-
-        CIdxTreeEntry* pTreeEntry;
-        int            idxEntry;
-
-        for( idxEntry = idxInParentBranch+1; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
-        {
-            pTreeEntry = m_arpTreeEntries[idxEntry];
+        for (int idxEntry = idxInParentBranch+1; idxEntry < m_arpTreeEntries.size(); ++idxEntry) {
+            CIdxTreeEntry* pTreeEntry = m_arpTreeEntries[idxEntry];
             pTreeEntry->setIndexInParentBranch(idxEntry);
         }
     }
-    else
-    {
+    else {
         idxInParentBranch = m_arpTreeEntries.size();
         m_arpTreeEntries.append(i_pChildTreeEntry);
     }
-
     m_mappTreeEntries.insert(strKeyInParentBranch, i_pChildTreeEntry);
-
     i_pChildTreeEntry->setParentBranch(this);
     i_pChildTreeEntry->setKeyInParentBranch(strKeyInParentBranch);
     i_pChildTreeEntry->setIndexInParentBranch(idxInParentBranch);
-
     return idxInParentBranch;
-
-} // insertChild
+}
 
 //-----------------------------------------------------------------------------
 /*! Removes the given tree entry from the branch.
@@ -1019,55 +944,39 @@ void CIdxTreeEntry::removeChild( CIdxTreeEntry* i_pChildTreeEntry )
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = i_pChildTreeEntry->indexInParentBranch();
-
-    if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-    {
+    if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "removeChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
-    if( idxInParentBranch != m_arpTreeEntries.indexOf(i_pChildTreeEntry) )
-    {
+    if (idxInParentBranch != m_arpTreeEntries.indexOf(i_pChildTreeEntry)) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "removeChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     QString strKeyInParentBranch = i_pChildTreeEntry->keyInParentBranch();
-
-    if( !m_mappTreeEntries.contains(strKeyInParentBranch) )
-    {
+    if (!m_mappTreeEntries.contains(strKeyInParentBranch)) {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "removeChild",
             EResultObjNotInList, ZS::System::EResultSeverityCritical,
             i_pChildTreeEntry->keyInParentBranch());
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     m_arpTreeEntries.remove(idxInParentBranch);
     m_mappTreeEntries.remove(strKeyInParentBranch);
-
     i_pChildTreeEntry->setParentBranch(nullptr);
     i_pChildTreeEntry->setKeyInParentBranch("");
     i_pChildTreeEntry->setIndexInParentBranch(-1);
-
-    CIdxTreeEntry* pTreeEntry;
-    int            idxEntry;
-
-    for( idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
-    {
-        pTreeEntry = m_arpTreeEntries[idxEntry];
+    for (int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry) {
+        CIdxTreeEntry* pTreeEntry = m_arpTreeEntries[idxEntry];
         pTreeEntry->setIndexInParentBranch(idxEntry);
     }
-
-} // removeChild
+}
 
 //-----------------------------------------------------------------------------
 /*! Renames the given child tree entry to the given new name.
@@ -1091,56 +1000,41 @@ void CIdxTreeEntry::renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     int idxInParentBranch = i_pChildTreeEntry->indexInParentBranch();
-
-    if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-    {
+    if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
-    if( idxInParentBranch != m_arpTreeEntries.indexOf(i_pChildTreeEntry) )
-    {
+    if (idxInParentBranch != m_arpTreeEntries.indexOf(i_pChildTreeEntry)) {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     QString strKeyInParentBranchOrig = i_pChildTreeEntry->keyInParentBranch();
-
-    if( !m_mappTreeEntries.contains(strKeyInParentBranchOrig) )
-    {
+    if (!m_mappTreeEntries.contains(strKeyInParentBranchOrig)) {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultObjNotInList, ZS::System::EResultSeverityCritical, strKeyInParentBranchOrig);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     QString strEntryType = i_pChildTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol);
     QString strKeyInParentBranchNew = strEntryType + ":" + i_strNameNew;
-
-    if( m_mappTreeEntries.contains(strKeyInParentBranchNew) )
-    {
+    if (m_mappTreeEntries.contains(strKeyInParentBranchNew)) {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
             NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strKeyInParentBranchNew);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
-
     i_pChildTreeEntry->setName(i_strNameNew);
-
     m_mappTreeEntries.remove(strKeyInParentBranchOrig);
     m_mappTreeEntries.insert(strKeyInParentBranchNew, i_pChildTreeEntry);
-
     i_pChildTreeEntry->setKeyInParentBranch(strKeyInParentBranchNew);
-
-} // renameChild
+}
 
 /*=============================================================================
 protected: // overridables
@@ -1158,8 +1052,8 @@ protected: // overridables
 
     @param i_strName [in] New name of the tree entry.
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setName( const QString& i_strName )
+//-----------------------------------------------------------------------------
 {
     m_strName = i_strName;
 }
@@ -1172,8 +1066,8 @@ void CIdxTreeEntry::setName( const QString& i_strName )
 
     @param i_strKey [in] New key of the tree entry.
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setKeyInTree( const QString& i_strKey )
+//-----------------------------------------------------------------------------
 {
     m_strKeyInTree = i_strKey;
 }
@@ -1186,8 +1080,8 @@ void CIdxTreeEntry::setKeyInTree( const QString& i_strKey )
 
     @param i_idx [in] New index of the tree entry in the vector of the index tree.
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setIndexInTree( int i_idx )
+//-----------------------------------------------------------------------------
 {
     m_idxInTree = i_idx;
 }
@@ -1204,8 +1098,8 @@ protected: // overridables
 
     @param i_pParent [in] Pointer to new parent entry.
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setParentBranch( CIdxTreeEntry* i_pParent )
+//-----------------------------------------------------------------------------
 {
     m_pParentBranch = i_pParent;
 }
@@ -1219,8 +1113,8 @@ void CIdxTreeEntry::setParentBranch( CIdxTreeEntry* i_pParent )
     @param i_strKey [in] New key in parent branch.
 
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setKeyInParentBranch( const QString& i_strKey )
+//-----------------------------------------------------------------------------
 {
     m_strKeyInParentBranch = i_strKey;
 }
@@ -1233,8 +1127,8 @@ void CIdxTreeEntry::setKeyInParentBranch( const QString& i_strKey )
 
     @param i_idx [in] New index of the entry in the vector of its parent branch.
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setIndexInParentBranch( int i_idx )
+//-----------------------------------------------------------------------------
 {
     m_idxInParentBranch = i_idx;
 }
@@ -1291,8 +1185,8 @@ void CIdxTreeEntry::removeShortcut( const QString& i_strUniqueName )
 
     @param i_pTree [in] Pointer to index tree the tree entry belongs to.
 */
-//-----------------------------------------------------------------------------
 void CIdxTreeEntry::setTree( CIdxTree* i_pTree )
+//-----------------------------------------------------------------------------
 {
     m_pTree = i_pTree;
 }

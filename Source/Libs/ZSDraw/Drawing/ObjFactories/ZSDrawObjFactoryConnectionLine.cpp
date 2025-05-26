@@ -190,25 +190,29 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     }
 
     CDrawSettings drawSettings = pGraphObj->drawSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
-    drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
-
-    CPhysValPolygon physValPolygon = pGraphObj->getPolygon(drawingSize.unit()); // rotated
-    CPhysVal physValAngle = physValPolygon.angle();
-    // The points will be saved unrotated and the rotation angle will be separately saved.
-    // Otherwise the rotation angle cannot be restored.
-    physValPolygon.setAngle(0.0);
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    for (int idxPt = 0; idxPt < physValPolygon.count(); ++idxPt) {
-        QPointF pt = physValPolygon.at(idxPt).toQPointF();
-        i_xmlStreamWriter.writeAttribute(
-            XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt+1), qPoint2Str(pt, ", ", 'f', iDecimals));
+    if (!drawSettings.isDefault()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
+        drawSettings.save(i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
     }
-    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAngle, physValAngle.toString());
-    i_xmlStreamWriter.writeEndElement();
 
-    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
+    CPhysValPolygon physValPolygon = pGraphObj->getPolygon(drawingSize.unit());
+    // The first and last points of the polygon are not stored in the XML file as they
+    // are superfluous and already specified by the connection points.
+    // Rotating a connection line makes no sense and is not possible. No use to save a rotation angle.
+    if (physValPolygon.isValid() && physValPolygon.count() > 2) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
+        for (int idxPt = 1; idxPt < physValPolygon.count()-1; ++idxPt) {
+            QPointF pt = physValPolygon.at(idxPt).toQPointF();
+            i_xmlStreamWriter.writeAttribute(
+                XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt+1), qPoint2Str(pt, ", ", 'f', iDecimals));
+        }
+        i_xmlStreamWriter.writeEndElement();
+    }
+
+    if (pGraphObj->getStackingOrderValue() != 0.0) {
+        i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
+    }
 
     if (!i_pGraphObj->getLabelNames().isEmpty()) {
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
@@ -259,7 +263,6 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
     CDrawSettings drawSettings(EGraphObjTypePolyline);
     CPhysValPolygon physValPolygon(*i_pDrawingScene, false);
-    CPhysVal physValAngle(Units.Angle.Degree);
     double fZValue = 0.0;
     QList<SLabelDscr> arTextLabels;
     QList<SLabelDscr> arGeometryLabels;
@@ -289,7 +292,9 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
-                    int idxPt = 0;
+                    // The first and last points of the polygon are not stored in the XML file as they
+                    // are superfluous and already specified by the connection points.
+                    int idxPt = 1;
                     QString strShapePointAttr = XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(idxPt+1);
                     while (xmlStreamAttrs.hasAttribute(strShapePointAttr)) {
                         strElemAttr = xmlStreamAttrs.value(strShapePointAttr).toString();
@@ -310,37 +315,10 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                         physValPolygon.append(physValPointTmp);
                         strShapePointAttr = XmlStreamParser::c_strXmlElemNameShapePointP + QString::number(++idxPt+1);
                     }
-                    if (physValPolygon.isEmpty()) {
-                        XmlStreamParser::raiseErrorAttributeNotDefined(
-                            i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameShapePoints);
-                    }
-                    if (!i_xmlStreamReader.hasError()) {
-                        if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameAngle)) {
-                            strElemAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameAngle).toString();
-                            bool bConverted = false;
-                            CPhysVal physValAngleTmp(Units.Angle.Degree);
-                            try {
-                                physValAngleTmp = strElemAttr;
-                                bConverted = true;
-                            }
-                            catch (...) {
-                                bConverted = false;
-                            }
-                            if (!bConverted) {
-                                i_xmlStreamReader.raiseError(
-                                    "Element \"" + strElemName + "\" (" + strElemAttr + ") cannot be converted to Angle");
-                            }
-                            else {
-                                physValAngle = physValAngleTmp;
-                            }
-                        }
-                    }
+                    // Rotating a connection line makes no sense and is not possible. No use to save and load a rotation angle.
                     if (!i_xmlStreamReader.hasError()) {
                         if (physValPolygon.isValid()) {
                             pGraphObj->setPolygon(physValPolygon);
-                        }
-                        if (physValAngle.isValid()) {
-                            pGraphObj->setRotationAngle(physValAngle);
                         }
                     }
                 }
@@ -376,7 +354,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
-    if (pCnctPtStart == nullptr || pCnctPtEnd == nullptr || !physValPolygon.isValid()) {
+    if (pCnctPtStart == nullptr || pCnctPtEnd == nullptr) {
         if (!i_xmlStreamReader.hasError()) {
             i_xmlStreamReader.raiseError("Incomplete geometry.");
         }

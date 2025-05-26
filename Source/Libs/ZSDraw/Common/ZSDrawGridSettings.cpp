@@ -161,6 +161,51 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+bool CDrawGridSettings::isDefault() const
+//------------------------------------------------------------------------------
+{
+    bool bIsDefault = true;
+    if (m_bLinesVisible) {
+        bIsDefault = false;
+    }
+    else if (m_iLinesDistMin_px != 20) {
+        bIsDefault = false;
+    }
+    else if (m_eLinesStyle.enumerator() != ELineStyle::DotLine) {
+        bIsDefault = false;
+    }
+    else if (m_iLinesWidth_px != 1) {
+        bIsDefault = false;
+    }
+    else if (m_colorLines != Qt::lightGray) {
+        bIsDefault = false;
+    }
+    else if (m_bLabelsVisible) {
+        bIsDefault = false;
+    }
+    else if (m_fntLabels.family() != "Terminal") {
+        bIsDefault = false;
+    }
+    else if (m_textSizeLabels != ETextSize8) {
+        bIsDefault = false;
+    }
+    else if (m_colorLabelsText != Qt::black) {
+        bIsDefault = false;
+    }
+    else if (m_eTextStyleLabels.enumerator() != ETextStyle::Normal) {
+        bIsDefault = false;
+    }
+    else if (m_eTextEffectLabels.enumerator() != ETextEffect::None) {
+        bIsDefault = false;
+    }
+    return bIsDefault;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CDrawGridSettings::setLinesVisible(bool i_bVisible)
 //------------------------------------------------------------------------------
 {

@@ -85,7 +85,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
@@ -94,6 +94,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
@@ -162,6 +163,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ELLIPSES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_TEXTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 1
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
@@ -275,6 +277,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallCross1 = "SmallCross1";
     const QString c_strGraphObjNameSmallCross2 = "SmallCross2";
     const QString c_strGraphObjNamePolygons = "Polygons";
+    const QString c_strGraphObjNameConnectionPoints = "ConnectionPoints";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -314,7 +317,8 @@ protected: // instance methods
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesConnect2Points(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionLineModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -332,6 +336,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupTextsCrossesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -391,6 +396,8 @@ protected slots:
     void doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjTextByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestStep);
@@ -425,7 +432,7 @@ protected: // auxiliary instance methods
         const QString& strGraphObjName, const QPointF& i_pos,
         const ZS::Draw::CPhysValPoint& i_physValPoint, int i_iPrecision = -1) const;
     QStringList resultValuesForConnectionLine(
-        const QString& strGraphObjName, const QString& i_strKeyInTreeP1, const QString& i_strKeyInTreeP2,
+        const QString& strGraphObjName, const QString& i_strGraphObjNameCntPt1, const QString& i_strGraphObjNameCntPt2,
         const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;
     QStringList resultValuesForLabel(
         const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision = -1) const;
@@ -619,6 +626,11 @@ protected: // instance members
     QSizeF m_sizePolygons;
     ZS::Draw::CPhysValRect* m_pPhysValRectPolygons = nullptr;
     ZS::PhysVal::CPhysVal m_physValAnglePolygons;
+    // ConnectionPoints
+    QPointF m_ptPosConnectionPoints;
+    QSizeF m_sizeConnectionPoints;
+    ZS::Draw::CPhysValRect* m_pPhysValRectConnectionPoints = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleConnectionPoints;
     // TopGroup
     QPointF m_ptPosTopGroup;
     QSizeF m_sizeTopGroup;

@@ -188,9 +188,11 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->drawSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
-    drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
+    if (!drawSettings.isDefault()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
+        drawSettings.save(i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     // Image
     //-------------
@@ -220,7 +222,9 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     // Z-Value
     //---------------
 
-    i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
+    if (pGraphObj->getStackingOrderValue() != 0.0) {
+        i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
+    }
 
     // Labels
     //----------------

@@ -974,9 +974,11 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawing);
         m_drawingSize.save(xmlStreamWriter);
 
-        xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
-        m_gridSettings.save(xmlStreamWriter);
-        xmlStreamWriter.writeEndElement();
+        if (!m_gridSettings.isDefault()) {
+            xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
+            m_gridSettings.save(xmlStreamWriter);
+            xmlStreamWriter.writeEndElement();
+        }
 
         // Connection points need to be recalled before the connection lines as on
         // creating the connection lines their connection points must already exist.

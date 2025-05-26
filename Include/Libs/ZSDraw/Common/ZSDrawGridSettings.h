@@ -60,6 +60,8 @@ public: // operators
     bool operator == (const CDrawGridSettings& i_other) const;
     bool operator != (const CDrawGridSettings& i_other) const;
 public: // instance methods
+    bool isDefault() const;
+public: // instance methods
     void setLinesVisible(bool i_bVisible);
     bool areLinesVisible() const;
     void setLinesDistMin(int i_iDistMin_px);

@@ -912,9 +912,8 @@ void CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged(
 
     CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjCnctPt);
     if (pGraphObjCnctPt != nullptr) {
-        CGraphObj* pGraphObjThis = this;
         CPhysValPoint physValPoint = pGraphObjCnctPt->getCenter();
-        physValPoint = pGraphObjThis->mapToScene(physValPoint);
+        physValPoint = static_cast<CGraphObj*>(pGraphObjCnctPt)->mapToScene(physValPoint);
         ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
         if (linePoint == ELinePoint::Start) {
             replace(0, physValPoint);

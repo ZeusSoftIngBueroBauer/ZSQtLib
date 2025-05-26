@@ -4431,27 +4431,23 @@ void CIdxTree::clear( CIdxTreeEntry* i_pBranch )
         /* strMethod          */ "clear",
         /* strMethodInArgs    */ strMthInArgs );
 
-    if( i_pBranch == nullptr )
-    {
+    if (i_pBranch == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-
-    for( int idxEntry = i_pBranch->count()-1; idxEntry >= 0; --idxEntry )
-    {
-        CIdxTreeEntry* pTreeEntry = i_pBranch->at(idxEntry);
-
-        if( pTreeEntry->isBranch() )
-        {
+    while (!i_pBranch->empty()) {
+        CIdxTreeEntry* pTreeEntry = i_pBranch->last();
+        if (pTreeEntry->isBranch()) {
             clear(pTreeEntry);
         }
-
-        // The dtor of the tree entry will remove the entry
-        // from the index tree and parent branch.
+        // The dtor of the tree entry will remove the entry from the index tree
+        // and from the parent branch. It might be that on deleting an tree entry
+        // other, dependent tree entries, will also be deleted.
+        // Thats why the number of child entries of the branch could change and
+        // always the last entry will be deleted.
         delete pTreeEntry;
         pTreeEntry = nullptr;
     }
-
-} // clear
+}
 
 /*==============================================================================
 public: // iterator methods

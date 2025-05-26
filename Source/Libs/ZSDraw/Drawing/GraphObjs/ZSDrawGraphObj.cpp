@@ -3673,16 +3673,31 @@ void CGraphObj::setPosition(const CPhysValPoint& i_physValPos)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::setPosition",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
 
-    QPointF ptCenter;
+#pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPointF ptPosPrev = pGraphicsItemThis->pos();
+    QPointF ptPosNew;
     if (parentGroup() != nullptr) {
-        ptCenter = parentGroup()->convert(i_physValPos, Units.Length.px).toQPointF();
-        ptCenter = mapFromTopLeftOfBoundingRect(ptCenter);
+        ptPosNew = parentGroup()->convert(i_physValPos, Units.Length.px).toQPointF();
+        ptPosNew = mapFromTopLeftOfBoundingRect(ptPosNew);
     }
     else {
-        ptCenter = m_pDrawingScene->convert(i_physValPos, Units.Length.px).toQPointF();
+        ptPosNew = m_pDrawingScene->convert(i_physValPos, Units.Length.px).toQPointF();
     }
-    QGraphicsItem_setPos(ptCenter);
+    if (ptPosPrev != ptPosNew) {
+        {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+            QGraphicsItem_setPos(ptPosNew);
+        }
+        emit_geometryOnSceneChanged();
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -3714,191 +3729,6 @@ CPhysValPoint CGraphObj::position(const ZS::PhysVal::CUnit& i_unit) const
     }
     return physValPos;
 }
-
-////------------------------------------------------------------------------------
-///*! @brief Pure virtual method which must be overridden by derived class to set
-//           the width of the item.
-//
-//    @param [in] i_physValWidth
-//        New width of the object.
-//*/
-//void CGraphObj::setLength( const CPhysVal& i_physValLength )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_physValLength.toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::setLength",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    #pragma message(__TODO__"Pure virtual")
-//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//    if (pGraphicsItem == nullptr) {
-//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-//    }
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the length of the item in the unit of the drawing scene.
-//
-//    The default implementation returns the width of the item's bounding rectangle.
-//*/
-//CPhysVal CGraphObj::length() const
-////------------------------------------------------------------------------------
-//{
-//    return length(m_pDrawingScene->drawingSize().unit());
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the length of the item in the desired unit.
-//
-//    The default implementation returns the width of the item's bounding rectangle.
-//*/
-//CPhysVal CGraphObj::length(const CUnit& i_unit) const
-////------------------------------------------------------------------------------
-//{
-//    return width(i_unit);
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Pure virtual method which must be overridden by derived class to set
-//           the width of the item.
-//
-//    @param [in] i_physValWidth
-//        New width of the object.
-//*/
-//void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_physValWidth.toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::setWidth",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    #pragma message(__TODO__"Pure virtual")
-//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//    if (pGraphicsItem == nullptr) {
-//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-//    }
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the width of the item in the unit of the drawing scene.
-//
-//    The default implementation returns the width of the item's bounding rectangle.
-//*/
-//CPhysVal CGraphObj::width() const
-////------------------------------------------------------------------------------
-//{
-//    return width(m_pDrawingScene->drawingSize().unit());
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the width of the item in the desired unit.
-//
-//    The default implementation returns the width of the item's bounding rectangle.
-//*/
-//CPhysVal CGraphObj::width(const CUnit& i_unit) const
-////------------------------------------------------------------------------------
-//{
-//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-//    double fWidth_px = getBoundingRect().width();
-//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-//    CPhysVal physValWidth(fWidth_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-//    // A value like width and height can be directly converted without the drawing size.
-//    physValWidth.convertValue(i_unit);
-//    return physValWidth;
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Pure virtual method which must be overridden by derived class to set
-//           the height of the item.
-//
-//    @param [in] i_physValWidth
-//        New height of the i_physValHeight.
-//*/
-//void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_physValHeight.toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::setHeight",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    #pragma message(__TODO__"Pure virtual")
-//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//    if (pGraphicsItem == nullptr) {
-//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-//    }
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the height of the item in the unit of the drawing scene.
-//
-//    The default implementation returns the height of the item's bounding rectangle.
-//*/
-//CPhysVal CGraphObj::height() const
-////------------------------------------------------------------------------------
-//{
-//    return height(m_pDrawingScene->drawingSize().unit());
-//}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the height of the item in the desired unit.
-//
-//    The default implementation returns the height of the item's bounding rectangle.
-//*/
-//CPhysVal CGraphObj::height(const CUnit& i_unit) const
-////------------------------------------------------------------------------------
-//{
-//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-//    double fHeight_px = getBoundingRect().height();
-//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-//    CPhysVal physValHeight(fHeight_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-//    // A value like width and height can be directly converted without the drawing size.
-//    physValHeight.convertValue(i_unit);
-//    return physValHeight;
-//}
-
-////------------------------------------------------------------------------------
-//void CGraphObj::setGroupScale(double i_fXScale, double i_fYScale)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::setGroupScale",
-//        /* strAddInfo   */ strMthInArgs );
-//    #pragma message(__TODO__"Pure virtual")
-//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-//    m_transformByGroup.scale(i_fXScale, i_fYScale);
-//    QGraphicsItem_setScale();
-//}
 
 //------------------------------------------------------------------------------
 /*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
@@ -7615,6 +7445,23 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Blocks or releases the method to update the transformed physical coordinates.
+
+    If blocked, the method "updateTransformedCoorsOnItemPositionChanged" is not called
+    internally in the itemChange method if the position of the item has been changed.
+
+    Usually called if the physical coordindates are set explicitly. E.g. on adding
+    the item to a group.
+
+    A blocked counter is incremented or decremented by this method. If the counter is 0,
+    the update method is not blocked. If the counter is greater than 0, the update method is blocke.
+
+    @param [in] i_bBlock
+        true, to block the update by incrementing the block counter, false to decrement
+        the block counter. If the block counter is 0, the update method is not blocked.
+
+    @return Current block counter value.
+*/
 int CGraphObj::blockItemChangeUpdatePhysValCoors(bool i_bBlock)
 //------------------------------------------------------------------------------
 {
@@ -7629,7 +7476,6 @@ int CGraphObj::blockItemChangeUpdatePhysValCoors(bool i_bBlock)
         /* strMethod    */ "CGraphObj::blockItemChangeUpdatePhysValCoors",
         /* strAddInfo   */ strMthInArgs );
 
-    int iCounterPrev = m_iItemChangeUpdatePhysValCoorsBlockedCounter;
     if (i_bBlock) {
         ++m_iItemChangeUpdatePhysValCoorsBlockedCounter;
     }
@@ -7641,41 +7487,9 @@ int CGraphObj::blockItemChangeUpdatePhysValCoors(bool i_bBlock)
         --m_iItemChangeUpdatePhysValCoorsBlockedCounter;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(iCounterPrev);
+        mthTracer.setMethodReturn(m_iItemChangeUpdatePhysValCoorsBlockedCounter);
     }
-    return iCounterPrev;
-}
-
-//------------------------------------------------------------------------------
-int CGraphObj::blockGeometryOnSceneChangedSignal(bool i_bBlock)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = bool2Str(i_bBlock);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::blockGeometryOnSceneChangedSignal",
-        /* strAddInfo   */ strMthInArgs );
-
-    int iCounterPrev = m_iGeometryOnSceneChangedSignalBlockedCounter;
-    if (i_bBlock) {
-        ++m_iGeometryOnSceneChangedSignalBlockedCounter;
-    }
-    else if (m_iGeometryOnSceneChangedSignalBlockedCounter <= 0) {
-        QString strExcAddInfo = "m_iGeometryOnSceneChangedSignalBlockedCounter (" + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) + ") <= 0";
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError, strExcAddInfo);
-    }
-    else {
-        --m_iGeometryOnSceneChangedSignalBlockedCounter;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(iCounterPrev);
-    }
-    return iCounterPrev;
+    return m_iItemChangeUpdatePhysValCoorsBlockedCounter;
 }
 
 //------------------------------------------------------------------------------
@@ -7695,7 +7509,7 @@ int CGraphObj::blockGeometryOnSceneChangedSignal(bool i_bBlock)
     @param [in] i_bSet
         true, if the parent groups starts adding a child, false if the child has been added.
 
-    @return Previous value of the flag.
+    @return Current block counter value.
 */
 int CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
 //------------------------------------------------------------------------------
@@ -7711,7 +7525,6 @@ int CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
         /* strMethod    */ "CGraphObj::setIgnoreParentGeometryChange",
         /* strAddInfo   */ strMthInArgs );
 
-    int iIgnorePrev = m_iIgnoreParentGeometryChange;
     if (i_bSet) {
         ++m_iIgnoreParentGeometryChange;
     }
@@ -7723,9 +7536,9 @@ int CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
         --m_iIgnoreParentGeometryChange;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(iIgnorePrev);
+        mthTracer.setMethodReturn(m_iIgnoreParentGeometryChange);
     }
-    return iIgnorePrev;
+    return m_iIgnoreParentGeometryChange;
 }
 
 /*==============================================================================

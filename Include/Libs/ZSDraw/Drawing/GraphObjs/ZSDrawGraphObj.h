@@ -743,7 +743,6 @@ protected slots: // overridables
     virtual void onActionDeletePointTriggered();
 public: // instance methods
     int blockItemChangeUpdatePhysValCoors(bool i_bBlock);
-    int blockGeometryOnSceneChangedSignal(bool i_bBlock);
     int setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
     virtual void initParentTransform();

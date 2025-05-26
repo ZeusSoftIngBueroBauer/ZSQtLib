@@ -1174,6 +1174,31 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Overloaded method to set the position of the ellipse.
+
+    Same as setCenter.
+
+    @param [in] i_physValPos
+        New position of the graphical object.
+*/
+void CGraphObjEllipse::setPosition(const CPhysValPoint& i_physValPos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPos.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPosition",
+        /* strAddInfo   */ strMthInArgs );
+
+    setCenter(i_physValPos);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
            around the Z axis.
 

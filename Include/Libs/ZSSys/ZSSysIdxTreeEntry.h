@@ -158,16 +158,19 @@ public: // operators (for branch entries)
         @return Pointer to child entry. */
     const CIdxTreeEntry* operator [] ( int i_idx ) const { return m_arpTreeEntries[i_idx]; }
 public: // instance methods (for branch entries)
+    /*! Returns true if the entry has no child entries. */
+    bool empty() const { return (m_arpTreeEntries.size() == 0); }
     /*! Returns the number of child entries. */
     int count() const { return m_arpTreeEntries.size(); }
     /*! Returns the number of child entries (same as count). */
     int length() const { return m_arpTreeEntries.size(); }
     /*! Returns the number of child entries (same as count). */
     int size() const { return m_arpTreeEntries.size(); }
-    /*! Returns the child entry at the given index. */
-    CIdxTreeEntry* at( int i_idx ) const { return m_arpTreeEntries.at(i_idx); }
     /*! Returns the child items. */
     QVector<CIdxTreeEntry*> childs() const { return m_arpTreeEntries; }
+    CIdxTreeEntry* at( int i_idx ) const;
+    CIdxTreeEntry* first() const;
+    CIdxTreeEntry* last() const;
 public: // instance methods (for branch entries)
     int indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;
