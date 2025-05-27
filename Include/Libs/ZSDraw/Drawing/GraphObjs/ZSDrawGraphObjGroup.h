@@ -122,7 +122,7 @@ public: // instance methods
     void setGridSettings(const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
 public: // instance methods
-    void addToGroup(CGraphObj* i_pGraphObj);
+    void addToGroup(CGraphObj* i_pGraphObj, bool i_bGraphObjCoordinatesRelativeToThisGroup = false);
     void removeFromGroup(CGraphObj* i_pGraphObj);
     void resizeToContent();
     CGraphObj* findGraphObj(const QString& i_strObjName);
@@ -208,7 +208,6 @@ public: // instance methods
     ZS::PhysVal::CPhysVal mapRotationAngleTo(const ZS::PhysVal::CPhysVal& i_physValAngle, CGraphObjGroup* i_pGraphObjGroup);
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
-    virtual QRectF getEffectiveBoundingRectOnScene() const override;
     virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;

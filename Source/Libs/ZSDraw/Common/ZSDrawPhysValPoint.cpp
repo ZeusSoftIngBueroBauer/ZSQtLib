@@ -421,14 +421,13 @@ QPointF CPhysValPoint::toQPointF() const
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the physical point as a QPointF instance in the desired unit.
-* 
 */
 QPointF CPhysValPoint::toQPointF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
+    //if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+    //    throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    //}
     QPointF pt = m_pt;
     if (i_unit != m_unit) {
         pt = m_pDrawingScene->convert(*this, i_unit).toQPointF();

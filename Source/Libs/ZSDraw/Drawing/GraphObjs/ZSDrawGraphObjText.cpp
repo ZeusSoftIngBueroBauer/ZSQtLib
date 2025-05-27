@@ -1796,26 +1796,6 @@ QRectF CGraphObjText::getBoundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Reimplements the virtual method of base class CGraphObj.
-*/
-QRectF CGraphObjText::getEffectiveBoundingRectOnScene() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "getEffectiveBoundingRectOnScene",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = CGraphObj::getEffectiveBoundingRectOnScene(getRect());
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-    }
-    return rctBounding;
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Returns the rotated, physical bounding rectangle.
 */
 CPhysValRect CGraphObjText::getPhysValBoundingRect(const CUnit& i_unit) const

@@ -447,13 +447,29 @@ public: // instance methods
 
     The item and child items will be reparented to this group, but its position
     and transformation relative to the scene will stay intact.
+
+    When creating the object on loading an XML file as a child of a parent group,
+    the object coordinates are relative to the group the object will be added to.
+    To calculate the resulting bounding rectangle of the group and to position the
+    child object correctly, the group, the object will be added (this group), has
+    to be used to map the coordinates of the child object to the scene. For this
+    the flag "i_bGraphObjCoordinatesRelativeToThisGroup" has to be set to true.
+
+    @param [in] i_pGraphObj
+        Object to be added to the group.
+    @param [in] i_bGraphObjCoordinatesRelativeToThisGroup
+        false, if the object coordinates are given relative to the previous
+        parent group or to the scene.
+        true, if the object is initially created on reading an XML file and
+        the coordinates are given relative to this group.
 */
-void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
+void CGraphObjGroup::addToGroup(CGraphObj* i_pGraphObj, bool i_bGraphObjCoordinatesRelativeToThisGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->path());
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->path()) +
+            ", CoordinatesRelativeToThisGroup: " + bool2Str(i_bGraphObjCoordinatesRelativeToThisGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -491,7 +507,8 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         // The parent of the child to be added is either the drawing scene or another group.
         // The bounding rectangle of the new child item need to be mapped into the parent
         // coordinates of this group. The parent of this group may either be the scene or a group.
-        QRectF rctBoundingChild = i_pGraphObj->getEffectiveBoundingRectOnScene();
+        QRectF rctBoundingChild = i_pGraphObj->getEffectiveBoundingRectOnScene(
+            i_bGraphObjCoordinatesRelativeToThisGroup ? this : nullptr);
         QGraphicsItem* pGraphicsItemParentThis = parentItem();
         CGraphObjGroup* pGraphObjGroupParentThis = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParentThis);
         if (pGraphicsItemParentThis != nullptr) {
@@ -2107,26 +2124,6 @@ QRectF CGraphObjGroup::getBoundingRect() const
         mthTracer.setMethodReturn("{" + qRect2Str(m_rectScaled) + "}");
     }
     return m_rectScaled;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Reimplements the virtual method of base class CGraphObj.
-*/
-QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "getEffectiveBoundingRectOnScene",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = CGraphObj::getEffectiveBoundingRectOnScene(getRect());
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-    }
-    return rctBounding;
 }
 
 //------------------------------------------------------------------------------

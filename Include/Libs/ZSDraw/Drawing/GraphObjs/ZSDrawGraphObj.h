@@ -608,10 +608,10 @@ public: // overridables
     virtual void clearAlignments();
 public: // must overridables
     virtual QRectF getBoundingRect() const;
-    virtual QRectF getEffectiveBoundingRectOnScene() const;
-    virtual CPhysValRect getPhysValBoundingRect() const;
     virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
+    virtual CPhysValRect getPhysValBoundingRect() const;
+    virtual QRectF getEffectiveBoundingRectOnScene(CGraphObjGroup* i_pGraphObjGroupParent = nullptr) const;
     virtual void setPosition(const CPhysValPoint& i_physValPos);
     virtual CPhysValPoint position() const;
     virtual CPhysValPoint position(const ZS::PhysVal::CUnit& i_unit) const;
@@ -630,6 +630,8 @@ public: // overridables
     virtual QRectF mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const;
 public: // overridables
     virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
+    virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
+    virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;
@@ -750,7 +752,6 @@ public: // overridables
     virtual void updateTransformedCoorsOnParentGeometryChanged();
     virtual void updateTransformedCoorsOnItemPositionChanged();
 protected: // auxiliary instance methods
-    QRectF getEffectiveBoundingRectOnScene(const CPhysValRect& i_physValRectBounding) const;
     QPointF getItemPosAndLocalCoors(const CPhysValPoint& i_physValPoint, QPointF& o_pt) const;
     QPointF getItemPosAndLocalCoors(const CPhysValLine& i_physValLine, QLineF& o_line) const;
     QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;

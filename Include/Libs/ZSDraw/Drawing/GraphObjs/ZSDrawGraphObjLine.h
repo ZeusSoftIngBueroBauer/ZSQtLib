@@ -155,7 +155,6 @@ public: // overridables of base class CGraphObj
     ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
-    virtual QRectF getEffectiveBoundingRectOnScene() const override;
     virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_pt) const override;

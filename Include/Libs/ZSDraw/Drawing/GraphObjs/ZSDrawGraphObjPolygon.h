@@ -145,7 +145,6 @@ public: // instance methods
     CPhysValPoint takeLast();
 public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
-    QRectF getEffectiveBoundingRectOnScene() const override;
     CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // overridables of base class CGraphObj
     QCursor getProposedCursor(const QPointF& i_pt) const override;

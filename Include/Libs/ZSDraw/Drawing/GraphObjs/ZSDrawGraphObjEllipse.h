@@ -125,7 +125,6 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
-    QRectF getEffectiveBoundingRectOnScene() const override;
     CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
