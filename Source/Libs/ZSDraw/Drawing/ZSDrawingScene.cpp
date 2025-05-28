@@ -1141,7 +1141,7 @@ void CDrawingScene::clear()
         The object will be added to the index tree as well as to Qt's graphics scene.
     @param i_pGraphObjParent [in]
         Pointer to parent object or nullptr.
-        If a parent object is given the parent object must have already been added
+        If a parent object is given, the parent object must have already been added
         before to the drawing scene. The given graph object will be added as a child
         to the parents index tree entry as well as to the parents graphics item.
 */
@@ -1195,7 +1195,7 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGrap
     m_pGraphObjsIdxTree->add(i_pGraphObj);
 
     if (i_pGraphObjParent != nullptr && i_pGraphObj->parent() != i_pGraphObjParent) {
-        i_pGraphObjParent->addToGroup(i_pGraphObj);
+        i_pGraphObjParent->addToGroup(i_pGraphObj, true);
     }
     QObject::connect(
         i_pGraphObj, &CGraphObj::aboutToBeDestroyed,

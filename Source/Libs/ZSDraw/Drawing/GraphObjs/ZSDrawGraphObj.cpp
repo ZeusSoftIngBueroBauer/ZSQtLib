@@ -2784,9 +2784,9 @@ public: // must overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Pure virtual method which must be overridden by derived classes to
-           return the "pure" bounding rectangle of the object in local coordinates
-           without selection points, without labels and without arrow heads etc..
+/*! @brief Pure virtual method which must be overridden by derived classes to return
+           the "pure" (without selection points, without labels, arrow heads etc.)
+           bounding rectangle of the object in local coordinates.
 
     @return Bounding rectangle in local coordinates.
 */
@@ -2811,7 +2811,59 @@ QRectF CGraphObj::getBoundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the rotated, physical bounding rectangle.
+/*! @brief Pure virtual method which must be overridden by derived classes to return
+           the "pure" (without selection points, without labels, arrow heads etc.)
+           rotated, physical bounding rectangle in parent or scene coordinates
+           in the desired unit.
+
+        Differences between "getBoundingRect" and "getPhysValBoundingRect":
+
+        E.g. Line: (lines don't have a rotation angle but a line angle)
+
+                  1         2         3         4         5         6
+        01234567890123456789012345678901234567890123456789012345678901234
+      0 +---------------------------------------------------------------+
+        |                                                               |
+      2 |                     P1                                        |
+        |                      +......                                  |
+      4 |                      .\    .                                  |
+        |                      . \   .                                  |
+      6 |                      .  x pos: (26, 6) px                     |
+        |                      .   \ .                                  |
+      8 |                      .    \.                                  |
+        |                      ......+                                  |
+     10 |                            P2                                 |
+        |                                                               |
+        +---------------------------------------------------------------+
+
+        - getBoundingRect:          TL: (-3, -3), BR: (3, 3), Size: (6, 6)
+        - getPhysValBoundingRect:   TL: (23, 3), BR: (29, 9), Size: (6, 6), RotationAngle: 0°
+
+        E.g. Rectangle with rotation angle 90°:
+
+                  1         2         3         4         5         6
+        01234567890123456789012345678901234567890123456789012345678901234
+      0 +---------------------------------------------------------------+
+        |                                                               |
+      2 |                     BL         TL                             |
+        |                      +---------+                              |
+      4 |                      |         |                              |
+        |                      |         |                              |
+      6 |                      |    x pos: (28, 6) px                   |
+        |                      |         |                              |
+      8 |                      |         |                              |
+        |                      +---------+                              |
+     10 |                     BR         TR                             |
+        |                                                               |
+        +---------------------------------------------------------------+
+
+        - getBoundingRect:          TL: (-3, -3), BR: (3, 3), Size: (6, 6)
+        - getPhysValBoundingRect:   TL: (33, 3), BR: (23, 9), Size: (6, 10), RotationAngle: 90°
+
+    @param [in] i_unit
+        Desired unit.
+
+    @return Bounding rectangle in parent or scene coordinates.
 */
 CPhysValRect CGraphObj::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
@@ -2848,7 +2900,11 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the rotated, physical bounding rectangle.
+/*! @brief Returns the "pure" (without selection points, without labels, arrow heads etc.)
+           rotated, physical bounding rectangle in parent or scene coordinates
+           in the unit of the drawing scene.
+
+    @return Bounding rectangle in parent or scene coordinates.
 */
 CPhysValRect CGraphObj::getPhysValBoundingRect() const
 //------------------------------------------------------------------------------
@@ -2907,18 +2963,18 @@ QRectF CGraphObj::getEffectiveBoundingRectOnScene(CGraphObjGroup* i_pGraphObjGro
         /* strMethod    */ "CGraphObj::getEffectiveBoundingRectOnScene",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValRect physValRectBounding = getPhysValBoundingRect(); // in local coordinates
+    CPhysValRect physValRectBounding = getPhysValBoundingRect();
     CGraphObjGroup* pGraphObjGroupParent = i_pGraphObjGroupParent;
     if (i_pGraphObjGroupParent == nullptr) {
         pGraphObjGroupParent = parentGroup();
     }
     if (pGraphObjGroupParent != nullptr) {
+        physValRectBounding = pGraphObjGroupParent->mapToScene(physValRectBounding);
         physValRectBounding = pGraphObjGroupParent->convert(physValRectBounding, Units.Length.px);
     }
     else {
         physValRectBounding = m_pDrawingScene->convert(physValRectBounding, Units.Length.px);
     }
-    physValRectBounding = mapToScene(physValRectBounding);
     CPhysValPoint physValPointTL = physValRectBounding.topLeft();
     CPhysValPoint physValPointTR = physValRectBounding.topRight();
     CPhysValPoint physValPointBR = physValRectBounding.bottomRight();
@@ -2966,8 +3022,8 @@ void CGraphObj::setPosition(const CPhysValPoint& i_physValPos)
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-#pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    //#pragma message(__TODO__"Pure virtual")
+    //throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPointF ptPosPrev = pGraphicsItemThis->pos();
     QPointF ptPosNew;
@@ -3348,14 +3404,27 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
-           Orientation, relative to either the top left or bottom left corner of
-           the parent's bounding rectangle to the physical value in the drawing scene.
+/*! @brief Maps the given physical point to the physical value in the drawing scene.
+
+    In contrast to the mapToScene methods of the graphics items, where the points
+    are passed in local item coordinates, this mapToScene method expectes the
+    coordinates relative to the parent - which may be either a group or the scene.
+
+    If the point is passed with in a metric unit, the coordinates are either relative
+    to the top left or bottom left corner of the parent's bounding rectangle, depending
+    on the Y-Axis-Scale orientation.
+
+    If the point is passed in pixel coordinates, the coordinates are relative to the
+    top left corner of the parent's bounding rectangle (there is no BottomUp orientation
+    for pixel drawings).
+
+    If the object has no parent group, the drawing scene is considered to be the parent
+    and there is no need to map the point.
 
     @param [in] i_physValPoint
         Point to be mapped.
 
-    @return Point in scene coordinates.
+    @return Point in scene coordinates in the unit of the point to be mapped.
 */
 CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
 //------------------------------------------------------------------------------
@@ -3371,16 +3440,10 @@ CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
         /* strMethod    */ "CGraphObj::mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPointF pt;
+    CPhysValPoint physValPoint = i_physValPoint;
     if (parentGroup() != nullptr) {
-        pt = parentGroup()->convert(i_physValPoint, Units.Length.px).toQPointF();
+        physValPoint = parentGroup()->mapToScene(i_physValPoint);
     }
-    else {
-        pt = m_pDrawingScene->convert(i_physValPoint, Units.Length.px).toQPointF();
-    }
-    pt = pGraphicsItemThis->mapToScene(pt);
-    CPhysValPoint physValPoint = m_pDrawingScene->convert(pt);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
     }
@@ -3388,16 +3451,7 @@ CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical line, which is, depending on the Y-Axis-Scale
-           Orientation, relative to either the top left or bottom left corner of
-           the item's bounding rectangle to the physical value in the drawing scene.
-
-    @param [in] i_physValLine
-        Line to be mapped.
-    @param [in] i_unitDst
-        Unit in which the coordinate should be returned.
-
-    @return Line in scene coordinates in the desired unit.
+/*! @brief 
 */
 CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine) const
 //------------------------------------------------------------------------------
@@ -3413,17 +3467,10 @@ CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine) const
         /* strMethod    */ "CGraphObj::mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF line;
+    CPhysValLine physValLine = i_physValLine;
     if (parentGroup() != nullptr) {
-        line = parentGroup()->convert(i_physValLine, Units.Length.px).toQLineF();
+        physValLine = parentGroup()->mapToScene(physValLine);
     }
-    else {
-        line = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
-    }
-    line.setP1(pGraphicsItemThis->mapToScene(line.p1()));
-    line.setP2(pGraphicsItemThis->mapToScene(line.p2()));
-    CPhysValLine physValLine = m_pDrawingScene->convert(line);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
     }
@@ -3431,16 +3478,7 @@ CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
-           Orientation, relative to either the top left or bottom left corner of
-           the item's bounding rectangle to the physical value in the drawing scene.
-
-    @param [in] i_physValPoint
-        Point to be mapped.
-    @param [in] i_unitDst
-        Unit in which the coordinate should be returned.
-
-    @return Point in scene coordinates in the desired unit.
+/*! @brief 
 */
 CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect) const
 //------------------------------------------------------------------------------
@@ -3456,16 +3494,10 @@ CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect) const
         /* strMethod    */ "CGraphObj::mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QRectF rect;
+    CPhysValRect physValRect = i_physValRect;
     if (parentGroup() != nullptr) {
-        rect = parentGroup()->convert(i_physValRect, Units.Length.px).toQRectF();
+        physValRect = parentGroup()->mapToScene(physValRect);
     }
-    else {
-        rect = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toQRectF();
-    }
-    rect = pGraphicsItemThis->mapToScene(rect).boundingRect();
-    CPhysValRect physValRect = m_pDrawingScene->convert(rect);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }

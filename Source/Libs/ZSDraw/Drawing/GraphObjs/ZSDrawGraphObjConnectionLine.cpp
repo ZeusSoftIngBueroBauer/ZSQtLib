@@ -290,9 +290,9 @@ bool CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
     bool bConnected = false;
 
     if (i_pGraphObjCnctPt != nullptr && (i_linePoint == ELinePoint::Start || i_linePoint == ELinePoint::End)) {
-        CGraphObj* pGraphObjThis = this;
+        CGraphObj* pGraphObjCnctPt = i_pGraphObjCnctPt;
         CPhysValPoint physValPoint = i_pGraphObjCnctPt->getCenter();
-        physValPoint = pGraphObjThis->mapToScene(physValPoint);
+        physValPoint = pGraphObjCnctPt->mapToScene(physValPoint);
         CGraphObjConnectionPoint* pGraphObjCnctPtPrev = m_arpCnctPts.value(i_linePoint, nullptr);
         if (pGraphObjCnctPtPrev != nullptr && pGraphObjCnctPtPrev != i_pGraphObjCnctPt ) {
             pGraphObjCnctPtPrev->removeConnectionLine(this);

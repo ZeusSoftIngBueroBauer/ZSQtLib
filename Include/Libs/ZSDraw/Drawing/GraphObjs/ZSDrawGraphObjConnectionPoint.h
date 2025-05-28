@@ -50,6 +50,7 @@ public: // class methods
     static void resetPainterRenderHints();
 public: // class methods
     static double defaultWidthInPx();
+    static QSizeF defaultSizeInPx();
 public: // ctors and dtor
     CGraphObjConnectionPoint(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     ~CGraphObjConnectionPoint() override;

@@ -4818,10 +4818,20 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
         QStringList strlstExpectedValues;
         CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
         CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+        // Connection lines will be saved at the end of the XML file.
         while (itIdxTree != pIdxTree->end()) {
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-            if (pGraphObj != nullptr) {
+            if (pGraphObj != nullptr && !pGraphObj->isConnectionLine()) {
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
+            }
+            ++itIdxTree;
+        }
+        itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+        while (itIdxTree != pIdxTree->end()) {
+            CIdxTreeEntry* pTreeEntry = *itIdxTree;
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+            if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
                 strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
             }
             ++itIdxTree;

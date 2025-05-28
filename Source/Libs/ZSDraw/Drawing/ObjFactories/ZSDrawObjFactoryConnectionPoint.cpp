@@ -113,7 +113,11 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
+    pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     pGraphObj->setDrawSettings(drawSettings);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(pGraphObj->path());
+    }
     return pGraphObj;
 }
 
@@ -139,8 +143,8 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
     pGraphObj->setPosition(i_physValPoint);
+    pGraphObj->setSize(CPhysValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px));
     pGraphObj->setDrawSettings(drawSettings);
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
     }

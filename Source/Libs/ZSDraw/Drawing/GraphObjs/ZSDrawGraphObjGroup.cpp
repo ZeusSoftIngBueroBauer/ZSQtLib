@@ -2042,9 +2042,9 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical rectangle, whose points are relative to either the top left
-           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
-           groups bounding rectangle to the physical value on the drawing scene.
+/*! @brief Maps the given physical rectangle, whose points are relative to either the
+           top left or bottom left corner (depending on the Y-Axis-Scale-Orientation)
+           of this  group's bounding rectangle to the physical value on the drawing scene.
 
     @param [in] i_physValRect
         Rectangle to be mapped.
@@ -2063,8 +2063,9 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const
     QRectF rectF(physValRect.topLeft().toQPointF(), physValRect.size().toQSizeF());
     rectF = pGraphicsItemThis->mapRectToScene(rectF);
     rectF = mapFromTopLeftOfBoundingRect(rectF);
-    physValRect.setTopLeft(rectF.topLeft());
+    physValRect.setCenter(rectF.center());
     physValRect.setSize(rectF.size());
+    physValRect.setAngle(i_physValRect.angle());
     physValRect = convert(physValRect, i_unitDst);
     return physValRect;
 }

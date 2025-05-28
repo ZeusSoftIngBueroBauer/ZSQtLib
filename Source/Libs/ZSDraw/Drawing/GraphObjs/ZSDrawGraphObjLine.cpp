@@ -1036,7 +1036,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Reimplements the virtual method of base class CGraphObj.
+/*! @brief Implements the pure virtual method of base class CGraphObj.
 */
 QRectF CGraphObjLine::getBoundingRect() const
 //------------------------------------------------------------------------------
@@ -1066,7 +1066,7 @@ QRectF CGraphObjLine::getBoundingRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the rotated, physical bounding rectangle.
+/*! @brief Implements the pure virtual method of base class CGraphObj.
 */
 CPhysValRect CGraphObjLine::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
@@ -1082,7 +1082,10 @@ CPhysValRect CGraphObjLine::getPhysValBoundingRect(const CUnit& i_unit) const
         /* strMethod    */ "getPhysValBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValRect physValRectBounding(*m_pDrawingScene, getBoundingRect());
+    CPhysValPolygon physValPolygon(*m_pDrawingScene);
+    physValPolygon.append(m_physValLineScaledAndRotated.p1());
+    physValPolygon.append(m_physValLineScaledAndRotated.p2());
+    CPhysValRect physValRectBounding = physValPolygon.physValBoundingRect();
     if (parentGroup() != nullptr) {
         physValRectBounding = parentGroup()->convert(physValRectBounding, i_unit);
     }

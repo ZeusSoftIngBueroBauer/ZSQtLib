@@ -116,6 +116,14 @@ double CGraphObjConnectionPoint::defaultWidthInPx()
     return s_fDefaultWidth_px;
 }
 
+//------------------------------------------------------------------------------
+QSizeF CGraphObjConnectionPoint::defaultSizeInPx()
+//------------------------------------------------------------------------------
+{
+    return QSizeF(s_fDefaultWidth_px, s_fDefaultWidth_px);
+}
+
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -194,7 +202,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 
-    CGraphObjEllipse::setRect(QPointF(0.0, 0.0), QSizeF(s_fDefaultWidth_px, s_fDefaultWidth_px), Units.Length.px);
+    //CGraphObjEllipse::setRect(QPointF(0.0, 0.0), QSizeF(s_fDefaultWidth_px, s_fDefaultWidth_px), Units.Length.px);
 }
 
 //------------------------------------------------------------------------------

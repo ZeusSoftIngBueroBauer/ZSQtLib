@@ -11329,6 +11329,7 @@ void CTest::createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTes
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstGraphObjsAddToGroup;
     QStringList strlstExpectedValues;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues;
 
     ZS::Test::CTestStepGroup* pGrpGroupsConnectionPointsAddShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -11349,9 +11350,9 @@ void CTest::createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTes
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(c_strGraphObjNameConnectionPoints, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameConnectionPoints));
-    m_hshGraphObjNameToKeys[c_strGraphObjNameStar] = pIdxTree->buildKeyInTreeStr(
+    m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint1] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameConnectionPoints, c_strGraphObjNameConnectionPoint1);
-    m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle] = pIdxTree->buildKeyInTreeStr(
+    m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint2] = pIdxTree->buildKeyInTreeStr(
         strEntryType, c_strGraphObjNameConnectionPoints, c_strGraphObjNameConnectionPoint2);
     iResultValuesPrecision = 3;
     strlstGraphObjsAddToGroup.clear();
@@ -11359,23 +11360,29 @@ void CTest::createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTes
     strlstGraphObjsAddToGroup.append(c_strGraphObjNameConnectionPoint2);
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameConnectionPoints);
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoints]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint1]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionPoint2]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt2]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // Group
-    m_ptPosConnectionPoints = QPointF(437.5, 375.0);
-    m_sizeConnectionPoints = QSizeF(325.0, 250.0);
+    m_ptPosConnectionPoints = QPointF(400.0, 300.0);
+    m_sizeConnectionPoints = QSizeF(207.0, 207.0);
     m_pPhysValRectConnectionPoints->setSize(m_sizeConnectionPoints);
-    m_pPhysValRectConnectionPoints->setCenter(QPointF(437.5, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0));
+    m_pPhysValRectConnectionPoints->setCenter(QPointF(400.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0));
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameConnectionPoints, m_ptPosConnectionPoints, *m_pPhysValRectConnectionPoints, iResultValuesPrecision));
     // ConnectionPoint1
-    m_ptPosConnectionPoint1 = QPointF(62.5, 25.0);
-    *m_pPhysValConnectionPoint1 = QPointF(200.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_ptPosConnectionPoint1 = QPointF(-100.0, -100.0);
+    *m_pPhysValConnectionPoint1 = QPointF(3.5, bYAxisTopDown ? 3.5 : 203.5);
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         c_strGraphObjNameConnectionPoint1, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, iResultValuesPrecision));
     // ConnectionPoint2
-    m_ptPosConnectionPoint2 = QPointF(62.5, 25.0);
-    *m_pPhysValConnectionPoint2 = QPointF(200.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_ptPosConnectionPoint2 = QPointF(100.0, 100.0);
+    *m_pPhysValConnectionPoint2 = QPointF(203.5, bYAxisTopDown ? 203.5 : 3.5);
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         c_strGraphObjNameConnectionPoint2, m_ptPosConnectionPoint2, *m_pPhysValConnectionPoint2, iResultValuesPrecision));
     // ConnectionLine
