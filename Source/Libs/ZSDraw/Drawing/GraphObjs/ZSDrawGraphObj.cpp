@@ -1341,12 +1341,12 @@ QColor CGraphObj::penColor() const
     If further set specific draw settings call will follow the flag
     i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
 */
-void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
+void CGraphObj::setPenWidth( int i_iPenWidth, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_iLineWidth) + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
+        strMthInArgs = QString::number(i_iPenWidth) + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1356,9 +1356,9 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
         /* strAddInfo   */ strMthInArgs );
 
     if (i_bImmediatelyApplySetting) {
-        if (m_drawSettings.penWidth() != i_iLineWidth) {
+        if (m_drawSettings.penWidth() != i_iPenWidth) {
             CDrawSettings drawSettingsOld = m_drawSettings;
-            m_drawSettings.setPenWidth(i_iLineWidth);
+            m_drawSettings.setPenWidth(i_iPenWidth);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
@@ -1369,7 +1369,7 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
         if (m_pDrawSettingsTmp == nullptr) {
             m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
         }
-        m_pDrawSettingsTmp->setPenWidth(i_iLineWidth);
+        m_pDrawSettingsTmp->setPenWidth(i_iPenWidth);
     }
 }
 

@@ -2225,6 +2225,110 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pT
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepSetDrawSettings(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepSetDrawSettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    bool bImmediatelyApplySetting = i_pTestStep->getConfigValue("ImmediatelyApplySettings").toBool();
+    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+    if (pGraphObj != nullptr) {
+        for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+            QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+            QString strMethod = dataRow["Method"].toString();
+            if (strMethod == "setPenColor") {
+                QColor penColor = dataRow["PenColor"].toString();
+                pGraphObj->setPenColor(penColor, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setPenWidth") {
+                int iPenWidth = dataRow["PenWidth"].toInt();
+                pGraphObj->setPenWidth(iPenWidth, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setLineStyle") {
+                CEnumLineStyle lineStyle = dataRow["LineStyle"].toString();
+                pGraphObj->setLineStyle(lineStyle, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setFillColor") {
+                QColor fillColor = dataRow["FillColor"].toString();
+                pGraphObj->setFillColor(fillColor, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setFillStyle") {
+                CEnumFillStyle fillStyle = dataRow["FillStyle"].toString();
+                pGraphObj->setFillStyle(fillStyle, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setLineRecordType") {
+                CEnumLineRecordType lineRecordType = dataRow["LineRecordType"].toString();
+                pGraphObj->setLineRecordType(lineRecordType, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setLineExtent") {
+                int iLineExtent = dataRow["LineExtent"].toInt();
+                pGraphObj->setLineExtent(iLineExtent, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setLineEndStyle") {
+                CEnumLinePoint linePoint = dataRow["LinePoint"].toString();
+                CEnumLineEndStyle lineEndStyle = dataRow["LineEndStyle"].toString();
+                pGraphObj->setLineEndStyle(linePoint, lineEndStyle, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setArrowHeadBaseLineType") {
+                CEnumLinePoint linePoint = dataRow["LinePoint"].toString();
+                CEnumArrowHeadBaseLineType arrowHeadBaseLineType = dataRow["ArrowHeadBaseLineType"].toString();
+                pGraphObj->setArrowHeadBaseLineType(linePoint, arrowHeadBaseLineType, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setArrowHeadFillStyle") {
+                CEnumLinePoint linePoint = dataRow["LinePoint"].toString();
+                CEnumArrowHeadFillStyle arrowHeadFillStyle = dataRow["ArrowHeadFillStyle"].toString();
+                pGraphObj->setArrowHeadFillStyle(linePoint, arrowHeadFillStyle, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setArrowHeadWidth") {
+                CEnumLinePoint linePoint = dataRow["LinePoint"].toString();
+                CEnumArrowHeadWidth arrowHeadWidth = dataRow["ArrowHeadWidth"].toString();
+                pGraphObj->setArrowHeadWidth(linePoint, arrowHeadWidth, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setArrowHeadLength") {
+                CEnumLinePoint linePoint = dataRow["LinePoint"].toString();
+                CEnumArrowHeadLength arrowHeadLength = dataRow["ArrowHeadLength"].toString();
+                pGraphObj->setArrowHeadLength(linePoint, arrowHeadLength, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setTextColor") {
+                QColor textColor = dataRow["TextColor"].toString();
+                pGraphObj->setTextColor(textColor, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setFont") {
+                QFont font = dataRow["Font"].toString();
+                pGraphObj->setFont(font, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setTextSize") {
+                ETextSize textSize = str2TextSize(dataRow["TextSize"].toString());
+                pGraphObj->setTextSize(textSize, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setTextStyle") {
+                CEnumTextStyle textStyle = dataRow["TextStyle"].toString();
+                pGraphObj->setTextStyle(textStyle, bImmediatelyApplySetting);
+            }
+            else if (strMethod == "setTextEffect") {
+                CEnumTextEffect textEffect = dataRow["TextEffect"].toString();
+                pGraphObj->setTextEffect(textEffect, bImmediatelyApplySetting);
+            }
+        }
+        if (!bImmediatelyApplySetting) {
+            pGraphObj->updateDrawSettings();
+        }
+    }
+    i_pTestStep->setExpectedValues(QStringList());
+    i_pTestStep->setResultValues(QStringList());
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -4071,6 +4175,85 @@ void CTest::doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepModifyGraphObjConnectionLineByDirectMethodCalls",
         /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    QString strMethod = i_pTestStep->getConfigValue("Method").toString();
+    CPhysValPoint physValPointTaken(*m_pDrawingScene);
+
+    CGraphObjConnectionLine* pGraphObj = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    if (pGraphObj != nullptr) {
+        if (strMethod.compare("replace", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("point.unit")) {
+                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            }
+            pGraphObj->replace(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
+        }
+        else if (strMethod.compare("append", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("point.unit")) {
+                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            }
+            pGraphObj->append(CPhysValPoint(*m_pDrawingScene, pt, unit));
+        }
+        else if (strMethod.compare("insert", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("point.unit")) {
+                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            }
+            pGraphObj->insert(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
+        }
+        else if (strMethod.compare("remove", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            int iCount = i_pTestStep->getConfigValue("count").toInt();
+            pGraphObj->remove(idxPt, iCount);
+        }
+        else if (strMethod.compare("removeAt", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            pGraphObj->removeAt(idxPt);
+        }
+        else if (strMethod.compare("removeFirst", Qt::CaseInsensitive) == 0) {
+            pGraphObj->removeFirst();
+        }
+        else if (strMethod.compare("removeLast", Qt::CaseInsensitive) == 0) {
+            pGraphObj->removeLast();
+        }
+        else if (strMethod.compare("takeAt", Qt::CaseInsensitive) == 0) {
+            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            physValPointTaken = pGraphObj->takeAt(idxPt);
+        }
+        else if (strMethod.compare("takeFirst", Qt::CaseInsensitive) == 0) {
+            physValPointTaken = pGraphObj->takeFirst();
+        }
+        else if (strMethod.compare("takeLast", Qt::CaseInsensitive) == 0) {
+            physValPointTaken = pGraphObj->takeLast();
+        }
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    if (!physValPointTaken.isNull()) {
+        strlstResultValues.append(
+            "Taken: {" +
+            physValPointTaken.toString(false, ", ", iResultValuesPrecision) + "} " +
+            physValPointTaken.unit().symbol());
+    }
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
 }
 
 //------------------------------------------------------------------------------

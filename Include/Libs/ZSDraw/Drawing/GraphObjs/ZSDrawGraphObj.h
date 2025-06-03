@@ -534,7 +534,7 @@ protected: // overridables
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setPenColor(const QColor& i_clr, bool i_bImmediatelyApplySetting = true);
     virtual QColor penColor() const;
-    virtual void setPenWidth(int i_iLineWidth, bool i_bImmediatelyApplySetting = true);
+    virtual void setPenWidth(int i_iPenWidth, bool i_bImmediatelyApplySetting = true);
     virtual int penWidth() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setLineStyle(const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting = true);

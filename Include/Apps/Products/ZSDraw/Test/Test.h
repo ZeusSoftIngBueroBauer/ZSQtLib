@@ -41,7 +41,7 @@ may result in using the software modules.
 class QGraphicsItem;
 class QPainterPath;
 
-#define TEST_ALL 1
+#define TEST_ALL 0
 
 #if TEST_ALL == 0
 
@@ -83,7 +83,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
@@ -376,6 +376,7 @@ protected slots:
     void doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepSetDrawSettings(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
