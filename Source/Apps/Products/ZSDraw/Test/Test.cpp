@@ -216,9 +216,19 @@ CTest::~CTest()
     m_pPhysValConnectionPoint1 = nullptr;
     delete m_pPhysValConnectionPoint2;
     m_pPhysValConnectionPoint2 = nullptr;
+    delete m_pPhysValConnectionPoint3;
+    m_pPhysValConnectionPoint3 = nullptr;
+    delete m_pPhysValConnectionPoint4;
+    m_pPhysValConnectionPoint4 = nullptr;
 
     delete m_pPhysValPolygonConnectionLineCnctPt1CnctPt2;
     m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = nullptr;
+    delete m_pPhysValPolygonConnectionLineCnctPt3CnctPt4;
+    m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = nullptr;
+    delete m_pPhysValPolygonConnectionLineCnctPt1CnctPt4;
+    m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = nullptr;
+    delete m_pPhysValPolygonConnectionLineCnctPt3CnctPt2;
+    m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = nullptr;
 
     delete m_pPhysValRectSmallPlusSign;
     m_pPhysValRectSmallPlusSign = nullptr;
@@ -317,10 +327,15 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     //------------------
     m_pPhysValConnectionPoint1 = new CPhysValPoint(*m_pDrawingScene);
     m_pPhysValConnectionPoint2 = new CPhysValPoint(*m_pDrawingScene);
+    m_pPhysValConnectionPoint3 = new CPhysValPoint(*m_pDrawingScene);
+    m_pPhysValConnectionPoint4 = new CPhysValPoint(*m_pDrawingScene);
 
     // Connection Lines
     //-----------------
     m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = new CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
@@ -4146,14 +4161,18 @@ void CTest::doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test:
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
-    QString strGraphObjConnectionLineKeyEntry = i_pTestStep->hasConfigValue("ResultValuesGraphObjKeyEntry") ?
-        i_pTestStep->getConfigValue("ResultValuesGraphObjKeyEntry").toString() : "";
+    QStringList strlstGraphObjConnectionLinesKeyEntry = i_pTestStep->hasConfigValue("ResultValuesGraphObjsKeyEntry") ?
+        i_pTestStep->getConfigValue("ResultValuesGraphObjsKeyEntry").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        if (!strGraphObjConnectionLineKeyEntry.isEmpty()) {
-            CGraphObjConnectionLine* pGraphObjConnectionLine =
-                dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjConnectionLineKeyEntry));
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, iResultValuesPrecision));
+        if (!strlstGraphObjConnectionLinesKeyEntry.isEmpty()) {
+            for (const QString& strGraphObjKeyEntry : strlstGraphObjConnectionLinesKeyEntry) {
+                CGraphObjConnectionLine* pGraphObjConnectionLine =
+                    dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyEntry));
+                if (pGraphObjConnectionLine != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, iResultValuesPrecision));
+                }
+            }
         }
         else {
             strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
@@ -5187,11 +5206,26 @@ void CTest::initObjectCoors()
     m_ptPosConnectionPoint2 = QPointF();
     *m_pPhysValConnectionPoint2 = CPhysValPoint(*m_pDrawingScene);
 
+    m_ptPosConnectionPoint3 = QPointF();
+    *m_pPhysValConnectionPoint3 = CPhysValPoint(*m_pDrawingScene);
+
+    m_ptPosConnectionPoint4 = QPointF();
+    *m_pPhysValConnectionPoint4 = CPhysValPoint(*m_pDrawingScene);
+
     // Connection Lines
     //-----------------
 
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF();
     *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineCnctPt1CnctPt4 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineCnctPt3CnctPt2 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------

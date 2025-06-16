@@ -262,9 +262,14 @@ public: // type definition and constants
     //------------------
     const QString c_strGraphObjNameConnectionPoint1 = "CnctPt1";
     const QString c_strGraphObjNameConnectionPoint2 = "CnctPt2";
+    const QString c_strGraphObjNameConnectionPoint3 = "CnctPt3";
+    const QString c_strGraphObjNameConnectionPoint4 = "CnctPt4";
     // Connection Lines
     //-----------------
     const QString c_strGraphObjNameConnectionLineCnctPt1CnctPt2 = "CnctLine-CnctPt1-CnctPt2";
+    const QString c_strGraphObjNameConnectionLineCnctPt3CnctPt4 = "CnctLine-CnctPt3-CnctPt4";
+    const QString c_strGraphObjNameConnectionLineCnctPt1CnctPt4 = "CnctLine-CnctPt1-CnctPt4";
+    const QString c_strGraphObjNameConnectionLineCnctPt3CnctPt2 = "CnctLine-CnctPt3-CnctPt2";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -317,7 +322,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesConnectionLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionLineModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -574,11 +579,21 @@ protected: // instance members
     ZS::Draw::CPhysValPoint* m_pPhysValConnectionPoint1 = nullptr;
     QPointF m_ptPosConnectionPoint2;
     ZS::Draw::CPhysValPoint* m_pPhysValConnectionPoint2 = nullptr;
+    QPointF m_ptPosConnectionPoint3;
+    ZS::Draw::CPhysValPoint* m_pPhysValConnectionPoint3 = nullptr;
+    QPointF m_ptPosConnectionPoint4;
+    ZS::Draw::CPhysValPoint* m_pPhysValConnectionPoint4 = nullptr;
 
     // Connection Lines
     //-----------------
     QPolygonF m_polygonConnectionLineCnctPt1CnctPt2;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = nullptr;
+    QPolygonF m_polygonConnectionLineCnctPt3CnctPt4;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = nullptr;
+    QPolygonF m_polygonConnectionLineCnctPt1CnctPt4;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = nullptr;
+    QPolygonF m_polygonConnectionLineCnctPt3CnctPt2;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = nullptr;
 
     // Groups
     //-------
