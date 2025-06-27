@@ -45,6 +45,8 @@ may result in using the software modules.
 
 #include <QtGui/qevent.h>
 #include <QtGui/QPainter>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QWidgetAction>
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSceneEvent>
@@ -150,7 +152,7 @@ int CGraphObjPolygon::extractIndexFromPolygonPointLabelName(const QString& i_str
 }
 
 /*==============================================================================
-public: // ctors
+public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -163,13 +165,8 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
         /* strType             */ ZS::Draw::graphObjType2Str(i_graphObjType),
         /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypePolygon) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
-    m_polygonOrig(),
     m_physValPolygonOrig(*m_pDrawingScene),
-    m_physValPolygonScaledAndRotated(*m_pDrawingScene),
-    m_plgLineStartArrowHead(),
-    m_plgLineEndArrowHead(),
-    m_idxsAdded(),
-    m_idxsRemoved()
+    m_physValPolygonScaledAndRotated(*m_pDrawingScene)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -221,50 +218,6 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     setAcceptHoverEvents(true);
 }
-
-/*==============================================================================
-protected: // ctor
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Constructor used to create a class derived from CGraphObjPolygon.
-
-    @param [in] i_pDrawingScene
-        Pointer to drawing scene from which the object is created.
-
-    @param [in] i_strObjName
-        Name of the graphical object.
-        Names of graphical objects must be unique below its parent.
-        If an empty string is passed a unique name is created by adding the current
-        number of objects taken from s_iInstCount to the graphical object type.
-*/
-CGraphObjPolygon::CGraphObjPolygon(
-    CDrawingScene* i_pDrawingScene,
-    const QString& i_strFactoryGroupName,
-    EGraphObjType i_type,
-    const QString& i_strType,
-    const QString& i_strObjName) :
-//------------------------------------------------------------------------------
-    CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ i_strFactoryGroupName,
-        /* type                */ i_type,
-        /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName),
-    QGraphicsPolygonItem(),
-    m_polygonOrig(),
-    m_physValPolygonOrig(*m_pDrawingScene),
-    m_physValPolygonScaledAndRotated(*m_pDrawingScene),
-    m_plgLineStartArrowHead(),
-    m_plgLineEndArrowHead(),
-    m_idxsAdded(),
-    m_idxsRemoved()
-{
-}
-
-/*==============================================================================
-public: // dtor
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 CGraphObjPolygon::~CGraphObjPolygon()
@@ -362,6 +315,77 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/* @brief
+
+    Must be overridden to show the context popup menu.
+    Usually opened by right clicking on the the object.
+*/
+void CGraphObjPolygon::createContextMenu()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::createContextMenu",
+        /* strAddInfo   */ "" );
+    if (m_pMenuContext == nullptr) {
+        m_pMenuContext = new QMenu();
+        // The title only works for sub menus.
+        // A widget action must be used to set a title.
+        //m_pMenuContext = new QMenu(path());
+        //m_pMenuContext->setTitle(path());
+
+        QLabel* pLblTitle = new QLabel(path());
+        QFont fntTitle = pLblTitle->font();
+        fntTitle.setBold(true);
+        pLblTitle->setFont(fntTitle);
+        pLblTitle->setContentsMargins(2, 5, 2, 5);
+        QWidgetAction* pWdgtAction = new QWidgetAction(this);
+        pWdgtAction->setDefaultWidget(pLblTitle);
+        m_pMenuContext->addAction(pWdgtAction);
+        m_pMenuContext->addSeparator();
+
+        //QIcon iconFormat;
+        QPixmap pxmFormat(":/ZS/Draw/FormatGraphObj16x16.png");
+        pxmFormat.setMask(pxmFormat.createHeuristicMask());
+        //iconFormat.addPixmap(pxmFormat);
+        m_pActionMenuContextFormat = new QAction(pxmFormat, "Format", this);
+        m_pMenuContext->addAction(m_pActionMenuContextFormat);
+        QObject::connect(
+            m_pActionMenuContextFormat, &QAction::triggered,
+            this, &CGraphObj::onActionFormatTriggered);
+        m_pMenuContext->addSeparator();
+
+        //QIcon iconFormatModifyPoints;
+        QPixmap pxmFormatModifyPoints(":/ZS/Draw/FormatGraphObjModifyPoints16x16.png");
+        pxmFormatModifyPoints.setMask(pxmFormatModifyPoints.createHeuristicMask());
+        //iconFormat.addPixmap(pxmFormat);
+        m_pActionMenuContextModifyPoints = new QAction(pxmFormatModifyPoints, "Modify Points", this);
+        m_pMenuContext->addAction(m_pActionMenuContextModifyPoints);
+        m_pMenuContext->addSeparator();
+        QObject::connect(
+            m_pActionMenuContextModifyPoints, &QAction::triggered,
+            this, &CGraphObjPolygon::onActionModifyPointsTriggered);
+        m_pActionMenuContextModifyPoints->setVisible(false);
+        m_pActionMenuContextModifyPoints->setEnabled(false);
+
+        //QIcon iconFormatDeletePoint;
+        QPixmap pxmFormatDeletePoint(":/ZS/Draw/FormatGraphObjDeletePoint16x16.png");
+        pxmFormatDeletePoint.setMask(pxmFormatDeletePoint.createHeuristicMask());
+        //iconFormatDeletePoint.addPixmap(pxmFormat);
+        m_pActionMenuContextDeletePoint = new QAction(pxmFormatDeletePoint, "Delete Point", this);
+        m_pMenuContext->addAction(m_pActionMenuContextDeletePoint);
+        QObject::connect(
+            m_pActionMenuContextDeletePoint, &QAction::triggered,
+            this, &CGraphObjPolygon::onActionDeletePointTriggered);
+        m_pActionMenuContextDeletePoint->setVisible(false);
+        m_pActionMenuContextDeletePoint->setEnabled(false);
+    }
+    m_pMenuContext->setTitle(path());
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjPolygon::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
@@ -373,7 +397,7 @@ void CGraphObjPolygon::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::showContextMenu",
+        /* strMethod    */ "showContextMenu",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_pMenuContext == nullptr) {
@@ -1642,93 +1666,6 @@ CPhysValRect CGraphObjPolygon::getPhysValBoundingRect(const CUnit& i_unit) const
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//bool CGraphObjPolygon::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = "Point:" + point2Str(i_pt) +
-//            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) +
-//            ", Polygon:" + polygon2Str(polygon());
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "isHit",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    bool bIsHit = false;
-//
-//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//
-//    if( pGraphicsItem != nullptr )
-//    {
-//        if( pGraphicsItem->isSelected() )
-//        {
-//            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
-//
-//            if( !bIsHit )
-//            {
-//                bIsHit = isBoundingRectSelectionPointHit(
-//                    /* pt               */ i_pt,
-//                    /* iSelPtsCount     */ -1,
-//                    /* pSelPts          */ nullptr,
-//                    /* pGraphObjHitInfo */ o_pHitInfo );
-//            }
-//        }
-//
-//        if( !bIsHit )
-//        {
-//            QPolygonF plg = polygon();
-//            bIsHit = isPolygonHit( plg, EFillStyle::NoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
-//        }
-//
-//        if( !bIsHit )
-//        {
-//            if( pGraphicsItem->isSelected() )
-//            {
-//                bIsHit = pGraphicsItem->contains(i_pt);
-//
-//                if( o_pHitInfo != nullptr )
-//                {
-//                    //o_pHitInfo->m_editMode = EEditMode::Move;
-//                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-//                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-//                    o_pHitInfo->m_idxLineSegment = -1;
-//                    o_pHitInfo->m_ptHit = i_pt;
-//                }
-//            }
-//        }
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//        if( bIsHit && o_pHitInfo != nullptr )
-//        {
-//            o_pHitInfo->setCursor( Math::degree2Rad(m_fRotAngleCurr_deg) );
-//        }
-//#endif
-//
-//    } // if( pGraphicsItem != nullptr )
-//
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        QString strMthOutArgs;
-//        if (o_pHitInfo != nullptr) {
-//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-//            mthTracer.setMethodOutArgs(strMthOutArgs);
-//        }
-//        mthTracer.setMethodReturn(bIsHit);
-//    }
-//
-//    return bIsHit;
-//
-//} // isHit
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 /*! @brief Returns the proposed cursor shape for the given point.
 
@@ -2952,29 +2889,6 @@ QVariant CGraphObjPolygon::itemChange( GraphicsItemChange i_change, const QVaria
 protected: // overridable slots of base class CGraphObj
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CGraphObjPolygon::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_drawingSize.toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "onDrawingSizeChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if (m_physValLineCurr.unit() != i_drawingSize.unit()) {
-//        m_bForceConversionToSceneCoors = true;
-//        setLine(m_pDrawingScene->convert(m_physValLineCurr, i_drawingSize.unit()));
-//        m_bForceConversionToSceneCoors = false;
-//        emit_geometryValuesUnitChanged();
-//    }
-//}
-
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
@@ -3188,6 +3102,26 @@ protected: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjPolygon::onActionModifyPointsTriggered()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onActionModifyPointsTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_editMode != EEditMode::CreatingByMouseEvents) {
+        setEditMode(EEditMode::ModifyingPolygonPoints);
+    }
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjPolygon::onActionDeletePointTriggered()
 //------------------------------------------------------------------------------
 {
@@ -3208,7 +3142,6 @@ void CGraphObjPolygon::onActionDeletePointTriggered()
         }
     }
 }
-
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj

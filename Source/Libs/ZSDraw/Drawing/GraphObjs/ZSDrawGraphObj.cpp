@@ -173,8 +173,6 @@ CGraphObj::CGraphObj(
     m_strEditInfo(),
     m_pMenuContext(nullptr),
     m_pActionMenuContextFormat(nullptr),
-    m_pActionMenuContextModifyPoints(nullptr),
-    m_pActionMenuContextDeletePoint(nullptr),
     m_hitInfoOnShowContextMenu(),
     m_iItemChangeBlockedCounter(0),
     m_iItemChangeUpdatePhysValCoorsBlockedCounter(0),
@@ -375,8 +373,6 @@ CGraphObj::~CGraphObj()
     m_fParentGroupScaleY = 0.0;
     m_pMenuContext = nullptr;
     m_pActionMenuContextFormat = nullptr;
-    m_pActionMenuContextModifyPoints = nullptr;
-    m_pActionMenuContextDeletePoint = nullptr;
     m_iItemChangeBlockedCounter = 0;
     m_iItemChangeUpdatePhysValCoorsBlockedCounter = 0;
     m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
@@ -1048,31 +1044,6 @@ void CGraphObj::createContextMenu()
             m_pActionMenuContextFormat, &QAction::triggered,
             this, &CGraphObj::onActionFormatTriggered);
         m_pMenuContext->addSeparator();
-
-        //QIcon iconFormatModifyPoints;
-        QPixmap pxmFormatModifyPoints(":/ZS/Draw/FormatGraphObjModifyPoints16x16.png");
-        pxmFormatModifyPoints.setMask(pxmFormatModifyPoints.createHeuristicMask());
-        //iconFormat.addPixmap(pxmFormat);
-        m_pActionMenuContextModifyPoints = new QAction(pxmFormatModifyPoints, "Modify Points", this);
-        m_pMenuContext->addAction(m_pActionMenuContextModifyPoints);
-        m_pMenuContext->addSeparator();
-        QObject::connect(
-            m_pActionMenuContextModifyPoints, &QAction::triggered,
-            this, &CGraphObj::onActionModifyPointsTriggered);
-        m_pActionMenuContextModifyPoints->setVisible(false);
-        m_pActionMenuContextModifyPoints->setEnabled(false);
-
-        //QIcon iconFormatDeletePoint;
-        QPixmap pxmFormatDeletePoint(":/ZS/Draw/FormatGraphObjDeletePoint16x16.png");
-        pxmFormatDeletePoint.setMask(pxmFormatDeletePoint.createHeuristicMask());
-        //iconFormatDeletePoint.addPixmap(pxmFormat);
-        m_pActionMenuContextDeletePoint = new QAction(pxmFormatDeletePoint, "Delete Point", this);
-        m_pMenuContext->addAction(m_pActionMenuContextDeletePoint);
-        QObject::connect(
-            m_pActionMenuContextDeletePoint, &QAction::triggered,
-            this, &CGraphObj::onActionDeletePointTriggered);
-        m_pActionMenuContextDeletePoint->setVisible(false);
-        m_pActionMenuContextDeletePoint->setEnabled(false);
     }
     m_pMenuContext->setTitle(path());
 }
@@ -7396,42 +7367,6 @@ void CGraphObj::onActionFormatTriggered()
         /* strAddInfo   */ strMthInArgs );
 
     openFormatGraphObjsDialog();
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::onActionModifyPointsTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onActionModifyPointsTriggered",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_editMode != EEditMode::CreatingByMouseEvents) {
-        setEditMode(EEditMode::ModifyingPolygonPoints);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::onActionDeletePointTriggered()
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = m_hitInfoOnShowContextMenu.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onActionDeletePointTriggered",
-        /* strAddInfo   */ strMthInArgs );
 }
 
 /*==============================================================================

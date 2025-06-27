@@ -520,7 +520,7 @@ protected: // overridables of base class CIdxTreeEntry
     virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
     QString factoryGroupName() const;
-public: // must overridables
+public: // overridables
     virtual void createContextMenu();
     virtual void showContextMenu(QGraphicsSceneMouseEvent* i_pEv);
     virtual void openFormatGraphObjsDialog();
@@ -739,10 +739,8 @@ protected slots: // overridables
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
-protected slots: // overridables
+public slots: // overridables
     virtual void onActionFormatTriggered();
-    virtual void onActionModifyPointsTriggered();
-    virtual void onActionDeletePointTriggered();
 public: // instance methods
     int blockItemChangeUpdatePhysValCoors(bool i_bBlock);
     int setIgnoreParentGeometryChange(bool i_bSet);
@@ -986,8 +984,6 @@ protected: // instance members
     /*!< Context menu. Usually opened as a popup when right clicking the object. */
     QMenu* m_pMenuContext;
     QAction* m_pActionMenuContextFormat;
-    QAction* m_pActionMenuContextModifyPoints;
-    QAction* m_pActionMenuContextDeletePoint;
 protected: // !!! OBSOLETE !!! instance members
     /*!< Simulation Functions. */
     //QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;

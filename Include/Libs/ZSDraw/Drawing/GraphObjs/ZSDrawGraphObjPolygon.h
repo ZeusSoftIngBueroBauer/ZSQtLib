@@ -59,13 +59,6 @@ public: // class methods
     static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 public: // ctors
     CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType i_type, const QString& i_strObjName = "");
-protected: // ctor (used by derived classes, e.g. CGraphObjConnectionLine)
-    CGraphObjPolygon(
-        CDrawingScene* i_pDrawingScene,
-        const QString& i_strFactoryGroupName,
-        EGraphObjType i_type,
-        const QString& i_strType,
-        const QString& i_strObjName);
 public: // dtor
     ~CGraphObjPolygon() override;
 public: // instance methods
@@ -75,6 +68,7 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
+    void createContextMenu() override;
     void showContextMenu(QGraphicsSceneMouseEvent* i_pEv) override;
     void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
@@ -166,8 +160,6 @@ public: // must overridables of base class QGraphicsItem
     QPainterPath shape() const override;
     void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    //bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
-protected: // overridables of base class QGraphicsItem
     void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
     void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
     void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
@@ -182,8 +174,9 @@ protected: // overridable slots of base class CGraphObj
     //void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
-protected slots: // overridables of base class CGraphObj
-    void onActionDeletePointTriggered() override;
+protected slots:
+    void onActionModifyPointsTriggered();
+    void onActionDeletePointTriggered();
 public: // must overridables of base class CGraphObj
     void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     void updateTransformedCoorsOnParentGeometryChanged() override;
@@ -220,6 +213,9 @@ public: // class members
     static qint64 s_iInstCount;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
+protected: // instance members
+    QAction* m_pActionMenuContextModifyPoints = nullptr;
+    QAction* m_pActionMenuContextDeletePoint = nullptr;
 protected: // instance members
     QPolygonF m_polygonOrig;
     CPhysValPolygon m_physValPolygonOrig;
