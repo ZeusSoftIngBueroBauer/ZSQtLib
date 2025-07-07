@@ -309,6 +309,12 @@ void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawS
         /* strObjName   */ myPathName(),
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    bool bDrawSettingsChanged = (m_drawSettings != i_drawSettingsOld);
+    if (bDrawSettingsChanged) {
+        update();
+        emit_drawSettingsChanged();
+    }
 }
 
 /*==============================================================================

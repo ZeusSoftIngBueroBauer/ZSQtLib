@@ -55,12 +55,12 @@ public: // class methods
 public: // ctors
     CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes, e.g. CGraphObjConnectionPoint)
-    CGraphObjEllipse(
-        CDrawingScene* i_pDrawingScene,
-        const QString& i_strFactoryGroupName,
-        EGraphObjType i_type,
-        const QString& i_strType,
-        const QString& i_strObjName);
+    //CGraphObjEllipse(
+    //    CDrawingScene* i_pDrawingScene,
+    //    const QString& i_strFactoryGroupName,
+    //    EGraphObjType i_type,
+    //    const QString& i_strType,
+    //    const QString& i_strObjName);
 public: // dtor
     ~CGraphObjEllipse() override;
 public: // overridables of base class QGraphicsItem

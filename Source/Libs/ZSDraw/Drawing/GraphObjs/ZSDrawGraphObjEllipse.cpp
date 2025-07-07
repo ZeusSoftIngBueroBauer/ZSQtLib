@@ -226,38 +226,38 @@ CGraphObjEllipse::CGraphObjEllipse(
 protected: // ctor
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Constructor used to create a class derived from CGraphObjEllipse.
-
-    @param [in] i_pDrawingScene
-        Pointer to drawing scene from which the object is created.
-
-    @param [in] i_strObjName
-        Name of the graphical object.
-        Names of graphical objects must be unique below its parent.
-        If an empty string is passed a unique name is created by adding the current
-        number of objects taken from s_iInstCount to the graphical object type.
-*/
-CGraphObjEllipse::CGraphObjEllipse(
-    CDrawingScene* i_pDrawingScene,
-    const QString& i_strFactoryGroupName,
-    EGraphObjType i_type,
-    const QString& i_strType,
-    const QString& i_strObjName) :
-//------------------------------------------------------------------------------
-    CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ i_strFactoryGroupName,
-        /* type                */ i_type,
-        /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName),
-    QGraphicsEllipseItem(),
-    m_rectOrig(),
-    m_physValRectOrig(*m_pDrawingScene),
-    m_physValRectScaled(*m_pDrawingScene),
-    m_physValRectScaledAndRotated(*m_pDrawingScene)
-{
-}
+////------------------------------------------------------------------------------
+///*! @brief Constructor used to create a class derived from CGraphObjEllipse.
+//
+//    @param [in] i_pDrawingScene
+//        Pointer to drawing scene from which the object is created.
+//
+//    @param [in] i_strObjName
+//        Name of the graphical object.
+//        Names of graphical objects must be unique below its parent.
+//        If an empty string is passed a unique name is created by adding the current
+//        number of objects taken from s_iInstCount to the graphical object type.
+//*/
+//CGraphObjEllipse::CGraphObjEllipse(
+//    CDrawingScene* i_pDrawingScene,
+//    const QString& i_strFactoryGroupName,
+//    EGraphObjType i_type,
+//    const QString& i_strType,
+//    const QString& i_strObjName) :
+////------------------------------------------------------------------------------
+//    CGraphObj(
+//        /* pDrawingScene       */ i_pDrawingScene,
+//        /* strFactoryGroupName */ i_strFactoryGroupName,
+//        /* type                */ i_type,
+//        /* strType             */ i_strType,
+//        /* strObjName          */ i_strObjName),
+//    QGraphicsEllipseItem(),
+//    m_rectOrig(),
+//    m_physValRectOrig(*m_pDrawingScene),
+//    m_physValRectScaled(*m_pDrawingScene),
+//    m_physValRectScaledAndRotated(*m_pDrawingScene)
+//{
+//}
 
 /*==============================================================================
 public: // dtor
@@ -397,7 +397,7 @@ void CGraphObjEllipse::setRect( const CPhysValRect& i_physValRect )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValRect.toString();
+        strMthInArgs = i_physValRect.toString(true);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -603,7 +603,7 @@ void CGraphObjEllipse::setCenter(const CPhysValPoint& i_physValPoint)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValPoint.toString() + "}";
+        strMthInArgs = "{" + i_physValPoint.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1186,7 +1186,7 @@ void CGraphObjEllipse::setPosition(const CPhysValPoint& i_physValPos)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValPos.toString() + "}";
+        strMthInArgs = "{" + i_physValPos.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

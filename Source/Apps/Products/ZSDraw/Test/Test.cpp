@@ -3038,6 +3038,9 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    if (i_pTestStep->hasConfigValue("GraphObjFactoryGroup")) {
+        strFactoryGroupName = i_pTestStep->getConfigValue("GraphObjFactoryGroup").toString();
+    }
 
     QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
     EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);

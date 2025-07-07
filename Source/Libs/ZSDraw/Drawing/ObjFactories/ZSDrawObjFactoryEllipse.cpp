@@ -145,7 +145,6 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
     CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene);
     pGraphObj->setRect(i_physValPoint, i_physValPoint);
     pGraphObj->setDrawSettings(drawSettings);
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
     }

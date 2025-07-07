@@ -72,7 +72,6 @@ public: // instance methods
     QString myPathName() const;
 public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
-    //void setShapePoint( int i_idxPt );
 public: // instance methods
     void setWidthInPx(double i_fWidth_px);
     double getWidthInPx() const;

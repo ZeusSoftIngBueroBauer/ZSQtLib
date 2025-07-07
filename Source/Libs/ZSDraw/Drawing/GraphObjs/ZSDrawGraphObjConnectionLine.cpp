@@ -162,7 +162,7 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
+        /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionLine,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),
         /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeConnectionLine) + QString::number(s_iInstCount) : i_strObjName),

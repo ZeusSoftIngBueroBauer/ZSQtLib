@@ -1392,7 +1392,6 @@ void CMainWindow::createActions()
     m_pActDrawGraphicsImage = new QAction(iconDrawImage, c_strActionNameDrawGraphicsImage.section(":",-1,-1), this);
     m_pActDrawGraphicsImage->setStatusTip(tr("Insert Images"));
     m_pActDrawGraphicsImage->setCheckable(false);
-    m_pActDrawGraphicsImage->setEnabled(false);
 
     QObject::connect(
         m_pActDrawGraphicsImage, &QAction::triggered,
@@ -1411,7 +1410,6 @@ void CMainWindow::createActions()
     m_pActDrawConnectionPoint = new QAction(iconDrawConnectionPoint, c_strActionNameDrawConnectionPoint.section(":",-1,-1), this);
     m_pActDrawConnectionPoint->setStatusTip(tr("Draw Connection Point"));
     m_pActDrawConnectionPoint->setCheckable(true);
-    m_pActDrawConnectionPoint->setEnabled(false);
 
     QObject::connect(
         m_pActDrawConnectionPoint, &QAction::triggered,
@@ -1427,7 +1425,6 @@ void CMainWindow::createActions()
     m_pActDrawConnectionLine = new QAction(iconDrawConnectionLine, c_strActionNameDrawConnectionLine.section(":",-1,-1), this);
     m_pActDrawConnectionLine->setStatusTip(tr("Draw Connection Line"));
     m_pActDrawConnectionLine->setCheckable(true);
-    m_pActDrawConnectionLine->setEnabled(false);
 
     QObject::connect(
         m_pActDrawConnectionLine, &QAction::triggered,
@@ -4711,8 +4708,7 @@ void CMainWindow::updateActions()
                 m_pActDrawConnectionPoint->setChecked(false);
             }
             else {
-                m_pActDrawConnectionPoint->setEnabled(false);
-                //m_pActDrawConnectionPoint->setEnabled(true);
+                m_pActDrawConnectionPoint->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionPoint) {
                     m_pActDrawConnectionPoint->setChecked(true);
                 }
@@ -4727,8 +4723,7 @@ void CMainWindow::updateActions()
                 m_pActDrawConnectionLine->setChecked(false);
             }
             else {
-                m_pActDrawConnectionLine->setEnabled(false);
-                //m_pActDrawConnectionLine->setEnabled(true);
+                m_pActDrawConnectionLine->setEnabled(true);
                 if (pDrawingScene->getCurrentDrawingTool() == m_pObjFactoryConnectionLine) {
                     m_pActDrawConnectionLine->setChecked(true);
                 }
@@ -4746,12 +4741,12 @@ void CMainWindow::updateActions()
                 m_pActEditSelect->setEnabled(false);
             }
             else {
-                //if (pDrawingScene->items().size() == 0) {
-                //    m_pActEditSelect->setEnabled(false);
-                //}
-                //else {
-                //    m_pActEditSelect->setEnabled(true);
-                //}
+                if (pDrawingScene->items().size() == 0) {
+                    m_pActEditSelect->setEnabled(false);
+                }
+                else {
+                    m_pActEditSelect->setEnabled(true);
+                }
                 if (pDrawingScene->getCurrentDrawingTool() == nullptr) {
                     m_pActEditSelect->setChecked(true);
                 }
