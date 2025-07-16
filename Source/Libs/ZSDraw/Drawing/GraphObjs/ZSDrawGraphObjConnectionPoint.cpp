@@ -1858,6 +1858,10 @@ void CGraphObjConnectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv 
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Indicate that connection line can be started or terminated here.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        QGraphicsItem_setCursor(Qt::PointingHandCursor);
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
@@ -1886,6 +1890,10 @@ void CGraphObjConnectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     // Ignore hover events if any object should be or is currently being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
+    // Indicate that connection line can be started or terminated here.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        QGraphicsItem_setCursor(Qt::PointingHandCursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1998,7 +2006,12 @@ void CGraphObjConnectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pE
         // The drawing scene is informed this way that creation of the object is finished
         // and will unselect the current drawing tool and will select the object under
         // construction showing the selection points at the bounding rectangle.
-        setEditMode(EEditMode::ModifyingBoundingRect);
+        if (isResizable()) {
+            setEditMode(EEditMode::ModifyingBoundingRect);
+        }
+        else {
+            setEditMode(EEditMode::None);
+        }
     }
 
     // Forward the mouse event to the items base implementation.

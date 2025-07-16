@@ -2719,7 +2719,10 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -2741,10 +2744,10 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //showSelectionPointsOfBoundingRect(getBoundingRect());
-    //setIsHit(true);
-    //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
-    QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -2766,11 +2769,6 @@ void CGraphObjGroup::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // If the object is selected the selection points should remain visible.
-    //if (!isSelected()) {
-    //    hideSelectionPoints();
-    //}
-    //setIsHit(false);
     QGraphicsItem_unsetCursor();
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

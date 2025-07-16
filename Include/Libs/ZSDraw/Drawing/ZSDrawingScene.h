@@ -170,7 +170,7 @@ public: // instance methods
     void setCurrentDrawingTool(CObjFactory* i_pObjFactory);
     void setCurrentDrawingTool(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     CObjFactory* getCurrentDrawingTool() const { return m_pObjFactory; }
-    int getCurrentDrawingToolGraphObjType() const;
+    EGraphObjType getCurrentDrawingToolGraphObjType() const;
     //QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }
     //CGraphObj* getGraphObjCreating() const { return m_pGraphObjCreating; }
 public: // instance methods

@@ -1053,7 +1053,6 @@ void CGraphicsTextItem::hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv)
     if (pDrawingScene != nullptr && pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::IBeamCursor);
     }
-    //QGraphicsTextItem::hoverEnterEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
@@ -1080,7 +1079,6 @@ void CGraphicsTextItem::hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv)
     if (pDrawingScene != nullptr && pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::IBeamCursor);
     }
-    //QGraphicsTextItem::hoverMoveEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");

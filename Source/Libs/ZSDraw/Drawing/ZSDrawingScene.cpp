@@ -1621,6 +1621,12 @@ public: // instance methods
     If a new object factory is activated the scenes mode will be adjusted
     so that a graphical object will be created by the following mouse click event.
 
+    ////The method may also change whether the graphics items accept hover events.
+    ////As long as a drawing tool is selected, graphics items don't accpet hover events
+    ////and cannot be selected.
+    ////The drawing tool connection line is an exception to this rule as when creating
+    ////connection lines it must be checked whether connection points are hit.
+
     @param i_pObjFactory [in] Pointer to Object Factory instance to be used as the
                               drawing tool's object factory.
                               nullptr may be passed to deactivate any currently
@@ -1653,26 +1659,25 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
     }
 
     if (m_pObjFactory != i_pObjFactory) {
-        // As long as a drawing tool is selected, graphics item don't
-        // accpet hover events and cannot be selected.
-        bool bAdjustItemsStates = false;
+        bool bDeselectItems = false;
         QString strFactoryGrpName;
         QString strGraphObjType;
+        //EGraphObjType graphObjType = EGraphObjTypeUndefined;
         if (m_pObjFactory != nullptr) {
             QObject::disconnect(
                 m_pObjFactory, &CObjFactory::destroyed,
                 this, &CDrawingScene::onGraphObjFactoryDestroyed );
             // If no drawing tool is selected anymore ...
             if (i_pObjFactory == nullptr) {
-                bAdjustItemsStates = true;
+                bDeselectItems = true;
             }
         }
-        else {
-            // If a drawing tool has been selected ...
-            if (i_pObjFactory != nullptr) {
-                bAdjustItemsStates = true;
-            }
-        }
+        //else {
+        //    // If a drawing tool has been selected ...
+        //    if (i_pObjFactory != nullptr) {
+        //        bAdjustItemsStates = true;
+        //    }
+        //}
         m_pObjFactory = i_pObjFactory;
         if (m_pObjFactory != nullptr) {
             QObject::connect(
@@ -1680,26 +1685,29 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
                 this, &CDrawingScene::onGraphObjFactoryDestroyed );
             strFactoryGrpName = m_pObjFactory->groupName();
             strGraphObjType = m_pObjFactory->graphObjTypeAsString();
+            //graphObjType = m_pObjFactory->graphObjType();
         }
-        if (bAdjustItemsStates) {
-            // The items call returns a list of all items currently under the cursor.
-            // This list may also include selection points. When deselecting an object
-            // the selection points are destroyed and the entries, pointing to those
-            // selection points, are referencing destroyed objects. To avoid crashes the
-            // selection points will be removed from the list before deselecting the items.
-            QList<QGraphicsItem*> arpGraphicsItems;
+        if (bDeselectItems) {
+            // The items call returns a list of all items on the scene ordered by the stacking order.
+            // This list may also include selection points. When deselecting an object, the selection
+            // points are destroyed and the entries in the items list are pointing to those deleted
+            // selection points. To avoid a crash, selection points will not be added to the items
+            // which got to be deselected.
+            QList<QGraphicsItem*> arpGraphicsItemsToDeselect;
             QList<QGraphicsItem*> arpGraphicsItemsTmp = items();
             for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsTmp) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                 if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint()) {
-                    arpGraphicsItems.append(pGraphicsItem);
+                    if (pGraphicsItem->isSelected()) {
+                        arpGraphicsItemsToDeselect.append(pGraphicsItem);
+                    }
                 }
             }
-            for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsToDeselect) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                 if (pGraphObj != nullptr) {
-                    pGraphicsItem->setAcceptHoverEvents(m_pObjFactory == nullptr);
-                    pGraphicsItem->setSelected(m_pObjFactory == nullptr ? pGraphicsItem->isSelected() : false);
+                    //pGraphicsItem->setAcceptHoverEvents(graphObjType == EGraphObjTypeUndefined || graphObjType == EGraphObjTypeConnectionLine);
+                    pGraphicsItem->setSelected(false);
                 }
             }
         }
@@ -1771,14 +1779,14 @@ void CDrawingScene::setCurrentDrawingTool(
 
     @return Type as integer value of the currently selected drawing tool.
 */
-int CDrawingScene::getCurrentDrawingToolGraphObjType() const
+EGraphObjType CDrawingScene::getCurrentDrawingToolGraphObjType() const
 //------------------------------------------------------------------------------
 {
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    EGraphObjType graphObjFactoryType = EGraphObjTypeUndefined;
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->graphObjType();
+        graphObjFactoryType = m_pObjFactory->graphObjType();
     }
-    return iObjFactoryType;
+    return graphObjFactoryType;
 }
 
 /*==============================================================================
@@ -1840,7 +1848,15 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
     if (m_mode == EMode::Edit) {
         if (sceneRect().contains(i_ptScenePos)) {
             if (m_pObjFactory != nullptr) {
-                cursor = Qt::CrossCursor;
+                EGraphObjType graphObjType = m_pObjFactory->graphObjType();
+                // For connection lines mouse move events will be passed as
+                // hover events to those items and the items must decide, which
+                // cursor is suitable (whether the connection line can be connected
+                // to an already created connection point or whether a connection point
+                // should be created).
+                if (graphObjType != EGraphObjTypeConnectionLine) {
+                    cursor = Qt::CrossCursor;
+                }
             }
             //else {
             //    // Mouse events are sent to the objects via hover events. The object is hit
@@ -1879,9 +1895,9 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
         //    }
         //}
         //else if (m_editTool == EEditTool::CreateObjects) {
-        //    int iObjFactoryType = getCurrentDrawingToolGraphObjType();
+        //    graphObjFactoryType graphObjFactoryType = getCurrentDrawingToolGraphObjType();
         //    if (m_editMode == EEditMode::MoveShapePoint) {
-        //        if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+        //        if (graphObjFactoryType != EGraphObjTypeUndefined) {
         //            cursor = Qt::CrossCursor;
         //        }
         //    }
@@ -1890,7 +1906,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
         //    }
         //    else if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
         //        // Special case for connection lines which may only be created on connection points.
-        //        if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
+        //        if (graphObjFactoryType == EGraphObjTypeConnectionLine) {
         //            cursor = Qt::ArrowCursor;
         //            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
         //                if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
@@ -3551,9 +3567,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     emit_mousePosChanged(i_pEv->scenePos());
 
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    EGraphObjType graphObjFactoryType = EGraphObjTypeUndefined;
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->graphObjType();
+        graphObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     if (m_pGraphicsItemSelectionArea != nullptr) {
@@ -3579,16 +3595,16 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             // If an object got to be created ...
             if (m_pObjFactory != nullptr) {
                 bool bCreateObj = true;
-                //CGraphObjConnectionPoint* pGraphObjCnctPtHit = nullptr;
-                //// Connection lines may only be created on connection points.
-                //// A connection point must have been hit to create connection lines.
-                //if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
-                //    // Check whether a connection point has been hit.
-                //    pGraphObjCnctPtHit = getConnectionPoint(i_pEv->scenePos());
-                //    if (pGraphObjCnctPtHit == nullptr) {
-                //        bCreateObj = false;
-                //    }
-                //}
+                CGraphObjConnectionPoint* pGraphObjCnctPtHit = nullptr;
+                // Connection lines may only be created on connection points.
+                // A connection point must have been hit to create connection lines.
+                if (graphObjFactoryType == EGraphObjTypeConnectionLine) {
+                    // Check whether a connection point has been hit.
+                    pGraphObjCnctPtHit = getConnectionPoint(i_pEv->scenePos());
+                    if (pGraphObjCnctPtHit == nullptr) {
+                        bCreateObj = false;
+                    }
+                }
                 // Don't start creating objects if mouse press was outside the scene rectangle.
                 if (bCreateObj) {
                     if (!sceneRect().contains(i_pEv->scenePos())) {
@@ -3621,11 +3637,11 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
                             this, &CDrawingScene::onGraphObjEditModeChanged );
 
-                        //CGraphObjConnectionLine* pGraphObjCnctLineCreating = nullptr;
+                        CGraphObjConnectionLine* pGraphObjCnctLineCreating = nullptr;
                         //CGraphObjConnectionPoint* pGraphObjCnctPtCreating = nullptr;
-                        //if (pGraphObj->isConnectionLine()) {
-                        //    pGraphObjCnctLineCreating = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
-                        //}
+                        if (m_pGraphObjUnderConstruction->isConnectionLine()) {
+                            pGraphObjCnctLineCreating = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjUnderConstruction);
+                        }
                         //else if (pGraphObj->isConnectionPoint()) {
                         //    pGraphObjCnctPtCreating = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObj);
                         //}
@@ -3644,15 +3660,15 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         //    //m_pGraphObjUnderConstruction->setPos(i_pEv->scenePos());
                         //}
 
-                        //if (pGraphObjCnctLineCreating != nullptr && pGraphObjCnctPtHit != nullptr) {
-                        //    pGraphObjCnctLineCreating->setConnectionPoint(ELinePoint::Start, pGraphObjCnctPtHit);
-                        //}
+                        if (pGraphObjCnctLineCreating != nullptr && pGraphObjCnctPtHit != nullptr) {
+                            pGraphObjCnctLineCreating->setConnectionPoint(ELinePoint::Start, pGraphObjCnctPtHit);
+                        }
                         //emit_modeChanged(m_mode);
                     }
                 }
             }
             // If currently no object is "under construction" ...
-            else if (m_pObjFactory == nullptr && m_pGraphObjUnderConstruction == nullptr) {
+            else {
                 // Dispatch mouse event to objects "under cursor".
                 QGraphicsScene_mousePressEvent(i_pEv);
                 if (m_pGraphObjMouseGrabber != nullptr) {
@@ -3725,9 +3741,9 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    EGraphObjType graphObjFactoryType = EGraphObjTypeUndefined;
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->graphObjType();
+        graphObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     bool bEventHandled = false;
@@ -3890,9 +3906,9 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     bool bEventHandled = false;
 
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    EGraphObjType graphObjFactoryType = EGraphObjTypeUndefined;
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->graphObjType();
+        graphObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     QPointF ptScenePosMouseEvent = i_pEv->scenePos();
@@ -3999,9 +4015,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     emit_mousePosChanged(i_pEv->scenePos());
 
-    int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
+    EGraphObjType graphObjFactoryType = EGraphObjTypeUndefined;
     if (m_pObjFactory != nullptr) {
-        iObjFactoryType = m_pObjFactory->graphObjType();
+        graphObjFactoryType = m_pObjFactory->graphObjType();
     }
 
     if (m_mode == EMode::Edit) {
@@ -4023,7 +4039,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             //    // If no mouse button is pressed ...
             //    if (iMouseButtonState == Qt::NoButton) {
             //        // If the drawing tool "ConnectionLine" is selected ...
-            //        if (m_pObjFactory != nullptr && iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
+            //        if (m_pObjFactory != nullptr && graphObjFactoryType == EGraphObjTypeConnectionLine) {
             //            bDispatchMouseEvents2ConnectionPointsUnderMouseCursor = true;
             //        }
             //    }

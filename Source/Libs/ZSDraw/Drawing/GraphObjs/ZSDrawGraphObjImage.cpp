@@ -934,29 +934,23 @@ void CGraphObjImage::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
 
-    //QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
-
-    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-    //{
-    //    SGraphObjHitInfo hitInfo;
-
-    //    bool bIsHit = isHit(ptItemPos,&hitInfo);
-
-    //    if( bIsHit )
-    //    {
-    //        if( cursor().shape() != hitInfo.m_cursor.shape() )
-    //        {
-    //            setCursor(hitInfo.m_cursor);
-    //        }
-    //    }
-
-    //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-
-} // hoverEnterEvent
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjImage::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -973,28 +967,14 @@ void CGraphObjImage::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
-
-    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-    //{
-    //    SGraphObjHitInfo hitInfo;
-
-    //    bool bIsHit = isHit(ptItemPos,&hitInfo);
-
-    //    if( bIsHit )
-    //    {
-    //        if( cursor().shape() != hitInfo.m_cursor.shape() )
-    //        {
-    //            setCursor(hitInfo.m_cursor);
-    //        }
-    //    }
-
-    //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-
-} // hoverMoveEvent
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjImage::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -1011,7 +991,11 @@ void CGraphObjImage::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    unsetCursor();
+    QGraphicsItem_unsetCursor();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 }
 
 /*==============================================================================

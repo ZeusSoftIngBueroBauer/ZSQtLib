@@ -339,7 +339,7 @@ enum class EEditMode
                                      to be modified. In this mode points can be added e.g. by clicking
                                      on a line segment or existing polygon points can be moved. */
     ModifyingContent = 4        /*!< The interior (content) of the object is about to be modified.
-                                     This mode is used by the text grahics item to edit the text. */
+                                     This mode is used by the text graphics item to edit the text. */
 };
 } }
 

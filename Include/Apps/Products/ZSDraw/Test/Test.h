@@ -398,6 +398,7 @@ protected slots:
     void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep* i_pTestStep);

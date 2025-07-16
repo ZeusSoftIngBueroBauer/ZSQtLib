@@ -335,7 +335,7 @@ class CGraphObjSelectionPoint;
       labels can be changed during runtime. But their names must be unique for all labels as the
       name is used to uniquely identify the label for each graphical object they are linked to.
 
-    A visible label is added to the graphics scene. A hidden label is removed from the grahics scene.
+    A visible label is added to the graphics scene. A hidden label is removed from the graphics scene.
     The text the labels are indicating can be changed during runtime. Only for "Name" labels the
     text always indicates the name of the object.
     Labels are anchored to a selection point of the graphical objects they belong to.
@@ -572,33 +572,34 @@ public: // overridables (you must call those methods (instead of e.g. "QGrahicsL
     virtual void setTextEffect(const CEnumTextEffect& i_effect, bool i_bImmediatelyApplySetting = true);
     virtual CEnumTextEffect textEffect() const;
 public: // overridables
-    virtual void setMinimumWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     virtual bool hasMinimumWidth() const;
-    virtual ZS::PhysVal::CPhysVal getMinimumWidth(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMinimumHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual void setMinimumWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    virtual ZS::PhysVal::CPhysVal minimumWidth(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasMinimumHeight() const;
-    virtual ZS::PhysVal::CPhysVal getMinimumHeight(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMinimumSize(const CPhysValSize& i_physValSize);
+    virtual void setMinimumHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual ZS::PhysVal::CPhysVal minimumHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasMinimumSize() const;
-    virtual CPhysValSize getMinimumSize(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMaximumWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    virtual void setMinimumSize(const CPhysValSize& i_physValSize);
+    virtual CPhysValSize minimumSize(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasMaximumWidth() const;
-    virtual ZS::PhysVal::CPhysVal getMaximumWidth(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMaximumHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual void setMaximumWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    virtual ZS::PhysVal::CPhysVal maximumWidth(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasMaximumHeight() const;
-    virtual ZS::PhysVal::CPhysVal getMaximumHeight(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMaximumSize(const CPhysValSize& i_physValSize);
+    virtual void setMaximumHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual ZS::PhysVal::CPhysVal maximumHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasMaximumSize() const;
-    virtual CPhysValSize getMaximumSize(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setFixedWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    virtual void setMaximumSize(const CPhysValSize& i_physValSize);
+    virtual CPhysValSize maximumSize(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasFixedWidth() const;
-    virtual ZS::PhysVal::CPhysVal getFixedWidth(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setFixedHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual void setFixedWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    virtual ZS::PhysVal::CPhysVal fixedWidth(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasFixedHeight() const;
-    virtual ZS::PhysVal::CPhysVal getFixedHeight(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setFixedSize( const CPhysValSize& i_physValSize );
+    virtual void setFixedHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual ZS::PhysVal::CPhysVal fixedHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual bool hasFixedSize() const;
-    virtual CPhysValSize getFixedSize(const ZS::PhysVal::CUnit& i_unit) const;
+    virtual bool isResizable() const;
+    virtual void setFixedSize( const CPhysValSize& i_physValSize );
+    virtual CPhysValSize fixedSize(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
     virtual int addAlignment(const SGraphObjAlignment& i_alignment);
     virtual int getAlignmentCount() const;
@@ -791,6 +792,11 @@ protected: // overridable auxiliary instance methods (method tracing)
 protected: // overridable auxiliary instance methods (method tracing)
     ZS::System::CTrcAdminObj* selectTraceAdminObj(QGraphicsItem::GraphicsItemChange i_change);
 public: // overridable auxiliary instance methods (method tracing)
+    virtual void traceConstraintSizes(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "",
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,

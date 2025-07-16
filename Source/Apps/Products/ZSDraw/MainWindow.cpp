@@ -4442,7 +4442,7 @@ void CMainWindow::updateStatusBar()
     //        QString strEditInfo = "Tool: ";
     //        CEnumEditTool editTool = pDrawingScene->getEditTool();
     //        if( editTool == EEditTool::CreateObjects ) {
-    //            int iGraphObjType = pDrawingScene->getCurrentDrawingToolGraphObjType();
+    //            EGraphObjType graphObjType = pDrawingScene->getCurrentDrawingToolGraphObjType();
     //            QString strObjFactory = graphObjType2Str(iGraphObjType);
     //            strEditInfo += "Create " + strObjFactory;
     //        }

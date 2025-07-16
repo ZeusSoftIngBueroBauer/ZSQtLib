@@ -114,6 +114,9 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
     pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    physValSize = i_pDrawingScene->convert(physValSize);
+    pGraphObj->setFixedSize(physValSize);
     pGraphObj->setDrawSettings(drawSettings);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
@@ -142,10 +145,11 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
+    pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     pGraphObj->setPosition(i_physValPoint);
     CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     physValSize = i_pDrawingScene->convert(physValSize);
-    pGraphObj->setSize(physValSize);
+    pGraphObj->setFixedSize(physValSize);
     pGraphObj->setDrawSettings(drawSettings);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
