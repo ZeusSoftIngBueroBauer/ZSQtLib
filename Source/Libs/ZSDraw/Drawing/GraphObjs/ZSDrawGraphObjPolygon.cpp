@@ -2637,7 +2637,6 @@ void CGraphObjPolygon::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
         bCallBaseMouseEventHandler = false;
     }
-    //i_pEv->accept();
     if (bCallBaseMouseEventHandler) {
         // Forward the mouse event to the base implementation.
         QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);

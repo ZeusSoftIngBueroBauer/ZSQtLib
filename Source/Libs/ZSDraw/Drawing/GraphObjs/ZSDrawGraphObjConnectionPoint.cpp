@@ -1856,11 +1856,15 @@ void CGraphObjConnectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv 
 
     // Ignore hover events if any object should be or is currently being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        QGraphicsItem_setCursor(Qt::SizeAllCursor);
+        if (cursor() != Qt::SizeAllCursor) {
+            QGraphicsItem_setCursor(Qt::SizeAllCursor);
+        }
     }
     // Indicate that connection line can be started or terminated here.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
-        QGraphicsItem_setCursor(Qt::PointingHandCursor);
+        if (cursor() != Qt::PointingHandCursor) {
+            QGraphicsItem_setCursor(Qt::PointingHandCursor);
+        }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1886,16 +1890,28 @@ void CGraphObjConnectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
 
     // Ignore hover events if any object should be or is currently being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        QGraphicsItem_setCursor(Qt::SizeAllCursor);
+        if (cursor() != Qt::SizeAllCursor) {
+            QGraphicsItem_setCursor(Qt::SizeAllCursor);
+        }
     }
     // Indicate that connection line can be started or terminated here.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
-        QGraphicsItem_setCursor(Qt::PointingHandCursor);
+        if (cursor() != Qt::PointingHandCursor) {
+            QGraphicsItem_setCursor(Qt::PointingHandCursor);
+        }
     }
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }

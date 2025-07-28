@@ -8761,16 +8761,26 @@ void CGraphObj::traceConstraintSizes(
     else strRuntimeInfo = " . ";
     strRuntimeInfo += "Constraints {";
     i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = " . ";
         strRuntimeInfo += " . Minimum {" + QString(m_physValSizeMinimum.isValid() ? m_physValSizeMinimum.toString(true) : "null") + "}";
         i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = " . ";
         strRuntimeInfo += " . Maximum {" + QString(m_physValSizeMaximum.isValid() ? m_physValSizeMaximum.toString(true) : "null") + "}";
         i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = " . ";
         strRuntimeInfo += " . Fixed {" + QString(m_physValSizeFixed.isValid() ? m_physValSizeFixed.toString(true) : "null") + "}";
         i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
     strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }
 
 //------------------------------------------------------------------------------

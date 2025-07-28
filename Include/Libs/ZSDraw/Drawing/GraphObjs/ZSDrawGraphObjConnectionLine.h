@@ -73,7 +73,7 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // overridables
-    virtual bool setConnectionPoint(ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pGraphObjCnctPt);
+    virtual void setConnectionPoint(ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pGraphObjCnctPt);
     virtual ELinePoint getConnectionLinePoint(CGraphObjConnectionPoint* i_pGraphObjCnctPt) const;
     virtual CGraphObjConnectionPoint* getConnectionPoint(ELinePoint i_linePoint) const;
 public: // instance methods

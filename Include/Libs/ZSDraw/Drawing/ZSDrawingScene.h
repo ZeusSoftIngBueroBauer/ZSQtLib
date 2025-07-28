@@ -130,7 +130,7 @@ public: // instance methods
     CPhysValRect convert(const CPhysValRect& i_physValRect) const;
     CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // instance methods
-    void setGridSettings( const CDrawGridSettings& i_gridSettings);
+    void setGridSettings(const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
 public: // instance methods
     const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return m_divLinesMetricsX; }
@@ -138,15 +138,16 @@ public: // instance methods
 public: // instance methods
     ZS::System::CIdxTree* getGraphObjsIdxTree() { return m_pGraphObjsIdxTree; }
 public: // instance methods
-    ZS::System::SErrResultInfo load( const QString& i_strFileName );
-    ZS::System::SErrResultInfo save( const QString& i_strFileName );
+    ZS::System::SErrResultInfo load(const QString& i_strFileName);
+    ZS::System::SErrResultInfo save(const QString& i_strFileName);
 protected: // instance methods
-    ZS::System::SErrResultInfo save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter );
+    ZS::System::SErrResultInfo save(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
 public: // instance methods
     void clear();
-    void addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGraphObjParent = nullptr );
-    QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
-    CGraphObj* findGraphObj( const QString& i_strKeyInTree );
+    void addGraphObj(CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGraphObjParent = nullptr);
+    void deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall = true);
+    QGraphicsItem* findGraphicsItem(const QString& i_strKeyInTree);
+    CGraphObj* findGraphObj(const QString& i_strKeyInTree);
 public: // instance methods (replacing methods of QGraphicScene)
     void removeItem(QGraphicsItem* i_pGraphicsItem);
 public: // instance methods
@@ -241,22 +242,24 @@ public: // instance methods
     CEnumTextStyle textStyle() const { return m_drawSettings.textStyle(); }
     void setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImmediatelyApplySetting = true );
     CEnumTextEffect textEffect() const { return m_drawSettings.textEffect(); }
+public: // overridables of base class QObject
+    bool event(QEvent* i_pEv) override;
 public: // overridables of base class QGraphicsScene
-    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    virtual void dragMoveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
-    virtual void dropEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dragEnterEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dragMoveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dragLeaveEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
+    void dropEvent(QGraphicsSceneDragDropEvent* i_pEv) override;
 public: // overridables of base class QGraphicsScene
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 public: // overridables of base class QGraphicsScene
-    virtual void keyPressEvent(QKeyEvent* i_pEv) override;
-    virtual void keyReleaseEvent(QKeyEvent* i_pEv) override;
+    void keyPressEvent(QKeyEvent* i_pEv) override;
+    void keyReleaseEvent(QKeyEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsScene
-    virtual void drawBackground(QPainter* i_pPainter, const QRectF& i_rect) override;
-    virtual void drawForeground(QPainter* i_pPainter, const QRectF& i_rect) override;
+    void drawBackground(QPainter* i_pPainter, const QRectF& i_rect) override;
+    void drawForeground(QPainter* i_pPainter, const QRectF& i_rect) override;
 protected slots:
     void onDrawUnitsScreenResolutionInPxPerMMChanged();
     void onDrawUnitsScaleFactorChanged();

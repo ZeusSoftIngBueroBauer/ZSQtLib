@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
+#include "ZSDraw/Common/ZSDrawMsg.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h"
@@ -1204,6 +1205,47 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGrap
 } // addGraphObj
 
 //------------------------------------------------------------------------------
+/*! Deletes the given graph object.
+
+    The method may be called by graphical objects itself. E.g. when drawing connection
+    lines and the end point is not on a connection point. In those cases the object
+    may not be immediately deleted but the delete call must be queued.
+
+    @param i_pGraphObj [in]
+        Pointer to object to be deleted and removed from the drawing scene.
+    @param i_bQueuedCall [in]
+        true, to queue the method call via event.
+        false, if the object can immediately deleted.
+*/
+void CDrawingScene::deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs =
+            QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path()) +
+            ", QueuedCall: " + bool2Str(i_bQueuedCall);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "deleteGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pGraphObj != nullptr) {
+        if (i_bQueuedCall) {
+            CMsgReqDeleteGraphObj* pMsgReqDeleteGraphObj =
+                new CMsgReqDeleteGraphObj(i_pGraphObj, this, i_pGraphObj->keyInTree());
+            QCoreApplication::sendEvent(this, pMsgReqDeleteGraphObj);
+        }
+        else {
+            delete i_pGraphObj;
+            i_pGraphObj = nullptr;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strKeyInTree )
 //------------------------------------------------------------------------------
 {
@@ -1519,7 +1561,7 @@ void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setMode",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     //}
 
@@ -1582,7 +1624,7 @@ void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
         emit_modeChanged(m_mode);
     }
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     //}
 } // setMode
@@ -1647,7 +1689,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
@@ -1726,8 +1768,8 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
     //    }
     //}
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
 }
 
@@ -2151,7 +2193,7 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //        /* strMethod    */ "onGraphObjAddingShapePointsStarted",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
 //    //    traceInternalStates(mthTracer, EMethodDir::Enter);
 //    //}
 //
@@ -2173,7 +2215,7 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //    //    throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
 //    //}
 //
-//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
 //    //    traceInternalStates(mthTracer, EMethodDir::Leave);
 //    //}
 //} // onGraphObjAddingShapePointsStarted
@@ -2201,7 +2243,7 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //        /* strMethod    */ "onGraphObjAddingShapePointsFinished",
 //        /* strAddInfo   */ strMthInArgs );
 //
-//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
 //    //    traceInternalStates(mthTracer, EMethodDir::Enter);
 //    //}
 //
@@ -2218,7 +2260,7 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 //    m_pGraphObjAddingShapePoints = nullptr;
 //    m_pGraphicsItemAddingShapePoints = nullptr;
 //
-//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
 //    //    traceInternalStates(mthTracer, EMethodDir::Leave);
 //    //}
 //} // onGraphObjAddingShapePointsFinished
@@ -2440,7 +2482,7 @@ int CDrawingScene::ungroupGraphObjsSelected()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ungroupGraphObjsSelected",
         /* strAddInfo   */ "" );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Enter);
     //}
 
@@ -2474,7 +2516,7 @@ int CDrawingScene::ungroupGraphObjsSelected()
             iObjsUngroupedCount++;
         }
     }
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2512,7 +2554,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<QGraphicsItem*> i_arpGraphic
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "groupGraphObjs",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Enter);
     //}
 
@@ -2606,7 +2648,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<QGraphicsItem*> i_arpGraphic
             }
         }
     }
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2643,7 +2685,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<CGraphObj*> i_arpGraphObjs)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "groupGraphObjs",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Enter);
     //}
 
@@ -2663,7 +2705,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<CGraphObj*> i_arpGraphObjs)
         pGraphObjGroup = groupGraphObjs(arpGraphicsItems);
     }
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -3311,6 +3353,64 @@ void CDrawingScene::setTextEffect( const CEnumTextEffect& i_textEffect, bool i_b
 }
 
 /*==============================================================================
+public: // overridables of base class QObject
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CDrawingScene::event(QEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    bool bEventHandled = false;
+    if (i_pEv->type() >= QEvent::User) {
+        CMsg* pMsg = nullptr;
+        try {
+            pMsg = dynamic_cast<CMsg*>(i_pEv);
+        }
+        catch (...) {
+            pMsg = nullptr;
+        }
+        if (pMsg != nullptr) {
+            QString strMthInArgs;
+            if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+                strMthInArgs = pMsg->getAddTrcInfoStr();
+            }
+            CMethodTracer mthTracer(
+                /* pAdminObj    */ m_pTrcAdminObj,
+                /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+                /* strMethod    */ "event",
+                /* strAddInfo   */ strMthInArgs );
+            if (pMsg->getSystemMsgType() == MsgProtocol::ESystemMsgTypeReq) {
+                CMsgReq* pMsgReq = dynamic_cast<CMsgReq*>(pMsg);
+                if (pMsgReq == nullptr) {
+                    throw CException(__FILE__, __LINE__, EResultMessageTypeMismatch);
+                }
+                switch (static_cast<int>(pMsgReq->type())) {
+                    case EMsgType::EMsgTypeReqDeleteGraphobj: {
+                        CMsgReqDeleteGraphObj* pMsgReqDeleteGraphObj = dynamic_cast<CMsgReqDeleteGraphObj*>(pMsgReq);
+                        if (pMsgReqDeleteGraphObj == nullptr) {
+                            throw CException(__FILE__, __LINE__, EResultMessageTypeMismatch);
+                        }
+                        CGraphObj* pGraphObj = this->findGraphObj(pMsgReqDeleteGraphObj->keyInTree());
+                        if (pGraphObj != nullptr) {
+                            delete pGraphObj;
+                            pGraphObj = nullptr;
+                        }
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (!bEventHandled) {
+        bEventHandled = QGraphicsScene::event(i_pEv);
+    }
+    return bEventHandled;
+}
+
+/*==============================================================================
 public: // overridables of base class QGraphicsScene
 ==============================================================================*/
 
@@ -3557,7 +3657,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
@@ -3714,7 +3814,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -3737,7 +3837,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
@@ -3877,7 +3977,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -3900,7 +4000,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
@@ -3920,7 +4020,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         //if (m_pGraphObjUnderConstruction != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
         //    // If currently a connection line is "under construction" ...
         //    if (m_pGraphObjUnderConstruction != nullptr && m_pGraphObjUnderConstruction->isConnectionLine()) {
-        //        bool bIsValidEndPoint = true;
         //        CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
         //        CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjUnderConstruction);
         //        if (pGraphObjCnctLine != nullptr) {
@@ -3928,9 +4027,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         //            if (pGraphObjCnctPt != nullptr) {
         //                bIsValidEndPoint = true;
         //            }
-        //        }
-        //        if (bIsValidEndPoint) {
-        //            bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End, pGraphObjCnctPt);
         //        }
         //        if (!bIsValidEndPoint) {
         //            delete m_pGraphObjUnderConstruction;
@@ -3961,7 +4057,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene_mouseDoubleClickEvent(i_pEv);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -4007,7 +4103,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
@@ -4200,7 +4296,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene_mouseMoveEvent(i_pEv);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -4227,7 +4323,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
@@ -4658,7 +4754,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         }
     } // if( !i_pEv->isAccepted() )
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -4681,13 +4777,13 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
 
     QGraphicsScene::keyReleaseEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -4913,18 +5009,28 @@ void CDrawingScene::onGraphObjEditModeChanged(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjEditModeChanged",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
 
-    if (m_pGraphObjUnderConstruction == i_pGraphObj) {
+    if (m_pGraphObjUnderConstruction != nullptr && m_pGraphObjUnderConstruction == i_pGraphObj) {
         // Object creation has been finished. Unset the current drawing tool and select
         // the currently created object.
         if (i_eModePrev == EEditMode::CreatingByMouseEvents) {
-            dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
+            if (m_pGraphObjUnderConstruction->type() == EGraphObjTypeConnectionLine) {
+            }
+            else {
+                dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
+            }
             QObject::disconnect(
                 m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
                 this, &CDrawingScene::onGraphObjEditModeChanged );
             m_pGraphObjUnderConstruction = nullptr;
             setCurrentDrawingTool(nullptr);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
 }
 
@@ -5545,14 +5651,14 @@ void CDrawingScene::QGraphicsScene_mousePressEvent( QGraphicsSceneMouseEvent* i_
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "QGraphicsScene_mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Enter, i_pEv->scenePos());
     }
 
     QGraphicsScene::mousePressEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Leave, i_pEv->scenePos());
     }
@@ -5574,14 +5680,14 @@ void CDrawingScene::QGraphicsScene_mouseReleaseEvent( QGraphicsSceneMouseEvent* 
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "QGraphicsScene_mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Enter, i_pEv->scenePos());
     }
 
     QGraphicsScene::mouseReleaseEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Leave, i_pEv->scenePos());
     }
@@ -5603,14 +5709,14 @@ void CDrawingScene::QGraphicsScene_mouseDoubleClickEvent( QGraphicsSceneMouseEve
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "QGraphicsScene_mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Enter, i_pEv->scenePos());
     }
 
     QGraphicsScene::mouseDoubleClickEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Leave, i_pEv->scenePos());
     }
@@ -5632,14 +5738,14 @@ void CDrawingScene::QGraphicsScene_mouseMoveEvent( QGraphicsSceneMouseEvent* i_p
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "QGraphicsScene_mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Enter, i_pEv->scenePos());
     }
 
     QGraphicsScene::mouseMoveEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
         //traceVisibleItems(mthTracer, EMethodDir::Leave, i_pEv->scenePos());
     }

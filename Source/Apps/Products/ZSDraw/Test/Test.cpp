@@ -3420,11 +3420,14 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         QString strRuntimeInfo = "Method: " + strMethod;
-        strRuntimeInfo += ", Points ";
+        strRuntimeInfo += ", Points {Idx: ";
         if (i_pTestStep->hasConfigValue("Points.Idx")) {
-            strRuntimeInfo += " Idx: " + QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt()) + ", ";
+            strRuntimeInfo += QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt());
         }
-        strRuntimeInfo += "[" + QString::number(points.size()) + "]";
+        else {
+            strRuntimeInfo += "n.d.";
+        }
+        strRuntimeInfo += ", [" + QString::number(points.size()) + "]";
         if (!points.isEmpty()) {
             strRuntimeInfo += "(";
             for (const QPoint& pt : points) {
@@ -3433,6 +3436,7 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
             }
             strRuntimeInfo += ")";
         }
+        strRuntimeInfo += "}";
         mthTracer.trace(strRuntimeInfo);
     }
 
@@ -3587,15 +3591,19 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = "Method: ";
+        strMethod = "Method: ";
         if (i_pTestStep->hasConfigValue("Method")) {
-            strRuntimeInfo += i_pTestStep->getConfigValue("Method").toString();
+            strMethod = i_pTestStep->getConfigValue("Method").toString();
         }
-        strRuntimeInfo += ", Points ";
+        QString strRuntimeInfo = "Method: " + strMethod;
+        strRuntimeInfo += ", Points {Idx: ";
         if (i_pTestStep->hasConfigValue("Points.Idx")) {
-            strRuntimeInfo += " Idx: " + QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt()) + ", ";
+            strRuntimeInfo += QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt());
         }
-        strRuntimeInfo += "[" + QString::number(points.size()) + "]";
+        else {
+            strRuntimeInfo += "n.d.";
+        }
+        strRuntimeInfo += ", [" + QString::number(points.size()) + "]";
         if (!points.isEmpty()) {
             strRuntimeInfo += "(";
             for (const QPoint& pt : points) {
@@ -3604,6 +3612,7 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
             }
             strRuntimeInfo += ")";
         }
+        strRuntimeInfo += "}";
         mthTracer.trace(strRuntimeInfo);
     }
 }
