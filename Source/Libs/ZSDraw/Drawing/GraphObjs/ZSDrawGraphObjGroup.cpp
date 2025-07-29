@@ -2850,7 +2850,6 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     // Forward the mouse event to the items base implementation.
-    // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsItemGroup::mouseReleaseEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -2909,7 +2908,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
     }
 
-    // Forward the mouse event to the LineItems base implementation.
+    // Forward the mouse event to the graphics item base implementation.
     // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsItemGroup::mouseMoveEvent(i_pEv);
 

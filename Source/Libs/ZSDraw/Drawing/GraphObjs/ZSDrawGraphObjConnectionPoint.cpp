@@ -1862,9 +1862,9 @@ void CGraphObjConnectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv 
     }
     // Indicate that connection line can be started or terminated here.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
-        if (cursor() != Qt::PointingHandCursor) {
-            QGraphicsItem_setCursor(Qt::PointingHandCursor);
-        }
+        QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+        QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+        QGraphicsItem_setCursor(cursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1903,9 +1903,9 @@ void CGraphObjConnectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     }
     // Indicate that connection line can be started or terminated here.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
-        if (cursor() != Qt::PointingHandCursor) {
-            QGraphicsItem_setCursor(Qt::PointingHandCursor);
-        }
+        QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+        QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+        QGraphicsItem_setCursor(cursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {

@@ -381,6 +381,17 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
     }
     else if (m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         cursor = Qt::CrossCursor;
+        CGraphObj* pGraphObjParent = m_selPt.m_pGraphObj;
+        if (pGraphObjParent != nullptr && pGraphObjParent->type() == EGraphObjTypeConnectionLine) {
+            const QGraphicsEllipseItem* pGraphicsItemThis = dynamic_cast<const QGraphicsEllipseItem*>(this);
+            // Check whether a connection point has been hit.
+            QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
+            CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(ptScenePos);
+            if (pGraphObjCnctPtHit != nullptr) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+            }
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
@@ -718,12 +729,12 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     //QGraphicsEllipseItem::mouseDoubleClickEvent(i_pEv);
 
     // We inform the linked object of the mouse press event as the graphics
-    // scene will not forward the event even if we would ignore the event.
+    // scene will not forward the event even if the event is ignored.
     QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
     if (pGraphicsItemParent != nullptr) {
         m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
         // Note: By calling the mouse event method of the parent object, the selection point might
-        //       be destroyed. This means that after invoking calling the parents mouse event method
+        //       be destroyed. This means that after invoking the parents mouse event method
         //       the selection point MUST NOT access any instance members anymore.
     }
     i_pEv->accept();

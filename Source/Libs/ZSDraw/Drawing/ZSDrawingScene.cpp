@@ -1236,7 +1236,7 @@ void CDrawingScene::deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall)
         if (i_bQueuedCall) {
             CMsgReqDeleteGraphObj* pMsgReqDeleteGraphObj =
                 new CMsgReqDeleteGraphObj(i_pGraphObj, this, i_pGraphObj->keyInTree());
-            QCoreApplication::sendEvent(this, pMsgReqDeleteGraphObj);
+            QCoreApplication::postEvent(this, pMsgReqDeleteGraphObj);
         }
         else {
             delete i_pGraphObj;
@@ -1890,79 +1890,9 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
     if (m_mode == EMode::Edit) {
         if (sceneRect().contains(i_ptScenePos)) {
             if (m_pObjFactory != nullptr) {
-                EGraphObjType graphObjType = m_pObjFactory->graphObjType();
-                // For connection lines mouse move events will be passed as
-                // hover events to those items and the items must decide, which
-                // cursor is suitable (whether the connection line can be connected
-                // to an already created connection point or whether a connection point
-                // should be created).
-                if (graphObjType != EGraphObjTypeConnectionLine) {
-                    cursor = Qt::CrossCursor;
-                }
+                cursor = Qt::CrossCursor;
             }
-            //else {
-            //    // Mouse events are sent to the objects via hover events. The object is hit
-            //    // and the cursor is set.
-            //    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            //        traceVisibleItems(mthTracer, EMethodDir::Enter, i_ptScenePos);
-            //    }
-            //    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptScenePos);
-            //    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
-            //        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            //        if (pGraphObj != nullptr /*&& pGraphObj->isSelectionPoint()*/) {
-            //            QPointF ptPos = pGraphicsItem->mapFromScene(i_ptScenePos);
-            //            cursor = pGraphObj->getProposedCursor(ptPos);
-            //            break;
-            //        }
-            //        else if (pGraphicsItem->hasCursor()) {
-            //            cursor = pGraphicsItem->cursor();
-            //            break;
-            //        }
-            //        //CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            //        //if (pGraphObj != nullptr) {
-            //        //    pGraphObj->getProposedCursor(i_ptScenePos);
-            //        //    break;
-            //        //}
-            //        //if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
-            //        //    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
-            //        //    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
-            //        //    break;
-            //        //}
-            //    }
-            //}
         }
-        //if (m_editTool == EEditTool::Select) {
-        //    if (m_editMode == EEditMode::EditText) {
-        //        cursor = Qt::IBeamCursor;
-        //    }
-        //}
-        //else if (m_editTool == EEditTool::CreateObjects) {
-        //    graphObjFactoryType graphObjFactoryType = getCurrentDrawingToolGraphObjType();
-        //    if (m_editMode == EEditMode::MoveShapePoint) {
-        //        if (graphObjFactoryType != EGraphObjTypeUndefined) {
-        //            cursor = Qt::CrossCursor;
-        //        }
-        //    }
-        //    else if (m_editMode == EEditMode::EditText) {
-        //        cursor = Qt::IBeamCursor;
-        //    }
-        //    else if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-        //        // Special case for connection lines which may only be created on connection points.
-        //        if (graphObjFactoryType == EGraphObjTypeConnectionLine) {
-        //            cursor = Qt::ArrowCursor;
-        //            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
-        //                if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
-        //                    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
-        //                    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //        else {
-        //            cursor = Qt::CrossCursor;
-        //        }
-        //    }
-        //}
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));

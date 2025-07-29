@@ -1132,6 +1132,8 @@ void CGraphObjLabel::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    // Forward the mouse event to the items base implementation.
+    // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsSimpleTextItem::mouseMoveEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

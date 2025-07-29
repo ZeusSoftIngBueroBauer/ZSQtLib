@@ -502,6 +502,7 @@ void CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
 
     if (i_pGraphObjCnctPt != nullptr && (i_linePoint == ELinePoint::Start || i_linePoint == ELinePoint::End)) {
         CGraphObj* pGraphObjCnctPt = i_pGraphObjCnctPt;
+        QGraphicsEllipseItem* pGraphicsItemCnctPt = dynamic_cast<QGraphicsEllipseItem*>(i_pGraphObjCnctPt);
         CPhysValPoint physValPoint = i_pGraphObjCnctPt->getCenter();
         physValPoint = pGraphObjCnctPt->mapToScene(physValPoint);
         CGraphObjConnectionPoint* pGraphObjCnctPtPrev = m_arpCnctPts.value(i_linePoint, nullptr);
@@ -527,11 +528,22 @@ void CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
         }
         if (i_linePoint == ELinePoint::Start) {
             if (count() == 0) {
-                insert(0, physValPoint);
+                append(physValPoint);
+            }
+            if (m_editMode == EEditMode::CreatingByMouseEvents) {
+                replace(0, physValPoint);
+                if (count() == 1) {
+                    append(physValPoint);
+                }
             }
             else if (first() != physValPoint) {
                 if (pGraphObjCnctPtPrev == nullptr) {
-                    insert(0, physValPoint);
+                    if (pGraphicsItemCnctPt->contains(first().toQPointF())) {
+                        replace(0, physValPoint);
+                    }
+                    else {
+                        insert(0, physValPoint);
+                    }
                 }
                 else {
                     replace(0, physValPoint);
@@ -539,12 +551,23 @@ void CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
             }
         }
         else if (i_linePoint == ELinePoint::End) {
-            if (count() < 2) {
+            if (count() == 0) {
                 append(physValPoint);
+            }
+            if (m_editMode == EEditMode::CreatingByMouseEvents) {
+                replace(count()-1, physValPoint);
+                if (count() == 1) {
+                    append(physValPoint);
+                }
             }
             else if (last() != physValPoint) {
                 if (pGraphObjCnctPtPrev == nullptr) {
-                    append(physValPoint);
+                    if (pGraphicsItemCnctPt->contains(last().toQPointF())) {
+                        replace(count()-1, physValPoint);
+                    }
+                    else {
+                        append(physValPoint);
+                    }
                 }
                 else {
                     replace(count()-1, physValPoint);
@@ -2009,6 +2032,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
         // and will unselect the current drawing tool and will select the object under
         // construction showing the selection points at the bounding rectangle.
         // In case of the connection line, check whether a connection point has been hit.
+        // If not, the connection line is invalid and need to be destroyed.
         CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(i_pEv->scenePos());
         if (pGraphObjCnctPtHit == nullptr) {
             // If no connection point has been hit, the connection line got to be deleted.
@@ -2151,8 +2175,8 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
                 hideSelectionPoints(c_uSelectionPointsBoundingRectAll);
             }
             else if (m_editMode == EEditMode::ModifyingBoundingRect) {
-                hideSelectionPoints(c_uSelectionPointsPolygonPoints);
-                showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+                //hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                //showSelectionPoints(c_uSelectionPointsBoundingRectAll);
             }
             else /*if (m_editMode == EEditMode::None)*/ {
                 hideSelectionPoints();
@@ -2325,6 +2349,7 @@ void CGraphObjConnectionLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* 
             replace(selPt.m_idxPt, physValPointParentSelPt);
         }
     }
+
     connectGeometryOnSceneChangedSlotWithSelectionPoints();
 }
 

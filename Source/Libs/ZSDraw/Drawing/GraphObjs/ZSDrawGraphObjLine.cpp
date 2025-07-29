@@ -1984,7 +1984,7 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Forward the mouse event to the LineItems base implementation.
+    // Forward the mouse event to the items base implementation.
     // This will move the item resulting in an itemChange call with PositionHasChanged.
     QGraphicsLineItem::mouseMoveEvent(i_pEv);
 
