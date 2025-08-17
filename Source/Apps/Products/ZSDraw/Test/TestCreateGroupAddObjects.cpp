@@ -3747,6 +3747,7 @@ void CTest::createTestGroupAddStandardShapesConnectionLineModifications(
 
     // move CntPt1
     //------------
+
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
     strGraphObjName = c_strGraphObjNameConnectionPoint1;
     strMethod = "setPosition";

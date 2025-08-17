@@ -1307,24 +1307,30 @@ bool ZS::Draw::isLineHit(
 
     if (rctPt.contains(i_line.p1())) {
         bIsHit = true;
-        o_pHitInfo->m_idxPolygonShapePoint = 0;
-        o_pHitInfo->m_ptHit = i_pt;
-        o_pHitInfo->m_cursor = Qt::CrossCursor;
+        if (o_pHitInfo != nullptr) {
+            o_pHitInfo->m_idxPolygonShapePoint = 0;
+            o_pHitInfo->m_ptHit = i_pt;
+            o_pHitInfo->m_cursor = Qt::CrossCursor;
+        }
     }
     else if (rctPt.contains(i_line.p2())) {
         bIsHit = true;
-        o_pHitInfo->m_idxPolygonShapePoint = 1;
-        o_pHitInfo->m_ptHit = i_pt;
-        o_pHitInfo->m_cursor = Qt::CrossCursor;
+        if (o_pHitInfo != nullptr) {
+            o_pHitInfo->m_idxPolygonShapePoint = 1;
+            o_pHitInfo->m_ptHit = i_pt;
+            o_pHitInfo->m_cursor = Qt::CrossCursor;
+        }
     }
     else {
         QPointF ptIntersection;
         QLineF linePerpendicular = getPerpendicularLine(i_line, i_pt, 0.0, &ptIntersection);
         if (linePerpendicular.length() <= i_fTolerance_px) {
             bIsHit = true;
-            o_pHitInfo->m_idxLineSegment = 0;
-            o_pHitInfo->m_ptHit = ptIntersection;
-            o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+            if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_idxLineSegment = 0;
+                o_pHitInfo->m_ptHit = ptIntersection;
+                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+            }
         }
     }
     return bIsHit;
@@ -1999,7 +2005,7 @@ QPolygonF ZS::Draw::normalizePolygon(const QPolygonF& i_plg, int i_iPrecision)
     }
 
     // Remove points on direct lines between two neighbor points:
-    if (plg.size() > 3) {
+    if (plg.size() > 2) {
         bool bPtRemoved = true;
         while (bPtRemoved) {
             bPtRemoved = false;

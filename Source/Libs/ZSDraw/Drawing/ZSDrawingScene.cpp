@@ -3635,8 +3635,8 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         bCreateObj = false;
                     }
                 }
-                // Don't start creating objects if mouse press was outside the scene rectangle.
                 if (bCreateObj) {
+                    // Don't create objects if mouse press was outside the scene rectangle.
                     if (!sceneRect().contains(i_pEv->scenePos())) {
                         bCreateObj = false;
                     }

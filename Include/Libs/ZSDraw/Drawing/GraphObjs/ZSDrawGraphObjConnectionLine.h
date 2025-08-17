@@ -182,8 +182,8 @@ protected: // instance members
     QAction* m_pActionMenuContextModifyPoints = nullptr;
     QAction* m_pActionMenuContextDeletePoint = nullptr;
 protected: // instance members
-    /*!< Vector with connection points of the connection line.
-         The vector has two elements: Start and End point. */
+    /*!< Map with connection points of the connection line.
+         The map has two elements: Start and End point. */
     QMap<ELinePoint, CGraphObjConnectionPoint*> m_arpCnctPts;
     QPolygonF m_polygonOrig;
     CPhysValPolygon m_physValPolygonOrig;

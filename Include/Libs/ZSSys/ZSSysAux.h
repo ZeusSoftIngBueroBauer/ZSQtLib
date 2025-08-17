@@ -186,6 +186,7 @@ ZSSYSDLL_API QString qMouseButton2Str( Qt::MouseButton i_mouseButton );
 ZSSYSDLL_API QString qMouseButtons2Str( Qt::MouseButtons i_mouseButtons );
 ZSSYSDLL_API QString qPenStyle2Str( const Qt::PenStyle& i_penStyle );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
+ZSSYSDLL_API QString qVariant2Str( const QVariant& i_var, bool i_bAddType = false );
 
 ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, const QString& i_strSeparator = ", " );
 ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );

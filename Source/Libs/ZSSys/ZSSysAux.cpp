@@ -3531,6 +3531,42 @@ QString ZS::System::qVariantType2Str( int i_type )
     return str;
 }
 
+//------------------------------------------------------------------------------
+QString ZS::System::qVariant2Str( const QVariant& i_var, bool i_bAddType )
+//------------------------------------------------------------------------------
+{
+    QString str = i_bAddType ? QString(qVariantType2Str(static_cast<int>(i_var.type())) + ": ") : "";
+    switch (i_var.type()) {
+        case QVariant::Rect:
+            str = qRect2Str(i_var.toRect());
+            break;
+        case QVariant::RectF:
+            str = qRect2Str(i_var.toRectF());
+            break;
+        case QVariant::Size:
+            str = qSize2Str(i_var.toSize());
+            break;
+        case QVariant::SizeF:
+            str = qSize2Str(i_var.toSizeF());
+            break;
+        case QVariant::Line:
+            str = qLine2Str(i_var.toLine());
+            break;
+        case QVariant::LineF:
+            str = qLine2Str(i_var.toLineF());
+            break;
+        case QVariant::Point:
+            str = qPoint2Str(i_var.toPoint());
+            break;
+        case QVariant::PointF:
+            str = qPoint2Str(i_var.toPointF());
+            break;
+        default:
+            str += i_var.toString();
+            break;
+    }
+    return str;
+}
 
 /*******************************************************************************
 Creating strings
