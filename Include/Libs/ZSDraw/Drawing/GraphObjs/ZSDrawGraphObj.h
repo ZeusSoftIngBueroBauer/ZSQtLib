@@ -789,6 +789,8 @@ protected: // overridable auxiliary instance methods (method tracing)
     virtual QGraphicsItem* QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent);
     virtual void QGraphicsItem_setCursor(const QCursor& i_cursor);
     virtual void QGraphicsItem_unsetCursor();
+    virtual void QGraphicsItem_setAcceptHoverEvents(bool i_bEnabled);
+    virtual void QGraphicsItem_setSelected(bool i_bSelected);
 protected: // overridable auxiliary instance methods (method tracing)
     ZS::System::CTrcAdminObj* selectTraceAdminObj(QGraphicsItem::GraphicsItemChange i_change);
 public: // overridable auxiliary instance methods (method tracing)

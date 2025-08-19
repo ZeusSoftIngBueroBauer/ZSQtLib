@@ -113,7 +113,7 @@ CGraphObjWdgtComboBox::CGraphObjWdgtComboBox(
 #endif
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
-    //setAcceptHoverEvents(true);
+    //QGraphicsItem_setAcceptHoverEvents(true);
 
     //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextColor,false);
     //m_drawSettings.setAttributeIsUsed(EDrawAttributeTextFont,false);

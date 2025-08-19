@@ -4378,8 +4378,8 @@ void CTest::doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test:
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
-    QStringList strlstGraphObjConnectionLinesKeyEntry = i_pTestStep->hasConfigValue("ResultValuesGraphObjsKeyEntry") ?
-        i_pTestStep->getConfigValue("ResultValuesGraphObjsKeyEntry").toStringList() : QStringList();
+    QStringList strlstGraphObjConnectionLinesKeyEntry = i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues") ?
+        i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
         if (!strlstGraphObjConnectionLinesKeyEntry.isEmpty()) {
@@ -4924,9 +4924,36 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "DataRows [" + QString::number(i_pTestStep->getDataRowCount()) + "]";
+        mthTracer.trace(strRuntimeInfo);
+        for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+            QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+            QString strRuntimeInfo = " {";
+            if (dataRow.keys().contains("Method")) {
+                strRuntimeInfo += "Method: " + qVariant2Str(dataRow["Method"]);
+            }
+            for (const QString& strKey : dataRow.keys()) {
+                if (strKey != "Method") {
+                    strRuntimeInfo += ", " + strKey + ": " + qVariant2Str(dataRow[strKey]);
+                }
+            }
+            strRuntimeInfo += "}";
+            mthTracer.trace(strRuntimeInfo);
+        }
+    }
+
     if (i_pTestStep->getDataRowCount() > 0) {
         QHash<QString, QVariant> dataRow = i_pTestStep->takeDataRow(0);
         QString strMethod = dataRow["Method"].toString();
+        QString strRuntimeInfo = "Executed {Method: " + strMethod;
+        for (const QString& strKey : dataRow.keys()) {
+            if (strKey != "Method") {
+                strRuntimeInfo += ", " + strKey + ": " + qVariant2Str(dataRow[strKey]);
+            }
+        }
+        strRuntimeInfo += "}";
+        mthTracer.trace(strRuntimeInfo);
         if (strMethod == "setCurrentDrawingTool") {
             QString strFactoryGroupName = dataRow["FactoryGroupName"].toString();
             if (strFactoryGroupName.isEmpty()) {

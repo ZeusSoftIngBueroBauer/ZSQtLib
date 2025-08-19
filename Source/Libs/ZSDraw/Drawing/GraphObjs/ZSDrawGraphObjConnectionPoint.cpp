@@ -205,7 +205,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-    setAcceptHoverEvents(true);
+    QGraphicsItem_setAcceptHoverEvents(true);
 }
 
 //------------------------------------------------------------------------------
@@ -2178,14 +2178,29 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         }
         bTreeEntryChanged = true;
     }
-    else if(i_change == ItemSelectedHasChanged) {
+    else if (i_change == ItemSelectedHasChanged) {
         //QGraphicsItem_prepareGeometryChange();
-        // The connection point does not have selection points but is a selection point itself.
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
+            // If not resizable, the connection point does not have selection points
+            // but is a selection point itself.
+            if (isResizable()) {
+                if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
+                    hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                    showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+                }
+                else if (m_editMode == EEditMode::ModifyingBoundingRect) {
+                    hideSelectionPoints(c_uSelectionPointsPolygonPoints);
+                    showSelectionPoints(c_uSelectionPointsBoundingRectAll);
+                }
+                else /*if (m_editMode == EEditMode::None)*/ {
+                    hideSelectionPoints();
+                }
+            }
         }
         else {
             setEditMode(EEditMode::None);
+            hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
         }
         bSelectedChanged = true;
@@ -2980,7 +2995,7 @@ void CGraphObjConnectionPoint::traceGraphObjStates(
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
-    strRuntimeInfo += "SelPt {" + m_selPt.toString() + "}";
+    strRuntimeInfo += "LinkedTo: SelPt {" + m_selPt.toString() + "}";
     i_mthTracer.trace(strRuntimeInfo);
 }
 

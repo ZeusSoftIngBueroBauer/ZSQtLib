@@ -4069,21 +4069,21 @@ void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
         m_editMode = i_eMode;
         QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
         if (m_editMode == EEditMode::None) {
-            pGraphicsItemThis->setAcceptHoverEvents(true);
+            QGraphicsItem_setAcceptHoverEvents(true);
         }
         else {
             if (m_editMode == EEditMode::CreatingByMouseEvents) {
                 // The object is under construction. Hover events will not be accepted.
                 // Only when no drawing tool is selected in the drawing scene, hover
                 // events may be accepted.
-                pGraphicsItemThis->setAcceptHoverEvents(false);
+                QGraphicsItem_setAcceptHoverEvents(false);
             }
             // Immediately select the object to create the selection points.
             // Following mouse move press, mouse move and mouse release events will
             // be forwarded by the scene to the selection point responsible for
             // resizing the obejct (the top most selection point most recently created).
             if (!pGraphicsItemThis->isSelected()) {
-                pGraphicsItemThis->setSelected(true);
+                QGraphicsItem_setSelected(true);
             }
             else if (isResizable()) {
                 if (m_editMode == EEditMode::CreatingByMouseEvents) {
@@ -8621,6 +8621,48 @@ void CGraphObj::QGraphicsItem_unsetCursor()
     }
 }
 
+//------------------------------------------------------------------------------
+void CGraphObj::QGraphicsItem_setAcceptHoverEvents(bool i_bEnabled)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bEnabled);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::QGraphicsItem_setAcceptHoverEvents",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        pGraphicsItemThis->setAcceptHoverEvents(i_bEnabled);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::QGraphicsItem_setSelected(bool i_bSelected)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bSelected);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::QGraphicsItem_setSelected",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        pGraphicsItemThis->setSelected(i_bSelected);
+    }
+}
+
 /*==============================================================================
 protected: // overridable auxiliary instance methods (method tracing)
 ==============================================================================*/
@@ -8917,20 +8959,14 @@ void CGraphObj::traceGraphicsItemStates(
             else strRuntimeInfo = "   ";
             QGraphicsItem* pGraphicsItemMouseGrabber = m_pDrawingScene->mouseGrabberItem();
             CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
+            QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
             strRuntimeInfo += "IsSelected: " + bool2Str(pGraphicsItemThis->isSelected()) +
                 ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
                 ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled()) +
                 ", HasCursor: " + bool2Str(pGraphicsItemThis->hasCursor()) +
                 ", HasFocus: " + bool2Str(pGraphicsItemThis->hasFocus()) +
-                ", MouseGrabber: " + QString(pGraphObjMouseGrabber == nullptr ? "null" : pGraphObjMouseGrabber->path());
-            i_mthTracer.trace(strRuntimeInfo);
-        }
-        if (i_strFilter.isEmpty() || i_strFilter.contains("SelectedItems")) {
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            QList<QGraphicsItem*> arpGraphicsItemsSelected = m_pDrawingScene->selectedItems();
-            strRuntimeInfo += "SelectedItems [" + QString::number(arpGraphicsItemsSelected.size()) + "]";
+                ", MouseGrabber: " + QString(pGraphObjMouseGrabber == nullptr ? "null" : pGraphObjMouseGrabber->path()) +
+                ", SelectedItems [" + QString::number(arpGraphicsItemsSelected.size()) + "]";
             if (!arpGraphicsItemsSelected.isEmpty()) {
                 strRuntimeInfo += "(";
                 for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {

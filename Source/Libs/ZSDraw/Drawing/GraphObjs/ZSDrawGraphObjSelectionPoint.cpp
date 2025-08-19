@@ -122,7 +122,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
            //| QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
-    setAcceptHoverEvents(true);
+    QGraphicsItem_setAcceptHoverEvents(true);
 
     if (m_selPt.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);

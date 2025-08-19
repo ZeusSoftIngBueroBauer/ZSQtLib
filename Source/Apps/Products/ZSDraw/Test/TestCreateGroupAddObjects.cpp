@@ -3766,7 +3766,7 @@ void CTest::createTestGroupAddStandardShapesConnectionLineModifications(
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_ptPosConnectionPoint1);
     pTestStep->setConfigValue("Pos.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesGraphObjsKeyEntry", QStringList{
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt2]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt4]}});
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
@@ -3816,7 +3816,7 @@ void CTest::createTestGroupAddStandardShapesConnectionLineModifications(
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_ptPosConnectionPoint2);
     pTestStep->setConfigValue("Pos.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesGraphObjsKeyEntry", QStringList{
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt2]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt3CnctPt2]}});
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
@@ -3866,7 +3866,7 @@ void CTest::createTestGroupAddStandardShapesConnectionLineModifications(
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_ptPosConnectionPoint3);
     pTestStep->setConfigValue("Pos.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesGraphObjsKeyEntry", QStringList{
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt3CnctPt4]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt3CnctPt2]}});
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
@@ -3916,7 +3916,7 @@ void CTest::createTestGroupAddStandardShapesConnectionLineModifications(
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_ptPosConnectionPoint4);
     pTestStep->setConfigValue("Pos.unit", strUnit);
-    pTestStep->setConfigValue("ResultValuesGraphObjsKeyEntry", QStringList{
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt3CnctPt4]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt4]}});
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);

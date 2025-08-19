@@ -234,7 +234,7 @@ CGraphObjText::CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_st
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-    setAcceptHoverEvents(true);
+    QGraphicsItem_setAcceptHoverEvents(true);
 
     QGraphicsTextItem_setTextInteractionFlags(Qt::TextEditorInteraction);
 
@@ -1737,7 +1737,7 @@ void CGraphObjText::setEditMode(const CEnumEditMode& i_eMode)
         m_editMode = i_eMode;
         QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
         if (m_editMode == EEditMode::None) {
-            pGraphicsItemThis->setAcceptHoverEvents(true);
+            QGraphicsItem_setAcceptHoverEvents(true);
         }
         //else if (m_editMode == EEditMode::ModifyingContent) {
         //    //hideSelectionPoints();
@@ -1747,14 +1747,14 @@ void CGraphObjText::setEditMode(const CEnumEditMode& i_eMode)
                 // The object is under construction. Hover events will not be accepted.
                 // Only when no drawing tool is selected in the drawing scene, hover
                 // events may be accepted.
-                pGraphicsItemThis->setAcceptHoverEvents(false);
+                QGraphicsItem_setAcceptHoverEvents(false);
             }
             // Immediately select the object to create the selection points.
             // Following mouse move press, mouse move and mouse release events will
             // be forwarded by the scene to the selection point responsible for
             // resizing the obejct (the top most selection point most recently created).
             if (!pGraphicsItemThis->isSelected()) {
-                pGraphicsItemThis->setSelected(true);
+                QGraphicsItem_setSelected(true);
             }
             else if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
                 showSelectionPoints(c_uSelectionPointsPolygonPoints);
@@ -3092,7 +3092,7 @@ void CGraphObjText::onGraphicsTextItemFocusChanged(QFocusEvent* i_pEv)
         /* strMethod    */ "onGraphicsTextItemFocusChanged",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "SelectedItems");
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
     // On setting the input focus on the text item (on starting the text editor) no other
@@ -3112,7 +3112,7 @@ void CGraphObjText::onGraphicsTextItemFocusChanged(QFocusEvent* i_pEv)
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "SelectedItems");
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
     }
 }
 

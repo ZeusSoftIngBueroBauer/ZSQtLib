@@ -334,7 +334,8 @@ enum class EEditMode
                                      - Resizing a line by moving the line end point.
                                      - Resizing a rectangle by moving the bottom right corner.
                                      - Adding points to poly lines. */
-    ModifyingBoundingRect = 2,  /*!< An object is about to be modified by resizing the bounding rectangle. */
+    ModifyingBoundingRect = 2,  /*!< An object is about to be modified by resizing the bounding rectangle.
+                                     This also includes moving the object by moving the center selection point. */
     ModifyingPolygonPoints = 3, /*!< An object with specific polygon points (polygons, lines) is about
                                      to be modified. In this mode points can be added e.g. by clicking
                                      on a line segment or existing polygon points can be moved. */

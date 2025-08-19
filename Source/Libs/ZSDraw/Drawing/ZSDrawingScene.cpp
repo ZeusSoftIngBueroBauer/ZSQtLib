@@ -3697,8 +3697,22 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
                 }
             }
-            // If currently no object is "under construction" ...
-            else {
+            // If no object got to be created ...
+            else /*if (m_pObjFactory == nullptr)*/ {
+                // Check if an object has been clicked.
+                // If an object has been clicked, without pressing the keyboard modifiers
+                // Shift or Control, the newly clicked object should be the only one to be selected.
+
+                if (!i_pEv->modifiers().testFlag(Qt::ShiftModifier) && !i_pEv->modifiers().testFlag(Qt::ControlModifier)) {
+                    QGraphicsItem* pGraphicsItemPressed = itemAt(i_pEv->scenePos(), QTransform());
+                    if (pGraphicsItemPressed != nullptr) {
+                        QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
+                        if (arpGraphicsItemsSelected.size() > 1) {
+                            unselectGraphicsItems(arpGraphicsItemsSelected);
+                        }
+                    }
+                }
+
                 // Dispatch mouse event to objects "under cursor".
                 QGraphicsScene_mousePressEvent(i_pEv);
                 if (m_pGraphObjMouseGrabber != nullptr) {
@@ -4260,8 +4274,6 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
     QGraphicsScene::keyPressEvent(i_pEv);
 
     if (!i_pEv->isAccepted()) {
-        int iEvKeyModifiers = i_pEv->modifiers();
-
         // As default the key is not handled by the manual test.
         i_pEv->ignore();
 
@@ -4354,7 +4366,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
         // Pressed key to copy selected objects to the (internal) clipboard ...
         else if (i_pEv->key() == Qt::Key_C) {
-            if (iEvKeyModifiers == Qt::ControlModifier) {
+            if (i_pEv->modifiers() == Qt::ControlModifier) {
                 //// Clear internal clipboard.
                 //if (m_dctpGraphObjsClipboard.size() > 0) {
                 //    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
@@ -4511,7 +4523,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
         // Pressed key to insert the objects from the (internal) clipboard ...
         else if (i_pEv->key() == Qt::Key_V) {
-            if (iEvKeyModifiers == Qt::ControlModifier) {
+            if (i_pEv->modifiers() == Qt::ControlModifier) {
                 //CGraphObj*                pGraphObjClone;
                 //QGraphicsItem*            pGraphicsItemClone;
                 //CGraphObjConnectionLine*  pGraphObjCnctLine;
@@ -5701,18 +5713,26 @@ void CDrawingScene::traceInternalStates(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
+        QGraphicsItem* pGraphicsItemMouseGrabber = mouseGrabberItem();
+        CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
+        QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
         strRuntimeInfo += "Mode: " + m_mode.toString() +
             ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
             ", UnderConstruction: " + QString(m_pGraphObjUnderConstruction == nullptr ? "nullptr" : m_pGraphObjUnderConstruction->path()) +
             ", HitTol: " + QString::number(m_fHitTolerance_px) + " px" +
             ", SelectArea {" + QString(m_pGraphicsItemSelectionArea == nullptr ? "null" : qRect2Str(m_pGraphicsItemSelectionArea->rect())) + "}";
-        QGraphicsItem* pGraphicsItemMouseGrabber = mouseGrabberItem();
-        CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
-        if (pGraphObjMouseGrabber == nullptr) {
-            strRuntimeInfo += ", MouseGrabber: null";
-        }
-        else {
-            strRuntimeInfo += ", MouseGrabber: " + pGraphObjMouseGrabber->path();
+            ", MouseGrabber: " + QString(pGraphObjMouseGrabber == nullptr ? "null" : pGraphObjMouseGrabber->path()) +
+            ", SelectedItems [" + QString::number(arpGraphicsItemsSelected.size()) + "]";
+        if (!arpGraphicsItemsSelected.isEmpty()) {
+            strRuntimeInfo += "(";
+            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+                if (pGraphObj != nullptr) {
+                    if (!strRuntimeInfo.endsWith("(")) strRuntimeInfo += ", ";
+                    strRuntimeInfo += pGraphObj->path();
+                }
+            }
+            strRuntimeInfo += ")";
         }
         i_mthTracer.trace(strRuntimeInfo);
     }

@@ -2613,29 +2613,34 @@ QString ZS::System::qKeyboardModifiers2Str( Qt::KeyboardModifiers i_modifiers )
 //------------------------------------------------------------------------------
 {
     QString str;
-    if (i_modifiers & Qt::ShiftModifier) {
-        if (!str.isEmpty()) str += "|";
-        str = "Shift";
+    if (i_modifiers == Qt::NoModifier) {
+        str = "No";
     }
-    if (i_modifiers & Qt::ControlModifier) {
-        if (!str.isEmpty()) str += "|";
-        str += "Control";
-    }
-    if (i_modifiers & Qt::AltModifier) {
-        if (!str.isEmpty()) str += "|";
-        str += "Alt";
-    }
-    if (i_modifiers & Qt::MetaModifier) {
-        if (!str.isEmpty()) str += "|";
-        str += "Meta";
-    }
-    if (i_modifiers & Qt::KeypadModifier) {
-        if (!str.isEmpty()) str += "|";
-        str += "Keypad";
-    }
-    if (i_modifiers & Qt::GroupSwitchModifier) {
-        if (!str.isEmpty()) str += "|";
-        str += "GroupSwitch";
+    else {
+        if (i_modifiers & Qt::ShiftModifier) {
+            if (!str.isEmpty()) str += "|";
+            str = "Shift";
+        }
+        if (i_modifiers & Qt::ControlModifier) {
+            if (!str.isEmpty()) str += "|";
+            str += "Control";
+        }
+        if (i_modifiers & Qt::AltModifier) {
+            if (!str.isEmpty()) str += "|";
+            str += "Alt";
+        }
+        if (i_modifiers & Qt::MetaModifier) {
+            if (!str.isEmpty()) str += "|";
+            str += "Meta";
+        }
+        if (i_modifiers & Qt::KeypadModifier) {
+            if (!str.isEmpty()) str += "|";
+            str += "Keypad";
+        }
+        if (i_modifiers & Qt::GroupSwitchModifier) {
+            if (!str.isEmpty()) str += "|";
+            str += "GroupSwitch";
+        }
     }
     return str;
 }
