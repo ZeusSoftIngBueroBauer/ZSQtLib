@@ -214,6 +214,8 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
+
+    setStackingOrderValue(c_fStackingOrderOffsetConnectionLines, ERowVersion::Original);
 }
 
 //------------------------------------------------------------------------------
@@ -512,9 +514,9 @@ void CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
             QObject::disconnect(
                 i_pGraphObjCnctPt, &CGraphObj::geometryOnSceneChanged,
                 this, &CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged);
-            QObject::disconnect(
-                i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
-                this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
+            //QObject::disconnect(
+            //    i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
+            //    this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
         }
         if (m_arpCnctPts.value(i_linePoint, nullptr) != i_pGraphObjCnctPt) {
             m_arpCnctPts[i_linePoint] = i_pGraphObjCnctPt;
@@ -522,9 +524,9 @@ void CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
             QObject::connect(
                 i_pGraphObjCnctPt, &CGraphObj::geometryOnSceneChanged,
                 this, &CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged);
-            QObject::connect(
-                i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
-                this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
+            //QObject::connect(
+            //    i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
+            //    this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
         }
         if (i_linePoint == ELinePoint::Start) {
             if (count() == 0) {
@@ -2322,25 +2324,25 @@ void CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged(
     }
 }
 
-//------------------------------------------------------------------------------
-void CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged(CGraphObj* i_pGraphObjCnctPt)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjCnctPt->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjConnectionPointZValueChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    // The connection lines should be drawn above the connection points.
-    double fZValueParent = i_pGraphObjCnctPt->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + 0.1);
-}
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged(CGraphObj* i_pGraphObjCnctPt)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_pGraphObjCnctPt->keyInTree();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "onGraphObjConnectionPointZValueChanged",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // The connection lines should be drawn above the connection points.
+//    double fZValueParent = i_pGraphObjCnctPt->getStackingOrderValue();
+//    setStackingOrderValue(fZValueParent + 0.1);
+//}
 
 /*==============================================================================
 protected: // overridable slots of base class CGraphObj

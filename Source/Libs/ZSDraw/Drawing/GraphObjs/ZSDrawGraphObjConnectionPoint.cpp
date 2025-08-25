@@ -206,6 +206,8 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
+
+    setStackingOrderValue(c_fStackingOrderOffsetConnectionPoints, ERowVersion::Original);
 }
 
 //------------------------------------------------------------------------------
@@ -320,13 +322,16 @@ QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
 }
 
 //------------------------------------------------------------------------------
-QString CGraphObjConnectionPoint::myPathName() const
+QString CGraphObjConnectionPoint::path() const
 //------------------------------------------------------------------------------
 {
     QString strPath;
     if (m_selPt.m_pGraphObj != nullptr) {
         strPath = pathNameOfLinkedObject();
         strPath = m_selPt.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    }
+    else {
+        strPath = CIdxTreeEntry::path();
     }
     return strPath;
 }
@@ -1744,7 +1749,7 @@ QPainterPath CGraphObjConnectionPoint::shape() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
     QPainterPath painterPath = QGraphicsEllipseItem::shape();

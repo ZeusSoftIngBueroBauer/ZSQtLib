@@ -69,7 +69,7 @@ public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // instance methods
     QString pathNameOfLinkedObject() const;
-    QString myPathName() const;
+    QString path() const override;
 public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
 public: // instance methods

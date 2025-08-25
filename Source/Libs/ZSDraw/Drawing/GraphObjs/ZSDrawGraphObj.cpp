@@ -63,9 +63,9 @@ class CGraphObj
 public: // type definitions and constants
 ==============================================================================*/
 
-const double CGraphObj::c_fStackingOrderOffsetLabels = 0.1;
+const double CGraphObj::c_fStackingOrderOffsetConnectionLines = 0.1;
 const double CGraphObj::c_fStackingOrderOffsetConnectionPoints = 0.2;
-const double CGraphObj::c_fStackingOrderOffsetConnectionLines = 0.3;
+const double CGraphObj::c_fStackingOrderOffsetLabels = 0.3;
 const double CGraphObj::c_fStackingOrderOffsetSelectionPoints = 0.4;
 
 const QString CGraphObj::c_strLabelName = "Name";

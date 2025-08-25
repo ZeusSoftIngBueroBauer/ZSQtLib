@@ -129,7 +129,7 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -156,7 +156,7 @@ CGraphObjLabelGeometryAngle::~CGraphObjLabelGeometryAngle()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -195,7 +195,7 @@ CGraphObj* CGraphObjLabelGeometryAngle::clone()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
@@ -228,7 +228,7 @@ QRectF CGraphObjLabelGeometryAngle::boundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
@@ -262,7 +262,7 @@ void CGraphObjLabelGeometryAngle::paint(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
@@ -317,7 +317,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
@@ -427,7 +427,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
@@ -494,7 +494,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
 

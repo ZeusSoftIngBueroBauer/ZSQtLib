@@ -111,7 +111,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -146,7 +146,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -188,7 +188,7 @@ CGraphObj* CGraphObjSelectionPoint::clone()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
     return nullptr;
@@ -210,7 +210,7 @@ QString CGraphObjSelectionPoint::pathNameOfLinkedObject() const
 }
 
 //------------------------------------------------------------------------------
-QString CGraphObjSelectionPoint::myPathName() const
+QString CGraphObjSelectionPoint::path() const
 //------------------------------------------------------------------------------
 {
     QString strPath = pathNameOfLinkedObject();
@@ -249,7 +249,7 @@ void CGraphObjSelectionPoint::setShapePoint( int i_idxPt )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "setShapePoint",
         /* strAddInfo   */ strMthInArgs );
 
@@ -275,7 +275,7 @@ void CGraphObjSelectionPoint::setWidthInPx( double i_fWidth_px )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "setWidthInPx",
         /* strAddInfo   */ strMthInArgs );
 
@@ -306,7 +306,7 @@ void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawS
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -330,7 +330,7 @@ QRectF CGraphObjSelectionPoint::getBoundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
 
@@ -367,7 +367,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ "" );
 
@@ -414,7 +414,7 @@ bool CGraphObjSelectionPoint::contains(const QPointF& i_pt) const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "contains",
         /* strAddInfo   */ strMthInArgs );
 
@@ -436,7 +436,7 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
@@ -461,7 +461,7 @@ QPainterPath CGraphObjSelectionPoint::shape() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
     QPainterPath painterPath = QGraphicsEllipseItem::shape();
@@ -488,7 +488,7 @@ void CGraphObjSelectionPoint::paint(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -528,7 +528,7 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -560,7 +560,7 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -592,7 +592,7 @@ void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -633,7 +633,7 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -677,7 +677,7 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -717,7 +717,7 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -755,7 +755,7 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -809,7 +809,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     CMethodTracer mthTracer(
         /* pAdminObj    */ pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
 
@@ -866,7 +866,7 @@ void CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -884,7 +884,7 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -919,7 +919,7 @@ void CGraphObjSelectionPoint::updatePosition()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 

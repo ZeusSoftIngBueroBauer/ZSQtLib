@@ -118,7 +118,7 @@ CGraphObjLabelGeometryPosition::CGraphObjLabelGeometryPosition(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -133,7 +133,7 @@ CGraphObjLabelGeometryPosition::~CGraphObjLabelGeometryPosition()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -165,7 +165,7 @@ CGraphObj* CGraphObjLabelGeometryPosition::clone()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
@@ -186,7 +186,7 @@ void CGraphObjLabelGeometryPosition::updatePosition()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ myPathName(),
+        /* strObjName   */ path(),
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 

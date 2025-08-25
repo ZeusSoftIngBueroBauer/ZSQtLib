@@ -114,10 +114,10 @@ public: // instance methods
     virtual QString entryType2Str( int i_alias = EEnumEntryAliasStrName ) const;
 public: // instance methods
     /*! Returns the name of the tree entry (e.g. "Volt". */
-    QString name() const { return m_strName; }
+    virtual QString name() const { return m_strName; }
     /*! Returns the path (incl. name, excluding the name of the root entry)
         of the tree entry (e.g. "Voltage::Volt)". */
-    QString path() const;
+    virtual QString path() const;
 public: // instance methods
     /*! Returns the index tree of the entry. */
     CIdxTree* tree() const { return m_pTree; }

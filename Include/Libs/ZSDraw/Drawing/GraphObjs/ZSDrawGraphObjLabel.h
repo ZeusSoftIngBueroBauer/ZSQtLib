@@ -116,7 +116,7 @@ public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
     QString pathNameOfLinkedObject() const;
-    QString myPathName() const;
+    QString path() const override;
 public: // overridables
     void setKey(const QString& i_strKey);
     QString key() const;

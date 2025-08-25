@@ -3644,7 +3644,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
     strGraphObjName = c_strGraphObjNameConnectionPoint1;
     strMethod = "move";
-    QPointF ptPosConnectionPoint1New(300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    QPointF ptPosConnectionPoint1New(300.0, 200.0);
     strMthArgs = qPoint2Str(ptPosConnectionPoint1New) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -3683,7 +3683,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
     });
     m_ptPosConnectionPoint1 = ptPosConnectionPoint1New;
-    *m_pPhysValConnectionPoint1 = ptPosConnectionPoint1New;
+    m_pPhysValConnectionPoint1->setX(ptPosConnectionPoint1New.x());
+    m_pPhysValConnectionPoint1->setY(bYAxisTopDown ? ptPosConnectionPoint1New.y() : fYAxisMaxVal - ptPosConnectionPoint1New.y());
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
         {  50.0, -75.0},
         { -50.0,  75.0}
@@ -3717,7 +3718,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
     strGraphObjName = c_strGraphObjNameConnectionPoint2;
     strMethod = "move";
-    QPointF ptPosConnectionPoint2New(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    QPointF ptPosConnectionPoint2New(300.0, 400.0);
     strMthArgs = qPoint2Str(ptPosConnectionPoint2New) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -3756,7 +3757,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
     });
     m_ptPosConnectionPoint2 = ptPosConnectionPoint2New;
-    *m_pPhysValConnectionPoint2 = ptPosConnectionPoint2New;
+    m_pPhysValConnectionPoint2->setX(ptPosConnectionPoint2New.x());
+    m_pPhysValConnectionPoint2->setY(bYAxisTopDown ? ptPosConnectionPoint2New.y() : fYAxisMaxVal - ptPosConnectionPoint2New.y());
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
         {0.0, -100.0},
         {0.0,  100.0}
@@ -3790,7 +3792,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
     strGraphObjName = c_strGraphObjNameConnectionPoint3;
     strMethod = "move";
-    QPointF ptPosConnectionPoint3New(500.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    QPointF ptPosConnectionPoint3New(500.0, 200.0);
     strMthArgs = qPoint2Str(ptPosConnectionPoint3New) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -3829,7 +3831,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
     });
     m_ptPosConnectionPoint3 = ptPosConnectionPoint3New;
-    *m_pPhysValConnectionPoint3 = ptPosConnectionPoint3New;
+    m_pPhysValConnectionPoint3->setX(ptPosConnectionPoint3New.x());
+    m_pPhysValConnectionPoint3->setY(bYAxisTopDown ? ptPosConnectionPoint3New.y() : fYAxisMaxVal - ptPosConnectionPoint3New.y());
     m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
         { -50.0, -75.0},
         {  50.0,  75.0}
@@ -3848,7 +3851,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, iResultValuesPrecision));
+        strGraphObjName, m_ptPosConnectionPoint3, *m_pPhysValConnectionPoint3, iResultValuesPrecision));
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
         m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, iResultValuesPrecision));
@@ -3863,8 +3866,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
     strGraphObjName = c_strGraphObjNameConnectionPoint4;
     strMethod = "move";
-    QPointF ptPosConnectionPoint4New(500.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
-    strMthArgs = qPoint2Str(ptPosConnectionPoint1New) + " " + strUnit;
+    QPointF ptPosConnectionPoint4New(500.0, 400.0);
+    strMthArgs = qPoint2Str(ptPosConnectionPoint4New) + " " + strUnit;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -3887,7 +3890,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     // Move mouse onto connection point, press mouse to select connection point, move the connection point while
     // mouse is pressed to the new position and release the mouse event.
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(640, 250), m_ptPosConnectionPoint1.toPoint());
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(640, 350), m_ptPosConnectionPoint4.toPoint());
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
@@ -3902,7 +3905,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
     });
     m_ptPosConnectionPoint4 = ptPosConnectionPoint4New;
-    *m_pPhysValConnectionPoint4 = ptPosConnectionPoint4New;
+    m_pPhysValConnectionPoint4->setX(ptPosConnectionPoint4New.x());
+    m_pPhysValConnectionPoint4->setY(bYAxisTopDown ? ptPosConnectionPoint4New.y() : fYAxisMaxVal - ptPosConnectionPoint4New.y());
     m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
         {0.0, -100.0},
         {0.0,  100.0}
@@ -3921,7 +3925,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, iResultValuesPrecision));
+        strGraphObjName, m_ptPosConnectionPoint4, *m_pPhysValConnectionPoint4, iResultValuesPrecision));
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
         m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, iResultValuesPrecision));
