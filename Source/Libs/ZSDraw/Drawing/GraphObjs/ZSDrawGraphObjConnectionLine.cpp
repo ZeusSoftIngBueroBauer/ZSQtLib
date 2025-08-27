@@ -1591,8 +1591,8 @@ QPainterPath CGraphObjConnectionLine::shape() const
     // length (< 0.5 pixels). So we do this on our own ...
     QPainterPath painterPath;
     QPolygonF polygon = this->polygon();
-    if (polygon.size() > 0) {
-        painterPath.moveTo(polygon.at(0));
+    if (!polygon.isEmpty()) {
+        painterPath.moveTo(polygon.first());
         for (int idxPt = 0; idxPt < polygon.size()-1; ++idxPt) {
             const QPointF& pt1 = polygon.at(idxPt);
             const QPointF& pt2 = polygon.at(idxPt+1);
@@ -1608,13 +1608,20 @@ QPainterPath CGraphObjConnectionLine::shape() const
             }
         }
     }
-    if (!m_plgLineStartArrowHead.isEmpty()) {
-        //painterPath.moveTo(mapToScene(m_plgLineStartArrowHead.at(0)));
-        painterPath.addPolygon(m_plgLineStartArrowHead);
+
+    // Please note that the number of polygon points of the arrow heads depends on the
+    // base line type and could be either 3 (NoLine or Normal) or 4 (Indented).
+    if (m_plgLineStartArrowHead.size() == 3 && m_plgLineStartArrowHead.at(1) == polygon.first()) {
+        painterPath.moveTo(polygon.first());
+        painterPath.lineTo(m_plgLineStartArrowHead.at(0));
+        painterPath.lineTo(m_plgLineStartArrowHead.at(2));
+        painterPath.lineTo(polygon.first());
     }
-    if (!m_plgLineEndArrowHead.isEmpty()) {
-        //painterPath.moveTo(mapToScene(m_plgLineEndArrowHead.at(0)));
-        painterPath.addPolygon(m_plgLineEndArrowHead);
+    if (m_plgLineEndArrowHead.size() == 3 && m_plgLineEndArrowHead.at(1) == polygon.last()) {
+        painterPath.moveTo(polygon.last());
+        painterPath.lineTo(m_plgLineEndArrowHead.at(0));
+        painterPath.lineTo(m_plgLineEndArrowHead.at(2));
+        painterPath.lineTo(polygon.last());
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
@@ -1779,7 +1786,7 @@ void CGraphObjConnectionLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
@@ -1787,6 +1794,41 @@ void CGraphObjConnectionLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
+
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        QCursor cursor = Qt::SizeAllCursor;
+        if (isSelected()) {
+            if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+                if (i_pEv->modifiers() & Qt::ControlModifier) {
+                    SGraphObjHitInfo hitInfo;
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
+                    }
+                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                    }
+                    if (bIsPolygonHit) {
+                        cursor = hitInfo.m_cursor;
+                    }
+                }
+            }
+        }
+        QGraphicsItem_setCursor(cursor);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1795,7 +1837,7 @@ void CGraphObjConnectionLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverMoveEvents,
@@ -1803,6 +1845,42 @@ void CGraphObjConnectionLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
+
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        QCursor cursor = Qt::SizeAllCursor;
+        if (isSelected()) {
+            if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+                if (i_pEv->modifiers() & Qt::ControlModifier) {
+                    SGraphObjHitInfo hitInfo;
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
+                    }
+                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                    }
+                    if (bIsPolygonHit) {
+                        cursor = hitInfo.m_cursor;
+                    }
+                }
+            }
+        }
+        QGraphicsItem_setCursor(cursor);
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1811,7 +1889,7 @@ void CGraphObjConnectionLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
@@ -1820,7 +1898,48 @@ void CGraphObjConnectionLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    unsetCursor();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+    }
+
+    // Ignore hover events if any object should be or is currently being created.
+    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
+        bool bSetCurser = false;
+        QCursor cursor = Qt::SizeAllCursor;
+        if (isSelected()) {
+            if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+                if (i_pEv->modifiers() & Qt::ControlModifier) {
+                    SGraphObjHitInfo hitInfo;
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
+                    }
+                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                    }
+                    if (bIsPolygonHit) {
+                        cursor = hitInfo.m_cursor;
+                        bSetCurser = true;
+                    }
+                }
+            }
+        }
+        if (bSetCurser) {
+            QGraphicsItem_setCursor(cursor);
+        }
+        else {
+            QGraphicsItem_unsetCursor();
+        }
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
 }
 
 /*==============================================================================
@@ -1833,7 +1952,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -1946,7 +2065,7 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -2049,7 +2168,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -2108,7 +2227,7 @@ void CGraphObjConnectionLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,

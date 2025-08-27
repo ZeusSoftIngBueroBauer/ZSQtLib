@@ -3701,10 +3701,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             // If no object got to be created ...
             else /*if (m_pObjFactory == nullptr)*/ {
                 // Check if an object has been clicked.
-                // If an object has been clicked, without pressing the keyboard modifiers
-                // Shift or Control, the newly clicked object should be the only one to be selected.
-
-                if (!i_pEv->modifiers().testFlag(Qt::ShiftModifier) && !i_pEv->modifiers().testFlag(Qt::ControlModifier)) {
+                // If an object has been clicked, without pressing the shift keyboard modifier,
+                // the newly clicked object should be the only selected object.
+                if (!i_pEv->modifiers().testFlag(Qt::ShiftModifier)) {
                     QGraphicsItem* pGraphicsItemPressed = itemAt(i_pEv->scenePos(), QTransform());
                     if (pGraphicsItemPressed != nullptr) {
                         QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();

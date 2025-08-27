@@ -656,16 +656,45 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Auxiliary Math Methods",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+    int iPrecision = 6;
+
+    // getLineEndArrowPolygons
+    //------------------------
+
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " getLineEndArrowPolygons",
+        /* strOperation    */ "Draw::getLineEndArrowPolygons",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep*)) );
+    strlstExpectedValues.clear();
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+        {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    QPolygonF polygonLineStartArrowHead({
+        QPointF(0.0, 0.0), QPointF(0.0, 0.0), QPointF(0.0, 0.0)
+    });
+    QPolygonF polygonLineEndArrowHead({
+        QPointF(0.0, 0.0), QPointF(0.0, 0.0), QPointF(0.0, 0.0)
+    });
+    strlstExpectedValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
+    strlstExpectedValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
     // getLineFromPolar
     //-----------------
 
-    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+    pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " getLineFromPolar",
         /* strOperation    */ "Draw::getLineFromPolar",
         /* pGrpParent      */ pGrpAuxMethods,
         /* szDoTestStepFct */ SLOT(doTestStepGetLineFromPolar(ZS::Test::CTestStep*)) );
-    int iPrecision = 6;
     strlstExpectedValues.clear();
     pTestStep->addDataRow({
         {"Length", "100.0 px"},
@@ -1000,6 +1029,25 @@ void CTest::createTestStepSaveLoadFile(ZS::Test::CTestStepGroup* i_pTestStepGrou
 /*==============================================================================
 protected slots:
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepGetLineEndArrowPolygons",
+        /* strAddInfo   */ strMthInArgs );
+
+    QLineF line;
+    CDrawSettings drawSettings;
+    getLineEndArrowPolygons(line, drawSettings, &plgLineStart, &plgLineEnd);
+}
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep)

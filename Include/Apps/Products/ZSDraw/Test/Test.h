@@ -45,7 +45,7 @@ class QPainterPath;
 
 #if TEST_ALL == 0
 
-#define TEST_AUX_METHODS 0
+#define TEST_AUX_METHODS 1
 #define TEST_DRAWINGSIZE 0
 #define TEST_PIXELS_DRAWINGS 1
 #define TEST_PIXELS_DRAWINGS_100x100 0
@@ -368,6 +368,7 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
+    void doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetPerpendicularLine(ZS::Test::CTestStep* i_pTestStep);

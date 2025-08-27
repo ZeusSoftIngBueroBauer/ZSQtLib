@@ -621,44 +621,48 @@ exported methods implementation
 
     The direction of the arrow head depends on whether the arrow should be shown
     at the line start (P1) or line end (P2). To draw an arrow head a polygon with
-    4 points is used as shwon in the figure below (assuming a vertical line with
-    P1 at top and P2 at bottom):
-
-                           |--Width--|
-
-                               2^                    ---
-                               / \                    |
-         Line Start (P1)      /   \                 Length
-                             /     \                  |
-                          1 /___4___\3 BaseLine      ---
-                                |
-                                |
-                                |
-                           1____|____3 BaseLine
-                            \   4   /
-                             \     /
-         Line End (P2)        \   /
-                               \ /
-                               2'
-
+    either 3 or 4 points is used.
     The arrow head may be styled with a
 
     - FillStyle (NoFill, SolidPattern),
     - Width (Thin, Medium, Wide),
-    - Length (Short, Medium, Long) and
+    - Length (Short, Medium, Long),
     - a BaseLine.
 
     Base line types for the arrow head:
 
          NoLine           Normal         Indented
+           Pt1             Pt1             Pt1
             ^               ^               ^
            /|\             / \             / \
-          / | \           /   \           /   \
+          / | \           /   \           /Pt3\
          /  |  \         /     \         /  ^  \
         /   |   \       /_______\       /__/ \__\
+      Pt3   |   Pt2    Pt3  |   Pt2    Pt4  |   Pt2
             |               |               |
             |               |               |
-            |               |               |
+
+    The figure below shows the line end polygons for the base line type indented.
+    For the base line types NoLine or Normal Pt3 is at position of Pt4 and there
+    is no Pt4.
+
+                           |--Width--|
+                               Pt1
+                                ^                    ---
+                               / \                    |
+         Line Start (P1)      /   \                 Length
+                             / Pt3 \                  |
+                          1 /__/|\__\ BaseLine      ---
+                           Pt4  |   Pt2
+                                |
+                                |
+                          Pt2__ | __Pt4 BaseLine
+                            \  \|/  /
+                             \ Pt3 /
+         Line End (P2)        \   /
+                               \ /
+                                '
+                               Pt1
 
     @param [in] i_line
         Line for which the polygon points should be calculated.
