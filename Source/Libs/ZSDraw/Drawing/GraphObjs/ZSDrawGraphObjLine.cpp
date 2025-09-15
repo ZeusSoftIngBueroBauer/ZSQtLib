@@ -1625,11 +1625,42 @@ QPainterPath CGraphObjLine::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsLineItem::shape();
+
+    // Please note that the number of polygon points of the arrow heads depends on the
+    // base line type and could be either 3 (NoLine or Normal) or 4 (Indented).
     if (!m_plgP1ArrowHead.isEmpty()) {
-        painterPath.addPolygon(m_plgP1ArrowHead);
+        painterPath.moveTo(m_plgP1ArrowHead.first());
+        for (int idxPt = 0; idxPt < m_plgP1ArrowHead.size()-1; ++idxPt) {
+            const QPointF& pt1 = m_plgP1ArrowHead.at(idxPt);
+            const QPointF& pt2 = m_plgP1ArrowHead.at(idxPt+1);
+            if (QLineF(pt1, pt2).length() > 1.0) {
+                painterPath.lineTo(pt2);
+            }
+        }
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) != EArrowHeadBaseLineType::NoLine) {
+            const QPointF& pt1 = m_plgP1ArrowHead.last();
+            const QPointF& pt2 = m_plgP1ArrowHead.first();
+            if (QLineF(pt1, pt2).length() > 1.0) { // see comment above
+                painterPath.lineTo(pt2);
+            }
+        }
     }
     if (!m_plgP2ArrowHead.isEmpty()) {
-        painterPath.addPolygon(m_plgP2ArrowHead);
+        painterPath.moveTo(m_plgP2ArrowHead.first());
+        for (int idxPt = 0; idxPt < m_plgP2ArrowHead.size()-1; ++idxPt) {
+            const QPointF& pt1 = m_plgP2ArrowHead.at(idxPt);
+            const QPointF& pt2 = m_plgP2ArrowHead.at(idxPt+1);
+            if (QLineF(pt1, pt2).length() > 1.0) {
+                painterPath.lineTo(pt2);
+            }
+        }
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) != EArrowHeadBaseLineType::NoLine) {
+            const QPointF& pt1 = m_plgP2ArrowHead.last();
+            const QPointF& pt2 = m_plgP2ArrowHead.first();
+            if (QLineF(pt1, pt2).length() > 1.0) { // see comment above
+                painterPath.lineTo(pt2);
+            }
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);

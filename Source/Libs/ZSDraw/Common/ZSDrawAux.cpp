@@ -631,14 +631,19 @@ exported methods implementation
 
     Base line types for the arrow head:
 
+        Note:  - Vertical lines are lines on the X-axis rotated by 90°
+               - Polygons are closed polylines
+
          NoLine           Normal         Indented
-           Pt1             Pt1             Pt1
+        (Polyline)       (Polygon)      (Polygon)
+
+           Pt2             Pt2             Pt2
             ^               ^               ^
            /|\             / \             / \
-          / | \           /   \           /Pt3\
+          / | \           /   \           /Pt4\
          /  |  \         /     \         /  ^  \
         /   |   \       /_______\       /__/ \__\
-      Pt3   |   Pt2    Pt3  |   Pt2    Pt4  |   Pt2
+      Pt1   |   Pt3   Pt1   |   Pt3   Pt1   |   Pt3
             |               |               |
             |               |               |
 
@@ -647,22 +652,22 @@ exported methods implementation
     is no Pt4.
 
                            |--Width--|
-                               Pt1
-                                ^                    ---
+                               Pt2
+         Line Start (P1)        ^                    ---
                                / \                    |
-         Line Start (P1)      /   \                 Length
-                             / Pt3 \                  |
-                          1 /__/|\__\ BaseLine      ---
-                           Pt4  |   Pt2
+                              /   \                 Length
+                             / Pt4 \                  |
+                            /__/|\__\ BaseLine      ---
+                          Pt1   |   Pt3
                                 |
                                 |
-                          Pt2__ | __Pt4 BaseLine
+                          Pt3__ | __Pt1 BaseLine
                             \  \|/  /
-                             \ Pt3 /
-         Line End (P2)        \   /
+                             \ Pt4 /
+                              \   /
                                \ /
-                                '
-                               Pt1
+         Line End (P2)          '
+                               Pt2
 
     @param [in] i_line
         Line for which the polygon points should be calculated.
@@ -725,58 +730,44 @@ void ZS::Draw::getLineEndArrowPolygons(
             QPointF pt;
 
             if ((linePoint == ELinePoint::Start) && (i_pplgLineStart != nullptr)) {
-                QPolygonF plgLineStart;
-                pt.setX(i_line.p1().x() + arrowHeadLength2dx(length));
-                pt.setY(i_line.p1().y() + arrowHeadWidth2dy(width)/2.0);
+                pt.setX(i_line.p1().x() + (arrowHeadLength2dx(length)-1.0));
+                pt.setY(i_line.p1().y() + (arrowHeadWidth2dy(width)-1.0)/2.0);
                 pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
-                plgLineStart.append(pt); // Pt1
-                plgLineStart.append(i_line.p1()); // Pt2
+                *i_pplgLineStart = QPolygonF({pt}); // Pt1
 
-                pt.setX(i_line.p1().x() + arrowHeadLength2dx(length));
-                pt.setY(i_line.p1().y() - arrowHeadWidth2dy(width)/2.0);
+                i_pplgLineStart->append(i_line.p1()); // Pt2
+
+                pt.setX(i_line.p1().x() + (arrowHeadLength2dx(length)-1.0));
+                pt.setY(i_line.p1().y() - (arrowHeadWidth2dy(width)-1.0)/2.0);
                 pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
-                plgLineStart.append(pt); // Pt3
+                i_pplgLineStart->append(pt); // Pt3
 
-                if (baseLineType == EArrowHeadBaseLineType::Normal) {
-                    pt.setX(i_line.p1().x() + arrowHeadLength2dx(length));
-                    pt.setY(i_line.p1().y());
-                    pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
-                    plgLineStart.append(pt); // Pt4
-                }
-                else if (baseLineType == EArrowHeadBaseLineType::Indented) {
+                if (baseLineType == EArrowHeadBaseLineType::Indented) {
                     pt.setX(i_line.p1().x() + arrowHeadLength2dx(length)/2.0);
                     pt.setY(i_line.p1().y());
                     pt = rotatePoint(i_line.p1(), pt, fAngle_rad);
-                    plgLineStart.append(pt); // Pt4
+                    i_pplgLineStart->append(pt); // Pt4
                 }
-                *i_pplgLineStart = plgLineStart;
             }
             else if ((linePoint == ELinePoint::End) && (i_pplgLineEnd != nullptr)) {
-                QPolygonF plgLineEnd;
-                pt.setX(i_line.p2().x() - arrowHeadLength2dx(length));
-                pt.setY(i_line.p2().y() + arrowHeadWidth2dy(width)/2.0);
+                pt.setX(i_line.p2().x() - (arrowHeadLength2dx(length)-1.0));
+                pt.setY(i_line.p2().y() - (arrowHeadWidth2dy(width)-1.0)/2.0);
                 pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
-                plgLineEnd.append(pt); // Pt1
-                plgLineEnd.append(i_line.p2()); // Pt2
+                *i_pplgLineEnd = QPolygonF({pt}); // Pt1
 
-                pt.setX(i_line.p2().x() - arrowHeadLength2dx(length));
-                pt.setY(i_line.p2().y() - arrowHeadWidth2dy(width)/2.0);
+                i_pplgLineEnd->append(i_line.p2()); // Pt2
+
+                pt.setX(i_line.p2().x() - (arrowHeadLength2dx(length)-1.0));
+                pt.setY(i_line.p2().y() + (arrowHeadWidth2dy(width)-1.0)/2.0);
                 pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
-                plgLineEnd.append(pt); // Pt3
+                i_pplgLineEnd->append(pt); // Pt3
 
-                if (baseLineType == EArrowHeadBaseLineType::Normal) {
-                    pt.setX(i_line.p2().x() - arrowHeadLength2dx(length));
-                    pt.setY(i_line.p2().y() );
-                    pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
-                    plgLineEnd.append(pt); // Pt4
-                }
-                else if (baseLineType == EArrowHeadBaseLineType::Indented) {
+                if (baseLineType == EArrowHeadBaseLineType::Indented) {
                     pt.setX(i_line.p2().x() - arrowHeadLength2dx(length)/2.0);
                     pt.setY(i_line.p2().y());
                     pt = rotatePoint(i_line.p2(), pt, fAngle_rad);
-                    plgLineEnd.append(pt); // Pt4
+                    i_pplgLineEnd->append(pt); // Pt4
                 }
-                *i_pplgLineEnd = plgLineEnd;
             }
         }
     } // if( i_drawSettings.lineEndStyle(ELinePoint::Start) != ELineEndStyle::Normal ..

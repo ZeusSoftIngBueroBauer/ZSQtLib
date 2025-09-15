@@ -668,6 +668,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         /* pGrpParent      */ pGrpAuxMethods,
         /* szDoTestStepFct */ SLOT(doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep*)) );
     strlstExpectedValues.clear();
+    // Horizontal line, Normal
     pTestStep->addDataRow({
         {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
         {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
@@ -676,10 +677,58 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     QPolygonF polygonLineStartArrowHead({
-        QPointF(0.0, 0.0), QPointF(0.0, 0.0), QPointF(0.0, 0.0)
+        QPointF(109.0, 103.0), QPointF(100.0, 100.0), QPointF(109.0, 97.0)
     });
     QPolygonF polygonLineEndArrowHead({
-        QPointF(0.0, 0.0), QPointF(0.0, 0.0), QPointF(0.0, 0.0)
+        QPointF(191.0, 97.0), QPointF(200.0, 100.0), QPointF(191.0, 103.0)
+    });
+    strlstExpectedValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
+    strlstExpectedValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
+    // Vertical line, Normal
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(100.0, 200.0))},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    polygonLineStartArrowHead = QPolygonF({
+        QPointF(97.0, 109.0), QPointF(100.0, 100.0), QPointF(103.0, 109.0)
+    });
+    polygonLineEndArrowHead = QPolygonF({
+        QPointF(103.0, 191.0), QPointF(100.0, 200.0), QPointF(97.0, 191.0)
+    });
+    strlstExpectedValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
+    strlstExpectedValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
+    // Horizontal line, Indented
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Indented).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    polygonLineStartArrowHead = QPolygonF({
+        QPointF(109.0, 103.0), QPointF(100.0, 100.0), QPointF(109.0, 97.0), QPointF(105.0, 100.0)
+    });
+    polygonLineEndArrowHead = QPolygonF({
+        QPointF(191.0, 97.0), QPointF(200.0, 100.0), QPointF(191.0, 103.0), QPointF(195.0, 100.0)
+    });
+    strlstExpectedValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
+    strlstExpectedValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
+    // Vertical line, Indented
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(100.0, 200.0))},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Indented).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    polygonLineStartArrowHead = QPolygonF({
+        QPointF(97.0, 109.0), QPointF(100.0, 100.0), QPointF(103.0, 109.0), QPointF(100.0, 105.0)
+    });
+    polygonLineEndArrowHead = QPolygonF({
+        QPointF(103.0, 191.0), QPointF(100.0, 200.0), QPointF(97.0, 191.0), QPointF(100.0, 195.0)
     });
     strlstExpectedValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
     strlstExpectedValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
@@ -1046,7 +1095,9 @@ void CTest::doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep* i_pTestStep)
     QLineF line;
     CDrawSettings drawSettingsArrowHeads(EGraphObjTypePolygon);
     drawSettingsArrowHeads.setLineEndStyle(ELinePoint::Start, ELineEndStyle::ArrowHead);
+    drawSettingsArrowHeads.setLineEndStyle(ELinePoint::End, ELineEndStyle::ArrowHead);
     int iPrecision = -1;
+    QStringList strlstResultValues;
 
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
@@ -1069,14 +1120,12 @@ void CTest::doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep* i_pTestStep)
         if (dataRow.contains("ResultValuesPrecision")) {
             iPrecision = dataRow["ResultValuesPrecision"].toInt();
         }
+        QPolygonF polygonLineStartArrowHead;
+        QPolygonF polygonLineEndArrowHead;
+        ZS::Draw::getLineEndArrowPolygons(line, drawSettingsArrowHeads, &polygonLineStartArrowHead, &polygonLineEndArrowHead);
+        strlstResultValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
+        strlstResultValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
     }
-
-    QPolygonF polygonLineStartArrowHead;
-    QPolygonF polygonLineEndArrowHead;
-    ZS::Draw::getLineEndArrowPolygons(line, drawSettingsArrowHeads, &polygonLineStartArrowHead, &polygonLineEndArrowHead);
-    QStringList strlstResultValues;
-    strlstResultValues.append(qPolygon2Str(polygonLineStartArrowHead, ", ", 'f', iPrecision));
-    strlstResultValues.append(qPolygon2Str(polygonLineEndArrowHead, ", ", 'f', iPrecision));
     i_pTestStep->setResultValues(strlstResultValues);
 }
 

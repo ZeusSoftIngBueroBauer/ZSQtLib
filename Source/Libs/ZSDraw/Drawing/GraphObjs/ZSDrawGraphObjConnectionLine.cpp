@@ -1600,28 +1600,43 @@ QPainterPath CGraphObjConnectionLine::shape() const
                 painterPath.lineTo(pt2);
             }
         }
-        if (m_type == EGraphObjTypePolygon) {
-            const QPointF& pt1 = polygon.last();
-            const QPointF& pt2 = polygon.first();
-            if (QLineF(pt1, pt2).length() > 1.0) {
-                painterPath.lineTo(pt2);
-            }
-        }
     }
 
     // Please note that the number of polygon points of the arrow heads depends on the
     // base line type and could be either 3 (NoLine or Normal) or 4 (Indented).
-    if (m_plgLineStartArrowHead.size() == 3 && m_plgLineStartArrowHead.at(1) == polygon.first()) {
-        painterPath.moveTo(polygon.first());
-        painterPath.lineTo(m_plgLineStartArrowHead.at(0));
-        painterPath.lineTo(m_plgLineStartArrowHead.at(2));
-        painterPath.lineTo(polygon.first());
+    if (!m_plgLineStartArrowHead.isEmpty()) {
+        painterPath.moveTo(m_plgLineStartArrowHead.first());
+        for (int idxPt = 0; idxPt < m_plgLineStartArrowHead.size()-1; ++idxPt) {
+            const QPointF& pt1 = m_plgLineStartArrowHead.at(idxPt);
+            const QPointF& pt2 = m_plgLineStartArrowHead.at(idxPt+1);
+            if (QLineF(pt1, pt2).length() > 1.0) {
+                painterPath.lineTo(pt2);
+            }
+        }
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) != EArrowHeadBaseLineType::NoLine) {
+            const QPointF& pt1 = m_plgLineStartArrowHead.last();
+            const QPointF& pt2 = m_plgLineStartArrowHead.first();
+            if (QLineF(pt1, pt2).length() > 1.0) { // see comment above
+                painterPath.lineTo(pt2);
+            }
+        }
     }
-    if (m_plgLineEndArrowHead.size() == 3 && m_plgLineEndArrowHead.at(1) == polygon.last()) {
+    if (!m_plgLineEndArrowHead.isEmpty()) {
         painterPath.moveTo(polygon.last());
-        painterPath.lineTo(m_plgLineEndArrowHead.at(0));
-        painterPath.lineTo(m_plgLineEndArrowHead.at(2));
-        painterPath.lineTo(polygon.last());
+        for (int idxPt = 0; idxPt < m_plgLineEndArrowHead.size()-1; ++idxPt) {
+            const QPointF& pt1 = m_plgLineEndArrowHead.at(idxPt);
+            const QPointF& pt2 = m_plgLineEndArrowHead.at(idxPt+1);
+            if (QLineF(pt1, pt2).length() > 1.0) {
+                painterPath.lineTo(pt2);
+            }
+        }
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) != EArrowHeadBaseLineType::NoLine) {
+            const QPointF& pt1 = m_plgLineEndArrowHead.last();
+            const QPointF& pt2 = m_plgLineEndArrowHead.first();
+            if (QLineF(pt1, pt2).length() > 1.0) { // see comment above
+                painterPath.lineTo(pt2);
+            }
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
@@ -1678,9 +1693,6 @@ void CGraphObjConnectionLine::paint(
         for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
             outline.lineTo(polygon[idxPt]);
         }
-        if (m_type == EGraphObjTypePolygon) {
-            outline.lineTo(polygon[0]);
-        }
         i_pPainter->strokePath(outline, pn);
     }
     i_pPainter->setRenderHints(s_painterRenderHints);
@@ -1688,15 +1700,7 @@ void CGraphObjConnectionLine::paint(
     pn.setWidth(m_drawSettings.penWidth());
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
-    if (m_type == EGraphObjTypePolygon) {
-        brsh.setColor(m_drawSettings.fillColor());
-        brsh.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle()));
-        i_pPainter->setBrush(brsh);
-        i_pPainter->drawPolygon(polygon);
-    }
-    else {
-        i_pPainter->drawPolyline(polygon);
-    }
+    i_pPainter->drawPolyline(polygon);
 
     CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
     CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.lineEndStyle(ELinePoint::End);

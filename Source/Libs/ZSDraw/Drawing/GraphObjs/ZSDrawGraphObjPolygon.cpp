@@ -2149,13 +2149,42 @@ QPainterPath CGraphObjPolygon::shape() const
             }
         }
     }
+
+    // Please note that the number of polygon points of the arrow heads depends on the
+    // base line type and could be either 3 (NoLine or Normal) or 4 (Indented).
     if (!m_plgLineStartArrowHead.isEmpty()) {
-        //painterPath.moveTo(mapToScene(m_plgLineStartArrowHead.at(0)));
-        painterPath.addPolygon(m_plgLineStartArrowHead);
+        painterPath.moveTo(m_plgLineStartArrowHead.first());
+        for (int idxPt = 0; idxPt < m_plgLineStartArrowHead.size()-1; ++idxPt) {
+            const QPointF& pt1 = m_plgLineStartArrowHead.at(idxPt);
+            const QPointF& pt2 = m_plgLineStartArrowHead.at(idxPt+1);
+            if (QLineF(pt1, pt2).length() > 1.0) {
+                painterPath.lineTo(pt2);
+            }
+        }
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) != EArrowHeadBaseLineType::NoLine) {
+            const QPointF& pt1 = m_plgLineStartArrowHead.last();
+            const QPointF& pt2 = m_plgLineStartArrowHead.first();
+            if (QLineF(pt1, pt2).length() > 1.0) { // see comment above
+                painterPath.lineTo(pt2);
+            }
+        }
     }
     if (!m_plgLineEndArrowHead.isEmpty()) {
-        //painterPath.moveTo(mapToScene(m_plgLineEndArrowHead.at(0)));
-        painterPath.addPolygon(m_plgLineEndArrowHead);
+        painterPath.moveTo(polygon.last());
+        for (int idxPt = 0; idxPt < m_plgLineEndArrowHead.size()-1; ++idxPt) {
+            const QPointF& pt1 = m_plgLineEndArrowHead.at(idxPt);
+            const QPointF& pt2 = m_plgLineEndArrowHead.at(idxPt+1);
+            if (QLineF(pt1, pt2).length() > 1.0) {
+                painterPath.lineTo(pt2);
+            }
+        }
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) != EArrowHeadBaseLineType::NoLine) {
+            const QPointF& pt1 = m_plgLineEndArrowHead.last();
+            const QPointF& pt2 = m_plgLineEndArrowHead.first();
+            if (QLineF(pt1, pt2).length() > 1.0) { // see comment above
+                painterPath.lineTo(pt2);
+            }
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
