@@ -294,21 +294,21 @@ public: // auxiliary instance methods (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
-        const QString& i_strWhat = "");
+        const QString& i_strFilter = "");
     void traceItemsAtScenePos(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
         const QPointF& i_ptScenePos,
-        const QString& i_strWhat = "");
+        const QString& i_strFilter = "");
     void traceAllItems(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
-        const QString& i_strWhat = "");
+        const QString& i_strFilter = "");
     void traceItems(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
         QList<QGraphicsItem*> arpGraphicsItems,
-        const QString& i_strWhat = "");
+        const QString& i_strFilter = "");
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
 protected: // instance members
@@ -379,6 +379,13 @@ protected: // instance members
     /*!< List with physical shapes to be drawing in the background or foreground layer of the drawing scene. */
     QVector<CPhysValShape*> m_arpPhysValShapes;
     QVector<CDrawSettings> m_arDrawSettingsPhysValShapes;
+protected: // instance members (method tracing)
+    /*!< Counters to block debug trace outputs for internal position and state infos. */
+    int m_iTraceBlockedCounter;
+    int m_iTraceInternalStatesBlockedCounter;
+    int m_iTraceItemsAtScenePosBlockedCounter;
+    int m_iTraceAllItemsBlockedCounter;
+protected: // instance members (method tracing)
     /*!< Objects to control method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions;

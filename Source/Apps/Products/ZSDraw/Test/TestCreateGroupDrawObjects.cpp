@@ -299,30 +299,36 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     // Triangle
     //---------
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE == 1
     ZS::Test::CTestStepGroup* pGrpPolygonsTriangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameTriangle,
         /* pTSGrpParent */ pGrpPolygons );
     createTestGroupDrawStandardShapesPolygonTriangle(pGrpPolygonsTriangle);
     createTestGroupDrawStandardShapesPolygonTriangleModifications(pGrpPolygonsTriangle);
+#endif
 
     // Star
     //-----
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_STAR == 1
     ZS::Test::CTestStepGroup* pGrpPolygonsStar = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameStar,
         /* pTSGrpParent */ pGrpPolygons );
     createTestGroupDrawStandardShapesPolygonStar(pGrpPolygonsStar);
+#endif
 
     // OpenArrow
     //----------
 
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW == 1
     ZS::Test::CTestStepGroup* pGrpPolygonsOpenArrow = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameOpenArrow,
         /* pTSGrpParent */ pGrpPolygons );
     createTestGroupDrawStandardShapesPolygonOpenArrow(pGrpPolygonsOpenArrow);
+#endif
 
     createTestStepSaveLoadFile(pGrpPolygons);
 
@@ -2658,7 +2664,9 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"FactoryGraphObjType", ""}
     });
     // Move mouse into object and select object to edit polygon shape points
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, m_ptPosTriangle.toPoint());
+    // The P1 label is on the position of the polygon.
+    // We need to move a little bit away from this label to select the polygon.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(m_ptPosTriangle.toPoint().x() + 10, m_ptPosTriangle.toPoint().y() + 10));
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
@@ -2719,6 +2727,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     // removeLast
     //-------------
 
+    iResultValuesPrecision = bUnitPixel ? 1 : drawingSize.metricImageCoorsDecimals();
     selPt.m_selPtType = ESelectionPointType::PolygonPoint;
     selPt.m_selPt = ESelectionPoint::PolygonPoint;
     selPt.m_idxPt = m_pPhysValPolygonTriangle->count() - 1;
@@ -2745,7 +2754,9 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"FactoryGraphObjType", ""}
     });
     // Move mouse into object and select object to edit polygon shape points
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, m_ptPosTriangle.toPoint());
+    // The P1 label is on the position of the polygon.
+    // We need to move a little bit away from this label to select the polygon.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(m_ptPosTriangle.toPoint().x() + 10, m_ptPosTriangle.toPoint().y() + 10));
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
@@ -2850,7 +2861,9 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"FactoryGraphObjType", ""}
     });
     // Move mouse into object and select object to edit the bounding rectangle
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, m_ptPosTriangle.toPoint());
+    // The P1 label is on the position of the polygon.
+    // We need to move a little bit away from this label to select the polygon.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(m_ptPosTriangle.toPoint().x() + 10, m_ptPosTriangle.toPoint().y() + 10));
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}

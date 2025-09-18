@@ -3528,18 +3528,14 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 
 //------------------------------------------------------------------------------
 void CGraphObjText::traceThisPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
         return;
     }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        return;
-    }
 
-    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
 
     QString strRuntimeInfo;
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
@@ -3570,19 +3566,15 @@ void CGraphObjText::traceThisPositionInfo(
     strRuntimeInfo += "}";
     i_mthTracer.trace(strRuntimeInfo);
 
-    traceTextItemPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+    traceTextItemPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjText::traceTextItemPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
-        return;
-    }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     QPointF ptPos = m_graphicsTextItem.pos();

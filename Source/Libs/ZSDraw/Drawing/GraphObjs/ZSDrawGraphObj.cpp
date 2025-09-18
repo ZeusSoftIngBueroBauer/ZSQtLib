@@ -8787,14 +8787,10 @@ protected: // overridable auxiliary instance methods (method tracing)
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceConstraintSizes(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0) {
-        return;
-    }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     QString strRuntimeInfo;
@@ -8827,28 +8823,23 @@ void CGraphObj::traceConstraintSizes(
 
 //------------------------------------------------------------------------------
 void CGraphObj::tracePositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0) {
         return;
     }
-    traceConstraintSizes(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
-    traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
-    traceParentGroupPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+    traceConstraintSizes(i_mthTracer, i_mthDir, i_strFilter);
+    traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
+    traceParentGroupPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceThisPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
-        return;
-    }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -8888,14 +8879,10 @@ void CGraphObj::traceThisPositionInfo(
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceParentGroupPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceParentGroupPositionInfoInfoBlockedCounter > 0) {
-        return;
-    }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     QGraphicsItem* pGraphicsItemGroupParent = dynamic_cast<QGraphicsItemGroup*>(m_pGraphObjGroupParent);
@@ -8940,14 +8927,10 @@ void CGraphObj::traceParentGroupPositionInfo(
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceGraphicsItemStates(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceGraphicsItemStatesInfoBlockedCounter > 0) {
-        return;
-    }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
@@ -9006,14 +8989,10 @@ void CGraphObj::traceGraphicsItemStates(
 
 //------------------------------------------------------------------------------
 void CGraphObj::traceGraphObjStates(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceGraphObjStatesInfoBlockedCounter > 0) {
-        return;
-    }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         return;
     }
     QString strRuntimeInfo;

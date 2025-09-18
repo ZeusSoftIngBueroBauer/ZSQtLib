@@ -34,12 +34,14 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMathScaleDivLines.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
@@ -160,6 +162,10 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_pGraphicsItemSelectionArea(nullptr),
     m_arpPhysValShapes(),
     m_arDrawSettingsPhysValShapes(),
+    m_iTraceBlockedCounter(0),
+    m_iTraceInternalStatesBlockedCounter(0),
+    m_iTraceItemsAtScenePosBlockedCounter(0),
+    m_iTraceAllItemsBlockedCounter(0),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjCoordinateConversions(nullptr),
     m_pTrcAdminObjCursor(nullptr),
@@ -3589,8 +3595,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
-        traceAllItems(mthTracer, EMethodDir::Enter, "StackingOrder");
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            traceAllItems(mthTracer, EMethodDir::Enter, "StackingOrder|Pos|BoundingRect|Shape");
+        }
     }
+    CRefCountGuard refCountGuardTraceInternalStates(&m_iTraceInternalStatesBlockedCounter);
+    CRefCountGuard refCountGuardTraceAllItems(&m_iTraceAllItemsBlockedCounter);
 
     bool bEventHandled = false;
 
@@ -3703,11 +3713,31 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // Check if an object has been clicked.
                 // If an object has been clicked, without pressing the shift keyboard modifier,
                 // the newly clicked object should be the only selected object.
+                // If a selection point is pressed, its parent remains selected.
                 if (!i_pEv->modifiers().testFlag(Qt::ShiftModifier)) {
                     QGraphicsItem* pGraphicsItemPressed = itemAt(i_pEv->scenePos(), QTransform());
                     if (pGraphicsItemPressed != nullptr) {
+                        CGraphObj* pGraphObjPressed = dynamic_cast<CGraphObj*>(pGraphicsItemPressed);
+                        if (pGraphObjPressed != nullptr) {
+                            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                                mthTracer.trace("ItemPressed: " + pGraphObjPressed->path());
+                            }
+                            if (pGraphObjPressed->isSelectionPoint()) {
+                                CGraphObjSelectionPoint* pGraphObjSelectionPointPressed = dynamic_cast<CGraphObjSelectionPoint*>(pGraphObjPressed);
+                                if (pGraphObjSelectionPointPressed != nullptr) {
+                                    // "Pressed" is not an optimal name. As in case of a selection point,
+                                    // the linked object should not be deselected but should remain selected.
+                                    // To simplify code, we keep this not suitable name.
+                                    pGraphObjPressed = pGraphObjSelectionPointPressed->linkedObject();
+                                    pGraphicsItemPressed = dynamic_cast<QGraphicsItem*>(pGraphObjPressed);
+                                }
+                            }
+                        }
                         QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
                         if (!arpGraphicsItemsSelected.empty()) {
+                            if (arpGraphicsItemsSelected.contains(pGraphicsItemPressed)) {
+                                arpGraphicsItemsSelected.removeOne(pGraphicsItemPressed);
+                            }
                             unselectGraphicsItems(arpGraphicsItemsSelected);
                         }
                     }
@@ -3758,9 +3788,13 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     }
 
+    refCountGuardTraceInternalStates.decrementAndReleaseCounter();
+    refCountGuardTraceAllItems.decrementAndReleaseCounter();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
-        traceAllItems(mthTracer, EMethodDir::Enter, "StackingOrder");
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            traceAllItems(mthTracer, EMethodDir::Leave, "StackingOrder|Pos|BoundingRect|Shape");
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -3784,7 +3818,12 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            traceAllItems(mthTracer, EMethodDir::Enter, "StackingOrder|Pos|BoundingRect|Shape");
+        }
     }
+    CRefCountGuard refCountGuardTraceInternalStates(&m_iTraceInternalStatesBlockedCounter);
+    CRefCountGuard refCountGuardTraceAllItems(&m_iTraceAllItemsBlockedCounter);
 
     EGraphObjType graphObjFactoryType = EGraphObjTypeUndefined;
     if (m_pObjFactory != nullptr) {
@@ -3922,8 +3961,13 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     }
 
+    refCountGuardTraceInternalStates.decrementAndReleaseCounter();
+    refCountGuardTraceAllItems.decrementAndReleaseCounter();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            traceAllItems(mthTracer, EMethodDir::Leave, "StackingOrder|Pos|BoundingRect|Shape");
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
@@ -3948,6 +3992,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter, "States");
     }
+    CRefCountGuard refCountGuardTraceInternalStates(&m_iTraceInternalStatesBlockedCounter);
 
     bool bEventHandled = false;
 
@@ -4002,6 +4047,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene_mouseDoubleClickEvent(i_pEv);
     }
 
+    refCountGuardTraceInternalStates.decrementAndReleaseCounter();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
@@ -5707,10 +5753,13 @@ public: // auxiliary instance methods (method tracing)
 void CDrawingScene::traceInternalStates(
     CMethodTracer& i_mthTracer,
     EMethodDir i_mthDir,
-    const QString& i_strWhat)
+    const QString& i_strFilter)
 //------------------------------------------------------------------------------
 {
-    if (i_strWhat.isEmpty() || i_strWhat.contains("States", Qt::CaseInsensitive)) {
+    if (m_iTraceBlockedCounter > 0 || m_iTraceInternalStatesBlockedCounter > 0) {
+        return;
+    }
+    if (i_strFilter.isEmpty() || i_strFilter.contains("States", Qt::CaseInsensitive)) {
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -5738,7 +5787,7 @@ void CDrawingScene::traceInternalStates(
         }
         i_mthTracer.trace(strRuntimeInfo);
     }
-    if (i_strWhat.isEmpty() || i_strWhat.contains("DrawingSize", Qt::CaseInsensitive)) {
+    if (i_strFilter.isEmpty() || i_strFilter.contains("DrawingSize", Qt::CaseInsensitive)) {
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -5755,7 +5804,7 @@ void CDrawingScene::traceInternalStates(
     //        ", Y {" + m_divLinesMetricsY.toString() + "}}";
     //    i_mthTracer.trace(strRuntimeInfo);
     //}
-    if (i_strWhat.isEmpty() || i_strWhat.contains("GridSettings", Qt::CaseInsensitive)) {
+    if (i_strFilter.isEmpty() || i_strFilter.contains("GridSettings", Qt::CaseInsensitive)) {
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -5763,7 +5812,7 @@ void CDrawingScene::traceInternalStates(
         strRuntimeInfo += "GridSettings {" + m_gridSettings.toString() + "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
-    if (i_strWhat.isEmpty() || i_strWhat.contains("DrawSettings", Qt::CaseInsensitive)) {
+    if (i_strFilter.isEmpty() || i_strFilter.contains("DrawSettings", Qt::CaseInsensitive)) {
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -5778,9 +5827,12 @@ void CDrawingScene::traceItemsAtScenePos(
     ZS::System::CMethodTracer& i_mthTracer,
     ZS::System::EMethodDir i_mthDir,
     const QPointF& i_ptScenePos,
-    const QString& i_strWhat)
+    const QString& i_strFilter)
 //------------------------------------------------------------------------------
 {
+    if (m_iTraceBlockedCounter > 0 || m_iTraceItemsAtScenePosBlockedCounter > 0) {
+        return;
+    }
     QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
     QString strRuntimeInfo;
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
@@ -5788,17 +5840,20 @@ void CDrawingScene::traceItemsAtScenePos(
     else strRuntimeInfo = "   ";
     strRuntimeInfo += "QGraphicsScene::itemsAtScenePos: " + qPoint2Str(i_ptScenePos);
     i_mthTracer.trace(strRuntimeInfo);
-    traceItems(i_mthTracer, i_mthDir, arpGraphicsItems, i_strWhat);
+    traceItems(i_mthTracer, i_mthDir, arpGraphicsItems, i_strFilter);
 }
 
 //------------------------------------------------------------------------------
 void CDrawingScene::traceAllItems(
     ZS::System::CMethodTracer& i_mthTracer,
     ZS::System::EMethodDir i_mthDir,
-    const QString& i_strWhat)
+    const QString& i_strFilter)
 //------------------------------------------------------------------------------
 {
-    traceItems(i_mthTracer, i_mthDir, items(), i_strWhat);
+    if (m_iTraceBlockedCounter > 0 || m_iTraceAllItemsBlockedCounter > 0) {
+        return;
+    }
+    traceItems(i_mthTracer, i_mthDir, items(), i_strFilter);
 }
 
 //------------------------------------------------------------------------------
@@ -5806,7 +5861,7 @@ void CDrawingScene::traceItems(
     ZS::System::CMethodTracer& i_mthTracer,
     ZS::System::EMethodDir i_mthDir,
     QList<QGraphicsItem*> arpGraphicsItems,
-    const QString& i_strWhat)
+    const QString& i_strFilter)
 //------------------------------------------------------------------------------
 {
     QString strRuntimeInfo;
@@ -5823,9 +5878,21 @@ void CDrawingScene::traceItems(
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- . ";
                 else strRuntimeInfo = "   . ";
                 strRuntimeInfo += pGraphObj->typeAsString() + " " + pGraphObj->path() + " {";
-                if (i_strWhat.isEmpty() || i_strWhat.contains("StackingOrder")) {
+                if (i_strFilter.isEmpty() || i_strFilter.contains("StackingOrder")) {
                     if (!strRuntimeInfo.endsWith("{")) strRuntimeInfo += ", ";
                     strRuntimeInfo += "ZVal: " + QString::number(pGraphicsItem->zValue());
+                }
+                if (i_strFilter.isEmpty() || i_strFilter.contains("Pos")) {
+                    if (!strRuntimeInfo.endsWith("{")) strRuntimeInfo += ", ";
+                    strRuntimeInfo += "Pos {" + qPoint2Str(pGraphicsItem->scenePos()) + "}";
+                }
+                if (i_strFilter.isEmpty() || i_strFilter.contains("BoundingRect")) {
+                    if (!strRuntimeInfo.endsWith("{")) strRuntimeInfo += ", ";
+                    strRuntimeInfo += "BoundingRect {" + qRect2Str(pGraphicsItem->boundingRect()) + "}";
+                }
+                if (i_strFilter.isEmpty() || i_strFilter.contains("Shape")) {
+                    if (!strRuntimeInfo.endsWith("{")) strRuntimeInfo += ", ";
+                    strRuntimeInfo += "Shape {" + qPainterPath2Str(pGraphicsItem, pGraphicsItem->shape()) + "}";
                 }
                 strRuntimeInfo += "}";
                 i_mthTracer.trace(strRuntimeInfo);

@@ -164,8 +164,7 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+        const QString& i_strFilter = "") const override;
 protected: // auxiliary instance methods (method tracing)
     void traceConnectionPoints(
         ZS::System::CMethodTracer& i_mthTracer,

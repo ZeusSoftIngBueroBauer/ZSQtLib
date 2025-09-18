@@ -797,33 +797,27 @@ public: // overridable auxiliary instance methods (method tracing)
     virtual void traceConstraintSizes(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+        const QString& i_strFilter = "") const;
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+        const QString& i_strFilter = "") const;
     virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+        const QString& i_strFilter = "") const;
     virtual void traceParentGroupPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+        const QString& i_strFilter = "") const;
     virtual void traceGraphicsItemStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+        const QString& i_strFilter = "") const;
     virtual void traceGraphObjStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        const QString& i_strFilter = "",
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+        const QString& i_strFilter = "") const;
     virtual void traceDrawSettings(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined) const;
@@ -1029,7 +1023,7 @@ protected: // instance members
          must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
          Same applies if the parent resizes itself to its content. */
     int m_iIgnoreParentGeometryChange;
-protected: // instance members
+protected: // instance members (method tracing)
     /*!< Counters to block debug trace outputs for internal position and state infos. */
     int m_iTraceBlockedCounter;
     int m_iTracePositionInfoBlockedCounter;

@@ -115,6 +115,7 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
+    CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
 public: // overridables

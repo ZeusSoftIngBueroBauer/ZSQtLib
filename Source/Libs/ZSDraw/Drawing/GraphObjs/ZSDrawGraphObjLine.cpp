@@ -2885,18 +2885,14 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::traceThisPositionInfo(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir,
-    const QString& i_strFilter, ELogDetailLevel i_detailLevel) const
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
         return;
     }
-    if (!i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        return;
-    }
 
-    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter, i_detailLevel);
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
 
     QLineF lineF = line();
     QString strRuntimeInfo;

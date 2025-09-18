@@ -328,6 +328,20 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+CGraphObj* CGraphObjLabel::linkedObject() const
+//------------------------------------------------------------------------------
+{
+    CGraphObj* pGraphObjLinked = nullptr;
+    if (m_labelDscr.m_selPt1.m_pGraphObj != nullptr) {
+        pGraphObjLinked = m_labelDscr.m_selPt1.m_pGraphObj;
+    }
+    else if (m_labelDscr.m_selPt2.m_pGraphObj != nullptr) {
+        pGraphObjLinked = m_labelDscr.m_selPt2.m_pGraphObj;
+    }
+    return pGraphObjLinked;
+}
+
+//------------------------------------------------------------------------------
 QString CGraphObjLabel::pathNameOfLinkedObject() const
 //------------------------------------------------------------------------------
 {
