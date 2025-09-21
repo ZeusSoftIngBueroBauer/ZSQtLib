@@ -536,9 +536,9 @@ QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv 
 //------------------------------------------------------------------------------
 {
     return qGraphicsSceneEvent2Str(i_pEv) +
-        ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
-        ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
-        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
+        ", Pos {{" + qPoint2Str(i_pEv->pos()) + "}, " + ", Last {" + qPoint2Str(i_pEv->lastPos()) + "}}" +
+        ", ScenePos {{" + qPoint2Str(i_pEv->scenePos()) + "}, Last {" + qPoint2Str(i_pEv->lastScenePos()) + "}}" +
+        ", ScreenPos {{" + qPoint2Str(i_pEv->screenPos()) + "}, Last {" + qPoint2Str(i_pEv->lastScreenPos()) + "}}" +
         ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
 }
 
@@ -633,6 +633,8 @@ exported methods implementation
 
         Note:  - Vertical lines are lines on the X-axis rotated by 90°
                - Polygons are closed polylines
+               - See also EArrowHeadBaseLineType in DrawCommon on how
+                 the points Pt .. Pt4 are counted.
 
          NoLine           Normal         Indented
         (Polyline)       (Polygon)      (Polygon)

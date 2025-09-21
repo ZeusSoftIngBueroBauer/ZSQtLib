@@ -5105,8 +5105,10 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
             QPoint ptMousePos = dataRow["MousePos"].toPoint();
             QPoint ptDrawingViewMousePos = m_pDrawingView->mapFromScene(ptMousePos);
             QPoint ptMousePosGlobal = m_pDrawingView->mapToGlobal(ptDrawingViewMousePos);
-            ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
-            ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+            //ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
+            //ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
+            ptMousePosGlobal.setX(ptMousePosGlobal.x());
+            ptMousePosGlobal.setY(ptMousePosGlobal.y());
             QMouseEvent* pMouseEv = new QMouseEvent(
                 /* type      */ QEvent::MouseButtonPress,
                 /* pos       */ ptDrawingViewMousePos,

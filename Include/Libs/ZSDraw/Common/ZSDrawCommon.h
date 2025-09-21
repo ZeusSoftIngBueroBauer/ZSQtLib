@@ -769,14 +769,24 @@ namespace Draw {
 /*! Base line type for the arrow head.
 
          NoLine           Normal         Indented
+
+           Pt2             Pt2             Pt2
             ^               ^               ^
            /|\             / \             / \
-          / | \           /   \           /   \
+          / | \           /   \           /Pt4\
          /  |  \         /     \         /  ^  \
         /   |   \       /_______\       /__/ \__\
+      Pt1   |   Pt3   Pt1   |   Pt3   Pt1   |   Pt3
             |               |               |
             |               |               |
             |               |               |
+      Pt1   |   Pt3   Pt1___+___Pt3   Pt1_  |  _Pt3
+        \   |   /       \       /       \  \ /  /
+         \  |  /         \     /         \  +  /
+          \ | /           \   /           \Pt4/
+           \|/             \ /             \ /
+            +               +               +
+           Pt2             Pt2             Pt2
 */
 enum class EArrowHeadBaseLineType
 //==============================================================================

@@ -3620,17 +3620,6 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     if (m_mode == EMode::Edit) {
-        // If currently an object is "under construction" ...
-        //if (m_pGraphObjUnderConstruction != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
-        //    // ... forward mouse event to object "under construction".
-        //    if (m_pGraphObjUnderConstruction != nullptr) {
-        //        forwardMouseEvent(m_pGraphObjUnderConstruction, i_pEv);
-        //    }
-        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
-        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-        //    }
-        //    bEventHandled = i_pEv->isAccepted();
-        //}
         // If no object is "under construction" ...
         if (m_pGraphObjUnderConstruction == nullptr) {
             // If an object got to be created ...
@@ -3837,62 +3826,8 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     emit_mousePosChanged(ptScenePosMouseEvent);
 
     if (m_mode == EMode::Edit) {
-        // If currently an object is "under construction" ...
-        //if (m_pGraphObjUnderConstruction != nullptr || m_pGraphicsItemAddingShapePoints != nullptr)
-        //{
-        //    // ... forward mouse event to object "under construction".
-        //    if (m_pGraphObjUnderConstruction != nullptr) {
-        //        forwardMouseEvent(m_pGraphObjUnderConstruction, i_pEv);
-        //    }
-        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
-        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-        //    }
-        //}
-        // If an object is "under construction" ...
-        if (m_pGraphObjUnderConstruction != nullptr) {
-            // If an obect is under construction, the mouse grabber item is a selection point.
-            // If mouse release events don't finish the object creation, a selection point must
-            // still be a mouse grabber after the mouse release event has been dispatched.
-            // After dispatching the mouse release event to the mouse grabber item, the
-            // graphics scene will reset the mouse grabber. So it is useless trying to
-            // keep the mouse grabber within the item's mouseReleaseEvent method.
-            // We cannot simply store the current mouse grabber and restore the grabber after
-            // the event has been dispatched as the selection point, which should grab the mouse
-            // events, may change and the current mouse grabber item may even be destroyed while
-            // dispatching the mouse event.
-            // Which selection point should be the the mouse grabber after handling the mouse event,
-            // knows the object under construction. If a selection point should become (or remain)
-            // the mouse grabber item, the object under construction needs to set a "mouseGrabber"
-            // flag by calling "setMouseGrabberItem". After the mouse event has been dispatched,
-            // the graphics scene checks whether a mouse grabber item has been explicitly set,
-            // uses this as the mouse grabber and invalidates the "mouseGrabberItem" flag again.
-
-            // Dispatch mouse event to objects "under cursor".
-            QGraphicsScene_mouseReleaseEvent(i_pEv);
-            bEventHandled = true;
-            if (m_pGraphObjMouseGrabber != nullptr) {
-                dynamic_cast<QGraphicsItem*>(m_pGraphObjMouseGrabber)->grabMouse();
-                m_pGraphObjMouseGrabber = nullptr;
-            }
-
-            // If an object is under construction the mouse grabber item is a selection point
-            // and mouse release events should not invalidate the mouse grabber item but
-            // the selection point should be kept as the mouse grabber item.
-            //if (m_pGraphObjUnderConstruction->mouseReleaseEventFinishesObjectCreation()) {
-            //    m_pGraphObjUnderConstruction->setEditMode(EEditMode::None);
-            //    dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
-            //    QObject::disconnect(
-            //        m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
-            //        this, &CDrawingScene::onGraphObjEditModeChanged );
-            //    m_pGraphObjUnderConstruction = nullptr;
-            //    setCurrentDrawingTool(nullptr);
-            //}
-            //else if (pGraphicsItemMouseGrabber != nullptr && mouseGrabberItem() == nullptr) {
-            //    pGraphicsItemMouseGrabber->grabMouse();
-            //}
-        }
         // If no object is "under construction" ...
-        else /*if (m_pGraphObjUnderConstruction == nullptr)*/ {
+        if (m_pGraphObjUnderConstruction == nullptr) {
             if (m_pGraphicsItemSelectionArea != nullptr) {
                 QRectF rctSelectionArea(
                     /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
@@ -3949,6 +3884,49 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
                     m_pGraphicsItemSelectionArea = nullptr;
                 }
             }
+        }
+        // If an object is "under construction" ...
+        else /*if (m_pGraphObjUnderConstruction != nullptr)*/ {
+            // If an obect is under construction, the mouse grabber item is a selection point.
+            // If mouse release events don't finish the object creation, a selection point must
+            // still be a mouse grabber after the mouse release event has been dispatched.
+            // After dispatching the mouse release event to the mouse grabber item, the
+            // graphics scene will reset the mouse grabber. So it is useless trying to
+            // keep the mouse grabber within the item's mouseReleaseEvent method.
+            // We cannot simply store the current mouse grabber and restore the grabber after
+            // the event has been dispatched as the selection point, which should grab the mouse
+            // events, may change and the current mouse grabber item may even be destroyed while
+            // dispatching the mouse event.
+            // Which selection point should be the the mouse grabber after handling the mouse event,
+            // knows the object under construction. If a selection point should become (or remain)
+            // the mouse grabber item, the object under construction needs to set a "mouseGrabber"
+            // flag by calling "setMouseGrabberItem". After the mouse event has been dispatched,
+            // the graphics scene checks whether a mouse grabber item has been explicitly set,
+            // uses this as the mouse grabber and invalidates the "mouseGrabberItem" flag again.
+
+            // Dispatch mouse event to objects "under cursor".
+            QGraphicsScene_mouseReleaseEvent(i_pEv);
+            bEventHandled = true;
+            if (m_pGraphObjMouseGrabber != nullptr) {
+                dynamic_cast<QGraphicsItem*>(m_pGraphObjMouseGrabber)->grabMouse();
+                m_pGraphObjMouseGrabber = nullptr;
+            }
+
+            // If an object is under construction the mouse grabber item is a selection point
+            // and mouse release events should not invalidate the mouse grabber item but
+            // the selection point should be kept as the mouse grabber item.
+            //if (m_pGraphObjUnderConstruction->mouseReleaseEventFinishesObjectCreation()) {
+            //    m_pGraphObjUnderConstruction->setEditMode(EEditMode::None);
+            //    dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction)->setSelected(true);
+            //    QObject::disconnect(
+            //        m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
+            //        this, &CDrawingScene::onGraphObjEditModeChanged );
+            //    m_pGraphObjUnderConstruction = nullptr;
+            //    setCurrentDrawingTool(nullptr);
+            //}
+            //else if (pGraphicsItemMouseGrabber != nullptr && mouseGrabberItem() == nullptr) {
+            //    pGraphicsItemMouseGrabber->grabMouse();
+            //}
         }
     }
 
@@ -5871,7 +5849,16 @@ void CDrawingScene::traceItems(
     strRuntimeInfo += "Items[" + QString::number(arpGraphicsItems.size()) + "]";
     i_mthTracer.trace(strRuntimeInfo);
     if (!arpGraphicsItems.isEmpty()) {
+        // Sort by ZVal-Path
+        QMultiMap<QString, QGraphicsItem*> mapGraphicsItemsSortedByZVal;
         for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if (pGraphObj != nullptr) {
+                QString strKey = QString::number(pGraphicsItem->zValue()) + "-" + pGraphObj->path();
+                mapGraphicsItemsSortedByZVal.insert(strKey, pGraphicsItem);
+            }
+        }
+        for (QGraphicsItem* pGraphicsItem : mapGraphicsItemsSortedByZVal) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if (pGraphObj != nullptr) {
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ . ";
