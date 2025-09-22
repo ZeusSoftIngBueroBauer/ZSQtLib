@@ -1722,18 +1722,15 @@ QRectF CGraphObjConnectionPoint::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = getBoundingRect();
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect){
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            rctBounding |= plgSelPt.boundingRect();
-        }
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
     }
-    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
-        // Half pen width of the selection rectangle would be enough.
-        // But the whole pen width is also not a bad choice.
-        rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
-    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -1752,6 +1749,7 @@ QPainterPath CGraphObjConnectionPoint::shape() const
         /* strObjName   */ path(),
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
+
     QPainterPath painterPath = QGraphicsEllipseItem::shape();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);

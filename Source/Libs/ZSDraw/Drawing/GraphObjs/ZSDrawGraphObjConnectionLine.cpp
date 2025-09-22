@@ -1387,6 +1387,80 @@ void CGraphObjConnectionLine::showSelectionPoints(TSelectionPointTypes i_selPts)
 }
 
 /*==============================================================================
+protected: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplement the base implementation of CGraphObj as for connection lines
+           for the first and last polygon points no selection points should be created.
+           The first and last polygon points are connection points.
+*/
+void CGraphObjConnectionLine::showSelectionPointsOfPolygon(const QPolygonF& i_plg)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Polygon {" + qPolygon2Str(i_plg) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "showSelectionPointsOfPolygon",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
+        //QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
+        if (m_arpSelPtsPolygon.size() > i_plg.size()) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
+                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+                m_arpSelPtsPolygon[idxSelPt] = nullptr;
+                // The dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene.
+                //m_pDrawingScene->removeGraphObj(pGraphObjSelPt);
+                delete pGraphObjSelPt;
+                pGraphObjSelPt = nullptr;
+            }
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
+                m_arpSelPtsPolygon.removeAt(idxSelPt);
+            }
+        }
+        else if (m_arpSelPtsPolygon.size() < i_plg.size()) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size(); idxSelPt < i_plg.size(); ++idxSelPt) {
+                m_arpSelPtsPolygon.append(nullptr);
+            }
+        }
+        // For connection lines the first and last polygon point are connection points and
+        // for those no selection points should be created.
+        // But if the connection line is under construction, there is no connection point at
+        // the end of the connection line. In this case we need the selection points (at least
+        // the selection point at the end of the last polygon point) to connect the line with
+        // the connction points.
+        int idxSelPtFirst = 1;
+        int idxSelPtLast = i_plg.size()-2;
+        if (m_editMode == EEditMode::CreatingByMouseEvents) {
+            idxSelPtFirst = 0;
+            idxSelPtLast = i_plg.size()-1;
+        }
+        for (int idxSelPt = idxSelPtFirst; idxSelPt <= idxSelPtLast; idxSelPt++) {
+            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+            if (pGraphObjSelPt == nullptr) {
+                pGraphObjSelPt = new CGraphObjSelectionPoint(
+                    m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
+                m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
+                m_pDrawingScene->addItem(pGraphObjSelPt);
+                QObject::connect(
+                    pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                    this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
+                QObject::connect(
+                    pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                    this, &CGraphObjConnectionLine::onSelectionPointGeometryOnSceneChanged);
+            }
+        }
+    }
+} // showSelectionPointsOfPolygon
+
+/*==============================================================================
 public: // overridables of base class CGraphObj (text labels)
 ==============================================================================*/
 
@@ -1541,17 +1615,21 @@ QRectF CGraphObjConnectionLine::boundingRect() const
     if (!polygon.isEmpty()) {
         rctBounding = polygon.boundingRect();
     }
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
     if (!m_plgLineStartArrowHead.isEmpty()) {
         rctBounding |= m_plgLineStartArrowHead.boundingRect();
     }
     if (!m_plgLineEndArrowHead.isEmpty()) {
         rctBounding |= m_plgLineEndArrowHead.boundingRect();
     }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(m_drawSettings.penWidth())/2.0,
-        rctBounding.top() - static_cast<double>(m_drawSettings.penWidth())/2.0,
-        rctBounding.width() + static_cast<double>(m_drawSettings.penWidth()),
-        rctBounding.height() + static_cast<double>(m_drawSettings.penWidth()));
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -1894,10 +1972,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     bool bCallBaseMouseEventHandler = true;
     if (i_pEv->button() == Qt::LeftButton) {
         if (m_editMode == EEditMode::None) {
-            if (i_pEv->modifiers() == Qt::NoModifier) {
-                setEditMode(EEditMode::ModifyingBoundingRect);
-            }
-            else if (i_pEv->modifiers() & Qt::ControlModifier) {
+            if (i_pEv->modifiers() == Qt::NoModifier || i_pEv->modifiers() & Qt::ControlModifier) {
                 setEditMode(EEditMode::ModifyingPolygonPoints);
             }
         }
@@ -1915,12 +1990,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             //    append(physValPointLast);
             //}
         }
-        else if (m_editMode == EEditMode::ModifyingBoundingRect) {
-            if (i_pEv->modifiers() & Qt::ControlModifier) {
-                setEditMode(EEditMode::ModifyingPolygonPoints);
-            }
-        }
-        else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+        if (m_editMode == EEditMode::ModifyingPolygonPoints) {
             // Check if any line segment has been hit.
             // As this method may have been called by the selection point, "pos" would return
             // the local coordinate of the selection point. We need to use the scene pos.
@@ -1934,16 +2004,11 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
             }
             if (hitInfo.isNull()) {
-                if (i_pEv->modifiers() == Qt::NoModifier) {
-                    setEditMode(EEditMode::ModifyingBoundingRect);
-                }
-                else if (i_pEv->modifiers() & Qt::ControlModifier) {
-                    bCallBaseMouseEventHandler = false;
-                }
+                bCallBaseMouseEventHandler = false;
             }
             // If a line segment has been hit (but not at polygon shape points as those are selection points) ..
             else if (hitInfo.isLineSegmentHit()) {
-                if (i_pEv->modifiers() & Qt::ControlModifier) {
+                if (i_pEv->modifiers() == Qt::NoModifier || i_pEv->modifiers() & Qt::ControlModifier) {
                     // .. create a new point there.
                     insert(hitInfo.m_idxLineSegment+1, CPhysValPoint(*m_pDrawingScene, mapToParent(hitInfo.m_ptHit), Units.Length.px));
                     // The newly added selection point will become the new grabber

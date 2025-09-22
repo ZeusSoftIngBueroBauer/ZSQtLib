@@ -1587,24 +1587,21 @@ QRectF CGraphObjLine::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsLineItem::boundingRect();
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsPolygon) {
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            rctBounding |= plgSelPt.boundingRect();
-        }
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
     }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
     if (!m_plgP1ArrowHead.isEmpty()) {
         rctBounding |= m_plgP1ArrowHead.boundingRect();
     }
     if (!m_plgP2ArrowHead.isEmpty()) {
         rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
-    rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.penWidth()/2,
-        rctBounding.top() - m_drawSettings.penWidth()/2,
-        rctBounding.width() + m_drawSettings.penWidth(),
-        rctBounding.height() + m_drawSettings.penWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }

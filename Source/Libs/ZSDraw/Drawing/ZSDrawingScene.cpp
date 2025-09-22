@@ -1978,8 +1978,8 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = "Item: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree()) +
-                       ", Items[" + QString::number(i_arpGraphicsItems.size()) + "]";
+        strMthInArgs = "Bring Item: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree()) +
+                       ", InFrontOf [" + QString::number(i_arpGraphicsItems.size()) + "]";
         if (i_arpGraphicsItems.size() > 0) {
             strMthInArgs += "(";
             for (const QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {

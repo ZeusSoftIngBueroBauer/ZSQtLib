@@ -2077,38 +2077,26 @@ QRectF CGraphObjPolygon::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsPolygonItem::boundingRect();
-    //mthTracer.trace("QGraphicsPolygonItem::boundingRect(): " + qRect2Str(rctBounding));
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsPolygon) {
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            QRectF rctBoundingSelPt = plgSelPt.boundingRect();
-            //mthTracer.trace(pGraphObjSelPt->path() + ".boundingRect(): " + qRect2Str(rctBoundingSelPt));
-            rctBounding |= rctBoundingSelPt;
-            //mthTracer.trace("rctBounding: " + qRect2Str(rctBounding));
-        }
+    // The QGraphicsPolygonItem::boundingRect call above returns strange, odd values.
+    QPolygonF polygon = this->polygon();
+    if (!polygon.isEmpty()) {
+        rctBounding = polygon.boundingRect();
     }
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect) {
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            QRectF rctBoundingSelPt = plgSelPt.boundingRect();
-            //mthTracer.trace(pGraphObjSelPt->path() + ".boundingRect(): " + qRect2Str(rctBoundingSelPt));
-            rctBounding |= rctBoundingSelPt;
-            //mthTracer.trace("rctBounding: " + qRect2Str(rctBounding));
-        }
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
     }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
     if (!m_plgLineStartArrowHead.isEmpty()) {
         rctBounding |= m_plgLineStartArrowHead.boundingRect();
     }
     if (!m_plgLineEndArrowHead.isEmpty()) {
         rctBounding |= m_plgLineEndArrowHead.boundingRect();
     }
-    rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.penWidth()/2,
-        rctBounding.top() - m_drawSettings.penWidth()/2,
-        rctBounding.width() + m_drawSettings.penWidth(),
-        rctBounding.height() + m_drawSettings.penWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -2128,27 +2116,28 @@ QPainterPath CGraphObjPolygon::shape() const
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
 
-    // QGraphicsPolygonItem::shape() throws an exception if any segment has a very small
-    // length (< 0.5 pixels). So we do this on our own ...
-    QPainterPath painterPath;
-    QPolygonF polygon = this->polygon();
-    if (polygon.size() > 0) {
-        painterPath.moveTo(polygon.at(0));
-        for (int idxPt = 0; idxPt < polygon.size()-1; ++idxPt) {
-            const QPointF& pt1 = polygon.at(idxPt);
-            const QPointF& pt2 = polygon.at(idxPt+1);
-            if (QLineF(pt1, pt2).length() > 1.0) {
-                painterPath.lineTo(pt2);
-            }
-        }
-        if (m_type == EGraphObjTypePolygon) {
-            const QPointF& pt1 = polygon.last();
-            const QPointF& pt2 = polygon.first();
-            if (QLineF(pt1, pt2).length() > 1.0) {
-                painterPath.lineTo(pt2);
-            }
-        }
-    }
+    QPainterPath painterPath = QGraphicsPolygonItem::shape();
+    //// QGraphicsPolygonItem::shape() throws an exception if any segment has a very small
+    //// length (< 0.5 pixels). So we do this on our own ...
+    //QPainterPath painterPath;
+    //QPolygonF polygon = this->polygon();
+    //if (polygon.size() > 0) {
+    //    painterPath.moveTo(polygon.at(0));
+    //    for (int idxPt = 0; idxPt < polygon.size()-1; ++idxPt) {
+    //        const QPointF& pt1 = polygon.at(idxPt);
+    //        const QPointF& pt2 = polygon.at(idxPt+1);
+    //        if (QLineF(pt1, pt2).length() > 1.0) {
+    //            painterPath.lineTo(pt2);
+    //        }
+    //    }
+    //    if (m_type == EGraphObjTypePolygon) {
+    //        const QPointF& pt1 = polygon.last();
+    //        const QPointF& pt2 = polygon.first();
+    //        if (QLineF(pt1, pt2).length() > 1.0) {
+    //            painterPath.lineTo(pt2);
+    //        }
+    //    }
+    //}
     if (!m_plgLineStartArrowHead.empty()) {
         QPolygonF plgArrowHead = m_plgLineStartArrowHead;
         // Add a closed polygon if a base line should be drawn.
@@ -2282,40 +2271,6 @@ void CGraphObjPolygon::paint(
                     i_pPainter->setBrush(Qt::black);
                 }
                 i_pPainter->drawPolygon(m_plgLineEndArrowHead);
-            }
-        }
-    }
-
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
-        if (m_editMode == EEditMode::ModifyingBoundingRect) {
-            if (!polygon.isEmpty()) {
-                QRectF rctBounding = getBoundingRect();
-                pn.setColor(Qt::blue);
-                pn.setStyle(Qt::DotLine);
-                pn.setWidth(1);
-                i_pPainter->setPen(pn);
-                i_pPainter->setBrush(Qt::NoBrush);
-                i_pPainter->drawRect(rctBounding);
-                if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
-                 && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-                    QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-                    QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-                    QPointF ptRctM = mapFromScene(ptRct);
-                    QPointF ptRotM = mapFromScene(ptRot);
-                    i_pPainter->drawLine(ptRctM, ptRotM);
-                }
-                if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
-                 && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-                    QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-                    QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-                    QPointF ptRctM = mapFromScene(ptRct);
-                    QPointF ptRotM = mapFromScene(ptRot);
-                    i_pPainter->drawLine( ptRctM, ptRotM );
-                }
             }
         }
     }

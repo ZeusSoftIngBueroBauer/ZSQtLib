@@ -448,11 +448,31 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsEllipseItem::boundingRect();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
     rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.penWidth()/2,
-        rctBounding.top() - m_drawSettings.penWidth()/2,
-        rctBounding.width() + m_drawSettings.penWidth(),
-        rctBounding.height() + m_drawSettings.penWidth() );
+        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
+
+    if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+        rctBounding |= rctBoundingAnchorLine;
+    }
+    else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+        rctBounding |= rctBoundingAnchorLine;
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -471,7 +491,26 @@ QPainterPath CGraphObjSelectionPoint::shape() const
         /* strObjName   */ path(),
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
+
     QPainterPath painterPath = QGraphicsEllipseItem::shape();
+    if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QPolygonF polygon({pos(), ptSelPosParent});
+        painterPath.closeSubpath();
+        painterPath.moveTo(0.0, 0.0);
+        painterPath.addPolygon(polygon);
+    }
+    else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QPolygonF polygon({pos(), ptSelPosParent});
+        painterPath.closeSubpath();
+        painterPath.moveTo(0.0, 0.0);
+        painterPath.addPolygon(polygon);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
@@ -516,6 +555,25 @@ void CGraphObjSelectionPoint::paint(
     i_pPainter->setBrush(brsh);
 
     QGraphicsEllipseItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
+
+    if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+        pn.setStyle(Qt::DotLine);
+        pn.setWidth(1);
+        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QRectF rct = rect();
+        i_pPainter->drawLine(QPoint(rct.center().x(), rct.top()), ptSelPosParent);
+    }
+    else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+        pn.setStyle(Qt::DotLine);
+        pn.setWidth(1);
+        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QRectF rct = rect();
+        i_pPainter->drawLine(QPoint(rct.center().x(), rct.bottom()), ptSelPosParent);
+    }
 
     i_pPainter->restore();
 }

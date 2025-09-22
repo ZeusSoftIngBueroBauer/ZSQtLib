@@ -2292,7 +2292,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"FactoryGraphObjType", ""}
     });
     // Move from current position to empty area
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(260, 300));
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(260, 270));
     pTestStep->addDataRow({ // Deselect object by clicking on empty area
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}
@@ -2301,8 +2301,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos}
     });
-    // Move mouse into object
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(260, 300), m_ptPosTriangle.toPoint());
+    // Move mouse into object (but not into the center as there is a label)
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(m_ptPosTriangle.toPoint().x(), m_ptPosTriangle.toPoint().y() + 10));
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}
@@ -3176,9 +3176,10 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint1->toQPointF()},
         {m_pPhysValConnectionPoint2->toQPointF()}
     });
-    // We need a start position, from which we move to the first connection point,
-    // and the position of the two connection points. If more than 3 points are defined,
-    // the points from index 2 to the penultimate index are additional polygon points.
+    // We need a start position, from which we move to the first connection point.
+    // The we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
     QPolygon points({
         QPoint(240, 250),
         m_ptPosConnectionPoint1.toPoint(),
@@ -3263,9 +3264,10 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint3->toQPointF()},
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
-    // We need a start position, from which we move to the first connection point,
-    // and the position of the two connection points. If more than 3 points are defined,
-    // the points from index 2 to the penultimate index are additional polygon points.
+    // We need a start position, from which we move to the first connection point.
+    // The we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
     points = QPolygon({
         QPoint(640, 250),
         m_ptPosConnectionPoint3.toPoint(),
@@ -3350,9 +3352,10 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint1->toQPointF()},
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
-    // We need a start position, from which we move to the first connection point,
-    // and the position of the two connection points. If more than 3 points are defined,
-    // the points from index 2 to the penultimate index are additional polygon points.
+    // We need a start position, from which we move to the first connection point.
+    // The we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
     points = QPolygon({
         QPoint(240, 250),
         m_ptPosConnectionPoint1.toPoint(),
@@ -3437,9 +3440,10 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint3->toQPointF()},
         {m_pPhysValConnectionPoint2->toQPointF()}
     });
-    // We need a start position, from which we move to the first connection point,
-    // and the position of the two connection points. If more than 3 points are defined,
-    // the points from index 2 to the penultimate index are additional polygon points.
+    // We need a start position, from which we move to the first connection point.
+    // The we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
     points = QPolygon({
         QPoint(640, 250),
         m_ptPosConnectionPoint3.toPoint(),
@@ -3978,35 +3982,18 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"FactoryGraphObjType", ""}
     });
     // Move from current position to empty area
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, bYAxisTopDown ? 250 : fYAxisMaxVal - 250));
-    pTestStep->addDataRow({ // Deselect object by clicking on empty area
-        {"Method", "mousePressEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    pTestStep->addDataRow({
-        {"Method", "mouseReleaseEvent"},
-        {"MousePos", m_ptMousePos}
-    });
+    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, bYAxisTopDown ? 250 : fYAxisMaxVal - 250));
+    //pTestStep->addDataRow({ // Deselect object by clicking on empty area
+    //    {"Method", "mousePressEvent"},
+    //    {"MousePos", m_ptMousePos}
+    //});
+    //pTestStep->addDataRow({
+    //    {"Method", "mouseReleaseEvent"},
+    //    {"MousePos", m_ptMousePos}
+    //});
     // Move mouse to line segment between first and second polygon point and
     // select connection line to edit polygon shape points
     m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(300, bYAxisTopDown ? 250 : fYAxisMaxVal - 250));
-    pTestStep->addDataRow({ // Select object by clicking on it
-        {"Method", "mousePressEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    pTestStep->addDataRow({
-        {"Method", "mouseReleaseEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    pTestStep->addDataRow({ // Select object by clicking on it
-        {"Method", "mousePressEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    pTestStep->addDataRow({
-        {"Method", "mouseReleaseEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    #if 0
     pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
@@ -4019,7 +4006,6 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
-    #endif
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
         { 10.0, -100.0},
         {-10.0,  -50.0},

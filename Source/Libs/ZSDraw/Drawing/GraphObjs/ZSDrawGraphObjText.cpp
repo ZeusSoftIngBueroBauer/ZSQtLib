@@ -2147,14 +2147,7 @@ QRectF CGraphObjText::boundingRect() const
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
-    QRectF rctBounding = getBoundingRect();
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect){
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            rctBounding |= plgSelPt.boundingRect();
-        }
-    }
+    QRectF rctBounding = m_graphicsTextItem.boundingRect();
     if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
         // Half pen width of the selection rectangle would be enough.
         // But the whole pen width is also not a bad choice.
@@ -2179,33 +2172,7 @@ QPainterPath CGraphObjText::shape() const
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
 
-    QPainterPath painterPath;
-    painterPath.addRect(getBoundingRect());
-
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
-        if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
-         && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
-            CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-            CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-            QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-            QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-            QPointF ptRctM = mapFromScene(ptRct);
-            QPointF ptRotM = mapFromScene(ptRot);
-            painterPath.addPolygon(line2Polygon(QLineF(ptRctM, ptRotM)));
-            painterPath.addEllipse(pGraphObjSelPtRot->getBoundingRect());
-        }
-        if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
-         && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
-            CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-            CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-            QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-            QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-            QPointF ptRctM = mapFromScene(ptRct);
-            QPointF ptRotM = mapFromScene(ptRot);
-            painterPath.addPolygon(line2Polygon(QLineF(ptRctM, ptRotM)));
-            painterPath.addEllipse(pGraphObjSelPtRot->getBoundingRect());
-        }
-    }
+    QPainterPath painterPath = m_graphicsTextItem.shape();
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
@@ -2273,32 +2240,6 @@ void CGraphObjText::paint(
     i_pPainter->setBrush(brush);
 
     i_pPainter->drawRect(rctBounding);
-
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
-        pn.setColor(Qt::blue);
-        pn.setStyle(Qt::DotLine);
-        pn.setWidth(1);
-        if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
-         && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
-            CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-            CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-            QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-            QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-            QPointF ptRctM = mapFromScene(ptRct);
-            QPointF ptRotM = mapFromScene(ptRot);
-            i_pPainter->drawLine(ptRctM, ptRotM);
-        }
-        if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
-         && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
-            CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-            CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-            QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-            QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-            QPointF ptRctM = mapFromScene(ptRct);
-            QPointF ptRotM = mapFromScene(ptRot);
-            i_pPainter->drawLine(ptRctM, ptRotM);
-        }
-    }
 
     #if 0
     QRectF rectBoundingTextItem = m_graphicsTextItem.boundingRect();

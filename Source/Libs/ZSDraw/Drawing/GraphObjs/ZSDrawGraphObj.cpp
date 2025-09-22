@@ -4356,13 +4356,14 @@ double CGraphObj::bringToFront()
         /* strAddInfo   */ "" );
 
     double fZValue = 0.0;
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QRectF rctBounding = pGraphicsItem->boundingRect();
-        rctBounding = pGraphicsItem->mapRectToScene(rctBounding);
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        QRectF rctBounding = pGraphicsItemThis->boundingRect();
+        rctBounding = pGraphicsItemThis->mapRectToScene(rctBounding);
         QList<QGraphicsItem*> arpGraphicsItemsIntersected = m_pDrawingScene->items(rctBounding);
-        m_pDrawingScene->bringToFront(pGraphicsItem, arpGraphicsItemsIntersected);
-        fZValue = pGraphicsItem->zValue();
+        arpGraphicsItemsIntersected.removeOne(pGraphicsItemThis);
+        m_pDrawingScene->bringToFront(pGraphicsItemThis, arpGraphicsItemsIntersected);
+        fZValue = pGraphicsItemThis->zValue();
         m_arfZValues[static_cast<int>(ERowVersion::Current)] = fZValue;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -5258,7 +5259,7 @@ void CGraphObj::showSelectionPointsOfPolygon(const QPolygonF& i_plg)
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
-        QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
+        //QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
         if (m_arpSelPtsPolygon.size() > i_plg.size()) {
             for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
