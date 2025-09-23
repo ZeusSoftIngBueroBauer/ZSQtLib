@@ -4318,7 +4318,8 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
         /* strMethod    */ "CGraphObj::getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
 
-    QCursor cursor = Qt::ArrowCursor;
+    //QCursor cursor = Qt::ArrowCursor;
+    QCursor cursor = Qt::ClosedHandCursor;
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
@@ -8948,6 +8949,7 @@ void CGraphObj::traceGraphicsItemStates(
                 ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
                 ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled()) +
                 ", HasCursor: " + bool2Str(pGraphicsItemThis->hasCursor()) +
+                QString(pGraphicsItemThis->hasCursor() ? " (" + qCursorShape2Str(pGraphicsItemThis->cursor().shape()) + ")" : "") +
                 ", HasFocus: " + bool2Str(pGraphicsItemThis->hasFocus()) +
                 ", MouseGrabber: " + QString(pGraphObjMouseGrabber == nullptr ? "null" : pGraphObjMouseGrabber->path()) +
                 ", SelectedItems [" + QString::number(arpGraphicsItemsSelected.size()) + "]";

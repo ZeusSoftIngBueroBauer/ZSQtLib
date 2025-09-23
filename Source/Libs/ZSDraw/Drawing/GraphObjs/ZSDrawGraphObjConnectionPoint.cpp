@@ -1859,9 +1859,10 @@ void CGraphObjConnectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv 
 
     // Ignore hover events if any object should be or is currently being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        if (cursor() != Qt::SizeAllCursor) {
-            QGraphicsItem_setCursor(Qt::SizeAllCursor);
-        }
+        //if (cursor() != Qt::SizeAllCursor) {
+        //    QGraphicsItem_setCursor(Qt::SizeAllCursor);
+        //}
+        QGraphicsItem_setCursor(Qt::WhatsThisCursor);
     }
     // Indicate that connection line can be started or terminated here.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
@@ -1900,9 +1901,10 @@ void CGraphObjConnectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 
     // Ignore hover events if any object should be or is currently being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        if (cursor() != Qt::SizeAllCursor) {
-            QGraphicsItem_setCursor(Qt::SizeAllCursor);
-        }
+        //if (cursor() != Qt::SizeAllCursor) {
+        //    QGraphicsItem_setCursor(Qt::SizeAllCursor);
+        //}
+        QGraphicsItem_setCursor(Qt::WhatsThisCursor);
     }
     // Indicate that connection line can be started or terminated here.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {

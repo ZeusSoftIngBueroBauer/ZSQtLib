@@ -40,7 +40,6 @@ may result in using the software modules.
 #include <QtWidgets/qabstractitemview.h>
 #endif
 
-class QCursor;
 class QFocusEvent;
 class QInputMethodEvent;
 class QMouseEvent;
@@ -61,7 +60,6 @@ public auxiliary methods
 *******************************************************************************/
 
 ZSSYSGUIDLL_API QString qColor2Str(const QColor& i_clr);
-ZSSYSGUIDLL_API QString qCursor2Str(const QCursor& i_cursor);
 
 ZSSYSGUIDLL_API QString qItemDelegateEndEditHint2Str(QAbstractItemDelegate::EndEditHint i_hint);
 ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);

@@ -73,6 +73,7 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     QGraphicsView(i_pDrawingScene, i_pWdgtParent),
     m_pDrawingScene(i_pDrawingScene),
     m_iZoomFactor_perCent(100),
+    m_iTraceInternalStatesBlockedCounter(0),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjCursor(nullptr),
     m_pTrcAdminObjPaint(nullptr),
@@ -151,6 +152,7 @@ CDrawingView::~CDrawingView()
 
     m_pDrawingScene = nullptr;
     m_iZoomFactor_perCent = 0;
+    m_iTraceInternalStatesBlockedCounter = 0;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjCursor = nullptr;
     m_pTrcAdminObjPaint = nullptr;
@@ -289,7 +291,7 @@ void CDrawingView::setCursor(const QCursor& i_cursor)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCursor2Str(i_cursor);
+        strMthInArgs = qCursorShape2Str(i_cursor.shape());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
@@ -297,7 +299,7 @@ void CDrawingView::setCursor(const QCursor& i_cursor)
         /* strMethod    */ "setCursor",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strMthInArgs = "CurrentCursor: " + qCursor2Str(cursor());
+        QString strMthInArgs = "CurrentCursor: " + qCursorShape2Str(cursor().shape());
         mthTracer.trace(strMthInArgs);
     }
 
@@ -315,7 +317,7 @@ void CDrawingView::unsetCursor()
         /* strMethod    */ "unsetCursor",
         /* strAddInfo   */ "" );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strMthInArgs = "CurrentCursor: " + qCursor2Str(cursor());
+        QString strMthInArgs = "CurrentCursor: " + qCursorShape2Str(cursor().shape());
         mthTracer.trace(strMthInArgs);
     }
 
@@ -340,6 +342,10 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+
     emit_mousePosChanged(i_pEv->pos());
 
     // Before dispatching the mouse event to the drawing scene the drawing scene
@@ -350,13 +356,17 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        setCursor(Qt::SplitVCursor);
     }
     else {
         unsetCursor();
     }
     QGraphicsView::mousePressEvent(i_pEv);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -375,6 +385,10 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+
     emit_mousePosChanged(i_pEv->pos());
 
     // Before dispatching the mouse event to the drawing scene the drawing scene
@@ -385,13 +399,18 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        setCursor(Qt::SplitVCursor);
     }
     else {
         unsetCursor();
     }
+
     QGraphicsView::mouseMoveEvent(i_pEv);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -410,6 +429,10 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+
     emit_mousePosChanged(i_pEv->pos());
 
     // Before dispatching the mouse event to the drawing scene the drawing scene
@@ -420,13 +443,17 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        setCursor(Qt::SplitVCursor);
     }
     else {
         unsetCursor();
     }
     QGraphicsView::mouseReleaseEvent(i_pEv);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -445,6 +472,10 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter);
+    }
+
     emit_mousePosChanged(i_pEv->pos());
 
     // Before dispatching the mouse event to the drawing scene the drawing scene
@@ -455,13 +486,17 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
+        setCursor(Qt::SplitVCursor);
     }
     else {
         unsetCursor();
     }
     QGraphicsView::mouseDoubleClickEvent(i_pEv);
 
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave);
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -675,4 +710,29 @@ void CDrawingView::emit_contentAreaChanged()
         /* strAddInfo   */ "" );
 
     emit contentAreaChanged();
+}
+
+/*==============================================================================
+public: // auxiliary instance methods (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingView::traceInternalStates(
+    CMethodTracer& i_mthTracer,
+    EMethodDir i_mthDir,
+    const QString& i_strFilter)
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceInternalStatesBlockedCounter > 0) {
+        return;
+    }
+    if (i_strFilter.isEmpty() || i_strFilter.contains("States", Qt::CaseInsensitive)) {
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "   ";
+        strRuntimeInfo += "ZoomFactor: " + QString::number(m_iZoomFactor_perCent) + " %" +
+            ", Cursor: " + qCursorShape2Str(cursor().shape());
+        i_mthTracer.trace(strRuntimeInfo);
+    }
 }

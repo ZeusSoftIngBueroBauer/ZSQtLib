@@ -3690,7 +3690,33 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
         }
         else {
             int idxPt = i_pTestStep->getConfigValue("Points.Idx").toInt();
-            if (idxPt >= 1) {
+            if (idxPt >= points.size()) {
+                i_pTestStep->setConfigValue("Method", "mousePressEvent");
+                i_pTestStep->setConfigValue("Points.Idx", points.size()-1);
+                i_pTestStep->setConfigValue("MouseButtons", static_cast<int>(Qt::LeftButton));
+                i_pTestStep->setConfigValue("KeyboardModifiers", static_cast<int>(Qt::NoModifier));
+            }
+            else if (idxPt == (points.size()-1)) {
+                // Last point. Move a bit around the last point to check whether the bitmap cursor is set.
+                i_pTestStep->setConfigValue("Method", "mouseMoveEvent");
+                QList<QPoint> addPoints({
+                    points.last(),
+                    QPoint(points.last().x()-1, points.last().y()-1),
+                    points.last(),
+                    QPoint(points.last().x()+1, points.last().y()+1),
+                    points.last(),
+                    QPoint(points.last().x()-1, points.last().y()-1),
+                    points.last(),
+                    QPoint(points.last().x()+1, points.last().y()+1),
+                    points.last(),
+                    QPoint(points.last().x()-1, points.last().y()-1),
+                    points.last()});
+                for (int idxAddPt = 0; idxAddPt < (addPoints.size()-1); idxAddPt++) {
+                    addMouseMoveEventDataRows(i_pTestStep, addPoints[idxAddPt], addPoints[idxAddPt+1]);
+                }
+                i_pTestStep->setConfigValue("Points.Idx", idxPt + 1);
+            }
+            else if (idxPt >= 1) {
                 i_pTestStep->setConfigValue("Method", "mousePressEvent");
                 i_pTestStep->setConfigValue("Points.Idx", idxPt);
                 i_pTestStep->setConfigValue("MouseButtons", static_cast<int>(Qt::LeftButton));

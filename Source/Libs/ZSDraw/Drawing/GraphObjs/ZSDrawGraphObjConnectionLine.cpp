@@ -216,6 +216,8 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
     QGraphicsItem_setAcceptHoverEvents(true);
 
     setStackingOrderValue(c_fStackingOrderOffsetConnectionLines, ERowVersion::Original);
+
+    QGraphicsItem_setCursor(Qt::BusyCursor);
 }
 
 //------------------------------------------------------------------------------
@@ -1821,7 +1823,8 @@ void CGraphObjConnectionLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
                 }
             }
         }
-        QGraphicsItem_setCursor(cursor);
+        //QGraphicsItem_setCursor(cursor);
+        QGraphicsItem_setCursor(Qt::BusyCursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1873,7 +1876,8 @@ void CGraphObjConnectionLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
                 }
             }
         }
-        QGraphicsItem_setCursor(cursor);
+        //QGraphicsItem_setCursor(cursor);
+        QGraphicsItem_setCursor(Qt::BusyCursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1928,10 +1932,12 @@ void CGraphObjConnectionLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
             }
         }
         if (bSetCurser) {
-            QGraphicsItem_setCursor(cursor);
+            //QGraphicsItem_setCursor(cursor);
+            QGraphicsItem_setCursor(Qt::BusyCursor);
         }
         else {
             QGraphicsItem_unsetCursor();
+            //QGraphicsItem_setCursor(Qt::ForbiddenCursor);
         }
     }
 

@@ -102,9 +102,17 @@ protected: // instance methods (method tracing)
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void emit_contentAreaChanged();
+public: // auxiliary instance methods (method tracing)
+    void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir,
+        const QString& i_strFilter = "");
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
     int m_iZoomFactor_perCent;
+protected: // instance members (method tracing)
+    /*!< Counters to block debug trace outputs for internal position and state infos. */
+    int m_iTraceInternalStatesBlockedCounter;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;

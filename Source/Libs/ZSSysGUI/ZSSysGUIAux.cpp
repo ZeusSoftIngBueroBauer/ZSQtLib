@@ -54,56 +54,6 @@ QString ZS::System::GUI::qColor2Str( const QColor& i_clr )
 }
 
 /*==============================================================================
-QCursor
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-static const ZS::System::SEnumEntry s_arEnumStrQCursorShape[] =
-//------------------------------------------------------------------------------
-{
-    /*  0 */ SEnumEntry( Qt::ArrowCursor, "Arrow" ),
-    /*  1 */ SEnumEntry( Qt::UpArrowCursor, "UpArrowCursor" ),
-    /*  2 */ SEnumEntry( Qt::CrossCursor, "CrossCursor" ),
-    /*  3 */ SEnumEntry( Qt::WaitCursor, "WaitCursor" ),
-    /*  4 */ SEnumEntry( Qt::IBeamCursor, "IBeamCursor" ),
-    /*  5 */ SEnumEntry( Qt::SizeVerCursor, "SizeVerCursor" ),
-    /*  6 */ SEnumEntry( Qt::SizeHorCursor, "SizeHorCursor" ),
-    /*  7 */ SEnumEntry( Qt::SizeBDiagCursor, "SizeBDiagCursor" ),
-    /*  8 */ SEnumEntry( Qt::SizeFDiagCursor, "SizeFDiagCursor" ),
-    /*  9 */ SEnumEntry( Qt::SizeAllCursor, "SizeAllCursor" ),
-    /* 10 */ SEnumEntry( Qt::BlankCursor, "BlankCursor" ),
-    /* 11 */ SEnumEntry( Qt::SplitVCursor, "SplitVCursor" ),
-    /* 12 */ SEnumEntry( Qt::SplitHCursor, "SplitHCursor" ),
-    /* 13 */ SEnumEntry( Qt::PointingHandCursor, "PointingHandCursor" ),
-    /* 14 */ SEnumEntry( Qt::ForbiddenCursor, "ForbiddenCursor" ),
-    /* 15 */ SEnumEntry( Qt::OpenHandCursor, "OpenHandCursor" ),
-    /* 16 */ SEnumEntry( Qt::ClosedHandCursor, "ClosedHandCursor" ),
-    /* 17 */ SEnumEntry( Qt::WhatsThisCursor, "WhatsThisCursor" ),
-    /* 18 */ SEnumEntry( Qt::BusyCursor, "BusyCursor" ),
-    /* 19 */ SEnumEntry( Qt::DragMoveCursor, "DragMoveCursor" ),
-    /* 20 */ SEnumEntry( Qt::DragCopyCursor, "DragCopyCursor" ),
-    /* 21 */ SEnumEntry( Qt::DragLinkCursor, "DragLinkCursor" ),
-    /* 22 */ SEnumEntry( 22, "? (22)" ),
-    /* 23 */ SEnumEntry( 23, "? (23)" ),
-    /* 24 */ SEnumEntry( Qt::BitmapCursor, "BitmapCursor" )
-};
-
-//------------------------------------------------------------------------------
-QString ZS::System::GUI::qCursor2Str(const QCursor& i_cursor)
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if (i_cursor.shape() >= 0 && i_cursor.shape() < _ZSArrLen(s_arEnumStrQCursorShape)) {
-        str = SEnumEntry::enumerator2Str(
-            s_arEnumStrQCursorShape, _ZSArrLen(s_arEnumStrQCursorShape), i_cursor.shape());
-    }
-    else {
-        str = "? (" + QString::number(i_cursor.shape()) + ")";
-    }
-    return str;
-}
-
-/*==============================================================================
 Enum QAbstractItemDelegate::EndEditHint
 ==============================================================================*/
 

@@ -3265,14 +3265,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
     // We need a start position, from which we move to the first connection point.
-    // The we add the position of the two connection points.
+    // Then we add the position of the two connection points.
     // If more than 3 points are defined, the points from index 2 to the penultimate
     // index are additional polygon points.
     points = QPolygon({
         QPoint(640, 250),
         m_ptPosConnectionPoint3.toPoint(),
-        QPoint((m_ptPosConnectionPoint3.x() + m_ptPosConnectionPoint4.x()) / 2,
-               (m_ptPosConnectionPoint3.y() + m_ptPosConnectionPoint4.y()) / 2),
+        QPoint(m_ptPosConnectionPoint3.x() + 20, m_ptPosConnectionPoint3.y() + 20),
+        QPoint(m_ptPosConnectionPoint3.x() + 10, m_ptPosConnectionPoint3.y() + 50),
+        QPoint(m_ptPosConnectionPoint3.x() + 20, m_ptPosConnectionPoint3.y() + 80),
         m_ptPosConnectionPoint4.toPoint()
     });
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
@@ -3353,14 +3354,12 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
     // We need a start position, from which we move to the first connection point.
-    // The we add the position of the two connection points.
+    // Then we add the position of the two connection points.
     // If more than 3 points are defined, the points from index 2 to the penultimate
     // index are additional polygon points.
     points = QPolygon({
         QPoint(240, 250),
         m_ptPosConnectionPoint1.toPoint(),
-        QPoint((m_ptPosConnectionPoint1.x() + m_ptPosConnectionPoint4.x()) / 2,
-               (m_ptPosConnectionPoint1.y() + m_ptPosConnectionPoint4.y()) / 2),
         m_ptPosConnectionPoint4.toPoint()
     });
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
@@ -3441,12 +3440,13 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         {m_pPhysValConnectionPoint2->toQPointF()}
     });
     // We need a start position, from which we move to the first connection point.
-    // The we add the position of the two connection points.
+    // Then we add the position of the two connection points.
     // If more than 3 points are defined, the points from index 2 to the penultimate
     // index are additional polygon points.
     points = QPolygon({
         QPoint(640, 250),
         m_ptPosConnectionPoint3.toPoint(),
+        // The additional point will be removed by normalizing the polygon.
         QPoint((m_ptPosConnectionPoint3.x() + m_ptPosConnectionPoint2.x()) / 2,
                (m_ptPosConnectionPoint3.y() + m_ptPosConnectionPoint2.y()) / 2),
         m_ptPosConnectionPoint2.toPoint()
@@ -3614,12 +3614,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     QString strGraphObjName;
     QString strMethod;
     QString strMthArgs;
-    int idxPt;
     CPhysValPoint physValPoint(*m_pDrawingScene);
-    CPhysValPolygon physValConnectionLineNew(*m_pDrawingScene);
-    SGraphObjSelectionPoint selPt;
-    QPointF pt1SelPt;
-    QPointF pt2SelPt;
+    int idxPt;
 
     ZS::Test::CTestStepGroup* pGrpModifyCnctPts = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -3981,18 +3977,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"FactoryGroupName", ""},
         {"FactoryGraphObjType", ""}
     });
-    // Move from current position to empty area
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, bYAxisTopDown ? 250 : fYAxisMaxVal - 250));
-    //pTestStep->addDataRow({ // Deselect object by clicking on empty area
-    //    {"Method", "mousePressEvent"},
-    //    {"MousePos", m_ptMousePos}
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "mouseReleaseEvent"},
-    //    {"MousePos", m_ptMousePos}
-    //});
-    // Move mouse to line segment between first and second polygon point and
-    // select connection line to edit polygon shape points
+    // Move mouse to line segment between first and second polygon point
     m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(300, bYAxisTopDown ? 250 : fYAxisMaxVal - 250));
     pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
@@ -4000,7 +3985,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, physValPoint.toQPointF().toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},
@@ -4020,47 +4005,38 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
 
     // CnctLinePt1Pt2.insert(2, )
     //---------------------------
-#if 0
-    selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
-    selPt.m_selPt = ESelectionPoint::LineCenterPoint;
-    selPt.m_idxPt = 0;
-    physValConnectionLineNew = *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2;
-    physValPoint = m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->at(selPt.m_idxPt);
+
+    idxPt = 2;
     physValPoint.setX(280.0);
-    physValPoint.setY(bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
-    physValConnectionLineNew.insert(selPt.m_idxPt+1, physValPoint);
+    physValPoint.setY(bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
     strGraphObjName = c_strGraphObjNameConnectionLineCnctPt1CnctPt2;
     strMethod = "insert";
-    strMthArgs = QString::number(selPt.m_idxPt+1) + ", {" + physValPoint.toString() + "}";
+    strMthArgs = QString::number(idxPt) + ", {" + physValPoint.toString() + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyCnctPts,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, selPt);
-    pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    pTestStep->setConfigValue("SelectionPoint", selPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     pTestStep->addDataRow({
         {"Method", "setCurrentDrawingTool"},
         {"FactoryGroupName", ""},
         {"FactoryGraphObjType", ""}
     });
-    // Move mouse to line segment between first and second polygon point and
-    // select connection line to edit polygon shape points
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(280, 250), pt1SelPt.toPoint());
-    pTestStep->addDataRow({ // Select object by clicking on it
+    // Move mouse to line segment between second and last polygon point
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(292, bYAxisTopDown ? 350 : fYAxisMaxVal - 350));
+    pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, physValPoint.toQPointF().toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},
@@ -4069,59 +4045,50 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
         { 10.0, -100.0},
         {-10.0,  -50.0},
+        {-10.0,   50.0},
         { 10.0,  100.0}
     });
-    m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->insert(selPt.m_idxPt+1, physValPoint);
+    m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->insert(idxPt, physValPoint);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
         m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-#endif
 
     // CnctLinePt1Pt2.insert(2, )
     //---------------------------
-#if 0
-    selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
-    selPt.m_selPt = ESelectionPoint::LineCenterPoint;
-    selPt.m_idxPt = 0;
-    physValConnectionLineNew = *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2;
-    physValPoint = m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->at(selPt.m_idxPt);
-    physValPoint.setX(280.0);
-    physValPoint.setY(bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
-    physValConnectionLineNew.insert(selPt.m_idxPt+1, physValPoint);
+
+    idxPt = 2;
+    physValPoint.setX(290.0);
+    physValPoint.setY(bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
     strGraphObjName = c_strGraphObjNameConnectionLineCnctPt1CnctPt2;
     strMethod = "insert";
-    strMthArgs = QString::number(selPt.m_idxPt+1) + ", {" + physValPoint.toString() + "}";
+    strMthArgs = QString::number(idxPt) + ", {" + physValPoint.toString() + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyCnctPts,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, selPt);
-    pt2SelPt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    pTestStep->setConfigValue("SelectionPoint", selPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     pTestStep->addDataRow({
         {"Method", "setCurrentDrawingTool"},
         {"FactoryGroupName", ""},
         {"FactoryGraphObjType", ""}
     });
-    // Move mouse to line segment between first and second polygon point and
-    // select connection line to edit polygon shape points
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(280, 250), pt1SelPt.toPoint());
-    pTestStep->addDataRow({ // Select object by clicking on it
+    // Move mouse to line segment between second and third polygon point
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, bYAxisTopDown ? 300 : fYAxisMaxVal - 300));
+    pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, pt2SelPt.toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, physValPoint.toQPointF().toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},
@@ -4130,15 +4097,16 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF({
         { 10.0, -100.0},
         {-10.0,  -50.0},
+        {  0.0,    0.0},
+        {-10.0,   50.0},
         { 10.0,  100.0}
     });
-    m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->insert(selPt.m_idxPt+1, physValPoint);
+    m_pPhysValPolygonConnectionLineCnctPt1CnctPt2->insert(idxPt, physValPoint);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
         m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-#endif
 }
 
 //------------------------------------------------------------------------------

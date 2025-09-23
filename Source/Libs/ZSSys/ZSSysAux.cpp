@@ -1442,42 +1442,36 @@ Enum Qt::CursorShape
 static const ZS::System::SEnumEntry s_arEnumStrCursorShape[] =
 //------------------------------------------------------------------------------
 {
-    /*  0 */ SEnumEntry( static_cast<int>(Qt::ArrowCursor), "Arrow" ),
-    /*  1 */ SEnumEntry( static_cast<int>(Qt::UpArrowCursor), "UpArrow" ),
-    /*  2 */ SEnumEntry( static_cast<int>(Qt::CrossCursor), "Cross" ),
-    /*  3 */ SEnumEntry( static_cast<int>(Qt::WaitCursor), "Wait" ),
-    /*  4 */ SEnumEntry( static_cast<int>(Qt::IBeamCursor), "IBeam" ),
-    /*  5 */ SEnumEntry( static_cast<int>(Qt::SizeVerCursor), "SizeVer" ),
-    /*  6 */ SEnumEntry( static_cast<int>(Qt::SizeHorCursor), "SizeHor" ),
-    /*  7 */ SEnumEntry( static_cast<int>(Qt::SizeBDiagCursor), "SizeBDiag" ),
-    /*  8 */ SEnumEntry( static_cast<int>(Qt::SizeFDiagCursor), "SizeFDiag" ),
-    /*  9 */ SEnumEntry( static_cast<int>(Qt::SizeAllCursor), "SizeAll" ),
-    /* 10 */ SEnumEntry( static_cast<int>(Qt::BlankCursor), "Blank" ),
-    /* 11 */ SEnumEntry( static_cast<int>(Qt::SplitVCursor), "SplitV" ),
-    /* 12 */ SEnumEntry( static_cast<int>(Qt::SplitHCursor), "SplitH" ),
-    /* 13 */ SEnumEntry( static_cast<int>(Qt::PointingHandCursor), "PointingHand" ),
-    /* 14 */ SEnumEntry( static_cast<int>(Qt::ForbiddenCursor), "Forbidden" ),
-    /* 15 */ SEnumEntry( static_cast<int>(Qt::WhatsThisCursor), "WhatsThis" ),
-    /* 16 */ SEnumEntry( static_cast<int>(Qt::BusyCursor), "Busy" ),
-    /* 17 */ SEnumEntry( static_cast<int>(Qt::OpenHandCursor), "OpenHand" ),
-    /* 18 */ SEnumEntry( static_cast<int>(Qt::ClosedHandCursor), "ClosedHand" ),
-    #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
-    /* 19 */ SEnumEntry( static_cast<int>(Qt::DragCopyCursor), "DragCopy" ),
-    /* 20 */ SEnumEntry( static_cast<int>(Qt::DragMoveCursor), "DragMove" ),
-    /* 21 */ SEnumEntry( static_cast<int>(Qt::DragLinkCursor), "DragLink" ),
-    #else
-    /* 19 */ SEnumEntry( 19, "Undefined (19)" ),
-    /* 20 */ SEnumEntry( 20, "Undefined (20)" ),
-    /* 21 */ SEnumEntry( 21, "Undefined (21)" ),
-    #endif
-    /* 22 */ SEnumEntry( 22, "Undefined (22)" ),
-    /* 23 */ SEnumEntry( 23, "Undefined (23)" ),
-    /* 24 */ SEnumEntry( static_cast<int>(Qt::BitmapCursor), "Bitmap" ),
-    /* 25 */ SEnumEntry( static_cast<int>(Qt::CustomCursor), "Custom" )
+    /*  0 */ SEnumEntry(Qt::ArrowCursor, "Arrow"),
+    /*  1 */ SEnumEntry(Qt::UpArrowCursor, "UpArrowCursor"),
+    /*  2 */ SEnumEntry(Qt::CrossCursor, "CrossCursor"),
+    /*  3 */ SEnumEntry(Qt::WaitCursor, "WaitCursor"),
+    /*  4 */ SEnumEntry(Qt::IBeamCursor, "IBeamCursor"),
+    /*  5 */ SEnumEntry(Qt::SizeVerCursor, "SizeVerCursor"),
+    /*  6 */ SEnumEntry(Qt::SizeHorCursor, "SizeHorCursor"),
+    /*  7 */ SEnumEntry(Qt::SizeBDiagCursor, "SizeBDiagCursor"),
+    /*  8 */ SEnumEntry(Qt::SizeFDiagCursor, "SizeFDiagCursor"),
+    /*  9 */ SEnumEntry(Qt::SizeAllCursor, "SizeAllCursor"),
+    /* 10 */ SEnumEntry(Qt::BlankCursor, "BlankCursor"),
+    /* 11 */ SEnumEntry(Qt::SplitVCursor, "SplitVCursor"),
+    /* 12 */ SEnumEntry(Qt::SplitHCursor, "SplitHCursor"),
+    /* 13 */ SEnumEntry(Qt::PointingHandCursor, "PointingHandCursor"),
+    /* 14 */ SEnumEntry(Qt::ForbiddenCursor, "ForbiddenCursor"),
+    /* 15 */ SEnumEntry(Qt::OpenHandCursor, "OpenHandCursor"),
+    /* 16 */ SEnumEntry(Qt::ClosedHandCursor, "ClosedHandCursor"),
+    /* 17 */ SEnumEntry(Qt::WhatsThisCursor, "WhatsThisCursor"),
+    /* 18 */ SEnumEntry(Qt::BusyCursor, "BusyCursor"),
+    /* 19 */ SEnumEntry(Qt::DragMoveCursor, "DragMoveCursor"),
+    /* 20 */ SEnumEntry(Qt::DragCopyCursor, "DragCopyCursor"),
+    /* 21 */ SEnumEntry(Qt::DragLinkCursor, "DragLinkCursor"),
+    /* 22 */ SEnumEntry(22, "? (22)"),
+    /* 23 */ SEnumEntry(23, "? (23)"),
+    /* 24 */ SEnumEntry(Qt::BitmapCursor, "BitmapCursor"),
+    /* 25 */ SEnumEntry(Qt::CustomCursor, "Custom")
 };
 
 //------------------------------------------------------------------------------
-QString ZS::System::qCursorShape2Str( int i_shape )
+QString ZS::System::qCursorShape2Str( Qt::CursorShape i_shape )
 //------------------------------------------------------------------------------
 {
     return SEnumEntry::enumerator2Str(s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_shape);
