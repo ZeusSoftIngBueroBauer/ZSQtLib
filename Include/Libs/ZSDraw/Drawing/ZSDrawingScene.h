@@ -294,21 +294,21 @@ public: // auxiliary instance methods (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
-        const QString& i_strFilter = "");
+        const QString& i_strFilter = "") const;
     void traceItemsAtScenePos(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
         const QPointF& i_ptScenePos,
-        const QString& i_strFilter = "");
+        const QString& i_strFilter = "") const;
     void traceAllItems(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
-        const QString& i_strFilter = "");
+        const QString& i_strFilter = "") const;
     void traceItems(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir,
         QList<QGraphicsItem*> arpGraphicsItems,
-        const QString& i_strFilter = "");
+        const QString& i_strFilter = "") const;
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
 protected: // instance members

@@ -4318,8 +4318,7 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
         /* strMethod    */ "CGraphObj::getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
 
-    //QCursor cursor = Qt::ArrowCursor;
-    QCursor cursor = Qt::ClosedHandCursor;
+    QCursor cursor = Qt::ArrowCursor;
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
@@ -4471,11 +4470,24 @@ public: // overridables
 //------------------------------------------------------------------------------
 /*! @brief Returns the selection point object which is under the given point.
 
+    @param i_pt [in] Point to be check in local coordinates.
+
     @return Selection point hit or nullptr, if no selection point is under the given point.
 */
 CGraphObjSelectionPoint* CGraphObj::getSelectionPointHit(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getSelectionPointHit",
+        /* strAddInfo   */ strMthInArgs );
+
     CGraphObjSelectionPoint* pGraphObjSelPtHit = nullptr;
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
@@ -4499,6 +4511,9 @@ CGraphObjSelectionPoint* CGraphObj::getSelectionPointHit(const QPointF& i_pt) co
                 }
             }
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphObjSelPtHit == nullptr ? "null" : pGraphObjSelPtHit->path()));
     }
     return pGraphObjSelPtHit;
 }

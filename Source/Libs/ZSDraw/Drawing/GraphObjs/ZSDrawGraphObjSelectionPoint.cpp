@@ -376,7 +376,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "getProposedCursor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::CrossCursor;
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -390,13 +390,15 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
         cursor = Qt::CrossCursor;
         CGraphObj* pGraphObjParent = m_selPt.m_pGraphObj;
         if (pGraphObjParent != nullptr && pGraphObjParent->type() == EGraphObjTypeConnectionLine) {
-            const QGraphicsEllipseItem* pGraphicsItemThis = dynamic_cast<const QGraphicsEllipseItem*>(this);
-            // Check whether a connection point has been hit.
-            QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
-            CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(ptScenePos);
-            if (pGraphObjCnctPtHit != nullptr) {
-                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
-                cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+            if (pGraphObjParent->editMode() == EEditMode::CreatingByMouseEvents) {
+                const QGraphicsEllipseItem* pGraphicsItemThis = dynamic_cast<const QGraphicsEllipseItem*>(this);
+                // Check whether a connection point has been hit.
+                QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
+                CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(ptScenePos);
+                if (pGraphObjCnctPtHit != nullptr) {
+                    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+                }
             }
         }
     }
@@ -601,11 +603,8 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
-    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
-        QGraphicsItem_setCursor(Qt::ForbiddenCursor);
-    }
+    QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -634,11 +633,8 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
-    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
-        QGraphicsItem_setCursor(Qt::ForbiddenCursor);
-    }
+    QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -667,7 +663,7 @@ void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    //QGraphicsItem_unsetCursor();
+    QGraphicsItem_unsetCursor();
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
@@ -710,24 +706,18 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
-    QGraphicsItem_setCursor(Qt::ForbiddenCursor);
 
     // We inform the linked object of the mouse press event as the graphics
     // scene will not forward the event even if we would ignore the event.
     QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
     if (pGraphicsItemParent != nullptr) {
         m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
-        // Note: By calling the mouse event method of the parent object, the selection point might
-        //       be destroyed. This means that after invoking the parents mouse event method
-        //       the selection point MUST NOT access any instance members anymore.
     }
     i_pEv->accept();
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
-        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
-        traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
-    }
+    // Note: By calling the mouse event method of the parent object, the selection point might
+    //       be destroyed. This means that after invoking the parents mouse event method
+    //       the selection point MUST NOT access any instance members anymore.
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
     }
@@ -860,7 +850,6 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
-    QGraphicsItem_setCursor(Qt::ForbiddenCursor);
     setPos(i_pEv->scenePos());
 
     // Eat the event. Don't pass it to other objects otherwise the object,

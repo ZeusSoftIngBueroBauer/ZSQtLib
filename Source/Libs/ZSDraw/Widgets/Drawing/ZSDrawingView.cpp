@@ -356,8 +356,7 @@ void CDrawingView::mousePressEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
-        setCursor(Qt::SplitVCursor);
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
     }
     else {
         unsetCursor();
@@ -399,8 +398,7 @@ void CDrawingView::mouseMoveEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
-        setCursor(Qt::SplitVCursor);
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
     }
     else {
         unsetCursor();
@@ -443,8 +441,7 @@ void CDrawingView::mouseReleaseEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
-        setCursor(Qt::SplitVCursor);
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
     }
     else {
         unsetCursor();
@@ -486,8 +483,7 @@ void CDrawingView::mouseDoubleClickEvent( QMouseEvent* i_pEv )
     QPointF ptScenePos = mapToScene(i_pEv->pos());
     QRectF rctScene = m_pDrawingScene->sceneRect();
     if (rctScene.contains(ptScenePos)) {
-        //setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
-        setCursor(Qt::SplitVCursor);
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
     }
     else {
         unsetCursor();

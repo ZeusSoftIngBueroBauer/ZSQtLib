@@ -1852,13 +1852,29 @@ public: // instance methods
 CGraphObjConnectionPoint* CDrawingScene::getConnectionPoint( const QPointF& i_ptScenePos )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getConnectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
     CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
     QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+    }
     for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
         if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
             pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(pGraphicsItem);
             break;
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphObjCnctPt == nullptr ? "null" : pGraphObjCnctPt->path()));
     }
     return pGraphObjCnctPt;
 }
@@ -1890,13 +1906,24 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
 
-    //QCursor cursor = Qt::ArrowCursor;
-    QCursor cursor = Qt::ClosedHandCursor;
+    QCursor cursor = Qt::ArrowCursor;
     if (m_mode == EMode::Edit) {
         if (sceneRect().contains(i_ptScenePos)) {
             if (m_pObjFactory != nullptr) {
-                cursor = Qt::CrossCursor;
+                if (m_pGraphObjUnderConstruction != nullptr) {
+                    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction);
+                    if (pGraphicsItem != nullptr) {
+                        QPointF ptLocalItemPos = pGraphicsItem->mapFromScene(i_ptScenePos);
+                        cursor = m_pGraphObjUnderConstruction->getProposedCursor(ptLocalItemPos);
+                    }
+                }
+                else {
+                    cursor = Qt::CrossCursor;
+                }
             }
         }
     }
@@ -5571,7 +5598,7 @@ public: // auxiliary instance methods (method tracing)
 void CDrawingScene::traceInternalStates(
     CMethodTracer& i_mthTracer,
     EMethodDir i_mthDir,
-    const QString& i_strFilter)
+    const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceInternalStatesBlockedCounter > 0) {
@@ -5645,7 +5672,7 @@ void CDrawingScene::traceItemsAtScenePos(
     ZS::System::CMethodTracer& i_mthTracer,
     ZS::System::EMethodDir i_mthDir,
     const QPointF& i_ptScenePos,
-    const QString& i_strFilter)
+    const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceItemsAtScenePosBlockedCounter > 0) {
@@ -5665,7 +5692,7 @@ void CDrawingScene::traceItemsAtScenePos(
 void CDrawingScene::traceAllItems(
     ZS::System::CMethodTracer& i_mthTracer,
     ZS::System::EMethodDir i_mthDir,
-    const QString& i_strFilter)
+    const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     if (m_iTraceBlockedCounter > 0 || m_iTraceAllItemsBlockedCounter > 0) {
@@ -5679,7 +5706,7 @@ void CDrawingScene::traceItems(
     ZS::System::CMethodTracer& i_mthTracer,
     ZS::System::EMethodDir i_mthDir,
     QList<QGraphicsItem*> arpGraphicsItems,
-    const QString& i_strFilter)
+    const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
     QString strRuntimeInfo;

@@ -216,8 +216,6 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
     QGraphicsItem_setAcceptHoverEvents(true);
 
     setStackingOrderValue(c_fStackingOrderOffsetConnectionLines, ERowVersion::Original);
-
-    QGraphicsItem_setCursor(Qt::BusyCursor);
 }
 
 //------------------------------------------------------------------------------
@@ -1160,21 +1158,32 @@ QCursor CGraphObjConnectionLine::getProposedCursor(const QPointF& i_pt) const
     QCursor cursor = Qt::SizeAllCursor;
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
-        CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
-        if (pGraphObjSelPtHit != nullptr) {
-            cursor = pGraphObjSelPtHit->getProposedCursor(i_pt);
+        if (m_editMode == EEditMode::CreatingByMouseEvents) {
+            // Check whether a connection point has been hit.
+            QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
+            CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(ptScenePos);
+            if (pGraphObjCnctPtHit != nullptr) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+            }
         }
         else {
-            SGraphObjHitInfo hitInfo;
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                mthTracer.trace("-+ isPolygonHit(" + qPoint2Str(i_pt) + ")");
+            CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
+            if (pGraphObjSelPtHit != nullptr) {
+                cursor = pGraphObjSelPtHit->getProposedCursor(i_pt);
             }
-            bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
-            }
-            if (bIsPolygonHit) {
-                cursor = hitInfo.m_cursor;
+            else {
+                SGraphObjHitInfo hitInfo;
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("-+ isPolygonHit(" + qPoint2Str(i_pt) + ")");
+                }
+                bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                }
+                if (bIsPolygonHit) {
+                    cursor = hitInfo.m_cursor;
+                }
             }
         }
     }
@@ -1823,8 +1832,7 @@ void CGraphObjConnectionLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
                 }
             }
         }
-        //QGraphicsItem_setCursor(cursor);
-        QGraphicsItem_setCursor(Qt::BusyCursor);
+        QGraphicsItem_setCursor(cursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1876,8 +1884,7 @@ void CGraphObjConnectionLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
                 }
             }
         }
-        //QGraphicsItem_setCursor(cursor);
-        QGraphicsItem_setCursor(Qt::BusyCursor);
+        QGraphicsItem_setCursor(cursor);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1903,43 +1910,12 @@ void CGraphObjConnectionLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
-    if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
-        bool bSetCurser = false;
-        QCursor cursor = Qt::SizeAllCursor;
-        if (isSelected()) {
-            if (m_editMode == EEditMode::ModifyingPolygonPoints) {
-                if (i_pEv->modifiers() & Qt::ControlModifier) {
-                    SGraphObjHitInfo hitInfo;
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
-                    }
-                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
-                    }
-                    if (bIsPolygonHit) {
-                        cursor = hitInfo.m_cursor;
-                        bSetCurser = true;
-                    }
-                }
-            }
-        }
-        if (bSetCurser) {
-            //QGraphicsItem_setCursor(cursor);
-            QGraphicsItem_setCursor(Qt::BusyCursor);
-        }
-        else {
-            QGraphicsItem_unsetCursor();
-            //QGraphicsItem_setCursor(Qt::ForbiddenCursor);
-        }
-    }
+    QGraphicsItem_unsetCursor();
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
@@ -2092,32 +2068,30 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
         // When not clicking on a connection point finishing creating the line,
         // the mouse grabber item, which is the newly appended selection point,
         // should become (or remain) the mouse grabber.
-        bool bChangeEditMode = false;
         CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(i_pEv->scenePos());
         if (pGraphObjCnctPtHit != nullptr) {
+            bool bChangeEditMode = false;
             if (m_arpCnctPts.value(ELinePoint::Start, nullptr) != pGraphObjCnctPtHit) {
                 setConnectionPoint(ELinePoint::End, pGraphObjCnctPtHit);
                 bChangeEditMode = true;
             }
+            // If the polygon contains more than two points, the connection lines
+            // start and end point may be the same.
             else if (m_physValPolygonScaledAndRotated.count() > 2) {
                 setConnectionPoint(ELinePoint::End, pGraphObjCnctPtHit);
                 bChangeEditMode = true;
             }
-        }
-        // Remove unnecessary polygon points.
-        if (m_physValPolygonScaledAndRotated.count() > 2) {
-            normalize();
-        }
-        if (bChangeEditMode) {
-            // The editMode changed signal will be emitted and received by the drawing scene.
-            // The drawing scene is informed this way that creation of the object is finished
-            // and will unselect the current drawing tool and will select the object under
-            // construction showing the selection points at the bounding rectangle.
-            setEditMode(EEditMode::None);
+            if (bChangeEditMode) {
+                // The editMode changed signal will be emitted and received by the drawing scene.
+                // The drawing scene is informed this way that creation of the object is finished
+                // and will unselect the current drawing tool and will select the object under
+                // construction showing the selection points at the bounding rectangle.
+                setEditMode(EEditMode::None);
+            }
         }
         else {
             CPhysValPoint physValPointLast = m_physValPolygonScaledAndRotated.last();
-            if (m_physValPolygonScaledAndRotated.count() == 2) {
+            if (m_physValPolygonScaledAndRotated.count() == 1) {
                 CPhysValPoint physValPointFirst = m_physValPolygonScaledAndRotated.first();
                 if (physValPointFirst != physValPointLast) {
                     // Append new polygon point which further on can be moved.
@@ -2125,6 +2099,10 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                 }
             }
             m_pDrawingScene->setMouseGrabber(m_arpSelPtsPolygon.last());
+        }
+        // Remove unnecessary polygon points.
+        if (m_physValPolygonScaledAndRotated.count() > 2) {
+            normalize();
         }
     }
     else if (m_editMode == EEditMode::ModifyingBoundingRect) {
