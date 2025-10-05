@@ -1587,13 +1587,13 @@ void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
             //    m_editResizeMode = EEditResizeMode::None;
             //}
         }
-        clearSelection();
+        QGraphicsScene_clearSelection(m_pTrcAdminObj);
     }
 
     //if (i_editTool != EEditTool::Undefined && m_editTool != i_editTool) {
     //    bModeChanged = true;
     //    m_editTool = i_editTool;
-    //    clearSelection();
+    //    QGraphicsScene_clearSelection(m_pTrcAdminObj);
     //}
 
     //QString strObjFactory;
@@ -3526,7 +3526,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
             }
             QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
             if (strlstMimeData.size() > 0) {
-                clearSelection();
+                QGraphicsScene_clearSelection(m_pTrcAdminObj);
                 for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
                     QString strObj = strlstMimeData[idxObj];
                     QStringList strlstObjPath = strObj.split("::");
@@ -3670,7 +3670,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
                 if (bCreateObj) {
                     // Unselect all currently selected objects.
-                    clearSelection();
+                    QGraphicsScene_clearSelection(m_pTrcAdminObjMouseClickEvents);
 
                     // Graphical objects must always be created at their transformation origin points.
                     // Otherwise mapping coordinates to group coordinates does not work correctly.
@@ -4440,7 +4440,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
                 //if( m_dctpGraphObjsClipboard.size() > 0 )
                 //{
-                //    clearSelection();
+                //    QGraphicsScene_clearSelection(m_pTrcAdminObjKeyEvents);
 
                 //    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
 
@@ -5587,6 +5587,24 @@ void CDrawingScene::QGraphicsScene_mouseMoveEvent( QGraphicsSceneMouseEvent* i_p
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::QGraphicsScene_clearSelection(ZS::System::CTrcAdminObj* i_pTrcAdminObj)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ i_pTrcAdminObj == nullptr ? m_pTrcAdminObj : i_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "QGraphicsScene_clearSelection",
+        /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter, "States");
+    }
+    clearSelection();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave, "States");
     }
 }
 

@@ -3257,11 +3257,17 @@ void CTest::createTestGroupDrawStandardShapesConnectionLines(
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
     m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
-        { 0.0, -50.0},
-        { 0.0,  50.0}
+        { -10.0, -50.0},
+        {  10.0, -30.0},
+        {   0.0,   0.0},
+        {  10.0,  30.0},
+        { -10.0,  50.0}
     });
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
         {m_pPhysValConnectionPoint3->toQPointF()},
+        {QPointF(620.0, bYAxisTopDown ? 270.0 : 330.0)},
+        {QPointF(610.0, bYAxisTopDown ? 300.0 : 300.0)},
+        {QPointF(620.0, bYAxisTopDown ? 330.0 : 270.0)},
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
     // We need a start position, from which we move to the first connection point.
@@ -3852,8 +3858,11 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     m_pPhysValConnectionPoint3->setX(ptPosConnectionPoint3New.x());
     m_pPhysValConnectionPoint3->setY(bYAxisTopDown ? ptPosConnectionPoint3New.y() : fYAxisMaxVal - ptPosConnectionPoint3New.y());
     m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
-        { -50.0, -75.0},
-        {  50.0,  75.0}
+        { -60.0, -75.0},
+        {  60.0,  -5.0},
+        {  50.0,  25.0},
+        {  60.0,  55.0},
+        {  40.0,  75.0}
     });
     m_polygonConnectionLineCnctPt3CnctPt2 = QPolygonF({
         { 100.0, -100.0},
@@ -3861,6 +3870,9 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
         {m_pPhysValConnectionPoint3->toQPointF()},
+        {QPointF(620.0, bYAxisTopDown ? 270.0 : 330.0)},
+        {QPointF(610.0, bYAxisTopDown ? 300.0 : 300.0)},
+        {QPointF(620.0, bYAxisTopDown ? 330.0 : 270.0)},
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = QPolygonF({
@@ -3926,8 +3938,11 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     m_pPhysValConnectionPoint4->setX(ptPosConnectionPoint4New.x());
     m_pPhysValConnectionPoint4->setY(bYAxisTopDown ? ptPosConnectionPoint4New.y() : fYAxisMaxVal - ptPosConnectionPoint4New.y());
     m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
-        {0.0, -100.0},
-        {0.0,  100.0}
+        { -60.0, -100.0},
+        {  60.0,  -30.0},
+        {  50.0,    0.0},
+        {  60.0,   30.0},
+        { -60.0,  100.0}
     });
     m_polygonConnectionLineCnctPt1CnctPt4 = QPolygonF({
         {-100.0, -100.0},
@@ -3935,6 +3950,9 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = QPolygonF({
         {m_pPhysValConnectionPoint3->toQPointF()},
+        {QPointF(620.0, bYAxisTopDown ? 270.0 : 330.0)},
+        {QPointF(610.0, bYAxisTopDown ? 300.0 : 300.0)},
+        {QPointF(620.0, bYAxisTopDown ? 330.0 : 270.0)},
         {m_pPhysValConnectionPoint4->toQPointF()}
     });
     *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = QPolygonF({
@@ -3978,14 +3996,14 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"FactoryGraphObjType", ""}
     });
     // Move mouse to line segment between first and second polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(300, bYAxisTopDown ? 250 : fYAxisMaxVal - 250));
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(300, 250));
     pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, physValPoint.toQPointF().toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, 250), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},
@@ -4029,14 +4047,14 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"FactoryGraphObjType", ""}
     });
     // Move mouse to line segment between second and last polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(292, bYAxisTopDown ? 350 : fYAxisMaxVal - 350));
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(292, 350));
     pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, physValPoint.toQPointF().toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, 350), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},
@@ -4081,14 +4099,14 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"FactoryGraphObjType", ""}
     });
     // Move mouse to line segment between second and third polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, bYAxisTopDown ? 300 : fYAxisMaxVal - 300));
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(280, 300));
     pTestStep->addDataRow({ // Click on line segment to create new polygon point
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos},
         {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
     });
     // Move newly created polygon point
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, physValPoint.toQPointF().toPoint(), 0, Qt::LeftButton, Qt::ControlModifier);
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(290, 300), 0, Qt::LeftButton, Qt::ControlModifier);
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos},

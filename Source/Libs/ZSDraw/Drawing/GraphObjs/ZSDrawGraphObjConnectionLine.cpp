@@ -2056,16 +2056,16 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
     }
     else if (m_editMode == EEditMode::CreatingByMouseEvents) {
         // When releasing the mouse somewhere but not on a connection point, the last
-        // polygon point will be duplicated and appended to become the new polygon point
-        // to be moved while creating the connection line.
-        // Exception to this rule is the first mouse release right after creating the
-        // object which has to be ignored as already two polygon points at the same
-        // position are existing.
+        // polygon point will be duplicated and appended. The duplicated polygon point
+        // becomes the polygon point to be moved while creating the connection line.
+        // Exception to this rule is the first mouse release right after creating the object.
+        // The first mouse release event has to be ignored as already two polygon points at
+        // the same position are existing.
         // Clicking on a connection point finishes creating the connection line.
         // Exception to this rule is if there are only two polygon points and the
         // connection point hit is the start point of the line. In this case the polygon
         // contains two points and those two points are equal (or almost equal).
-        // When not clicking on a connection point finishing creating the line,
+        // When not clicking on a connection point and creating the line is not finished,
         // the mouse grabber item, which is the newly appended selection point,
         // should become (or remain) the mouse grabber.
         CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(i_pEv->scenePos());
@@ -2082,27 +2082,42 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                 bChangeEditMode = true;
             }
             if (bChangeEditMode) {
+                // Remove unnecessary polygon points.
+                if (m_physValPolygonScaledAndRotated.count() > 2) {
+                    normalize();
+                }
                 // The editMode changed signal will be emitted and received by the drawing scene.
                 // The drawing scene is informed this way that creation of the object is finished
                 // and will unselect the current drawing tool and will select the object under
                 // construction showing the selection points at the bounding rectangle.
                 setEditMode(EEditMode::None);
             }
+            else if (m_physValPolygonScaledAndRotated.count() >= 2) {
+                m_pDrawingScene->setMouseGrabber(m_arpSelPtsPolygon.last());
+            }
         }
         else {
+            //CPhysValPoint physValPointLast = m_physValPolygonScaledAndRotated.last();
+            //if (m_physValPolygonScaledAndRotated.count() == 1) {
+            //    CPhysValPoint physValPointFirst = m_physValPolygonScaledAndRotated.first();
+            //    if (physValPointFirst != physValPointLast) {
+            //        // Append new polygon point which further on can be moved.
+            //        append(physValPointLast);
+            //    }
+            //}
+            // The first mouse press right after creating the object will be ignored.
+            bool bIgnoreMouseEvent = false;
             CPhysValPoint physValPointLast = m_physValPolygonScaledAndRotated.last();
-            if (m_physValPolygonScaledAndRotated.count() == 1) {
+            if (m_physValPolygonScaledAndRotated.count() == 2) {
                 CPhysValPoint physValPointFirst = m_physValPolygonScaledAndRotated.first();
-                if (physValPointFirst != physValPointLast) {
-                    // Append new polygon point which further on can be moved.
-                    append(physValPointLast);
+                if (physValPointFirst == physValPointLast) {
+                    bIgnoreMouseEvent = true;
                 }
             }
+            if (!bIgnoreMouseEvent) {
+                append(physValPointLast);
+            }
             m_pDrawingScene->setMouseGrabber(m_arpSelPtsPolygon.last());
-        }
-        // Remove unnecessary polygon points.
-        if (m_physValPolygonScaledAndRotated.count() > 2) {
-            normalize();
         }
     }
     else if (m_editMode == EEditMode::ModifyingBoundingRect) {
@@ -2869,10 +2884,6 @@ void CGraphObjConnectionLine::normalize()
         QPolygonF plgNew = normalizePolygon(plgOld, m_pDrawingScene->getHitToleranceInPx());
         if (plgOld.size() != plgNew.size()) {
             setPolygon(plgNew, m_pDrawingScene->drawingSize().unit());
-            hideSelectionPoints();
-            if (isSelected()) {
-                showSelectionPoints();
-            }
         }
     }
 }

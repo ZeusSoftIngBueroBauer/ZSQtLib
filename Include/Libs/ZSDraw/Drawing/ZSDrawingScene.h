@@ -290,6 +290,7 @@ protected: // auxiliary instance methods (method tracing)
     void QGraphicsScene_mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv );
     void QGraphicsScene_mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
     void QGraphicsScene_mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv );
+    void QGraphicsScene_clearSelection(ZS::System::CTrcAdminObj* i_pTrcAdminObj = nullptr);
 public: // auxiliary instance methods (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
