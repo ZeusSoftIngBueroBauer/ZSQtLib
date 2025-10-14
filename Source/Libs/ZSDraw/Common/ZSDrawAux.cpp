@@ -1321,12 +1321,21 @@ bool ZS::Draw::isLineHit(
     else {
         QPointF ptIntersection;
         QLineF linePerpendicular = getPerpendicularLine(i_line, i_pt, 0.0, &ptIntersection);
+        // Please note that the calculated perpendicular line may not intersect the given line.
+        // If close enough to the given line ..
         if (linePerpendicular.length() <= i_fTolerance_px) {
-            bIsHit = true;
-            if (o_pHitInfo != nullptr) {
-                o_pHitInfo->m_idxLineSegment = 0;
-                o_pHitInfo->m_ptHit = ptIntersection;
-                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+            // We check whether the perpendicular line has an "unbound intersection" to the given line
+            // and therefore the line has not really been hit.
+            // Please note that if the perpendicular line is very close to the start or end point
+            // of the line, the start or end point has already been determined as the hit point a
+            // few code lines above.
+            if (i_line.intersects(linePerpendicular, nullptr) == QLineF::BoundedIntersection) {
+                bIsHit = true;
+                if (o_pHitInfo != nullptr) {
+                    o_pHitInfo->m_idxLineSegment = 0;
+                    o_pHitInfo->m_ptHit = ptIntersection;
+                    o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+                }
             }
         }
     }
@@ -1604,6 +1613,106 @@ bool ZS::Draw::isEllipseHit(
 } // isEllipseHit
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether the given polyline is hit by the passed point.
+
+    The method first checks whether any of the polyline points has been hit.
+    If not, the method checks, whether any line segment has been hit.
+
+    In contrast to "isPolygonHit" the line segment between the last and first
+    polygon point is not taken into account. Polylines also have no "enclosed area"
+    and therefore the polyline is only hit if a line segment or the end points of
+    the line segments have been hit.
+
+    @param [in] i_plg The polyline to be checked.
+    @param [in] i_pt The point to be checked,
+    @param [in] i_fTolerance The hit tolerance in pixels.
+    @param [out] o_pHitInfo
+        If a valid pointer is passed, the hit info describes whether a polyline point
+        or a line segment has been hit (the first line segment has the index 0).
+
+    @return true, if the polyline was hit, false otherwise.
+*/
+bool ZS::Draw::isPolylineHit(
+    const QPolygonF& i_plg,
+    const QPointF& i_pt,
+    double i_fTolerance,
+    SGraphObjHitInfo* o_pHitInfo )
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+    double fTolerance = i_fTolerance;
+
+    if (fTolerance <= 0.0) {
+        fTolerance = 2.0;
+    }
+    if (o_pHitInfo != nullptr) {
+        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+        o_pHitInfo->m_idxPolygonShapePoint = -1;
+        o_pHitInfo->m_idxLineSegment = -1;
+        o_pHitInfo->m_ptHit = QPointF();
+        o_pHitInfo->m_cursor = Qt::ArrowCursor;
+    }
+
+    QRectF rctBndTmp = i_plg.boundingRect();
+    rctBndTmp.setLeft(rctBndTmp.left() - fTolerance);
+    rctBndTmp.setTop(rctBndTmp.top() - fTolerance);
+    rctBndTmp.setRight(rctBndTmp.right() + fTolerance);
+    rctBndTmp.setBottom(rctBndTmp.bottom() + fTolerance);
+
+    if (rctBndTmp.contains(i_pt)) {
+        for (int idxPt = 0; idxPt < i_plg.size(); idxPt++) {
+            const QPointF& pt = i_plg[idxPt];
+            QRectF rct = boundingRect(pt, fTolerance);
+            if (rct.contains(i_pt)) {
+                bIsHit = true;
+                if (o_pHitInfo != nullptr) {
+                    o_pHitInfo->m_idxPolygonShapePoint = idxPt;
+                    o_pHitInfo->m_ptHit = pt;
+                    o_pHitInfo->m_cursor = Qt::CrossCursor;
+                }
+                break;
+            }
+        }
+        if (!bIsHit && i_plg.size() > 1) {
+            for (int idxPt = 0; idxPt < (i_plg.size()-1); idxPt++) {
+                QLineF lin(i_plg[idxPt], i_plg[idxPt+1]);
+                if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
+                    bIsHit = true;
+                    if (o_pHitInfo != nullptr) {
+                        o_pHitInfo->m_idxLineSegment = idxPt;
+                        o_pHitInfo->m_ptHit = i_pt;
+                        o_pHitInfo->m_cursor = Qt::CrossCursor;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return bIsHit;
+
+} // isPolylineHit
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given polygon is hit by the passed point.
+
+    The method first checks whether any of the polygon points has been hit.
+    If not, the method checks, whether any line segment has been hit.
+    If neither a polygon point nor a line segement has been hit and if the
+    polygons fill style is a solid pattern, the method checks, whether the
+    point is within the area of the polygon.
+
+    @param [in] i_plg The polyline to be checked.
+    @param [in] i_fillStyle
+        Fill style used to draw the polyong. For solid pattern, the polygon
+        is also hit if the point is within the area enclosed by the polygon.
+    @param [in] i_pt The point to be checked,
+    @param [in] i_fTolerance The hit tolerance in pixels.
+    @param [out] o_pHitInfo
+        If a valid pointer is passed, the hit info describes whether a polyline point
+        or a line segment has been hit (the first line segment has the index 0).
+
+    @return true, if the polygon was hit, false otherwise.
+*/
 bool ZS::Draw::isPolygonHit(
     const QPolygonF& i_plg,
     const CEnumFillStyle& i_fillStyle,
@@ -1646,32 +1755,28 @@ bool ZS::Draw::isPolygonHit(
                 break;
             }
         }
-        if (!bIsHit) {
-            if (i_plg.size() > 1) {
-                for (int idxPt = 0; idxPt < i_plg.size(); idxPt++) {
-                    QLineF lin(i_plg[idxPt], idxPt < (i_plg.size()-1) ? i_plg[idxPt+1] : i_plg[0]);
-                    if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
-                        bIsHit = true;
-                        if (o_pHitInfo != nullptr) {
-                            o_pHitInfo->m_idxLineSegment = idxPt;
-                            o_pHitInfo->m_ptHit = i_pt;
-                            o_pHitInfo->m_cursor = Qt::CrossCursor;
-                        }
-                        break;
+        if (!bIsHit && i_plg.size() > 1) {
+            for (int idxPt = 0; idxPt < i_plg.size(); idxPt++) {
+                QLineF lin(i_plg[idxPt], idxPt < (i_plg.size()-1) ? i_plg[idxPt+1] : i_plg[0]);
+                if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
+                    bIsHit = true;
+                    if (o_pHitInfo != nullptr) {
+                        o_pHitInfo->m_idxLineSegment = idxPt;
+                        o_pHitInfo->m_ptHit = i_pt;
+                        o_pHitInfo->m_cursor = Qt::CrossCursor;
                     }
+                    break;
                 }
             }
         }
-        if (!bIsHit) {
-            if (i_fillStyle == EFillStyle::SolidPattern) {
-                bIsHit = true;
-                if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-                    o_pHitInfo->m_idxLineSegment = -1;
-                    o_pHitInfo->m_ptHit = i_pt;
-                    o_pHitInfo->m_cursor = Qt::SizeAllCursor;
-                }
+        if (!bIsHit && i_fillStyle == EFillStyle::SolidPattern) {
+            bIsHit = true;
+            if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                o_pHitInfo->m_idxPolygonShapePoint = -1;
+                o_pHitInfo->m_idxLineSegment = -1;
+                o_pHitInfo->m_ptHit = i_pt;
+                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
             }
         }
     }

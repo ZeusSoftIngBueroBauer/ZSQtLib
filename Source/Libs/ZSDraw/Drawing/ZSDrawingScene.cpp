@@ -3741,7 +3741,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             if (pGraphObjPressed->isSelectionPoint()) {
                                 CGraphObjSelectionPoint* pGraphObjSelectionPointPressed = dynamic_cast<CGraphObjSelectionPoint*>(pGraphObjPressed);
                                 if (pGraphObjSelectionPointPressed != nullptr) {
-                                    // "Pressed" is not an optimal name. As in case of a selection point,
+                                    // "Pressed" is not an optimal name as in case of a selection point,
                                     // the linked object should not be deselected but should remain selected.
                                     // To simplify code, we keep this not suitable name.
                                     pGraphObjPressed = pGraphObjSelectionPointPressed->linkedObject();

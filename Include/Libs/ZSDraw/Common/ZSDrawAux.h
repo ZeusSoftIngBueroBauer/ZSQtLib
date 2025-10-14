@@ -116,6 +116,7 @@ ZSDRAWDLL_API QPolygonF rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount = -
 ZSDRAWDLL_API bool isLineHit(const QLineF& i_line, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isRectHit(const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isEllipseHit(const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
+ZSDRAWDLL_API bool isPolylineHit(const QPolygonF& i_plg, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isPolygonHit(const QPolygonF& i_plg, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API double getDistance(const QPointF& i_pt, const QLineF& i_line);
 ZSDRAWDLL_API double getRadius(const QSizeF& i_size);

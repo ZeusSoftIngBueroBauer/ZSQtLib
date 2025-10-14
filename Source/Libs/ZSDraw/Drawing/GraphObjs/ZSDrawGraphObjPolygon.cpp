@@ -418,12 +418,23 @@ void CGraphObjPolygon::showContextMenu(QGraphicsSceneMouseEvent* i_pEv)
         // the local coordinate of the selection point. We need to use the scene pos.
         QPointF ptEvLocalPos = mapFromScene(i_pEv->scenePos());
         SGraphObjHitInfo hitInfo;
-        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(ptEvLocalPos) + ")");
+        if (m_type == EGraphObjTypePolygon) {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                mthTracer.trace("-+ isPolygonHit(Pos {" + qPoint2Str(ptEvLocalPos) + "}, {" + qPolygon2Str(polygon()) + "})");
+            }
+            bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+            }
         }
-        bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+        else {
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                mthTracer.trace("-+ isPolylineHit(Pos {" + qPoint2Str(ptEvLocalPos) + "}, {" + qPolygon2Str(polygon()) + "})");
+            }
+            bool bIsPolygonHit = isPolylineHit(polygon(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                mthTracer.trace("+- isPolylineHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+            }
         }
         m_hitInfoOnShowContextMenu = hitInfo;
         if (hitInfo.isPolygonShapePointHit() && polygon().size() > 2) {
@@ -1627,7 +1638,9 @@ QRectF CGraphObjPolygon::getBoundingRect() const
     QPolygonF polygon = this->polygon();
     QRectF rctBounding = polygon.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+        const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+        QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
+        mthTracer.setMethodReturn("Item {" + qRect2Str(rctBounding) + "}, Scene {" + qRect2Str(rctBoundingSceneCoors) + "}");
     }
     return rctBounding;
 }
@@ -1705,12 +1718,24 @@ QCursor CGraphObjPolygon::getProposedCursor(const QPointF& i_pt) const
         }
         else {
             SGraphObjHitInfo hitInfo;
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                mthTracer.trace("-+ isPolygonHit(" + qPoint2Str(i_pt) + ")");
+            bool bIsPolygonHit = false;
+            if (m_type == EGraphObjTypePolygon) {
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("-+ isPolygonHit(Pos {" + qPoint2Str(i_pt) + "}, {" + qPolygon2Str(polygon()) + "})");
+                }
+                bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                }
             }
-            bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+            else {
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("-+ isPolylineHit(Pos {" + qPoint2Str(i_pt) + "}, {" + qPolygon2Str(polygon()) + "})");
+                }
+                bIsPolygonHit = isPolylineHit(polygon(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("+- isPolylineHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                }
             }
             if (bIsPolygonHit) {
                 cursor = hitInfo.m_cursor;
@@ -2098,7 +2123,9 @@ QRectF CGraphObjPolygon::boundingRect() const
         rctBounding |= m_plgLineEndArrowHead.boundingRect();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+        const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+        QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
+        mthTracer.setMethodReturn("Item {" + qRect2Str(rctBounding) + "}, Scene {" + qRect2Str(rctBoundingSceneCoors) + "}");
     }
     return rctBounding;
 }
@@ -2116,10 +2143,17 @@ QPainterPath CGraphObjPolygon::shape() const
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
 
+    #if 0
     QPainterPath painterPath = QGraphicsPolygonItem::shape();
+    #else
     //// QGraphicsPolygonItem::shape() throws an exception if any segment has a very small
     //// length (< 0.5 pixels). So we do this on our own ...
-    //QPainterPath painterPath;
+    QPainterPath painterPath;
+    painterPath.addPolygon(polygon());
+    if (m_type == EGraphObjTypePolygon) {
+        painterPath.closeSubpath();
+    }
+    #endif
     //QPolygonF polygon = this->polygon();
     //if (polygon.size() > 0) {
     //    painterPath.moveTo(polygon.at(0));
@@ -2198,26 +2232,26 @@ void CGraphObjPolygon::paint(
 
     QPen pn = pen();
     QBrush brsh;
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        if (isSelected()) {
-            pn.setColor(s_selectionColor);
-            pn.setWidth(3 + m_drawSettings.penWidth());
-        }
-        else {
-            pn.setColor(s_highlightColor);
-            pn.setWidth(3 + m_drawSettings.penWidth());
-        }
-        pn.setStyle(Qt::SolidLine);
-        QPainterPath outline;
-        outline.moveTo(polygon[0]);
-        for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
-            outline.lineTo(polygon[idxPt]);
-        }
-        if (m_type == EGraphObjTypePolygon) {
-            outline.lineTo(polygon[0]);
-        }
-        i_pPainter->strokePath(outline, pn);
-    }
+    //if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+    //    if (isSelected()) {
+    //        pn.setColor(s_selectionColor);
+    //        pn.setWidth(3 + m_drawSettings.penWidth());
+    //    }
+    //    else {
+    //        pn.setColor(s_highlightColor);
+    //        pn.setWidth(3 + m_drawSettings.penWidth());
+    //    }
+    //    pn.setStyle(Qt::SolidLine);
+    //    QPainterPath outline;
+    //    outline.moveTo(polygon[0]);
+    //    for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
+    //        outline.lineTo(polygon[idxPt]);
+    //    }
+    //    if (m_type == EGraphObjTypePolygon) {
+    //        outline.lineTo(polygon[0]);
+    //    }
+    //    i_pPainter->strokePath(outline, pn);
+    //}
     i_pPainter->setRenderHints(s_painterRenderHints);
     pn.setColor(m_drawSettings.penColor());
     pn.setWidth(m_drawSettings.penWidth());
@@ -2227,53 +2261,55 @@ void CGraphObjPolygon::paint(
         brsh.setColor(m_drawSettings.fillColor());
         brsh.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle()));
         i_pPainter->setBrush(brsh);
-        i_pPainter->drawPolygon(polygon);
+        //i_pPainter->drawPolygon(polygon);
     }
     else {
-        i_pPainter->drawPolyline(polygon);
+        //i_pPainter->drawPolyline(polygon);
     }
+    QPainterPath painterPath = shape();
+    i_pPainter->drawPath(painterPath);
 
-    CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
-    CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.lineEndStyle(ELinePoint::End);
-    if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal) {
-        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
-        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
-        pn.setWidth(1);
-        pn.setStyle(Qt::SolidLine);
-        i_pPainter->setPen(pn);
-        if (lineEndStyleLineStart != ELineEndStyle::Normal) {
-            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)));
-            i_pPainter->setBrush(brsh);
-            if (baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine) {
-                i_pPainter->drawPolyline(m_plgLineStartArrowHead);
-            }
-            else {
-                if (m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
-                    i_pPainter->setBrush(Qt::white);
-                }
-                else {
-                    i_pPainter->setBrush(Qt::black);
-                }
-                i_pPainter->drawPolygon(m_plgLineStartArrowHead);
-            }
-        }
-        if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
-            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)) );
-            i_pPainter->setBrush(brsh);
-            if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
-                i_pPainter->drawPolyline(m_plgLineEndArrowHead);
-            }
-            else {
-                if (m_drawSettings.arrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
-                    i_pPainter->setBrush(Qt::white);
-                }
-                else {
-                    i_pPainter->setBrush(Qt::black);
-                }
-                i_pPainter->drawPolygon(m_plgLineEndArrowHead);
-            }
-        }
-    }
+    //CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
+    //CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.lineEndStyle(ELinePoint::End);
+    //if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal) {
+    //    CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
+    //    CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
+    //    pn.setWidth(1);
+    //    pn.setStyle(Qt::SolidLine);
+    //    i_pPainter->setPen(pn);
+    //    if (lineEndStyleLineStart != ELineEndStyle::Normal) {
+    //        brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)));
+    //        i_pPainter->setBrush(brsh);
+    //        if (baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine) {
+    //            i_pPainter->drawPolyline(m_plgLineStartArrowHead);
+    //        }
+    //        else {
+    //            if (m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
+    //                i_pPainter->setBrush(Qt::white);
+    //            }
+    //            else {
+    //                i_pPainter->setBrush(Qt::black);
+    //            }
+    //            i_pPainter->drawPolygon(m_plgLineStartArrowHead);
+    //        }
+    //    }
+    //    if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
+    //        brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)) );
+    //        i_pPainter->setBrush(brsh);
+    //        if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
+    //            i_pPainter->drawPolyline(m_plgLineEndArrowHead);
+    //        }
+    //        else {
+    //            if (m_drawSettings.arrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
+    //                i_pPainter->setBrush(Qt::white);
+    //            }
+    //            else {
+    //                i_pPainter->setBrush(Qt::black);
+    //            }
+    //            i_pPainter->drawPolygon(m_plgLineEndArrowHead);
+    //        }
+    //    }
+    //}
     i_pPainter->restore();
 }
 
@@ -2307,12 +2343,24 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
             if (m_editMode == EEditMode::ModifyingPolygonPoints) {
                 if (i_pEv->modifiers() & Qt::ControlModifier) {
                     SGraphObjHitInfo hitInfo;
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
+                    bool bIsPolygonHit = false;
+                    if (m_type == EGraphObjTypePolygon) {
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("-+ isPolygonHit(Pos {" + qPoint2Str(i_pEv->pos()) + "}, {" + qPolygon2Str(polygon()) + "})");
+                        }
+                        bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                        }
                     }
-                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                    else {
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("-+ isPolylineHit(Pos {" + qPoint2Str(i_pEv->pos()) + "}, {" + qPolygon2Str(polygon()) + "})");
+                        }
+                        bIsPolygonHit = isPolylineHit(polygon(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("+- isPolylineHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                        }
                     }
                     if (bIsPolygonHit) {
                         cursor = hitInfo.m_cursor;
@@ -2358,12 +2406,24 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
             if (m_editMode == EEditMode::ModifyingPolygonPoints) {
                 if (i_pEv->modifiers() & Qt::ControlModifier) {
                     SGraphObjHitInfo hitInfo;
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
+                    bool bIsPolygonHit = false;
+                    if (m_type == EGraphObjTypePolygon) {
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("-+ isPolygonHit(Pos {" + qPoint2Str(i_pEv->pos()) + "}, {" + qPolygon2Str(polygon()) + "})");
+                        }
+                        bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                        }
                     }
-                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                    else {
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("-+ isPolylineHit(Pos {" + qPoint2Str(i_pEv->pos()) + "}, {" + qPolygon2Str(polygon()) + "})");
+                        }
+                        bIsPolygonHit = isPolylineHit(polygon(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("+- isPolylineHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                        }
                     }
                     if (bIsPolygonHit) {
                         cursor = hitInfo.m_cursor;
@@ -2410,12 +2470,24 @@ void CGraphObjPolygon::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
             if (m_editMode == EEditMode::ModifyingPolygonPoints) {
                 if (i_pEv->modifiers() & Qt::ControlModifier) {
                     SGraphObjHitInfo hitInfo;
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(i_pEv->pos()) + ")");
+                    bool bIsPolygonHit = false;
+                    if (m_type == EGraphObjTypePolygon) {
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("-+ isPolygonHit(Pos {" + qPoint2Str(i_pEv->pos()) + "}, {" + qPolygon2Str(polygon()) + "})");
+                        }
+                        bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                        }
                     }
-                    bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-                    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                        mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                    else {
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("-+ isPolylineHit(Pos {" + qPoint2Str(i_pEv->pos()) + "}, {" + qPolygon2Str(polygon()) + "})");
+                        }
+                        bIsPolygonHit = isPolylineHit(polygon(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                            mthTracer.trace("+- isPolylineHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                        }
                     }
                     if (bIsPolygonHit) {
                         cursor = hitInfo.m_cursor;
@@ -2500,12 +2572,23 @@ void CGraphObjPolygon::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             // the local coordinate of the selection point. We need to use the scene pos.
             QPointF ptEvLocalPos = mapFromScene(i_pEv->scenePos());
             SGraphObjHitInfo hitInfo;
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                mthTracer.trace("-+ isPolygonHit([" + QString::number(polygon().size()) + "], .., Pos {" + qPoint2Str(ptEvLocalPos) + ")");
+            if (m_type == EGraphObjTypePolygon) {
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("-+ isPolygonHit(Pos {" + qPoint2Str(ptEvLocalPos) + "}, {" + qPolygon2Str(polygon()) + "})");
+                }
+                bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                }
             }
-            bool bIsPolygonHit = isPolygonHit(polygon(), m_drawSettings.fillStyle(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                mthTracer.trace("+- isPolygonHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+            else {
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("-+ isPolylineHit(Pos {" + qPoint2Str(ptEvLocalPos) + "}, {" + qPolygon2Str(polygon()) + "})");
+                }
+                bool bIsPolygonHit = isPolylineHit(polygon(), ptEvLocalPos, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+                if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                    mthTracer.trace("+- isPolylineHit(HitInfo {" + hitInfo.toString() + "}): " + bool2Str(bIsPolygonHit));
+                }
             }
             if (hitInfo.isNull()) {
                 if (i_pEv->modifiers() == Qt::NoModifier) {
