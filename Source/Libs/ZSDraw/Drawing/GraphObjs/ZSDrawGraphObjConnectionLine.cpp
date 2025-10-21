@@ -1670,26 +1670,26 @@ QPainterPath CGraphObjConnectionLine::shape() const
     QPainterPath painterPath;
     painterPath.addPolygon(polygon());
     #endif
-    //if (!m_plgLineStartArrowHead.empty()) {
-    //    QPolygonF plgArrowHead = m_plgLineStartArrowHead;
-    //    // Add a closed polygon if a base line should be drawn.
-    //    if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) != EArrowHeadBaseLineType::NoLine) {
-    //        plgArrowHead.append(plgArrowHead.first());
-    //    }
-    //    painterPath.closeSubpath();
-    //    painterPath.moveTo(0.0, 0.0);
-    //    painterPath.addPolygon(plgArrowHead);
-    //}
-    //if (!m_plgLineEndArrowHead.empty()) {
-    //    QPolygonF plgArrowHead = m_plgLineEndArrowHead;
-    //    // Add a closed polygon if a base line should be drawn.
-    //    if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) != EArrowHeadBaseLineType::NoLine) {
-    //        plgArrowHead.append(plgArrowHead.first());
-    //    }
-    //    painterPath.closeSubpath();
-    //    painterPath.moveTo(0.0, 0.0);
-    //    painterPath.addPolygon(plgArrowHead);
-    //}
+    if (!m_plgLineStartArrowHead.empty()) {
+        painterPath.moveTo(0.0, 0.0);
+        QPolygonF plgArrowHead = m_plgLineStartArrowHead;
+        painterPath.addPolygon(plgArrowHead);
+        // Add a closed polygon if a base line should be drawn.
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start) != EArrowHeadBaseLineType::NoLine) {
+            painterPath.closeSubpath();
+        }
+        //plgArrowHead.append(plgArrowHead.first());
+        //painterPath.closeSubpath();
+    }
+    if (!m_plgLineEndArrowHead.empty()) {
+        painterPath.moveTo(0.0, 0.0);
+        QPolygonF plgArrowHead = m_plgLineEndArrowHead;
+        painterPath.addPolygon(plgArrowHead);
+        // Add a closed polygon if a base line should be drawn.
+        if (m_drawSettings.arrowHeadBaseLineType(ELinePoint::End) != EArrowHeadBaseLineType::NoLine) {
+            painterPath.closeSubpath();
+        }
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
@@ -1727,6 +1727,7 @@ void CGraphObjConnectionLine::paint(
     }
 
     i_pPainter->save();
+    i_pPainter->setRenderHints(s_painterRenderHints);
 
     QPen pn = pen();
     //if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
@@ -1746,56 +1747,61 @@ void CGraphObjConnectionLine::paint(
     //    }
     //    i_pPainter->strokePath(outline, pn);
     //}
-    i_pPainter->setRenderHints(s_painterRenderHints);
     pn.setColor(m_drawSettings.penColor());
     pn.setWidth(m_drawSettings.penWidth());
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
-    //i_pPainter->drawPolyline(polygon);
-    QPainterPath painterPath = shape();
-    i_pPainter->drawPath(painterPath);
-
-    //CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
-    //CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.lineEndStyle(ELinePoint::End);
-    //if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal) {
-    //    CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
-    //    CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
-    //    pn.setWidth(1);
-    //    pn.setStyle(Qt::SolidLine);
-    //    i_pPainter->setPen(pn);
-    //    if (lineEndStyleLineStart != ELineEndStyle::Normal) {
-    //        brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)));
-    //        i_pPainter->setBrush(brsh);
-    //        if (baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine) {
-    //            i_pPainter->drawPolyline(m_plgLineStartArrowHead);
-    //        }
-    //        else {
-    //            if (m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
-    //                i_pPainter->setBrush(Qt::white);
-    //            }
-    //            else {
-    //                i_pPainter->setBrush(Qt::black);
-    //            }
-    //            i_pPainter->drawPolygon(m_plgLineStartArrowHead);
-    //        }
-    //    }
-    //    if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
-    //        brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)) );
-    //        i_pPainter->setBrush(brsh);
-    //        if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
-    //            i_pPainter->drawPolyline(m_plgLineEndArrowHead);
-    //        }
-    //        else {
-    //            if (m_drawSettings.arrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
-    //                i_pPainter->setBrush(Qt::white);
-    //            }
-    //            else {
-    //                i_pPainter->setBrush(Qt::black);
-    //            }
-    //            i_pPainter->drawPolygon(m_plgLineEndArrowHead);
-    //        }
-    //    }
-    //}
+    if (m_bPaintShapePath) {
+        paintShapePath(i_pPainter);
+    }
+    else {
+        i_pPainter->drawPolyline(polygon);
+        CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
+        CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.lineEndStyle(ELinePoint::End);
+        if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal) {
+            QBrush brsh;
+            CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
+            CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
+            pn.setWidth(1);
+            pn.setStyle(Qt::SolidLine);
+            i_pPainter->setPen(pn);
+            if (lineEndStyleLineStart != ELineEndStyle::Normal) {
+                brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)));
+                i_pPainter->setBrush(brsh);
+                if (baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine) {
+                    i_pPainter->drawPolyline(m_plgLineStartArrowHead);
+                }
+                else {
+                    if (m_drawSettings.arrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
+                        i_pPainter->setBrush(Qt::white);
+                    }
+                    else {
+                        i_pPainter->setBrush(Qt::black);
+                    }
+                    i_pPainter->drawPolygon(m_plgLineStartArrowHead);
+                }
+            }
+            if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
+                brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)) );
+                i_pPainter->setBrush(brsh);
+                if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
+                    i_pPainter->drawPolyline(m_plgLineEndArrowHead);
+                }
+                else {
+                    if (m_drawSettings.arrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
+                        i_pPainter->setBrush(Qt::white);
+                    }
+                    else {
+                        i_pPainter->setBrush(Qt::black);
+                    }
+                    i_pPainter->drawPolygon(m_plgLineEndArrowHead);
+                }
+            }
+        }
+    }
+    if (m_bPaintBoundingRect) {
+        paintBoundingRect(i_pPainter);
+    }
     i_pPainter->restore();
 }
 

@@ -831,6 +831,491 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
     });
     strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 200.0), QPointF(170.710678, 129.289322)), ", ", 'f', iPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // isLineHit
+    //--------------
+
+    SGraphObjHitInfo hitInfo;
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " isLineHit",
+        /* strOperation    */ "Draw::isLineHit",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepIsLineHit(ZS::Test::CTestStep*)) );
+    strlstExpectedValues.clear();
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(-10.0, -10.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(0.0, 0.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 0;
+    hitInfo.m_ptHit = QPointF(0.0, 0.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(10.0, 10.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 0;
+    hitInfo.m_ptHit = QPointF(10.0, 10.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(50.0, 50.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 0;
+    hitInfo.m_ptHit = QPointF(50.0, 50.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(90.0, 90.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 0;
+    hitInfo.m_ptHit = QPointF(90.0, 90.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(100.0, 100.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 1;
+    hitInfo.m_ptHit = QPointF(100.0, 100.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(110.0, 110.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(52.0, 48.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 0;
+    hitInfo.m_ptHit = QPointF(50.0, 50.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(48.0, 52.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 0;
+    hitInfo.m_ptHit = QPointF(50.0, 50.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(53.0, 47.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
+        {"Point", QPointF(47.0, 53.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // isRectHit
+    //--------------
+
+    QRectF rect(QPointF(100.0, 100.0), QSizeF(100.0, 100.0));
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " isRectHit",
+        /* strOperation    */ "Draw::isRectHit",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepIsRectHit(ZS::Test::CTestStep*)) );
+    strlstExpectedValues.clear();
+
+    pTestStep->addDataRow({
+        {"Rect", rect},
+        {"FillStyle", CEnumFillStyle(EFillStyle::None).toString()},
+        {"Point", QPointF(150.0, 150.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Rect", rect},
+        {"FillStyle", CEnumFillStyle(EFillStyle::SolidPattern).toString()},
+        {"Point", QPointF(150.0, 150.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_ptHit = QPointF(150.0, 150.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // isEllipseHit
+    //--------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " isEllipseHit",
+        /* strOperation    */ "Draw::isEllipseHit",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepIsEllipseHit(ZS::Test::CTestStep*)) );
+    strlstExpectedValues.clear();
+
+    pTestStep->addDataRow({
+        {"Rect", rect},
+        {"FillStyle", CEnumFillStyle(EFillStyle::None).toString()},
+        {"Point", QPointF(150.0, 150.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Rect", rect},
+        {"FillStyle", CEnumFillStyle(EFillStyle::SolidPattern).toString()},
+        {"Point", QPointF(150.0, 150.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_ptHit = QPointF(150.0, 150.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // isPolylineHit
+    //--------------
+
+    QPolygonF polygon({QPointF(300.0, 200.0), QPointF(280.0, 250.0), QPointF(290.0, 300.0), QPointF(280.0, 350.0), QPointF(300.0, 400.0)});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " isPolylineHit",
+        /* strOperation    */ "Draw::isPolylineHit",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepIsPolylineHit(ZS::Test::CTestStep*)) );
+    strlstExpectedValues.clear();
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(300.0, 200.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 0;
+    hitInfo.m_ptHit = QPointF(300.0, 200.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(290.0, 225.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 0;
+    hitInfo.m_ptHit = QPointF(290.0, 225.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(280.0, 250.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 1;
+    hitInfo.m_ptHit = QPointF(280.0, 250.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(296.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(295.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(294.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(289.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(288.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(285.1, 275.6);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(287.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(285.1, 275.4);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(286.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(285.0, 275.2);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(285.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(284.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(285.0, 274.8);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(283.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(284.9, 274.6);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(282.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(284.9, 274.4);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(282.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 1;
+    hitInfo.m_ptHit = QPointF(284.9, 274.4);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(290.0, 300.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 2;
+    hitInfo.m_ptHit = QPointF(290.0, 300.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(285.0, 325.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 2;
+    hitInfo.m_ptHit = QPointF(285.0, 325.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(280.0, 350.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 3;
+    hitInfo.m_ptHit = QPointF(280.0, 350.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(290.0, 375.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 3;
+    hitInfo.m_ptHit = QPointF(290.0, 375.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(300.0, 400.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxPolygonShapePoint = 4;
+    hitInfo.m_ptHit = QPointF(300.0, 400.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // isPolygonHit
+    //--------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " isPolygonHit",
+        /* strOperation    */ "Draw::isPolygonHit",
+        /* pGrpParent      */ pGrpAuxMethods,
+        /* szDoTestStepFct */ SLOT(doTestStepIsPolygonHit(ZS::Test::CTestStep*)) );
+    strlstExpectedValues.clear();
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"FillStyle", CEnumFillStyle(EFillStyle::None).toString()},
+        {"Point", QPointF(296.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"FillStyle", CEnumFillStyle(EFillStyle::SolidPattern).toString()},
+        {"Point", QPointF(296.0, 275.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_ptHit = QPointF(296.0, 275.0);
+    hitInfo.m_cursor = Qt::SizeAllCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------
@@ -1217,6 +1702,164 @@ void CTest::doTestStepGetPerpendicularLine(ZS::Test::CTestStep* i_pTestStep)
         }
         QLineF lineResult = ZS::Draw::getPerpendicularLine(line, pt, fMinLength);
         strlstResultValues.append(qLine2Str(lineResult, ", ", 'f', iPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepIsLineHit(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepIsLineHit",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QLineF line = dataRow["Line"].toLineF();
+        QPointF pt = dataRow["Point"].toPointF();
+        double fTolerance = dataRow["Tolerance"].toDouble();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        SGraphObjHitInfo hitInfoResult;
+        bool bIsHit = ZS::Draw::isLineHit(line, pt, fTolerance, &hitInfoResult);
+        strlstResultValues.append(hitInfoResult.toString());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepIsRectHit(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepIsRectHit",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QRectF rect = dataRow["Rect"].toRectF();
+        CEnumFillStyle fillStyle = dataRow["FillStyle"].toString();
+        QPointF pt = dataRow["Point"].toPointF();
+        double fTolerance = dataRow["Tolerance"].toDouble();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        SGraphObjHitInfo hitInfoResult;
+        bool bIsHit = ZS::Draw::isRectHit(rect, fillStyle, pt, fTolerance, &hitInfoResult);
+        strlstResultValues.append(hitInfoResult.toString());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepIsEllipseHit(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepIsEllipseHit",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QRectF rect = dataRow["Rect"].toRectF();
+        CEnumFillStyle fillStyle = dataRow["FillStyle"].toString();
+        QPointF pt = dataRow["Point"].toPointF();
+        double fTolerance = dataRow["Tolerance"].toDouble();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        SGraphObjHitInfo hitInfoResult;
+        bool bIsHit = ZS::Draw::isEllipseHit(rect, fillStyle, pt, fTolerance, &hitInfoResult);
+        strlstResultValues.append(hitInfoResult.toString());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepIsPolylineHit(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepIsPolylineHit",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QPolygonF polygon = dataRow["Polygon"].value<QPolygonF>();
+        QPointF pt = dataRow["Point"].toPointF();
+        double fTolerance = dataRow["Tolerance"].toDouble();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        SGraphObjHitInfo hitInfoResult;
+        bool bIsHit = ZS::Draw::isPolylineHit(polygon, pt, fTolerance, &hitInfoResult);
+        strlstResultValues.append(hitInfoResult.toString());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepIsPolygonHit(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepIsPolygonHit",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QPolygonF polygon = dataRow["Polygon"].value<QPolygonF>();
+        CEnumFillStyle fillStyle = dataRow["FillStyle"].toString();
+        QPointF pt = dataRow["Point"].toPointF();
+        double fTolerance = dataRow["Tolerance"].toDouble();
+        int iPrecision = 1;
+        if (dataRow.contains("ResultValuesPrecision")) {
+            iPrecision = dataRow["ResultValuesPrecision"].toInt();
+        }
+        SGraphObjHitInfo hitInfoResult;
+        bool bIsHit = ZS::Draw::isPolygonHit(polygon, fillStyle, pt, fTolerance, &hitInfoResult);
+        strlstResultValues.append(hitInfoResult.toString());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -2389,9 +3032,20 @@ void CTest::doTestStepSetDrawSettings(ZS::Test::CTestStep* i_pTestStep)
         for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
             QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
             QString strMethod = dataRow["Method"].toString();
-            if (strMethod == "setPenColor") {
-                QColor penColor = dataRow["PenColor"].toString();
-                pGraphObj->setPenColor(penColor, bImmediatelyApplySetting);
+            if (strMethod == "setPaintBoundingRect") {
+                bool bPaintRect = dataRow["PaintRect"].toBool();
+                pGraphObj->setPaintBoundingRect(bPaintRect);
+            }
+            else if (strMethod == "setPaintShapePath") {
+                bool bPaintPath = dataRow["PaintPath"].toBool();
+                pGraphObj->setPaintShapePath(bPaintPath);
+            }
+            else if (strMethod == "setPenColor") {
+                QString strColor = dataRow["PenColor"].toString();
+                QColor penColor = strColor;
+                if (penColor.isValid()) {
+                    pGraphObj->setPenColor(penColor, bImmediatelyApplySetting);
+                }
             }
             else if (strMethod == "setPenWidth") {
                 int iPenWidth = dataRow["PenWidth"].toInt();

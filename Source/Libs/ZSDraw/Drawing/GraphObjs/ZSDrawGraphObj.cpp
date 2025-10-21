@@ -140,63 +140,18 @@ CGraphObj::CGraphObj(
     CIdxTreeEntry::EEntryType i_idxTreeEntryType ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
-    m_bDtorInProgress(false),
-    m_bAboutToBeDestroyedEmitted(false),
-    m_bForceConversionToSceneCoors(false),
     m_pDrawingScene(i_pDrawingScene),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
     m_strType(i_strType),
     m_drawSettings(i_type),
-    m_pDrawSettingsTmp(nullptr),
     m_physValSizeMinimum(*i_pDrawingScene),
     m_physValSizeMaximum(*i_pDrawingScene),
     m_physValSizeFixed(*i_pDrawingScene),
-    m_arAlignments(),
-    m_bIsHighlighted(false),
-    m_editMode(EEditMode::None),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
-    m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
-    m_pGraphObjGroupParent(nullptr),
     m_physValRectParentGroupOrig(*i_pDrawingScene),
-    m_fParentGroupScaleX(1.0),
-    m_fParentGroupScaleY(1.0),
     m_arpSelPtsPolygon(),
-    m_arpSelPtsBoundingRect(CEnumSelectionPoint::count()),
-    m_strlstPredefinedLabelNames(),
-    m_hshLabelDscrs(),
-    m_hshpLabels(),
-    m_strlstGeometryLabelNames(),
-    m_hshGeometryLabelDscrs(),
-    m_hshpGeometryLabels(),
-    m_strToolTip(),
-    m_strEditInfo(),
-    m_pMenuContext(nullptr),
-    m_pActionMenuContextFormat(nullptr),
-    m_hitInfoOnShowContextMenu(),
-    m_iItemChangeBlockedCounter(0),
-    m_iItemChangeUpdatePhysValCoorsBlockedCounter(0),
-    m_iGeometryOnSceneChangedSignalBlockedCounter(0),
-    m_iIgnoreParentGeometryChange(0),
-    m_iTraceBlockedCounter(0),
-    m_iTracePositionInfoBlockedCounter(0),
-    m_iTraceThisPositionInfoInfoBlockedCounter(0),
-    m_iTraceParentGroupPositionInfoInfoBlockedCounter(0),
-    m_iTraceGraphicsItemStatesInfoBlockedCounter(0),
-    m_iTraceGraphObjStatesInfoBlockedCounter(0),
-    m_iTraceDrawSettingsInfoBlockedCounter(0),
-    m_pTrcAdminObjCtorsAndDtor(nullptr),
-    m_pTrcAdminObjItemChange(nullptr),
-    m_pTrcAdminObjBoundingRect(nullptr),
-    m_pTrcAdminObjCoordinateConversions(nullptr),
-    m_pTrcAdminObjCursor(nullptr),
-    m_pTrcAdminObjPaint(nullptr),
-    m_pTrcAdminObjSceneEventFilter(nullptr),
-    m_pTrcAdminObjHoverEnterLeaveEvents(nullptr),
-    m_pTrcAdminObjHoverMoveEvents(nullptr),
-    m_pTrcAdminObjMouseClickEvents(nullptr),
-    m_pTrcAdminObjMouseMoveEvents(nullptr),
-    m_pTrcAdminObjKeyEvents(nullptr)
+    m_arpSelPtsBoundingRect(CEnumSelectionPoint::count())
 {
     QObject::connect(
         m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
@@ -7991,57 +7946,119 @@ protected: // overridables
 //}
 
 /*==============================================================================
-protected: // overridable auxiliary instance methods (method tracing)
+public: // auxiliary instance methods (debugging)
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-///*! @brief Internal method to calculate and set the current scene position of the object.
-//*/
-//void CGraphObj::updateInternalScenePos()
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::updateInternalScenePos",
-//        /* strAddInfo   */ "" );
-//
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-//    if (pGraphicsItem != nullptr) {
-//        QPointF ptScenePos = pGraphicsItem->scenePos();
-//        setInternalScenePos(ptScenePos);
-//    }
-//}
+//------------------------------------------------------------------------------
+/*! @brief Returns true, if the bounding rectangle should be painted for debugging
+           purposes, false otherwise.
+*/
+bool CGraphObj::isPaintBoundingRectSet() const
+//------------------------------------------------------------------------------
+{
+    return m_bPaintBoundingRect;
+}
 
-////------------------------------------------------------------------------------
-///*! @brief Internal method to set the current scene position of the object.
-//
-//    If the current scene position has been changed the scenePosChanged signal
-//    is emitted.
-//
-//    @param [in] i_pos
-//        New scene position of the object.
-//*/
-//void CGraphObj::setInternalScenePos(const QPointF& i_pos)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = point2Str(i_pos);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::setInternalScenePos",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if (m_ptScenePos != i_pos) {
-//        m_ptScenePos = i_pos;
-//        emit_scenePosChanged();
-//    }
-//}
+//------------------------------------------------------------------------------
+/*! @brief Sets the flag, whether the bounding rectangle should be painted for
+           debugging purposes.
+
+    @param [in] i_bPaintRect Flag to active painting of the bounding rectangle.
+*/
+void CGraphObj::setPaintBoundingRect(bool i_bPaintRect)
+//------------------------------------------------------------------------------
+{
+    if (m_bPaintBoundingRect != i_bPaintRect) {
+        m_bPaintBoundingRect = i_bPaintRect;
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItemThis != nullptr && m_pDrawingScene != nullptr) {
+            QRectF rctBounding = pGraphicsItemThis->boundingRect();
+            rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
+            m_pDrawingScene->update(rctBounding);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true, if the shape path should be painted for debugging
+           purposes, false otherwise.
+*/
+bool CGraphObj::isPaintShapePathSet() const
+//------------------------------------------------------------------------------
+{
+    return m_bPaintShapePath;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the flag, whether the bounding rectangle should be painted for
+           debugging purposes.
+
+    @param [in] i_bPaintPath Flag to active painting of the shape path.
+*/
+void CGraphObj::setPaintShapePath(bool i_bPaintPath)
+//------------------------------------------------------------------------------
+{
+    if (m_bPaintShapePath != i_bPaintPath) {
+        m_bPaintShapePath = i_bPaintPath;
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItemThis != nullptr && m_pDrawingScene != nullptr) {
+            QRectF rctBounding = pGraphicsItemThis->boundingRect();
+            rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
+            m_pDrawingScene->update(rctBounding);
+        }
+    }
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods (debugging)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Paints the bounding rectangle for debugging purposes.
+
+    @param [in] i_pPainter Painter to be used.
+*/
+void CGraphObj::paintBoundingRect(QPainter* i_pPainter)
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (i_pPainter != nullptr && pGraphicsItemThis != nullptr) {
+        i_pPainter->save();
+        QPen pen(Qt::red);
+        pen.setStyle(Qt::DotLine);
+        pen.setWidth(1);
+        i_pPainter->setPen(pen);
+        QRectF rctBounding = pGraphicsItemThis->boundingRect();
+        i_pPainter->drawRect(rctBounding);
+        i_pPainter->restore();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Paints the bounding rectangle for debugging purposes.
+
+    @param [in] i_pPainter Painter to be used.
+*/
+void CGraphObj::paintShapePath(QPainter* i_pPainter)
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (i_pPainter != nullptr && pGraphicsItemThis != nullptr) {
+        i_pPainter->save();
+        QPen pen;
+        pen.setColor(m_drawSettings.penColor());
+        pen.setWidth(m_drawSettings.penWidth());
+        pen.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
+        i_pPainter->setPen(pen);
+        QPainterPath painterPath = pGraphicsItemThis->shape();
+        i_pPainter->drawPath(painterPath);
+        i_pPainter->restore();
+    }
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods (method tracing)
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Internal method to trace setting the parent group's physical rectangle.

@@ -1477,6 +1477,13 @@ QString ZS::System::qCursorShape2Str( Qt::CursorShape i_shape )
     return SEnumEntry::enumerator2Str(s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_shape);
 }
 
+//------------------------------------------------------------------------------
+Qt::CursorShape ZS::System::str2CursorShape(const QString& i_strCursorShape, bool* o_pbOk)
+//------------------------------------------------------------------------------
+{
+    return static_cast<Qt::CursorShape>(SEnumEntry::str2Enumerator(
+        s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_strCursorShape, -1, Qt::CaseInsensitive, o_pbOk));
+}
 
 /*==============================================================================
 Enum Qt::DropAction

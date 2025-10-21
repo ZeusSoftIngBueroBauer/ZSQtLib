@@ -759,6 +759,14 @@ protected: // overridables
     //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
+public: // auxiliary instance methods (debugging)
+    bool isPaintBoundingRectSet() const;
+    void setPaintBoundingRect(bool i_bPaintRect);
+    bool isPaintShapePathSet() const;
+    void setPaintShapePath(bool i_bPaintPath);
+protected: // auxiliary instance methods (debugging)
+    virtual void paintBoundingRect(QPainter* i_pPainter);
+    virtual void paintShapePath(QPainter* i_pPainter);
 protected: // overridable auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
     double setParentGroupScaleX(double i_fScaleX);
@@ -826,21 +834,21 @@ protected: // class members
     static QColor s_highlightColor;
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
-    bool m_bDtorInProgress;
+    bool m_bDtorInProgress = false;
     /*!< Flag to indicate that the signal aboutToDestroyed has been emitted.
          This flag should ensure that the signal is emitted just once by
          the top most class in the hierachy of class inheritance. */
-    bool m_bAboutToBeDestroyedEmitted;
+    bool m_bAboutToBeDestroyedEmitted = false;
     /*!< When changing the drawing size in metric unit dimension
          (e.g. on changing the Y Scale Orientation) the scene coordinates
          must be newly calculated even if the original values stored in
          metric units have not been changed. On changing the drawing size
          the drawing scene will emit "drawingSizeChanged" and the slot method
          "onDrawingSizeChanged" of the graphical object must set this flag to true. */
-    bool m_bForceConversionToSceneCoors;
+    bool m_bForceConversionToSceneCoors = false;
     /*!< Pointer to drawing scene the graphical object belongs to.
          Is set if the graphical object is added to the scene. */
-    CDrawingScene* m_pDrawingScene;
+    CDrawingScene* m_pDrawingScene = nullptr;
     /*!< Graphical objects are called via factories which must be registered at the drawing scene.
          Using registered factories allows to also create user defined graphical objects.
          The name of the factories group name is stored here. */
@@ -869,7 +877,7 @@ protected: // instance members
          settings from the temporary buffer.
          For the first change to be cached the temporary buffer will be allocated.
          After updating the changes the temporary buffer will be deleted. */
-    CDrawSettings* m_pDrawSettingsTmp;
+    CDrawSettings* m_pDrawSettingsTmp = nullptr;
     /*!< If valid, defines the minimum size of the graphical object. */
     CPhysValSize m_physValSizeMinimum;
     /*!< If valid, defines the maximum size of the graphical object. */
@@ -884,10 +892,10 @@ protected: // instance members
     /*!< Flag indicating whether the graphical object is highlighted.
          Objects are highlighted if they are selected via the graph objects index tree.
          A highlighted but not selected object does not show selection points. */
-    bool m_bIsHighlighted;
+    bool m_bIsHighlighted = false;
     /*!< Current edit mode. The current edit mode defines how the graphical object for example
          handels mouse events passed to the selection points. */
-    CEnumEditMode m_editMode;
+    CEnumEditMode m_editMode = EEditMode::None;
     ///*!< If the graphical object is currently being resized this member defines how the object
     //     will be resized. */
     //CEnumEditResizeMode m_editResizeMode;
@@ -908,7 +916,7 @@ protected: // instance members
     /*!< Current parent group of the item. Updated by the slot "onParentGroupChanged". Keeping this
          pointer allows to access the previous parent group if the object is reparented to retrieve
          and update (move) transformation parameters from the previous to the new parent group. */
-    CGraphObjGroup* m_pGraphObjGroupParent;
+    CGraphObjGroup* m_pGraphObjGroupParent = nullptr;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated
          using the original group rectangle and current group rectangle. As long as the item
@@ -916,8 +924,8 @@ protected: // instance members
     CPhysValRect m_physValRectParentGroupOrig;
     /*!< Current scale factor for width and height of the parent group.
          Calculated by taking m_physValRectGroupOrig into account. */
-    double m_fParentGroupScaleX;
-    double m_fParentGroupScaleY;
+    double m_fParentGroupScaleX = 1.0;
+    double m_fParentGroupScaleY = 1.0;
     /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
     //QTransform m_transform;
     ///*!< Current scene position of the object. To keep the relative position of selection points
@@ -984,8 +992,8 @@ protected: // instance members
     /*!< Current edit info. */
     QString m_strEditInfo;
     /*!< Context menu. Usually opened as a popup when right clicking the object. */
-    QMenu* m_pMenuContext;
-    QAction* m_pActionMenuContextFormat;
+    QMenu* m_pMenuContext = nullptr;
+    QAction* m_pActionMenuContextFormat = nullptr;
 protected: // !!! OBSOLETE !!! instance members
     /*!< Simulation Functions. */
     //QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
@@ -1001,7 +1009,7 @@ protected: // instance members
 protected: // instance members
     /*!< If the itemChange method should be blocked this member may be set to a value greater than 0
          e.g. using CRefCountGuard. */
-    int m_iItemChangeBlockedCounter;
+    int m_iItemChangeBlockedCounter = 0;
     /*!< When modifying the geometry of graphical objects via external "setGeometry" methods
          like "setLine" or "setRect", the position of the item may be changed and "itemChange"
          will be triggered with "positionHasChanged". The "itemChange" method with flag
@@ -1012,43 +1020,44 @@ protected: // instance members
          the external "setGeometry" updating the position of the item.
          In this case the BlockedCounter will (or has to) be set to a value greater than 0
          (e.g. using CRefCountGuard). */
-    int m_iItemChangeUpdatePhysValCoorsBlockedCounter;
+    int m_iItemChangeUpdatePhysValCoorsBlockedCounter = 0;
     /*!< To avoid that a signal is emitted twice for the same reason, the signal blocked counter
          may be set to a value greater than 0 (e.g. using CRefCountGuard). */
-    int m_iGeometryOnSceneChangedSignalBlockedCounter;
+    int m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
     /*!< When adding a new child already existing childs should not calculate new positions and must not
          resize themselves if the geometry of the parent group is changed by adding the new child.
          The size of the already existing childs does not change. Only their position within the group.
          But the group will set the new position of the already existing childs. For this the childs
          must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
          Same applies if the parent resizes itself to its content. */
-    int m_iIgnoreParentGeometryChange;
+    int m_iIgnoreParentGeometryChange = 0;
+protected: // instance members (debugging)
+    bool m_bPaintBoundingRect = false;
+    bool m_bPaintShapePath = false;
 protected: // instance members (method tracing)
     /*!< Counters to block debug trace outputs for internal position and state infos. */
-    int m_iTraceBlockedCounter;
-    int m_iTracePositionInfoBlockedCounter;
-    int m_iTraceThisPositionInfoInfoBlockedCounter;
-    int m_iTraceParentGroupPositionInfoInfoBlockedCounter;
-    int m_iTraceGraphicsItemStatesInfoBlockedCounter;
-    int m_iTraceGraphObjStatesInfoBlockedCounter;
-    int m_iTraceDrawSettingsInfoBlockedCounter;
+    int m_iTraceBlockedCounter = 0;
+    int m_iTracePositionInfoBlockedCounter = 0;
+    int m_iTraceThisPositionInfoInfoBlockedCounter = 0;
+    int m_iTraceParentGroupPositionInfoInfoBlockedCounter = 0;
+    int m_iTraceGraphicsItemStatesInfoBlockedCounter = 0;
+    int m_iTraceGraphObjStatesInfoBlockedCounter = 0;
+    int m_iTraceDrawSettingsInfoBlockedCounter = 0;
 protected: // instance members (method tracing)
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions;
-    //ZS::System::CTrcAdminObj* m_pTrcAdminObjIsHit;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
-    //ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEnterLeaveEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverMoveEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEnterLeaveEvents = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverMoveEvents = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents = nullptr;
 
 }; // class CGraphObj
 

@@ -1289,52 +1289,78 @@ bool ZS::Draw::isLineHit(
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-        o_pHitInfo->m_idxPolygonShapePoint = -1;
-        o_pHitInfo->m_idxLineSegment = -1;
-        o_pHitInfo->m_ptHit = QPointF();
+        o_pHitInfo->reset();
         o_pHitInfo->m_cursor = Qt::ArrowCursor;
     }
 
-    double fXLeft   = i_pt.x() - fTolerance;
-    double fYTop    = i_pt.y() - fTolerance;
-    double fXRight  = i_pt.x() + fTolerance;
-    double fYBottom = i_pt.y() + fTolerance;
-    QRectF rctPt(QPointF(fXLeft, fYTop), QPointF(fXRight, fYBottom));
+    QRectF rctBndTmp;
+    if (i_line.dx() >= 0.0 && i_line.dy() >= 0.0) {
+        rctBndTmp = QRectF(i_line.p1(), QSizeF(i_line.dx(), i_line.dy()));
+    }
+    else if (i_line.dx() < 0.0 && i_line.dy() < 0.0) {
+        rctBndTmp = QRectF(i_line.p2(), QSizeF(fabs(i_line.dx()), fabs(i_line.dy())));
+    }
+    else if (i_line.dx() < 0.0) {
+        rctBndTmp = QRectF(QPointF(i_line.p2().x(), i_line.p1().y()), QSizeF(fabs(i_line.dx()), fabs(i_line.dy())));
+    }
+    else if (i_line.dy() < 0.0) {
+        rctBndTmp = QRectF(QPointF(i_line.p1().x(), i_line.p2().y()), QSizeF(fabs(i_line.dx()), fabs(i_line.dy())));
+    }
+    rctBndTmp.setLeft(rctBndTmp.left() - fTolerance);
+    rctBndTmp.setTop(rctBndTmp.top() - fTolerance);
+    rctBndTmp.setRight(rctBndTmp.right() + fTolerance);
+    rctBndTmp.setBottom(rctBndTmp.bottom() + fTolerance);
 
-    if (rctPt.contains(i_line.p1())) {
-        bIsHit = true;
-        if (o_pHitInfo != nullptr) {
-            o_pHitInfo->m_idxPolygonShapePoint = 0;
-            o_pHitInfo->m_ptHit = i_pt;
-            o_pHitInfo->m_cursor = Qt::CrossCursor;
+    if (rctBndTmp.contains(i_pt)) {
+        double fXLeft   = i_pt.x() - fTolerance;
+        double fYTop    = i_pt.y() - fTolerance;
+        double fXRight  = i_pt.x() + fTolerance;
+        double fYBottom = i_pt.y() + fTolerance;
+        QRectF rctPt(QPointF(fXLeft, fYTop), QPointF(fXRight, fYBottom));
+
+        if (rctPt.contains(i_line.p1())) {
+            bIsHit = true;
+            if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_idxPolygonShapePoint = 0;
+                o_pHitInfo->m_ptHit = i_pt;
+                o_pHitInfo->m_cursor = Qt::CrossCursor;
+            }
         }
-    }
-    else if (rctPt.contains(i_line.p2())) {
-        bIsHit = true;
-        if (o_pHitInfo != nullptr) {
-            o_pHitInfo->m_idxPolygonShapePoint = 1;
-            o_pHitInfo->m_ptHit = i_pt;
-            o_pHitInfo->m_cursor = Qt::CrossCursor;
+        else if (rctPt.contains(i_line.p2())) {
+            bIsHit = true;
+            if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_idxPolygonShapePoint = 1;
+                o_pHitInfo->m_ptHit = i_pt;
+                o_pHitInfo->m_cursor = Qt::CrossCursor;
+            }
         }
-    }
-    else {
-        QPointF ptIntersection;
-        QLineF linePerpendicular = getPerpendicularLine(i_line, i_pt, 0.0, &ptIntersection);
-        // Please note that the calculated perpendicular line may not intersect the given line.
-        // If close enough to the given line ..
-        if (linePerpendicular.length() <= i_fTolerance_px) {
-            // We check whether the perpendicular line has an "unbound intersection" to the given line
-            // and therefore the line has not really been hit.
-            // Please note that if the perpendicular line is very close to the start or end point
-            // of the line, the start or end point has already been determined as the hit point a
-            // few code lines above.
-            if (i_line.intersects(linePerpendicular, nullptr) == QLineF::BoundedIntersection) {
+        else {
+            QPointF ptIntersection;
+            QLineF linePerpendicular = getPerpendicularLine(i_line, i_pt, fTolerance, &ptIntersection);
+            // Point exactly on the line ..
+            if (i_pt == ptIntersection) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
                     o_pHitInfo->m_idxLineSegment = 0;
                     o_pHitInfo->m_ptHit = ptIntersection;
                     o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+                }
+            }
+            // Please note that the calculated perpendicular line may not intersect the given line.
+            // If close enough to the given line ..
+            else if ((linePerpendicular.length() - 0.1) <= fTolerance) {
+                // We check whether the perpendicular line has an "unbound intersection" to the given line
+                // and therefore the line has not really been hit.
+                // Please note that if the perpendicular line is very close to the start or end point
+                // of the line, the start or end point has already been determined as the hit point a
+                // few code lines above.
+                if (i_line.intersects(linePerpendicular, nullptr) == QLineF::BoundedIntersection) {
+                    bIsHit = true;
+                    if (o_pHitInfo != nullptr) {
+                        o_pHitInfo->m_idxLineSegment = 0;
+                        o_pHitInfo->m_ptHit = ptIntersection;
+                        o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+                    }
                 }
             }
         }
@@ -1372,10 +1398,7 @@ bool ZS::Draw::isRectHit(
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-        o_pHitInfo->m_idxPolygonShapePoint = -1;
-        o_pHitInfo->m_idxLineSegment = -1;
-        o_pHitInfo->m_ptHit = QPointF();
+        o_pHitInfo->reset();
         o_pHitInfo->m_cursor = Qt::ArrowCursor;
     }
 
@@ -1477,10 +1500,7 @@ bool ZS::Draw::isEllipseHit(
     }
     if( o_pHitInfo != nullptr )
     {
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-        o_pHitInfo->m_idxPolygonShapePoint = -1;
-        o_pHitInfo->m_idxLineSegment = -1;
-        o_pHitInfo->m_ptHit = QPointF();
+        o_pHitInfo->reset();
         o_pHitInfo->m_cursor = Qt::ArrowCursor;
     }
 
@@ -1646,10 +1666,7 @@ bool ZS::Draw::isPolylineHit(
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-        o_pHitInfo->m_idxPolygonShapePoint = -1;
-        o_pHitInfo->m_idxLineSegment = -1;
-        o_pHitInfo->m_ptHit = QPointF();
+        o_pHitInfo->reset();
         o_pHitInfo->m_cursor = Qt::ArrowCursor;
     }
 
@@ -1680,7 +1697,6 @@ bool ZS::Draw::isPolylineHit(
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_idxLineSegment = idxPt;
-                        o_pHitInfo->m_ptHit = i_pt;
                         o_pHitInfo->m_cursor = Qt::CrossCursor;
                     }
                     break;
@@ -1697,7 +1713,7 @@ bool ZS::Draw::isPolylineHit(
 
     The method first checks whether any of the polygon points has been hit.
     If not, the method checks, whether any line segment has been hit.
-    If neither a polygon point nor a line segement has been hit and if the
+    If neither a polygon point nor a line segment has been hit and if the
     polygons fill style is a solid pattern, the method checks, whether the
     point is within the area of the polygon.
 
@@ -1728,10 +1744,7 @@ bool ZS::Draw::isPolygonHit(
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-        o_pHitInfo->m_idxPolygonShapePoint = -1;
-        o_pHitInfo->m_idxLineSegment = -1;
-        o_pHitInfo->m_ptHit = QPointF();
+        o_pHitInfo->reset();
         o_pHitInfo->m_cursor = Qt::ArrowCursor;
     }
 
@@ -1762,7 +1775,6 @@ bool ZS::Draw::isPolygonHit(
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_idxLineSegment = idxPt;
-                        o_pHitInfo->m_ptHit = i_pt;
                         o_pHitInfo->m_cursor = Qt::CrossCursor;
                     }
                     break;

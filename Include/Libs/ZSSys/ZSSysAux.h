@@ -164,6 +164,7 @@ ZSSYSDLL_API QString qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_a
 ZSSYSDLL_API QString qBrushStyle2Str( const Qt::BrushStyle& i_brushStyle );
 ZSSYSDLL_API QString qCheckState2Str( int i_iVal );
 ZSSYSDLL_API QString qCursorShape2Str( Qt::CursorShape i_cursor );
+ZSSYSDLL_API Qt::CursorShape str2CursorShape(const QString& i_strCursorShape, bool* o_pbOk = nullptr);
 ZSSYSDLL_API QString qDropAction2Str( Qt::DropAction i_action );
 ZSSYSDLL_API QString qDropActions2Str( int i_actions );
 ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );

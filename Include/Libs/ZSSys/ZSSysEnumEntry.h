@@ -176,277 +176,277 @@ public: // class methods
 public: // class methods
     static QString enumerator2Str(
         const SEnumEntry* i_pEnumArr,
-        int               i_iArrLen,
-        int               i_iEnumerator,
-        int               i_idxAlias = EEnumEntryAliasStrName );
+        int i_iArrLen,
+        int i_iEnumerator,
+        int i_idxAlias = EEnumEntryAliasStrName );
     static QVariant enumerator2Val(
         const SEnumEntry* i_pEnumArr,
-        int               i_iArrLen,
-        int               i_iEnumerator,
+        int i_iArrLen,
+        int i_iEnumerator,
         #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-         QVariant::Type   i_type = QVariant::Invalid,
+         QVariant::Type i_type = QVariant::Invalid,
         #else
-        QMetaType::Type   i_type = QMetaType::UnknownType,
+        QMetaType::Type i_type = QMetaType::UnknownType,
         #endif
-        bool*             o_pbOk = nullptr );
+        bool* o_pbOk = nullptr );
     static int str2Enumerator(
-        const SEnumEntry*   i_pEnumArr,
-        int                 i_iArrLen,
-        const QString&      i_strName,
-        int                 i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
+        const SEnumEntry* i_pEnumArr,
+        int i_iArrLen,
+        const QString& i_strName,
+        int i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
-        bool*               o_pbOk = nullptr );
+        bool* o_pbOk = nullptr );
     static QVariant str2Val(
-        const SEnumEntry*   i_pEnumArr,
-        int                 i_iArrLen,
-        const QString&      i_strName,
+        const SEnumEntry* i_pEnumArr,
+        int i_iArrLen,
+        const QString& i_strName,
         #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QVariant::Type      i_type = QVariant::Invalid,
+        QVariant::Type i_type = QVariant::Invalid,
         #else
-        QMetaType::Type     i_type = QMetaType::UnknownType,
+        QMetaType::Type i_type = QMetaType::UnknownType,
         #endif
-        int                 i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
+        int i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
-        bool*               o_pbOk = nullptr );
+        bool* o_pbOk = nullptr );
     static int val2Enumerator(
         const SEnumEntry* i_pEnumArr,
-        int               i_iArrLen,
-        const QVariant&   i_val,
-        bool*             o_pbOk = nullptr );
+        int i_iArrLen,
+        const QVariant& i_val,
+        bool* o_pbOk = nullptr );
     static QString val2Str(
         const SEnumEntry* i_pEnumArr,
-        int               i_iArrLen,
-        const QVariant&   i_val,
-        int               i_idxAlias = EEnumEntryAliasStrName,
-        bool*             o_pbOk = nullptr );
+        int i_iArrLen,
+        const QVariant& i_val,
+        int i_idxAlias = EEnumEntryAliasStrName,
+        bool* o_pbOk = nullptr );
     static bool isValidEnumerator(
         const SEnumEntry* i_pEnumArr,
-        int               i_iArrLen,
-        int               i_iEnumerator );
+        int i_iArrLen,
+        int i_iEnumerator );
 public: // class methods
     static void initStr2EnumeratorMaps(
-        const SEnumEntry*             i_pEnumArr,
-        int                           i_iArrLen,
+        const SEnumEntry* i_pEnumArr,
+        int i_iArrLen,
         QVector<QHash<QString, int>>& io_arMaps,
-        QMutex*                       i_pMtxMaps = nullptr );
+        QMutex* i_pMtxMaps = nullptr );
 public: // class methods
     static int str2Enumerator(
         const QVector<QHash<QString, int>>& i_arMaps,
-        const QString&                      i_strName,
-        int                                 i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
-        Qt::CaseSensitivity                 i_caseSensitivity = Qt::CaseInsensitive,
-        bool*                               o_pbOk = nullptr );
+        const QString& i_strName,
+        int i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
+        Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
+        bool* o_pbOk = nullptr );
     static QVariant str2Val(
         const QVector<QHash<QString, int>>& i_arMaps,
-        const SEnumEntry*                   i_pEnumArr,
-        int                                 i_iArrLen,
-        const QString&                      i_strName,
+        const SEnumEntry* i_pEnumArr,
+        int i_iArrLen,
+        const QString& i_strName,
         #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QVariant::Type                      i_type = QVariant::Invalid,
+        QVariant::Type i_type = QVariant::Invalid,
         #else
-        QMetaType::Type                     i_type = QMetaType::UnknownType,
+        QMetaType::Type i_type = QMetaType::UnknownType,
         #endif
-        int                                 i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
-        Qt::CaseSensitivity                 i_caseSensitivity = Qt::CaseInsensitive,
-        bool*                               o_pbOk = nullptr );
+        int i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
+        Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
+        bool* o_pbOk = nullptr );
 public: // default ctor
     SEnumEntry();
 public: // ctors
     explicit SEnumEntry( // Name becomes QString::number(i_iEnumerator)
-        int                i_iEnumerator,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // ctors
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const char*        i_strAliasSCPIShort,
-        const char*        i_strAliasSCIPLong,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const char* i_strAliasSCPIShort,
+        const char* i_strAliasSCIPLong,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const char*        i_strAliasSCPIShort,
-        const char*        i_strAliasSCIPLong,
-        const char*        i_strAlias6,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const char* i_strAliasSCPIShort,
+        const char* i_strAliasSCIPLong,
+        const char* i_strAlias6,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const char*        i_strAliasSCPIShort,
-        const char*        i_strAliasSCIPLong,
-        const char*        i_strAlias6,
-        const char*        i_strAlias7,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const char* i_strAliasSCPIShort,
+        const char* i_strAliasSCIPLong,
+        const char* i_strAlias6,
+        const char* i_strAlias7,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const char*        i_strAliasSCPIShort,
-        const char*        i_strAliasSCIPLong,
-        const char*        i_strAlias6,
-        const char*        i_strAlias7,
-        const char*        i_strAlias8,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const char* i_strAliasSCPIShort,
+        const char* i_strAliasSCIPLong,
+        const char* i_strAlias6,
+        const char* i_strAlias7,
+        const char* i_strAlias8,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const char*        i_strAliasSCPIShort,
-        const char*        i_strAliasSCIPLong,
-        const char*        i_strAlias6,
-        const char*        i_strAlias7,
-        const char*        i_strAlias8,
-        const char*        i_strAlias9,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const char* i_strAliasSCPIShort,
+        const char* i_strAliasSCIPLong,
+        const char* i_strAlias6,
+        const char* i_strAlias7,
+        const char* i_strAlias8,
+        const char* i_strAlias9,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
     explicit SEnumEntry(
-        int                i_iEnumerator,
-        const char*        i_strName,
-        const char*        i_strAliasSymbol,
-        const char*        i_strAliasText,
-        const char*        i_strAliasSCPIShort,
-        const char*        i_strAliasSCIPLong,
-        const char*        i_strAlias6,
-        const char*        i_strAlias7,
-        const char*        i_strAlias8,
-        const char*        i_strAlias9,
-        const char*        i_strAlias10,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-public: // ctors
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QString&     i_strAliasSCPIShort,
-        const QString&     i_strAliasSCIPLong,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QString&     i_strAliasSCPIShort,
-        const QString&     i_strAliasSCIPLong,
-        const QString&     i_strAlias6,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QString&     i_strAliasSCPIShort,
-        const QString&     i_strAliasSCIPLong,
-        const QString&     i_strAlias6,
-        const QString&     i_strAlias7,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QString&     i_strAliasSCPIShort,
-        const QString&     i_strAliasSCIPLong,
-        const QString&     i_strAlias6,
-        const QString&     i_strAlias7,
-        const QString&     i_strAlias8,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QString&     i_strAliasSCPIShort,
-        const QString&     i_strAliasSCIPLong,
-        const QString&     i_strAlias6,
-        const QString&     i_strAlias7,
-        const QString&     i_strAlias8,
-        const QString&     i_strAlias9,
-        const QVariant&    i_val = QVariant(),
-        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
-    explicit SEnumEntry(
-        int                i_iEnumerator,
-        const QString&     i_strName,
-        const QString&     i_strAliasSymbol,
-        const QString&     i_strAliasText,
-        const QString&     i_strAliasSCPIShort,
-        const QString&     i_strAliasSCIPLong,
-        const QString&     i_strAlias6,
-        const QString&     i_strAlias7,
-        const QString&     i_strAlias8,
-        const QString&     i_strAlias9,
-        const QString&     i_strAlias10,
-        const QVariant&    i_val = QVariant(),
+        int i_iEnumerator,
+        const char* i_strName,
+        const char* i_strAliasSymbol,
+        const char* i_strAliasText,
+        const char* i_strAliasSCPIShort,
+        const char* i_strAliasSCIPLong,
+        const char* i_strAlias6,
+        const char* i_strAlias7,
+        const char* i_strAlias8,
+        const char* i_strAlias9,
+        const char* i_strAlias10,
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // ctors
     explicit SEnumEntry(
-        int                i_iEnumerator,
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QString& i_strAliasSCPIShort,
+        const QString& i_strAliasSCIPLong,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QString& i_strAliasSCPIShort,
+        const QString& i_strAliasSCIPLong,
+        const QString& i_strAlias6,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QString& i_strAliasSCPIShort,
+        const QString& i_strAliasSCIPLong,
+        const QString& i_strAlias6,
+        const QString& i_strAlias7,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QString& i_strAliasSCPIShort,
+        const QString& i_strAliasSCIPLong,
+        const QString& i_strAlias6,
+        const QString& i_strAlias7,
+        const QString& i_strAlias8,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QString& i_strAliasSCPIShort,
+        const QString& i_strAliasSCIPLong,
+        const QString& i_strAlias6,
+        const QString& i_strAlias7,
+        const QString& i_strAlias8,
+        const QString& i_strAlias9,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+    explicit SEnumEntry(
+        int i_iEnumerator,
+        const QString& i_strName,
+        const QString& i_strAliasSymbol,
+        const QString& i_strAliasText,
+        const QString& i_strAliasSCPIShort,
+        const QString& i_strAliasSCIPLong,
+        const QString& i_strAlias6,
+        const QString& i_strAlias7,
+        const QString& i_strAlias8,
+        const QString& i_strAlias9,
+        const QString& i_strAlias10,
+        const QVariant& i_val = QVariant(),
+        EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
+public: // ctors
+    explicit SEnumEntry(
+        int i_iEnumerator,
         const QStringList& i_strlstNames, // [0: Name, 1: Symbol, 2: Text, 3: SCPIShort, 4: SCPILong, 5: Alias6, .., 9: Alias10]
-        const QVariant&    i_val = QVariant(),
+        const QVariant& i_val = QVariant(),
         EEnumEntryValidity i_validity = EEnumEntryValidityNormal );
 public: // dtor
     virtual ~SEnumEntry();
 public: // methods
     QString getName( int i_idxAlias = EEnumEntryAliasStrName ) const;
 public: // struct members
-    int                m_iEnumerator;   /*!< Initialization value of the enumerator within the enumeration. The enumerator initialization values must start with 0 and must be incremented by 1 when defining the list of enumerators. */
-    QStringList        m_strlstNames;   /*!< List with up as many different string representations as desired. But it is recommend to use the list indexes [0: Name, 1: Symbol, 2: Text, 3: SCPIShort, 4: SCPILong, 5: Alias6, .., 9: Alias10]. */
-    QVariant           m_val;           /*!< Real value of enumerator (e.g. Frequency as double value). */
-    EEnumEntryValidity m_validity;      /*!< Validity of the enum index value. Used to mark an enumerator as not selectable or not available. */
+    int m_iEnumerator; /*!< Initialization value of the enumerator within the enumeration. The enumerator initialization values must start with 0 and must be incremented by 1 when defining the list of enumerators. */
+    QStringList m_strlstNames; /*!< List with up as many different string representations as desired. But it is recommend to use the list indexes [0: Name, 1: Symbol, 2: Text, 3: SCPIShort, 4: SCPILong, 5: Alias6, .., 9: Alias10]. */
+    QVariant m_val; /*!< Real value of enumerator (e.g. Frequency as double value). */
+    EEnumEntryValidity m_validity; /*!< Validity of the enum index value. Used to mark an enumerator as not selectable or not available. */
 
 }; // struct SEnumEntry
 

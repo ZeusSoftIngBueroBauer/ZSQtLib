@@ -989,6 +989,7 @@ public: // struct methods
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
     bool isNull() const;
+    void reset();
 public: // struct methods
     QString toString() const;
 public: // struct members
@@ -1000,7 +1001,7 @@ public: // struct members
     int m_idxPolygonShapePoint = -1;
     /*!< Index of the polygon's line segment hit.
          Range:  < 0, if no line segment has been hit.
-                 >= 0 && < polygon.size(), if a polygon line segement has been hit. */
+                 >= 0 && < polygon.size(), if a polygon line segment has been hit. */
     int m_idxLineSegment = -1;
     /*!< The coordinates of the hit point. */
     QPointF m_ptHit;

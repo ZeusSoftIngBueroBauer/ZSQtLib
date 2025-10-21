@@ -45,7 +45,7 @@ class QPainterPath;
 
 #if TEST_ALL == 0
 
-#define TEST_AUX_METHODS 0
+#define TEST_AUX_METHODS 1
 #define TEST_DRAWINGSIZE 0
 #define TEST_PIXELS_DRAWINGS 1
 #define TEST_PIXELS_DRAWINGS_100x100 0
@@ -384,6 +384,11 @@ protected slots:
     void doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetPerpendicularLine(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepIsLineHit(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepIsRectHit(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepIsEllipseHit(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepIsPolylineHit(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepIsPolygonHit(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepDrawingSize(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepMainWindowSetGeometry(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepClearDrawingScene(ZS::Test::CTestStep* i_pTestStep);

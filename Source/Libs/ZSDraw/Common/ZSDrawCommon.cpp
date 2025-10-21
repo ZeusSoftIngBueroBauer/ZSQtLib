@@ -1426,8 +1426,22 @@ bool SGraphObjHitInfo::isNull() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief 
+/*! @brief Resets all members to their default values.
 
+    After calling this method, isNull will return true.
+*/
+void SGraphObjHitInfo::reset()
+//------------------------------------------------------------------------------
+{
+    m_selPtBoundingRect = ESelectionPoint::None;
+    m_idxPolygonShapePoint = -1;
+    m_idxLineSegment = -1;
+    m_ptHit = QPointF();
+    m_cursor = QCursor();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief 
 */
 QString SGraphObjHitInfo::toString() const
 //------------------------------------------------------------------------------
@@ -1435,7 +1449,7 @@ QString SGraphObjHitInfo::toString() const
     return isNull() ? "null" :
         "SelPt: " + m_selPtBoundingRect.toString() +
         ", PolygonPt: " + QString::number(m_idxPolygonShapePoint) +
-        ", Line: " + QString::number(m_idxLineSegment) +
+        ", LineIdx: " + QString::number(m_idxLineSegment) +
         ", PtHit {" + qPoint2Str(m_ptHit) + "}" +
         ", Cursor: " + qCursorShape2Str(m_cursor.shape());
 }
