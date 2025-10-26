@@ -4622,8 +4622,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
-        c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
-        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
+        c_strGraphObjNameConnectionLineCnctPt1CnctPt4, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint4,
+        m_polygonConnectionLineCnctPt1CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // CnctLinePt1Pt4.unselect()
@@ -4672,8 +4672,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
-        c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
-        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, iResultValuesPrecision));
+        c_strGraphObjNameConnectionLineCnctPt1CnctPt4, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint4,
+        m_polygonConnectionLineCnctPt1CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 

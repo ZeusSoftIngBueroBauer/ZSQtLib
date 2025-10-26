@@ -100,18 +100,7 @@ CWdgtGraphObjPolygonProperties::CWdgtGraphObjPolygonProperties(
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Polygon",
-        ClassName(), i_strObjName, i_pWdgtParent),
-    m_pWdgtHeadLine(nullptr),
-    m_pLytHeadLine(nullptr),
-    m_pLblHeadLine(nullptr),
-    m_pWdgtGraphObjType(nullptr),
-    m_pLytWdgtGraphObjType(nullptr),
-    m_pLblGraphObjType(nullptr),
-    m_pCmbGraphObjType(nullptr),
-    m_pWdgtLabels(nullptr),
-    m_pWdgtGeometry(nullptr),
-    m_pWdgtLineStyle(nullptr),
-    m_pWdgtFillStyle(nullptr)
+        ClassName(), i_strObjName, i_pWdgtParent)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {

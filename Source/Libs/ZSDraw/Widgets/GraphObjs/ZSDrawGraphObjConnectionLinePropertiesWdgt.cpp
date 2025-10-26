@@ -25,11 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionLinePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionLineGeometryPropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjConnectionLineGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPaintOptionsPropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSys/ZSSysAux.h"
@@ -81,8 +81,8 @@ QString CWdgtGraphObjConnectionLineProperties::widgetName(EWidget i_widget)
     else if (i_widget == EWidget::LineStyle) {
         str = "LineStyle";
     }
-    else if (i_widget == EWidget::FillStyle) {
-        str = "FillStyle";
+    else if (i_widget == EWidget::PaintOptions) {
+        str = "PaintOptions";
     }
     return str;
 }
@@ -100,14 +100,7 @@ CWdgtGraphObjConnectionLineProperties::CWdgtGraphObjConnectionLineProperties(
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "Connections::ConnectionLine",
-        ClassName(), i_strObjName, i_pWdgtParent),
-    m_pWdgtHeadLine(nullptr),
-    m_pLytHeadLine(nullptr),
-    m_pLblHeadLine(nullptr),
-    m_pWdgtLabels(nullptr),
-    m_pWdgtGeometry(nullptr),
-    m_pWdgtLineStyle(nullptr),
-    m_pWdgtFillStyle(nullptr)
+        ClassName(), i_strObjName, i_pWdgtParent)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -156,13 +149,13 @@ CWdgtGraphObjConnectionLineProperties::CWdgtGraphObjConnectionLineProperties(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
         this, &CWdgtGraphObjConnectionLineProperties::onWdgtLineStyleContentChanged);
 
-    m_pWdgtFillStyle = new CWdgtGraphObjFillStyleProperties(
+    m_pWdgtPaintOptions = new CWdgtGraphObjPaintOptionsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
         "Connections::ConnectionLine", i_strObjName);
-    m_pLyt->addWidget(m_pWdgtFillStyle);
+    m_pLyt->addWidget(m_pWdgtPaintOptions);
     QObject::connect(
-        m_pWdgtFillStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,
-        this, &CWdgtGraphObjConnectionLineProperties::onWdgtFillStyleContentChanged);
+        m_pWdgtPaintOptions, &CWdgtGraphObjPaintOptionsProperties::contentChanged,
+        this, &CWdgtGraphObjConnectionLineProperties::onWdgtPaintOptionsContentChanged);
 
     // <Buttons>
     //==========
@@ -192,7 +185,7 @@ CWdgtGraphObjConnectionLineProperties::~CWdgtGraphObjConnectionLineProperties()
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
-    m_pWdgtFillStyle = nullptr;
+    m_pWdgtPaintOptions = nullptr;
 }
 
 /*==============================================================================
@@ -222,8 +215,8 @@ void CWdgtGraphObjConnectionLineProperties::expand(EWidget i_widget, bool i_bExp
     else if (i_widget == EWidget::LineStyle) {
         m_pWdgtLineStyle->expand(i_bExpand);
     }
-    else if (i_widget == EWidget::FillStyle) {
-        m_pWdgtFillStyle->expand(i_bExpand);
+    else if (i_widget == EWidget::PaintOptions) {
+        m_pWdgtPaintOptions->expand(i_bExpand);
     }
 }
 
@@ -261,16 +254,10 @@ bool CWdgtGraphObjConnectionLineProperties::setKeyInTree(const QString& i_strKey
             m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
             m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
             m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
-            m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
+            m_pWdgtPaintOptions->setKeyInTree(i_strKeyInTree);
             EGraphObjType graphObjType = EGraphObjTypeUndefined;
             if (m_pGraphObj != nullptr) {
                 graphObjType = m_pGraphObj->type();
-            }
-            if (graphObjType == EGraphObjTypeConnectionLine) {
-                m_pWdgtFillStyle->show();
-            }
-            else {
-                m_pWdgtFillStyle->hide();
             }
         }
         if (m_pGraphObj != nullptr) {
@@ -308,7 +295,7 @@ bool CWdgtGraphObjConnectionLineProperties::hasErrors() const
         bHasErrors = m_pWdgtLineStyle->hasErrors();
     }
     if (!bHasErrors) {
-        bHasErrors = m_pWdgtFillStyle->hasErrors();
+        bHasErrors = m_pWdgtPaintOptions->hasErrors();
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -343,7 +330,7 @@ bool CWdgtGraphObjConnectionLineProperties::hasChanges() const
             bHasChanges = m_pWdgtLineStyle->hasChanges();
         }
         if (!bHasChanges) {
-            bHasChanges = m_pWdgtFillStyle->hasChanges();
+            bHasChanges = m_pWdgtPaintOptions->hasChanges();
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -384,7 +371,7 @@ void CWdgtGraphObjConnectionLineProperties::acceptChanges()
                 m_pWdgtLabels->acceptChanges();
                 m_pWdgtGeometry->acceptChanges();
                 m_pWdgtLineStyle->acceptChanges();
-                m_pWdgtFillStyle->acceptChanges();
+                m_pWdgtPaintOptions->acceptChanges();
             }
 
             // If the "contentChanged" signal is no longer blocked and the content of
@@ -416,7 +403,7 @@ void CWdgtGraphObjConnectionLineProperties::rejectChanges()
         m_pWdgtLabels->rejectChanges();
         m_pWdgtGeometry->rejectChanges();
         m_pWdgtLineStyle->rejectChanges();
-        m_pWdgtFillStyle->rejectChanges();
+        m_pWdgtPaintOptions->rejectChanges();
     }
 
     // If the "contentChanged" signal is no longer blocked and the content of
@@ -506,13 +493,13 @@ void CWdgtGraphObjConnectionLineProperties::onWdgtLineStyleContentChanged()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjConnectionLineProperties::onWdgtFillStyleContentChanged()
+void CWdgtGraphObjConnectionLineProperties::onWdgtPaintOptionsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onWdgtFillStyleContentChanged",
+        /* strMethod    */ "onWdgtPaintOptionsContentChanged",
         /* strAddInfo   */ "" );
 
     if (m_iContentChangedSignalBlockedCounter == 0) {

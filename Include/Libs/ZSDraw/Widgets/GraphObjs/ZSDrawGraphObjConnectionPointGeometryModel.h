@@ -108,7 +108,7 @@ protected: // type definitions and constants
     struct SLabelSettings {
     public:
         static SLabelSettings fromGraphObj(
-            CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx = -1);
+            CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx);
     public: // ctors
         SLabelSettings();
         SLabelSettings(

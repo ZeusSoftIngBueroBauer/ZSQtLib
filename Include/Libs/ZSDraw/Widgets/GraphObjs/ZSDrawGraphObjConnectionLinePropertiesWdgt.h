@@ -36,9 +36,9 @@ namespace Draw
 class CDrawingScene;
 class CGraphObjConnectionLine;
 class CWdgtGraphObjConnectionLineGeometryProperties;
-class CWdgtGraphObjFillStyleProperties;
 class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjLabelsProperties;
+class CWdgtGraphObjPaintOptionsProperties;
 
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtGraphObjConnectionLineProperties : public CWdgtGraphObjPropertiesAbstract
@@ -52,7 +52,7 @@ public: // class methods
         Labels,
         Geometry,
         LineStyle,
-        FillStyle
+        PaintOptions
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
@@ -77,17 +77,17 @@ protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
-    void onWdgtFillStyleContentChanged();
+    void onWdgtPaintOptionsContentChanged();
 protected slots:
     void onGraphObjNameChanged(CGraphObj* i_pGraphObj, const QString& i_strNameNew, const QString& i_strNameOld);
 protected: // instance members
-    QWidget* m_pWdgtHeadLine;
-    QHBoxLayout* m_pLytHeadLine;
-    QLabel* m_pLblHeadLine;
-    CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
-    CWdgtGraphObjConnectionLineGeometryProperties* m_pWdgtGeometry;
-    CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
-    CWdgtGraphObjFillStyleProperties* m_pWdgtFillStyle;
+    QWidget* m_pWdgtHeadLine = nullptr;
+    QHBoxLayout* m_pLytHeadLine = nullptr;
+    QLabel* m_pLblHeadLine = nullptr;
+    CWdgtGraphObjLabelsProperties* m_pWdgtLabels = nullptr;
+    CWdgtGraphObjConnectionLineGeometryProperties* m_pWdgtGeometry = nullptr;
+    CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle = nullptr;
+    CWdgtGraphObjPaintOptionsProperties* m_pWdgtPaintOptions = nullptr;
 
 }; // class CWdgtGraphObjConnectionLineProperties
 

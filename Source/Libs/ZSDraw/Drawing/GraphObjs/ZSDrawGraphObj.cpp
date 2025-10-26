@@ -7976,6 +7976,7 @@ void CGraphObj::setPaintBoundingRect(bool i_bPaintRect)
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             m_pDrawingScene->update(rctBounding);
         }
+        emit_optionPaintBoundingRectChanged(m_bPaintBoundingRect);
     }
 }
 
@@ -8006,6 +8007,7 @@ void CGraphObj::setPaintShapePath(bool i_bPaintPath)
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             m_pDrawingScene->update(rctBounding);
         }
+        emit_optionPaintShapePathChanged(m_bPaintShapePath);
     }
 }
 
@@ -8460,6 +8462,40 @@ void CGraphObj::emit_geometryLabelChanged(const QString& i_strName)
         /* strMethod    */ "CGraphObj::emit_geometryLabelChanged",
         /* strAddInfo   */ strMthInArgs );
     emit geometryLabelChanged(this, i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_optionPaintBoundingRectChanged(bool i_bOptionSet)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bOptionSet);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_optionPaintBoundingRectChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit optionPaintBoundingRectChanged(this, i_bOptionSet);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_optionPaintShapePathChanged(bool i_bOptionSet)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bOptionSet);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_optionPaintShapePathChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit optionPaintShapePathChanged(this, i_bOptionSet);
 }
 
 /*==============================================================================

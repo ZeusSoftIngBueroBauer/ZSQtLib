@@ -1278,8 +1278,8 @@ void CModelGraphObjLabels::onGraphObjLabelRenamed(
                     QModelIndex modelIdxTL = index(iRow, 0);
                     QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
                     emit_dataChanged(modelIdxTL, modelIdxBR);
+                    m_bContentChanged = true;
                 }
-                m_bContentChanged = true;
             }
         }
 

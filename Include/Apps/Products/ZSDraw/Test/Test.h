@@ -45,7 +45,7 @@ class QPainterPath;
 
 #if TEST_ALL == 0
 
-#define TEST_AUX_METHODS 1
+#define TEST_AUX_METHODS 0
 #define TEST_DRAWINGSIZE 0
 #define TEST_PIXELS_DRAWINGS 1
 #define TEST_PIXELS_DRAWINGS_100x100 0

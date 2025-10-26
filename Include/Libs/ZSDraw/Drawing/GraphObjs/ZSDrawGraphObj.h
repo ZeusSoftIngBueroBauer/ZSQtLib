@@ -487,6 +487,10 @@ signals:
     void geometryLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a geometry label has been changed. */
     void geometryLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if the option to paint the bounding rectangle has been changed. */
+    void optionPaintBoundingRectChanged(CGraphObj* i_pGraphObj, bool i_bOptionSet);
+    /*!< This signal is emitted if the option to paint the shape path has been changed. */
+    void optionPaintShapePathChanged(CGraphObj* i_pGraphObj, bool i_bOptionSet);
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
     void releaseTraceAdminObjs();
@@ -759,7 +763,7 @@ protected: // overridables
     //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
-public: // auxiliary instance methods (debugging)
+public: // auxiliary instance methods (paint options for debugging)
     bool isPaintBoundingRectSet() const;
     void setPaintBoundingRect(bool i_bPaintRect);
     bool isPaintShapePathSet() const;
@@ -789,6 +793,8 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelAdded(const QString& i_strName);
     void emit_geometryLabelRemoved(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
+    void emit_optionPaintBoundingRectChanged(bool i_bOptionSet);
+    void emit_optionPaintShapePathChanged(bool i_bOptionSet);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_prepareGeometryChange();
     virtual QPointF QGraphicsItem_setPos(const QPointF& i_pos);
