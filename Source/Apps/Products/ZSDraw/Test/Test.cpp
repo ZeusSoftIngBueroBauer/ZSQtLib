@@ -3391,7 +3391,7 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3444,7 +3444,7 @@ void CTest::doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3497,7 +3497,7 @@ void CTest::doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3571,7 +3571,7 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3620,7 +3620,7 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3673,7 +3673,7 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3731,7 +3731,7 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -3797,7 +3797,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
         CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);
@@ -3950,7 +3950,7 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
             if (pGraphObj != nullptr) {
                 pGraphObj->rename(strGraphObjName);
-                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }
             i_pTestStep->setResultValues(strlstResultValues);
             i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
@@ -4165,7 +4165,7 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
         if (pGraphObjPolygon != nullptr) {
             pGraphObjPolygon->rename(strGraphObjName);
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObjPolygon, false, iResultValuesPrecision));
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObjPolygon, false, false, iResultValuesPrecision));
         }
         i_pTestStep->setResultValues(strlstResultValues);
         i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
@@ -4393,7 +4393,7 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
         CGraphObjConnectionLine* pGraphObjConnectionLine = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
         if (pGraphObjConnectionLine != nullptr) {
             pGraphObjConnectionLine->rename(strGraphObjName);
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, iResultValuesPrecision));
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, false, iResultValuesPrecision));
         }
         i_pTestStep->setResultValues(strlstResultValues);
         i_pTestStep->removeConfigValue("Method"); // to allow that the test may be called several times
@@ -4554,7 +4554,7 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
             CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
             if (pGraphObj != nullptr) {
-                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }
         }
         i_pTestStep->setResultValues(strlstResultValues);
@@ -4628,7 +4628,7 @@ void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -4761,7 +4761,7 @@ void CTest::doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -4894,7 +4894,7 @@ void CTest::doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestSt
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5027,7 +5027,7 @@ void CTest::doTestStepModifyGraphObjTextByDirectMethodCalls(ZS::Test::CTestStep*
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5143,7 +5143,7 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
             physValPointTaken.unit().symbol());
     }
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5195,12 +5195,12 @@ void CTest::doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test:
                 CGraphObjConnectionLine* pGraphObjConnectionLine =
                     dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyEntry));
                 if (pGraphObjConnectionLine != nullptr) {
-                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, iResultValuesPrecision));
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, false, iResultValuesPrecision));
                 }
             }
         }
         else {
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);
@@ -5295,7 +5295,7 @@ void CTest::doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::
             physValPointTaken.unit().symbol());
     }
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5517,7 +5517,7 @@ void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
         CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);
@@ -5702,7 +5702,7 @@ void CTest::doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
             CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
             if (pGraphObj != nullptr) {
-                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }
         }
         i_pTestStep->setResultValues(strlstResultValues);
@@ -5919,8 +5919,9 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
             CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-            if (pGraphObj != nullptr) {
-                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+            if (pGraphObj != nullptr && pGraphicsItem != nullptr) {
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, pGraphicsItem->isSelected(), false, iResultValuesPrecision));
             }
         }
         i_pTestStep->setResultValues(strlstResultValues);
@@ -6030,7 +6031,7 @@ void CTest::doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep)
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
             CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
             if (pGraphObj != nullptr) {
-                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, iResultValuesPrecision));
+                strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }
         }
         i_pTestStep->setResultValues(strlstResultValues);
@@ -6079,7 +6080,7 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
             if (pGraphObj != nullptr && !pGraphObj->isConnectionLine()) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, false, true, iResultValuesPrecision));
             }
             ++itIdxTree;
         }
@@ -6088,7 +6089,7 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
             if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, false, true, iResultValuesPrecision));
             }
             ++itIdxTree;
         }
@@ -6109,7 +6110,7 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
                 CIdxTreeEntry* pTreeEntry = *itIdxTree;
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
                 if (pGraphObj != nullptr) {
-                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, true, iResultValuesPrecision));
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, true, iResultValuesPrecision));
                 }
                 ++itIdxTree;
             }
@@ -6649,7 +6650,7 @@ SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_s
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForGraphObj(
-    const CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues, int i_iPrecision) const
+    const CGraphObj* i_pGraphObj, bool i_bIsSelected, bool i_bAddLabelResultValues, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QStringList strlstResultValues;
@@ -6660,7 +6661,7 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjLine != nullptr) {
                 strlstResultValues = resultValuesForLine(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjLine->line(), pGraphObjLine->getLine(), i_iPrecision);
+                    pGraphObjLine->line(), pGraphObjLine->getLine(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isRect()) {
@@ -6668,7 +6669,7 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjRect != nullptr) {
                 strlstResultValues = resultValuesForRect(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjRect->rect(), pGraphObjRect->getRect(), i_iPrecision);
+                    pGraphObjRect->rect(), pGraphObjRect->getRect(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isEllipse()) {
@@ -6676,7 +6677,7 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjEllipse != nullptr) {
                 strlstResultValues = resultValuesForEllipse(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjEllipse->rect(), pGraphObjEllipse->getRect(), i_iPrecision);
+                    pGraphObjEllipse->rect(), pGraphObjEllipse->getRect(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isText()) {
@@ -6684,7 +6685,7 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjText != nullptr) {
                 strlstResultValues = resultValuesForText(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjText->getRect(), pGraphObjText->toPlainText(), i_iPrecision);
+                    pGraphObjText->getRect(), pGraphObjText->toPlainText(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isPolyline() || i_pGraphObj->isPolygon()) {
@@ -6692,7 +6693,7 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjPolygon != nullptr) {
                 strlstResultValues = resultValuesForPolygon(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjPolygon->polygon(), pGraphObjPolygon->getPolygon(), i_iPrecision);
+                    pGraphObjPolygon->polygon(), pGraphObjPolygon->getPolygon(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isConnectionPoint()) {
@@ -6700,7 +6701,7 @@ QStringList CTest::resultValuesForGraphObj(
             if (pGraphObjConnectionPoint != nullptr) {
                 strlstResultValues = resultValuesForConnectionPoint(
                     i_pGraphObj->name(), pGraphicsItem->pos(),
-                    pGraphObjConnectionPoint->position(), i_iPrecision);
+                    pGraphObjConnectionPoint->position(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isConnectionLine()) {
@@ -6712,14 +6713,14 @@ QStringList CTest::resultValuesForGraphObj(
                 QString strNameCntPt2 = pGraphObjConnectionPointP2 == nullptr ? "" : pGraphObjConnectionPointP2->name();
                 strlstResultValues = resultValuesForConnectionLine(
                     i_pGraphObj->name(), strNameCntPt1, strNameCntPt2,
-                    pGraphObjConnectionLine->polygon(), pGraphObjConnectionLine->getPolygon(), i_iPrecision);
+                    pGraphObjConnectionLine->polygon(), pGraphObjConnectionLine->getPolygon(), i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isGroup()) {
             const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
             if (pGraphObjGroup != nullptr) {
                 strlstResultValues = resultValuesForGroup(
-                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect(), i_iPrecision);
+                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect(), i_bIsSelected, i_iPrecision);
             }
         }
         if (i_bAddLabelResultValues) {
@@ -6751,7 +6752,8 @@ QStringList CTest::resultValuesForGraphObj(
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForLine(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const QLineF& i_lineItemCoors, const CPhysValLine& i_physValLine, int i_iPrecision) const
+    const QLineF& i_lineItemCoors, const CPhysValLine& i_physValLine,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QRectF rctBounding(i_lineItemCoors.p1(), i_lineItemCoors.p2());
@@ -6778,13 +6780,15 @@ QStringList CTest::resultValuesForLine(
             strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForRect(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const QRectF& i_rectItemCoors, const CPhysValRect& i_physValRect, int i_iPrecision) const
+    const QRectF& i_rectItemCoors, const CPhysValRect& i_physValRect,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QStringList strlst;
@@ -6810,13 +6814,15 @@ QStringList CTest::resultValuesForRect(
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForEllipse(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const QRectF& i_rectItemCoors, const CPhysValRect& i_physValRect, int i_iPrecision) const
+    const QRectF& i_rectItemCoors, const CPhysValRect& i_physValRect,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QStringList strlst;
@@ -6842,13 +6848,15 @@ QStringList CTest::resultValuesForEllipse(
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForText(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const CPhysValRect& i_physValRect, const QString& i_strText, int i_iPrecision) const
+    const CPhysValRect& i_physValRect, const QString& i_strText,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
@@ -6876,13 +6884,15 @@ QStringList CTest::resultValuesForText(
             strGraphObjName + ".text: " + i_strText
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForPolygon(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const QPolygonF& i_polygonItemCoors, const CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
+    const QPolygonF& i_polygonItemCoors, const CPhysValPolygon& i_physValPolygon,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QRectF rctBounding(i_polygonItemCoors.boundingRect());
@@ -6907,13 +6917,15 @@ QStringList CTest::resultValuesForPolygon(
             strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForConnectionPoint(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const ZS::Draw::CPhysValPoint& i_physValPoint, int i_iPrecision) const
+    const ZS::Draw::CPhysValPoint& i_physValPoint,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QStringList strlst;
@@ -6929,13 +6941,15 @@ QStringList CTest::resultValuesForConnectionPoint(
             strGraphObjName + ".position {" + i_physValPoint.toString(false, ", ", 1) + "} " + i_physValPoint.unit().symbol(),
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForConnectionLine(
     const QString& strGraphObjName, const QString& i_strGraphObjNameCntPt1, const QString& i_strGraphObjNameCntPt2,
-    const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision) const
+    const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QRectF rctBounding(i_polygonItemCoors.boundingRect());
@@ -6956,33 +6970,15 @@ QStringList CTest::resultValuesForConnectionLine(
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
-}
-
-//------------------------------------------------------------------------------
-QStringList CTest::resultValuesForLabel(
-    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision) const
-//------------------------------------------------------------------------------
-{
-    QStringList strlstResultValues;
-    if (!i_pos.isNull()) {
-        if (i_iPrecision < 0) {
-            strlstResultValues = QStringList({
-                strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
-        }
-        else {
-            strlstResultValues = QStringList({
-                strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', i_iPrecision) + "} px"});
-        }
-    }
-    strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
-    return strlstResultValues;
 }
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForGroup(
     const QString& strGraphObjName, const QPointF& i_pos,
-    const CPhysValRect& i_physValRect, int i_iPrecision) const
+    const CPhysValRect& i_physValRect,
+    bool i_bIsSelected, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
     QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
@@ -7008,7 +7004,28 @@ QStringList CTest::resultValuesForGroup(
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
         });
     }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
     return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForLabel(
+    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstResultValues;
+    if (!i_pos.isNull()) {
+        if (i_iPrecision < 0) {
+            strlstResultValues = QStringList({
+                strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
+        }
+        else {
+            strlstResultValues = QStringList({
+                strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', i_iPrecision) + "} px"});
+        }
+    }
+    strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
+    return strlstResultValues;
 }
 
 //------------------------------------------------------------------------------

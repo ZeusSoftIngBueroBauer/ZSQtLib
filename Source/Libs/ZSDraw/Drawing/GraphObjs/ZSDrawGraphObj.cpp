@@ -8030,6 +8030,7 @@ void CGraphObj::paintBoundingRect(QPainter* i_pPainter)
         pen.setStyle(Qt::DotLine);
         pen.setWidth(1);
         i_pPainter->setPen(pen);
+        i_pPainter->setBrush(Qt::NoBrush);
         QRectF rctBounding = pGraphicsItemThis->boundingRect();
         i_pPainter->drawRect(rctBounding);
         i_pPainter->restore();

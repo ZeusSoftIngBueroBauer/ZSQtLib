@@ -1730,23 +1730,23 @@ void CGraphObjConnectionLine::paint(
     i_pPainter->setRenderHints(s_painterRenderHints);
 
     QPen pn = pen();
-    //if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-    //    if (isSelected()) {
-    //        pn.setColor(s_selectionColor);
-    //        pn.setWidth(3 + m_drawSettings.penWidth());
-    //    }
-    //    else {
-    //        pn.setColor(s_highlightColor);
-    //        pn.setWidth(3 + m_drawSettings.penWidth());
-    //    }
-    //    pn.setStyle(Qt::SolidLine);
-    //    QPainterPath outline;
-    //    outline.moveTo(polygon[0]);
-    //    for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
-    //        outline.lineTo(polygon[idxPt]);
-    //    }
-    //    i_pPainter->strokePath(outline, pn);
-    //}
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        if (isSelected()) {
+            pn.setColor(s_selectionColor);
+            pn.setWidth(3 + m_drawSettings.penWidth());
+        }
+        else {
+            pn.setColor(s_highlightColor);
+            pn.setWidth(3 + m_drawSettings.penWidth());
+        }
+        pn.setStyle(Qt::SolidLine);
+        QPainterPath outline;
+        outline.moveTo(polygon[0]);
+        for (int idxPt = 1; idxPt < polygon.size(); ++idxPt) {
+            outline.lineTo(polygon[idxPt]);
+        }
+        i_pPainter->strokePath(outline, pn);
+    }
     pn.setColor(m_drawSettings.penColor());
     pn.setWidth(m_drawSettings.penWidth());
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
@@ -1841,6 +1841,9 @@ void CGraphObjConnectionLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         if (bIsPolygonHit) {
             QGraphicsItem_setCursor(hitInfo.m_cursor);
         }
+        else {
+            QGraphicsItem_unsetCursor();
+        }
 
         //QCursor cursor = Qt::SizeAllCursor;
         //if (isSelected()) {
@@ -1904,6 +1907,9 @@ void CGraphObjConnectionLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         }
         if (bIsPolygonHit) {
             QGraphicsItem_setCursor(hitInfo.m_cursor);
+        }
+        else {
+            QGraphicsItem_unsetCursor();
         }
 
         //QCursor cursor = Qt::SizeAllCursor;

@@ -439,33 +439,33 @@ protected: // auxiliary instance methods
     //void getSelectionPointCoors(const ZS::Draw::SGraphObjSelectionPoint& i_selPt, const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     //void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
-    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
+    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bIsSelected, bool i_bAddLabelResultValues = false, int i_iPrecision = -1) const;
     QStringList resultValuesForLine(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const QLineF& i_lineItemCoors, const ZS::Draw::CPhysValLine& i_physValLine, int i_iPrecision = -1) const;
+        const QLineF& i_lineItemCoors, const ZS::Draw::CPhysValLine& i_physValLine, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForRect(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
+        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForEllipse(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
+        const QRectF& i_rectItemCoors, const ZS::Draw::CPhysValRect& i_physValRect, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForText(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const ZS::Draw::CPhysValRect& i_physValRect, const QString& i_srText, int i_iPrecision = -1) const;
+        const ZS::Draw::CPhysValRect& i_physValRect, const QString& i_srText, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForPolygon(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;
+        const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForConnectionPoint(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const ZS::Draw::CPhysValPoint& i_physValPoint, int i_iPrecision = -1) const;
+        const ZS::Draw::CPhysValPoint& i_physValPoint, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForConnectionLine(
         const QString& strGraphObjName, const QString& i_strGraphObjNameCntPt1, const QString& i_strGraphObjNameCntPt2,
-        const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, int i_iPrecision = -1) const;
-    QStringList resultValuesForLabel(
-        const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision = -1) const;
+        const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForGroup(
         const QString& strGraphObjName, const QPointF& i_pos,
-        const ZS::Draw::CPhysValRect& i_physValRect, int i_iPrecision = -1) const;
+        const ZS::Draw::CPhysValRect& i_physValRect, bool i_bIsSelected, int i_iPrecision = -1) const;
+    QStringList resultValuesForLabel(
+        const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText, int i_iPrecision = -1) const;
 public: // overridables of base class CTest (make protected method public)
     void triggerDoTestStep(int i_iInterval_ms = -1) override;
 protected: // class members

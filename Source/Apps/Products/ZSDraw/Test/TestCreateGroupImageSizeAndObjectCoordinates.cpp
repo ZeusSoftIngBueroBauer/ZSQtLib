@@ -12613,7 +12613,7 @@ void CTest::createTestGroupObjectCoordinatesAddLines(
     pTestStep->setConfigValue("P1", physValLine0.p1().toQPointF());
     pTestStep->setConfigValue("P2", physValLine0.p2().toQPointF());
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine0,line0, physValLine0));
+    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine0,line0, physValLine0, false));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -12637,7 +12637,7 @@ void CTest::createTestGroupObjectCoordinatesAddLines(
     pTestStep->setConfigValue("P1", physValLine1.p1().toQPointF());
     pTestStep->setConfigValue("P2", physValLine1.p2().toQPointF());
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine1,line1, physValLine1));
+    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine1,line1, physValLine1, false));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -12661,7 +12661,7 @@ void CTest::createTestGroupObjectCoordinatesAddLines(
     pTestStep->setConfigValue("P1", physValLine2.p1().toQPointF());
     pTestStep->setConfigValue("P2", physValLine2.p2().toQPointF());
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine2,line2, physValLine2));
+    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine2,line2, physValLine2, false));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -12685,7 +12685,7 @@ void CTest::createTestGroupObjectCoordinatesAddLines(
     pTestStep->setConfigValue("P1", physValLine3.p1().toQPointF());
     pTestStep->setConfigValue("P2", physValLine3.p2().toQPointF());
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine3,line3, physValLine3));
+    strlstExpectedValues.append(resultValuesForLine(strGraphObjName, ptPosLine3,line3, physValLine3, false));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
