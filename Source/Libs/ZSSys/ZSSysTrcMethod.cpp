@@ -290,15 +290,13 @@ CMethodTracer::CMethodTracer(
         }
         m_pTrcAdminObj->lock();
     }
-    else if (m_pTrcMthFile != nullptr) {
-        if (m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel) {
-            QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-            if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
-                strMth += "." + m_strMethod;
-            }
-            m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
-            m_bEnterTraced = true;
+    else if (m_pTrcMthFile != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel) {
+        QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
+        if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
+            strMth += "." + m_strMethod;
         }
+        m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
+        m_bEnterTraced = true;
     }
 } // ctor
 
@@ -428,7 +426,7 @@ bool CMethodTracer::areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetai
     if (m_pTrcAdminObj != nullptr) {
         bActive = m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel);
     }
-    else {
+    else if (m_eMethodCallsTrcDetailLevel != EMethodTraceDetailLevel::Undefined) {
         // Without trace admin object the caller must decide whether tracing is active.
         bActive = (m_eMethodCallsTrcDetailLevel >= i_eFilterDetailLevel);
     }
