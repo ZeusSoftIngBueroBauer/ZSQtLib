@@ -290,15 +290,13 @@ CMethodTracer::CMethodTracer(
         }
         m_pTrcAdminObj->lock();
     }
-    else if (m_pTrcMthFile != nullptr) {
-        if (m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel) {
-            QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-            if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
-                strMth += "." + m_strMethod;
-            }
-            m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
-            m_bEnterTraced = true;
+    else if (m_pTrcMthFile != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel) {
+        QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
+        if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
+            strMth += "." + m_strMethod;
         }
+        m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
+        m_bEnterTraced = true;
     }
 } // ctor
 
@@ -401,9 +399,6 @@ EMethodTraceDetailLevel CMethodTracer::getMethodCallsTraceDetailLevel() const
     if (m_pTrcAdminObj != nullptr) {
         eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
-    else {
-        eDetailLevel = m_eMethodCallsTrcDetailLevel;
-    }
     return eDetailLevel;
 }
 
@@ -425,13 +420,10 @@ bool CMethodTracer::areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetai
 //------------------------------------------------------------------------------
 {
     bool bActive = false;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         bActive = m_pTrcAdminObj->areMethodCallsActive(i_eFilterDetailLevel);
     }
-    else
-    {
+    else if (m_eMethodCallsTrcDetailLevel != EMethodTraceDetailLevel::Undefined) {
         // Without trace admin object the caller must decide whether tracing is active.
         bActive = (m_eMethodCallsTrcDetailLevel >= i_eFilterDetailLevel);
     }
@@ -462,9 +454,7 @@ ELogDetailLevel CMethodTracer::getRuntimeInfoTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
     ELogDetailLevel eDetailLevel = ELogDetailLevel::None;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         eDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
     }
     return eDetailLevel;
@@ -488,9 +478,7 @@ bool CMethodTracer::isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) 
 //------------------------------------------------------------------------------
 {
     bool bActive = false;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel);
     }
     return bActive;
@@ -571,9 +559,7 @@ QString CMethodTracer::getNameSpace() const
 //------------------------------------------------------------------------------
 {
     QString strNameSpace = m_strNameSpace;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         strNameSpace = m_pTrcAdminObj->getNameSpace();
     }
     return strNameSpace;
@@ -589,14 +575,11 @@ QString CMethodTracer::getClassName() const
 //------------------------------------------------------------------------------
 {
     QString strClassName = m_strClassName;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         strClassName = m_pTrcAdminObj->getClassName();
     }
     return strClassName;
-
-} // getClassName
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the object name of the instance to be traced as passed to the constructor
@@ -608,14 +591,11 @@ QString CMethodTracer::getObjectName() const
 //------------------------------------------------------------------------------
 {
     QString strObjName = m_strObjName;
-
-    if( m_pTrcAdminObj != nullptr && m_strObjName.isEmpty() )
-    {
+    if (m_pTrcAdminObj != nullptr && m_strObjName.isEmpty()) {
         strObjName = m_pTrcAdminObj->getObjectName();
     }
     return strObjName;
-
-} // getObjectName
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the method name to be traced as passed to the constructor.

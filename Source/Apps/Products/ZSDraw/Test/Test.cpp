@@ -6358,7 +6358,7 @@ QPoint CTest::addMouseMoveEventDataRows(
     bool bMoveUp = i_ptMousePosStop.y() < i_ptMousePosStart.y();
     int xDist_px = i_ptMousePosStop.x() - i_ptMousePosStart.x(); // might be negative
     int yDist_px = i_ptMousePosStop.y() - i_ptMousePosStart.y(); // might be negative
-    if (iMovesCount == 0) {
+    if (iMovesCount <= 0) {
         if (abs(xDist_px) >= abs(yDist_px)) {
             iMovesCount = abs(xDist_px) / 10;
             if (abs(xDist_px) % 10 != 0) {

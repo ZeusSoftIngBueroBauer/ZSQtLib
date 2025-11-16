@@ -3840,7 +3840,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, false, iResultValuesPrecision));
+        strGraphObjName, m_ptPosConnectionPoint1, *m_pPhysValConnectionPoint1, true, iResultValuesPrecision));
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
         m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, false, iResultValuesPrecision));
@@ -3914,7 +3914,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, m_ptPosConnectionPoint2, *m_pPhysValConnectionPoint2, false, iResultValuesPrecision));
+        strGraphObjName, m_ptPosConnectionPoint2, *m_pPhysValConnectionPoint2, true, iResultValuesPrecision));
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
         m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, false, iResultValuesPrecision));
@@ -3994,7 +3994,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, m_ptPosConnectionPoint3, *m_pPhysValConnectionPoint3, false, iResultValuesPrecision));
+        strGraphObjName, m_ptPosConnectionPoint3, *m_pPhysValConnectionPoint3, true, iResultValuesPrecision));
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
         m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, false, iResultValuesPrecision));
@@ -4074,7 +4074,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     });
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, m_ptPosConnectionPoint4, *m_pPhysValConnectionPoint4, false, iResultValuesPrecision));
+        strGraphObjName, m_ptPosConnectionPoint4, *m_pPhysValConnectionPoint4, true, iResultValuesPrecision));
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
         m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, false, iResultValuesPrecision));
@@ -4131,7 +4131,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
-        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, false, iResultValuesPrecision));
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // CnctLinePt1Pt2.insert(2, )
@@ -4183,7 +4183,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
-        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, false, iResultValuesPrecision));
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // CnctLinePt1Pt2.insert(2, )
@@ -4236,7 +4236,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
-        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, false, iResultValuesPrecision));
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // CnctLinePt1Pt2.hoverLeave()
@@ -4267,7 +4267,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt2, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint2,
-        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, false, iResultValuesPrecision));
+        m_polygonConnectionLineCnctPt1CnctPt2, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // CnctLinePt1Pt2.unselect()
@@ -4431,7 +4431,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineCnctPt1CnctPt4, c_strGraphObjNameConnectionPoint1, c_strGraphObjNameConnectionPoint4,
-        m_polygonConnectionLineCnctPt1CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4, false, iResultValuesPrecision));
+        m_polygonConnectionLineCnctPt1CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // CnctLinePt1Pt4.unselect()
@@ -4535,20 +4535,11 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         {"FactoryGroupName", ""},
         {"FactoryGraphObjType", ""}
     });
-    // Move mouse into bounding rectangle of CnctLinePt3Pt4
+    // Click into bounding rectangle of CnctLinePt3Pt4 (but line should not be selected)
     pTestStep->addDataRow({ // Click within bounding rectangle of connection line, but not on the line segments
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}
     });
-    pTestStep->addDataRow({
-        {"Method", "mouseReleaseEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    pTestStep->addDataRow({ // Click again and move mouse.
-        {"Method", "mousePressEvent"},
-        {"MousePos", m_ptMousePos}
-    });
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(580, 300));
     pTestStep->addDataRow({
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos}
@@ -4558,6 +4549,124 @@ void CTest::createTestGroupDrawStandardShapesConnectionLineModifications(ZS::Tes
         c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
         m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // mousePressAndMove
+    //------------------
+
+    strMethod = "mousePressMouseMoveMouseRelease";
+    strMthArgs = "{" + qPoint2Str(m_ptMousePos) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyCnctPts,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Click into bounding rectangle of CnctLinePt3Pt4 and move mouse (line should not be selected and not moved)
+    pTestStep->addDataRow({
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(580, 300), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
+        m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // CnctLinePt3Pt4.select()
+    //------------------------
+
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
+    strGraphObjName = c_strGraphObjNameConnectionLineCnctPt3CnctPt4;
+    strMethod = "select";
+    ptMousePos = QPoint(540, 223);
+    strMthArgs = "{" + qPoint2Str(ptMousePos) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyCnctPts,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move mouse onto line
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, ptMousePos);
+    pTestStep->addDataRow({ // Click on line segment to select the connection line
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"KeyboardModifiers", static_cast<int>(Qt::ControlModifier)}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
+        m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, true, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // mouseMoveMousePressMouseMove
+    //-----------------------------
+
+    strMethod = "mouseMoveMousePressMouseMoveMouseRelease";
+    strMthArgs = "{" + qPoint2Str(m_ptMousePos) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyCnctPts,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move mouse to line start point at connection point.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(502, 202), 0, Qt::LeftButton);
+    // Mouse press at the line start point.
+    pTestStep->addDataRow({
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    // Move mouse pos. Either the connection point should be moved or a new polygon point
+    // should be inserted but the whole line should not be moved.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(540, 202), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineCnctPt3CnctPt4, c_strGraphObjNameConnectionPoint3, c_strGraphObjNameConnectionPoint4,
+        m_polygonConnectionLineCnctPt3CnctPt4, *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4, true, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
 }
 
 //------------------------------------------------------------------------------
