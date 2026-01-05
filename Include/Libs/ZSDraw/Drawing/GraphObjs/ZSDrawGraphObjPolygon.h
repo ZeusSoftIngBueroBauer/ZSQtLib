@@ -150,6 +150,9 @@ public: // must overridables of base class CGraphObj
     QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
+protected: // auxiliary instance methods
+    void updateSelectionPointsOnPolygonPointsAdded();
+    void updateSelectionPointsOnPolygonPointsRemoved();
 public: // overridables of base class CGraphObj (text labels)
     QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
     bool labelHasDefaultValues(const QString& i_strName) const override;

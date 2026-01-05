@@ -2816,7 +2816,7 @@ void CGraphObjText::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
         physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
 
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         // Moving a selection point will modify the shape of the object and the position
         // of all other selection points got to be updated. If the position of the other

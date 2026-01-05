@@ -68,11 +68,11 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // instance methods
+    void setLinkedSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
+    SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
     CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
-public: // instance methods
-    SGraphObjSelectionPoint getSelectionPoint() const;
 public: // instance methods
     void setWidthInPx(double i_fWidth_px);
     double getWidthInPx() const;
@@ -120,9 +120,9 @@ protected: // instance members
          rectangle around the graphical object or into polygon shape points. */
     SGraphObjSelectionPoint m_selPt;
     /*!< Radius for drawing the selection point. */
-    double m_fWidth_px;
+    double m_fWidth_px = 0.0;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
-    bool m_bUpdatePositionInProgress;
+    bool m_bUpdatePositionInProgress = false;
 
 }; // class CGraphObjSelectionPoint
 

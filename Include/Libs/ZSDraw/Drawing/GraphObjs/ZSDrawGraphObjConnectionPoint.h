@@ -67,10 +67,10 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
 public: // instance methods
+    SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
+    CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
-public: // instance methods
-    SGraphObjSelectionPoint getSelectionPoint() const;
 public: // overridables of base class CGraphObj
     void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods

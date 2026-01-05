@@ -3272,7 +3272,7 @@ void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelect
     else {
         physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
 
     if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         // Moving a selection point will modify the shape of the object and the position

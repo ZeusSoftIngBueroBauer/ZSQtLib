@@ -5232,7 +5232,6 @@ void CGraphObj::showSelectionPointsOfPolygon(const QPolygonF& i_plg)
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
-        //QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
         if (m_arpSelPtsPolygon.size() > i_plg.size()) {
             for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
@@ -5253,7 +5252,10 @@ void CGraphObj::showSelectionPointsOfPolygon(const QPolygonF& i_plg)
         }
         for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-            if (pGraphObjSelPt == nullptr) {
+            if (pGraphObjSelPt != nullptr) {
+                pGraphObjSelPt->setLinkedSelectionPoint(SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
+            }
+            else {
                 pGraphObjSelPt = new CGraphObjSelectionPoint(
                     m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;

@@ -311,6 +311,26 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the description of the selection point at the linked object
+           the connection point is linked to.
+
+    Connection points may be linked to selection points at the bounding rectangle
+    or to polygon shape points.
+*/
+SGraphObjSelectionPoint CGraphObjConnectionPoint::selectionPointAtLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    return m_selPt;
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CGraphObjConnectionPoint::linkedObject() const
+//------------------------------------------------------------------------------
+{
+    return m_selPt.m_pGraphObj;
+}
+
+//------------------------------------------------------------------------------
 QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
 //------------------------------------------------------------------------------
 {
@@ -334,23 +354,6 @@ QString CGraphObjConnectionPoint::path() const
         strPath = CIdxTreeEntry::path();
     }
     return strPath;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point, the linked object and the
-           position at the linked object the selection point is linked to.
-
-    Selection points are differentiated into selection points on the bounding
-    rectangle around the graphical object or into polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjConnectionPoint::getSelectionPoint() const
-//------------------------------------------------------------------------------
-{
-    return m_selPt;
 }
 
 /*==============================================================================
@@ -1426,12 +1429,7 @@ void CGraphObjConnectionPoint::showSelectionPoints(TSelectionPointTypes i_selPts
         /* strObjName   */ path(),
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
-
-    if( parentItem() == nullptr )
-    {
-        showSelectionPointsOfBoundingRect( rect(), i_selPts );
-    }
-} // showSelectionPoints
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj (text labels)
@@ -2380,7 +2378,7 @@ void CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged(CGraphObj*
         physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
 
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         // Moving a selection point will modify the shape of the object and the position
         // of all other selection points got to be updated. If the position of the other

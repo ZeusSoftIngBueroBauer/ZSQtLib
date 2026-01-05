@@ -2315,7 +2315,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
         physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     }
 
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
         if (selPt.m_idxPt == 0) {

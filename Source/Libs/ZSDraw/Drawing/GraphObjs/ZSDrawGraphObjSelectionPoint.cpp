@@ -98,9 +98,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* strObjName          */ "SelPt." + i_selPt.name(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsEllipseItem(QRectF(-s_fDefaultWidth_px/2.0, -s_fDefaultWidth_px/2.0, s_fDefaultWidth_px, s_fDefaultWidth_px)),
-    m_selPt(i_selPt),
-    m_fWidth_px(s_fDefaultWidth_px),
-    m_bUpdatePositionInProgress(false)
+    m_fWidth_px(s_fDefaultWidth_px)
 {
     createTraceAdminObjs("SelectionPoints::" + ClassName());
 
@@ -124,19 +122,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
 
-    if (m_selPt.m_pGraphObj == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-
-    double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints, ERowVersion::Original);
-
-    QObject::connect(
-        m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged);
-    QObject::connect(
-        m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
+    setLinkedSelectionPoint(i_selPt);
 }
 
 //------------------------------------------------------------------------------
@@ -199,6 +185,64 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::setLinkedSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_selPt.toString(true);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setLinkedSelectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_selPt != i_selPt) {
+        if (m_selPt.m_pGraphObj != nullptr) {
+            QObject::disconnect(
+                m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged);
+            QObject::disconnect(
+                m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
+        }
+
+        if (i_selPt.m_pGraphObj == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+
+        m_selPt = i_selPt;
+
+        double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
+        setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints, ERowVersion::Original);
+
+        QObject::connect(
+            m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged);
+        QObject::connect(
+            m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
+            this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
+
+        update();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the description of the selection point at the linked object
+           the selection point is linked to.
+
+    Selection points may be linked to selection points at the bounding rectangle
+    or to polygon shape points.
+*/
+SGraphObjSelectionPoint CGraphObjSelectionPoint::selectionPointAtLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    return m_selPt;
+}
+
+//------------------------------------------------------------------------------
 CGraphObj* CGraphObjSelectionPoint::linkedObject() const
 //------------------------------------------------------------------------------
 {
@@ -226,46 +270,6 @@ QString CGraphObjSelectionPoint::path() const
     }
     return strPath;
 }
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point, the linked object and the
-           position at the linked object the selection point is linked to.
-
-    Selection points are differentiated into selection points on the bounding
-    rectangle around the graphical object or into polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjSelectionPoint::getSelectionPoint() const
-//------------------------------------------------------------------------------
-{
-    return m_selPt;
-}
-
-#if 0
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setShapePoint( int i_idxPt )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_idxPt);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setShapePoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
-    }
-    m_selPt.m_idxPt = i_idxPt;
-}
-#endif
 
 /*==============================================================================
 public: // instance methods

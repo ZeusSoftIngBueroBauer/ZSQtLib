@@ -616,15 +616,23 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             // If selected while creating the object or while modifying
             // (adding/removing/changing) polygon points ..
-            if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
+            if (m_editMode == EEditMode::CreatingByMouseEvents) {
                 showSelectionPoints(c_uSelectionPointsPolygonPoints);
+            }
+            else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+                if (m_idxsAdded.second > 0) {
+                    updateSelectionPointsOnPolygonPointsAdded();
+                }
+                else if (m_idxsRemoved.second > 0) {
+                    updateSelectionPointsOnPolygonPointsRemoved();
+                }
             }
         }
         if (m_idxsAdded.second > 0) {
             updateLabelsOnPolygonPointsAdded();
         }
         else if (m_idxsRemoved.second > 0) {
-            updateLabelsOnPolygonPointsRemoved();
+            updateSelectionPointsOnPolygonPointsRemoved();
         }
         m_idxsAdded = qMakePair(-1, 0);
         m_idxsRemoved = qMakePair(-1, 0);
@@ -1953,6 +1961,66 @@ void CGraphObjPolygon::showSelectionPoints(TSelectionPointTypes i_selPts)
 }
 
 /*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliaray method to update the info to which selection point
+           of the bounding recangle or polygon point of this polygon the graphical
+           selection points are linked to if polygon points have been inserted.
+
+    On adding a polygon point the selection point objects of all following
+    polygon points must be updated.
+*/
+void CGraphObjPolygon::updateSelectionPointsOnPolygonPointsAdded()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateSelectionPointsOnPolygonPointsAdded",
+        /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    if (m_idxsAdded.second > 0) {
+        // TODO: showSelectionPointsOfPolygon removes all currently created selection points and
+        // newly creates selection points for each polygon point. This could be improved by adding
+        // new selection points and relink existing selection points.
+        showSelectionPointsOfPolygon(m_polygonOrig);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliaray method to update the info to which selection point
+           of the bounding recangle or polygon point of this polygon the graphical
+           selection points are linked to if polygon points have been removed.
+
+    On removing a polygon point the selection point objects of all following
+    polygon points must be updated.
+*/
+void CGraphObjPolygon::updateSelectionPointsOnPolygonPointsRemoved()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateSelectionPointsOnPolygonPointsRemoved",
+        /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    if (m_idxsRemoved.second > 0) {
+        // TODO: showSelectionPointsOfPolygon removes all currently created selection points and
+        // newly creates selection points for each polygon point. This could be improved by removing
+        // unnecessary selection points and relink existing selection points.
+        showSelectionPointsOfPolygon(m_polygonOrig);
+    }
+}
+
+/*==============================================================================
 public: // overridables of base class CGraphObj (text labels)
 ==============================================================================*/
 
@@ -3075,7 +3143,7 @@ void CGraphObjPolygon::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSele
     // disconnected from the geometryOnSceneChanged signal of the selection points.
     disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
 
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         if (selPt.m_idxPt >= 0 && selPt.m_idxPt < polygon().size()) {
             replace(selPt.m_idxPt, physValPointParentSelPt);

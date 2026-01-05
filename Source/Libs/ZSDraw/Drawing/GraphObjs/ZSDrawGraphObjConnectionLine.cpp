@@ -707,8 +707,16 @@ void CGraphObjConnectionLine::setPolygon(const CPhysValPolygon& i_physValPolygon
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             // If selected while creating the object or while modifying
             // (adding/removing/changing) polygon points ..
-            if (m_editMode == EEditMode::CreatingByMouseEvents || m_editMode == EEditMode::ModifyingPolygonPoints) {
+            if (m_editMode == EEditMode::CreatingByMouseEvents) {
                 showSelectionPoints(c_uSelectionPointsPolygonPoints);
+            }
+            else if (m_editMode == EEditMode::ModifyingPolygonPoints) {
+                if (m_idxsAdded.second > 0) {
+                    updateSelectionPointsOnPolygonPointsAdded();
+                }
+                else if (m_idxsRemoved.second > 0) {
+                    updateSelectionPointsOnPolygonPointsRemoved();
+                }
             }
         }
         if (m_idxsAdded.second > 0) {
@@ -1424,9 +1432,10 @@ void CGraphObjConnectionLine::showSelectionPointsOfPolygon(const QPolygonF& i_pl
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
-        //QGraphicsItem_prepareGeometryChange(); // as the boundingRect is changed
+        // For connection lines the first and last polygon point are connection points and
+        // for those no selection points should be created.
         if (m_arpSelPtsPolygon.size() > i_plg.size()) {
-            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-2; idxSelPt >= i_plg.size()-1; --idxSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                 m_arpSelPtsPolygon[idxSelPt] = nullptr;
                 // The dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene.
@@ -1434,30 +1443,31 @@ void CGraphObjConnectionLine::showSelectionPointsOfPolygon(const QPolygonF& i_pl
                 delete pGraphObjSelPt;
                 pGraphObjSelPt = nullptr;
             }
-            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= i_plg.size(); --idxSelPt) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-2; idxSelPt >= i_plg.size()-1; --idxSelPt) {
                 m_arpSelPtsPolygon.removeAt(idxSelPt);
             }
         }
         else if (m_arpSelPtsPolygon.size() < i_plg.size()) {
-            for (int idxSelPt = m_arpSelPtsPolygon.size(); idxSelPt < i_plg.size(); ++idxSelPt) {
+            for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt < i_plg.size()-1; ++idxSelPt) {
                 m_arpSelPtsPolygon.append(nullptr);
             }
         }
-        // For connection lines the first and last polygon point are connection points and
-        // for those no selection points should be created.
-        // But if the connection line is under construction, there is no connection point at
-        // the end of the connection line. In this case we need the selection points (at least
-        // the selection point at the end of the last polygon point) to connect the line with
-        // the connction points.
         int idxSelPtFirst = 1;
         int idxSelPtLast = i_plg.size()-2;
         if (m_editMode == EEditMode::CreatingByMouseEvents) {
+            // If the connection line is under construction, there is no connection point at
+            // the end of the connection line. In this case we need the selection points (at least
+            // the selection point at the end of the last polygon point) to connect the line with
+            // the connction points.
             idxSelPtFirst = 0;
             idxSelPtLast = i_plg.size()-1;
         }
         for (int idxSelPt = idxSelPtFirst; idxSelPt <= idxSelPtLast; idxSelPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-            if (pGraphObjSelPt == nullptr) {
+            if (pGraphObjSelPt != nullptr) {
+                pGraphObjSelPt->setLinkedSelectionPoint(SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
+            }
+            else {
                 pGraphObjSelPt = new CGraphObjSelectionPoint(
                     m_pDrawingScene, SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
@@ -1472,6 +1482,66 @@ void CGraphObjConnectionLine::showSelectionPointsOfPolygon(const QPolygonF& i_pl
         }
     }
 } // showSelectionPointsOfPolygon
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliaray method to update the info to which selection point
+           of the bounding recangle or polygon point of this polygon the graphical
+           selection points are linked to if polygon points have been inserted.
+
+    On adding a polygon point the selection point objects of all following
+    polygon points must be updated.
+*/
+void CGraphObjConnectionLine::updateSelectionPointsOnPolygonPointsAdded()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateSelectionPointsOnPolygonPointsAdded",
+        /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    if (m_idxsAdded.second > 0) {
+        // TODO: showSelectionPointsOfPolygon removes all currently created selection points and
+        // newly creates selection points for each polygon point. This could be improved by adding
+        // new selection points and relink existing selection points.
+        showSelectionPointsOfPolygon(m_polygonOrig);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliaray method to update the info to which selection point
+           of the bounding recangle or polygon point of this polygon the graphical
+           selection points are linked to if polygon points have been removed.
+
+    On removing a polygon point the selection point objects of all following
+    polygon points must be updated.
+*/
+void CGraphObjConnectionLine::updateSelectionPointsOnPolygonPointsRemoved()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateSelectionPointsOnPolygonPointsRemoved",
+        /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    if (m_idxsRemoved.second > 0) {
+        // TODO: showSelectionPointsOfPolygon removes all currently created selection points and
+        // newly creates selection points for each polygon point. This could be improved by removing
+        // unnecessary selection points and relink existing selection points.
+        showSelectionPointsOfPolygon(m_polygonOrig);
+    }
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj (text labels)
@@ -2546,7 +2616,7 @@ void CGraphObjConnectionLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* 
     // disconnected from the geometryOnSceneChanged signal of the selection points.
     disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
 
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         if (selPt.m_idxPt >= 0 && selPt.m_idxPt < polygon().size()) {
             replace(selPt.m_idxPt, physValPointParentSelPt);
