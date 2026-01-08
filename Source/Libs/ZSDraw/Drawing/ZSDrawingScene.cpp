@@ -3754,7 +3754,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                             if (arpGraphicsItemsSelected.contains(pGraphicsItemPressed)) {
                                 arpGraphicsItemsSelected.removeOne(pGraphicsItemPressed);
                             }
-                            unselectGraphicsItems(arpGraphicsItemsSelected);
+                            if (!arpGraphicsItemsSelected.empty()) {
+                                unselectGraphicsItems(arpGraphicsItemsSelected);
+                            }
                         }
                     }
                 }

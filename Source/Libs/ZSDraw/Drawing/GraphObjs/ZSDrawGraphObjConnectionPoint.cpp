@@ -409,6 +409,9 @@ void CGraphObjConnectionPoint::appendConnectionLine(CGraphObjConnectionLine* i_p
         // If the connection line is not yet connected with me ...
         if (idxLineTmp < 0) {
             m_lstConnectionLines.append(i_pGraphObjCnctLine);
+            QObject::connect(
+                i_pGraphObjCnctLine, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionPoint::onConnectionLineZValueChanged);
         }
     }
 
@@ -443,6 +446,9 @@ void CGraphObjConnectionPoint::removeConnectionLine(CGraphObjConnectionLine* i_p
         }
         else {
             m_lstConnectionLines.removeAt(iLineIdx);
+            QObject::disconnect(
+                i_pGraphObjCnctLine, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionPoint::onConnectionLineZValueChanged);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -482,6 +488,43 @@ CGraphObjConnectionLine* CGraphObjConnectionPoint::getConnectionLine(int i_iLine
         pGraphObjCnctLine = m_lstConnectionLines[i_iLineIdx];
     }
     return pGraphObjCnctLine;
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Slot called if the zValue of the connection line has been changed.
+
+    The zValue (stacking order) is changed if a graph object is selected or unselected.
+    If the zValue of the connection line is changed, the connection point's zValue also
+    has to be changed to ensure that the connection point is above the line.
+
+    @param [in] i_pGraphObjCnctLine
+        Pointer to connection line who's zValue has been changed.
+    @param [in] i_fZValue
+        ZValue of the connection line.
+*/
+void CGraphObjConnectionPoint::onConnectionLineZValueChanged(CGraphObj* i_pGraphObjCnctLine, double i_fZValue)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "CnctLine: " + QString(i_pGraphObjCnctLine == nullptr ? "null" : i_pGraphObjCnctLine->path()) +
+            ", ZValue: " + QString::number(i_fZValue);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onConnectionLineZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    static const double c_fZValueOffset = fabs(c_fStackingOrderOffsetConnectionPoints - c_fStackingOrderOffsetConnectionLines);
+    if (i_pGraphObjCnctLine != nullptr) {
+        setZValue(i_fZValue + c_fZValueOffset);
+    }
 }
 
 /*==============================================================================

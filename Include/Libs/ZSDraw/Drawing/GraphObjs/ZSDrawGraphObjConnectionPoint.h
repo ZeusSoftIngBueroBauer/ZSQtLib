@@ -79,6 +79,8 @@ public: // instance methods
     int getConnectionLineIdx(CGraphObjConnectionLine* i_pGraphObjCnctLine);
     int getConnectionLinesCount() const;
     CGraphObjConnectionLine* getConnectionLine( int i_iLineIdx );
+protected slots:
+    void onConnectionLineZValueChanged(CGraphObj* i_pGraphObjCnctLine, double i_fZValue);
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     void setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit);
