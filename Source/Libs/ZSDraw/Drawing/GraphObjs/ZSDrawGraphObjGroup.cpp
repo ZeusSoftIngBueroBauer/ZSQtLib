@@ -2284,8 +2284,8 @@ bool CGraphObjGroup::labelHasDefaultValues(const QString& i_strName) const
     bool bHasDefaultValues = false;
     if (isPredefinedLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
-        if (labelDscr.m_bLabelIsVisible) {
+        const SLinkedChildObjDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }
         else if (labelDscr.m_bShowAnchorLine) {
@@ -2376,8 +2376,8 @@ bool CGraphObjGroup::geometryLabelHasDefaultValues(const QString& i_strName) con
     bool bHasDefaultValues = false;
     if (m_strlstGeometryLabelNames.contains(i_strName)) {
         bHasDefaultValues = true;
-        const SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
-        if (labelDscr.m_bLabelIsVisible) {
+        const SLinkedChildObjDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }
         else if (labelDscr.m_bShowAnchorLine) {

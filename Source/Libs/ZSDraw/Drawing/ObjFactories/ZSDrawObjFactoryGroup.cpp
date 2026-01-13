@@ -310,8 +310,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     CPhysValSize physValSize(*i_pDrawingScene);
     CPhysVal physValAngle(Units.Angle.Degree);
     double fZValue = 0.0;
-    QList<SLabelDscr> arTextLabels;
-    QList<SLabelDscr> arGeometryLabels;
+    QList<SLinkedChildObjDscr> arTextLabels;
+    QList<SLinkedChildObjDscr> arGeometryLabels;
     bool bGeometrySet = false;
     bool bAddedToParentGroup = false;
 
@@ -542,7 +542,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
     if (!i_xmlStreamReader.hasError()) {
-        for (const SLabelDscr& labelDscr : arTextLabels) {
+        for (const SLinkedChildObjDscr& labelDscr : arTextLabels) {
             if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->addLabel(
@@ -564,7 +564,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             }
             pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
                 labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
-            labelDscr.m_bLabelIsVisible ?
+            labelDscr.m_bIsVisible ?
                 pGraphObj->showLabel(labelDscr.m_strKey) :
                 pGraphObj->hideLabel(labelDscr.m_strKey);
             labelDscr.m_bShowAnchorLine ?
@@ -572,7 +572,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
         // Geometry Labels
-        for (const SLabelDscr& labelDscr : arGeometryLabels) {
+        for (const SLinkedChildObjDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
@@ -580,7 +580,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             else {
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
-                labelDscr.m_bLabelIsVisible ?
+                labelDscr.m_bIsVisible ?
                     pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
                     pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
                 labelDscr.m_bShowAnchorLine ?

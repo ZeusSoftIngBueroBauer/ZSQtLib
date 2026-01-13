@@ -1725,7 +1725,7 @@ QString SPolarCoors::toString(bool i_bAddUnit, const QString& i_strSeparator) co
 
 
 /*******************************************************************************
-struct SLabelDscr
+struct SLinkedChildObjDscr
 *******************************************************************************/
 
 /*==============================================================================
@@ -1733,122 +1733,122 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr() :
+SLinkedChildObjDscr::SLinkedChildObjDscr() :
 //------------------------------------------------------------------------------
     m_strKey(),
-    m_labelType(EGraphObjTypeUndefined),
+    m_graphObjType(EGraphObjTypeUndefined),
     m_strText(),
     m_selPt1(),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(EGraphObjType i_labelType) :
+SLinkedChildObjDscr::SLinkedChildObjDscr(EGraphObjType i_graphObjType) :
 //------------------------------------------------------------------------------
     m_strKey(),
-    m_labelType(i_labelType),
+    m_graphObjType(i_graphObjType),
     m_strText(),
     m_selPt1(),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey) :
+SLinkedChildObjDscr::SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(i_labelType),
+    m_graphObjType(i_graphObjType),
     m_strText(),
     m_selPt1(),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(
-    EGraphObjType i_labelType, const QString& i_strKey,
+SLinkedChildObjDscr::SLinkedChildObjDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(i_labelType),
+    m_graphObjType(i_graphObjType),
     m_strText(),
     m_selPt1(i_selPt),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(
-    EGraphObjType i_labelType, const QString& i_strKey,
+SLinkedChildObjDscr::SLinkedChildObjDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey,
     const SGraphObjSelectionPoint& i_selPt1,
     const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(i_labelType),
+    m_graphObjType(i_graphObjType),
     m_strText(),
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(
-    EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText,
+SLinkedChildObjDscr::SLinkedChildObjDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(i_labelType),
+    m_graphObjType(i_graphObjType),
     m_strText(i_strText),
     m_selPt1(i_selPt),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(
-    EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText,
+SLinkedChildObjDscr::SLinkedChildObjDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(i_labelType),
+    m_graphObjType(i_graphObjType),
     m_strText(i_strText),
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
     m_polarCoorsToLinkedSelPt(),
-    m_bLabelIsVisible(false),
+    m_bIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(const SLabelDscr& i_other) :
+SLinkedChildObjDscr::SLinkedChildObjDscr(const SLinkedChildObjDscr& i_other) :
 //------------------------------------------------------------------------------
     m_strKey(i_other.m_strKey),
-    m_labelType(i_other.m_labelType),
+    m_graphObjType(i_other.m_graphObjType),
     m_strText(i_other.m_strText),
     m_selPt1(i_other.m_selPt1),
     m_selPt2(i_other.m_selPt2),
     m_polarCoorsToLinkedSelPt(i_other.m_polarCoorsToLinkedSelPt),
-    m_bLabelIsVisible(i_other.m_bLabelIsVisible),
+    m_bIsVisible(i_other.m_bIsVisible),
     m_bShowAnchorLine(i_other.m_bShowAnchorLine)
 {
 }

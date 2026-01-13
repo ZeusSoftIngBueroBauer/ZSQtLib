@@ -1037,40 +1037,47 @@ public: // struct members
 
 
 //******************************************************************************
-/*! @brief Struct defining the properties of a label.
+/*! @brief Struct definining how to position a graphical object relative to
+           another graphical object.
 
-    As long as a label is not added to the graphics scene the label objects are
-    not created but the descriptors are kept in the parent object so that the
-    labels can be created with the desired properties on demand.
+    Used to position text labels and geometry labels but also connection points,
+    which may be arbitrarily moved.
+
+    Descriptors also provide the possibility to keep the position information
+    even if the object is not existing and invisible.
+
+    E.g. as long as a label is not added to the graphics scene the label objects
+    are not created but the descriptors are kept in the parent object. This way
+    the labels can be created with the desired properties on demand.
 */
-struct ZSDRAWDLL_API SLabelDscr
+struct ZSDRAWDLL_API SLinkedChildObjDscr
 //******************************************************************************
 {
 public: // ctors
-    SLabelDscr();
-    SLabelDscr(EGraphObjType i_labelType);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLabelDscr(const SLabelDscr& i_other);
+    SLinkedChildObjDscr();
+    SLinkedChildObjDscr(EGraphObjType i_graphObjType);
+    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
+    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SLinkedChildObjDscr(const SLinkedChildObjDscr& i_other);
 public: // struct members
-    /*!< Key of the label within the list of labels of the graphical objects. */
+    /*!< Key of the linked object within the parent's list of linked objects. */
     QString m_strKey;
-    /*!< Type of the label.
-         Range [EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
-    EGraphObjType m_labelType;
-    /*!< For text labels or geometry labels (like position) selPt1 defines the
-         selection point the label is linked to.
+    /*!< Type of the anchored object. Limited to Labels and ConnectionPoints.
+         Range [EGraphcObjConnectionPoint, EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
+    EGraphObjType m_graphObjType;
+    /*!< For connection points, text labels or geometry labels (like position) selPt1 defines the
+         selection point the object is linked to.
          For geometry labels using two selection points like length, width or height,
          selPt1 defines the first selection point the label is linked to. */
     SGraphObjSelectionPoint m_selPt1;
-    /*!< For text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
+    /*!< For connection points, text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
          For geometry labels using two selection points like length, width or height,
          selPt2 defines the second selection point the label is linked to. */
     SGraphObjSelectionPoint m_selPt2;
-    /*!< Text to be indicated by text labels. Not set (empty string) for geometry labels.
+    /*!< Text to be indicated by the anchored object. Not set (empty string) for geometry labels.
          For geometry labels the indicated text is calculated during runtime
          by the label item and set at the QGraphicsSimpleTextItem. */
     QString m_strText;
@@ -1079,13 +1086,12 @@ public: // struct members
          This can only be managed when keeping the distance and the angle to the selection point
          after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
     SPolarCoors m_polarCoorsToLinkedSelPt;
-    /*!< Flag indicating whether the label is visible. */
-    bool m_bLabelIsVisible;
-    /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
-         label is linked to) should always be visible. */
+    /*!< Flag indicating whether the anchored object is visible. */
+    bool m_bIsVisible;
+    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine;
 
-}; // struct SLabelDscr
+}; // struct SLinkedChildObjDscr
 
 } // namespace Draw
 

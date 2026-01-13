@@ -1177,7 +1177,6 @@ void CGraphObjImage::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //        m_editMode = EEditMode::None;
 //        m_editResizeMode = EEditResizeMode::None;
 //        m_idxSelPtSelectedPolygon = -1;
-//        m_selPtSelectedBoundingRect = ESelectionPoint::None;
 //
 //    } // if( modeDrawing == EMode::Edit )
 //
@@ -1385,7 +1384,6 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             //m_editMode = EEditMode::None;
             //m_editResizeMode = EEditResizeMode::None;
-            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
             //m_idxSelPtSelectedPolygon = -1;
         }
         //updateEditInfo();

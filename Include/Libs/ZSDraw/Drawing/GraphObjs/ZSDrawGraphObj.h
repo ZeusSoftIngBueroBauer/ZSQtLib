@@ -52,6 +52,7 @@ namespace Draw
 class CDrawingScene;
 class CDrawingSize;
 class CGraphObj;
+class CGraphObjConnectionPoint;
 class CGraphObjGroup;
 class CGraphObjLabel;
 class CGraphObjSelectionPoint;
@@ -255,6 +256,11 @@ class CGraphObjSelectionPoint;
     ================
 
     Selection points are used to change the shape of the objects.
+    E.g. to to resize the graphical object using the mouse.
+    The number and type of selection poionts depend on the type of the graphical object.
+    A line only has two selection points at the start and end point.
+    A rectangle has at least four selection points - one at each corner.
+    Polgons have selection points at each shape point.
 
     Selection points will be dynamically created if an object is selected and
     will never belong as childs to groups.
@@ -487,6 +493,14 @@ signals:
     void geometryLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a geometry label has been changed. */
     void geometryLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a new connection point has been added. */
+    void connectionPointAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a connection point has been removed. */
+    void connectionPointRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a connection point has been renamed. */
+    void connectionPointRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
+    /*!< This signal is emitted if a connection point has been changed. */
+    void connectionPointChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if the option to paint the bounding rectangle has been changed. */
     void optionPaintBoundingRectChanged(CGraphObj* i_pGraphObj, bool i_bOptionSet);
     /*!< This signal is emitted if the option to paint the shape path has been changed. */
@@ -675,7 +689,7 @@ protected: // overridables
 protected: // auxiliary instance methods
     void connectGeometryOnSceneChangedSlotWithSelectionPoints();
     void disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
-protected: // overridables
+protected: // overridables (selection points)
     virtual void showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectionPointTypes i_selPts = c_uSelectionPointsBoundingRectAll);
     virtual void showSelectionPointsOfPolygon(const QPolygonF& i_plg);
 public: // overridables (text labels)
@@ -684,7 +698,7 @@ public: // overridables (text labels)
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
     CGraphObjLabel* getLabel(const QString& i_strName) const;
-    SLabelDscr getLabelDescriptor(const QString& i_strName) const;
+    SLinkedChildObjDscr getLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool labelHasDefaultValues(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
@@ -709,7 +723,7 @@ public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
     virtual bool isValidGeometryLabelName(const QString& i_strName) const;
     CGraphObjLabel* getGeometryLabel(const QString& i_strName) const;
-    SLabelDscr getGeometryLabelDescriptor(const QString& i_strName) const;
+    SLinkedChildObjDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
@@ -723,6 +737,23 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
     virtual bool removeGeometryLabel(const QString& i_strName);
+public: // overridables (connection points)
+    CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
+    SLinkedChildObjDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints(const QString& i_strName) const;
+    virtual bool isConnectionPointAdded(const QString& i_strName) const;
+    virtual bool addConnectionPoint(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual bool addConnectionPoint(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt);
+    virtual bool removeConnectionPoint(const QString& i_strName);
+    virtual bool renameConnectionPoint(const QString& i_strName, const QString& i_strNameNew);
+    virtual void setConnectionPointAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    virtual void setConnectionPointAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
+    virtual SGraphObjSelectionPoint connectionPointAnchorPoint(const QString& i_strName) const;
+    virtual void setConnectionPointPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors);
+    virtual SPolarCoors connectionPointPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const;
+    virtual void showConnectionPointAnchorLine(const QString& i_strName);
+    virtual void hideConnectionPointAnchorLine(const QString& i_strName);
+    virtual bool isConnectionPointAnchorLineVisible(const QString& i_strName) const;
 public: // instance methods (simulation methods)
     //void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
@@ -740,10 +771,11 @@ protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
-    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint);
-    virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
-    virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
-    virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
+    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjSelectionPoint);
+    virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjSelectionPoint);
+    virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);
+    virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);
+    virtual void onConnectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjConnectionPoint);
 public slots: // overridables
     virtual void onActionFormatTriggered();
 public: // instance methods
@@ -793,6 +825,10 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelAdded(const QString& i_strName);
     void emit_geometryLabelRemoved(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
+    void emit_connectionPointAdded(const QString& i_strName);
+    void emit_connectionPointRemoved(const QString& i_strName);
+    void emit_connectionPointRenamed(const QString& i_strName, const QString& i_strNameNew);
+    void emit_connectionPointChanged(const QString& i_strName);
     void emit_optionPaintBoundingRectChanged(bool i_bOptionSet);
     void emit_optionPaintShapePathChanged(bool i_bOptionSet);
 protected: // overridable auxiliary instance methods (method tracing)
@@ -943,13 +979,8 @@ protected: // instance members
     //QPointF m_ptScenePos;
     /*!< Currently selected selection point of the items polygon. */
     //int m_idxSelPtSelectedPolygon;
-    /*!< List of selections points. Selection points are used to resize the graphical object
-         using the mouse. The number and type of selection poionts depend on the type of the
-         graphical object. A line only has two selection points at the start and end  point.
-         A rectangle has at least four selection points - one at each corner. */
+    /*!< List of selections points at shape points of polygons (or line end points). */
     QList<CGraphObjSelectionPoint*> m_arpSelPtsPolygon;
-    /*!< Currently selected selection point at the bounding rectangle. */
-    //CEnumSelectionPoint m_selPtSelectedBoundingRect;
     /*!< List of selection points at the bounding rectangle. */
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
     /*!< List with predefined (reserved) label names.
@@ -963,35 +994,43 @@ protected: // instance members
     QStringList m_strlstPredefinedLabelNames;
     /*!< Hash with descriptors for labels which may be assigned to and indicated by the graphical object.
          For each label a unique name has to be assigned.
-         Some names are reserved for internal use. E.g. "Name" is used to indicate
-         the name of the object. The value of the "Name" label is not editable but is
-         used to indicate the name of the object.
-         Derived graphical object classes may further on reserve names. E.g. the Line object
-         uses "P1" and "P2" to address the line end points. The names for "P<IdxPt>" are
-         editable but are defaulting to "P<IdxPt>".
+         Some names are reserved for internal use.
+         E.g. "Name" is used to indicate the name of the object. The value (text) of the "Name" label is not
+         editable but is used to indicate the name of the object.
+         Derived graphical object classes may further on reserve names.
+         E.g. the Line object uses "P1" and "P2" to address the line end points.
+         The names for "P<IdxPt>" are editable but are defaulting to "P<IdxPt>".
          In addition to those predefined labels additional labels may be added by defining a
          unique name and assigning a text. Both the name and the text are stored in the Label object.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
-         the properties of the label objects. */
-    QHash<QString, SLabelDscr> m_hshLabelDscrs;
+         the properties (text, relative position to linked object) of the label objects. */
+    QHash<QString, SLinkedChildObjDscr> m_hshLabelDscrs;
     /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
          Created on demand from the label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
     /*!< List with the geometry label names. May be initialised in the constructor of derived classes
-         in addition to the hash with geometry labels. Keeping the geometry label names also a string list
-         should verify that the returned value names are always in the same order (as the order
-         in a hash is arbitrary). For polygons the geometry label names may be added or removed during runtime. */
+         in addition to the hash with geometry labels. Keeping the geometry label names also in a string list
+         beside the geometry label hashes should verify that the returned value names are always in the same order
+         (as the order in a hash is arbitrary). For polygons the geometry label names may be added or removed
+         during runtime. */
     QStringList m_strlstGeometryLabelNames;
     /*!< Hash with descriptors for geometry labels which may be indicated by the graphical object.
          The number of geometry labels depend on the object type.
          E.g. for the Line object the positions "P1", "P2" and "Center" as well as the "Width" and "Height",
          "Length" and "Angle" may be shown.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
-         the properties of the label objects. */
-    QHash<QString, SLabelDscr> m_hshGeometryLabelDscrs;
+         the properties (text, relative position to linked object) of the label objects. */
+    QHash<QString, SLinkedChildObjDscr> m_hshGeometryLabelDscrs;
     /*!< Hash with geometry labels which may be indicated by the graphical object.
          Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
+    /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
+         Connection points may be at the same position of selection points but may also be arbitrarily positioned.
+         The desriptors are used to set the relative position to of the connection point to the graphical object. */
+    QHash<QString, SLinkedChildObjDscr> m_hshConnectionPointsDscrs;
+    /*!< Hash with geometry labels which may be indicated by the graphical object.
+         Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
+    QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */
     QString m_strToolTip;

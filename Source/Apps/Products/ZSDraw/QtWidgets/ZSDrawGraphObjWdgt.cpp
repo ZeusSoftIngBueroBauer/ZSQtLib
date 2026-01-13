@@ -578,9 +578,8 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //
 //                //bool bIsHit = isHit( ptMousePos, &hitInfo );
 //
-//                m_editMode                  = hitInfo.m_editMode;
-//                m_editResizeMode            = hitInfo.m_editResizeMode;
-//                m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
+//                m_editMode = hitInfo.m_editMode;
+//                m_editResizeMode = hitInfo.m_editResizeMode;
 //
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
 //                m_ptRotOriginCurr = rect().center();
@@ -712,8 +711,6 @@ void CGraphObjWdgt::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     //    m_editMode = EEditMode::None;
     //    m_editResizeMode = EEditResizeMode::None;
-    //    m_idxSelPtSelectedPolygon = -1;
-    //    m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
     //    // The mouse release event would select the object.
     //    // This is not wanted if the selection tool is not active.
@@ -807,8 +804,6 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             //m_editMode = EEditMode::None;
             //m_editResizeMode = EEditResizeMode::None;
-            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
-            //m_idxSelPtSelectedPolygon = -1;
         }
         //updateEditInfo();
         //updateToolTip();
