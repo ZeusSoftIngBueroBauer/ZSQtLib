@@ -698,7 +698,7 @@ public: // overridables (text labels)
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
     CGraphObjLabel* getLabel(const QString& i_strName) const;
-    SLinkedChildObjDscr getLabelDescriptor(const QString& i_strName) const;
+    SAnchorLayoutDscr getLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool labelHasDefaultValues(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
@@ -723,7 +723,7 @@ public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
     virtual bool isValidGeometryLabelName(const QString& i_strName) const;
     CGraphObjLabel* getGeometryLabel(const QString& i_strName) const;
-    SLinkedChildObjDscr getGeometryLabelDescriptor(const QString& i_strName) const;
+    SAnchorLayoutDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
@@ -739,7 +739,7 @@ protected: // overridables (geometry labels)
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
     CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    SLinkedChildObjDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints(const QString& i_strName) const;
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
     virtual bool addConnectionPoint(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
@@ -1004,7 +1004,7 @@ protected: // instance members
          unique name and assigning a text. Both the name and the text are stored in the Label object.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, SLinkedChildObjDscr> m_hshLabelDscrs;
+    QHash<QString, SAnchorLayoutDscr> m_hshLabelDscrs;
     /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
          Created on demand from the label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
@@ -1020,14 +1020,14 @@ protected: // instance members
          "Length" and "Angle" may be shown.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, SLinkedChildObjDscr> m_hshGeometryLabelDscrs;
+    QHash<QString, SAnchorLayoutDscr> m_hshGeometryLabelDscrs;
     /*!< Hash with geometry labels which may be indicated by the graphical object.
          Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
     /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
          Connection points may be at the same position of selection points but may also be arbitrarily positioned.
          The desriptors are used to set the relative position to of the connection point to the graphical object. */
-    QHash<QString, SLinkedChildObjDscr> m_hshConnectionPointsDscrs;
+    QHash<QString, SAnchorLayoutDscr> m_hshConnectionPointsDscrs;
     /*!< Hash with geometry labels which may be indicated by the graphical object.
          Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;

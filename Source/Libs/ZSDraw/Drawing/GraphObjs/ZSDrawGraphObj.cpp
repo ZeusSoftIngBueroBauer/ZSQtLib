@@ -5406,10 +5406,10 @@ CGraphObjLabel* CGraphObj::getLabel(const QString& i_strName) const
 //------------------------------------------------------------------------------
 /*! @brief Returns the label descriptor for the given label name.
 */
-SLinkedChildObjDscr CGraphObj::getLabelDescriptor(const QString& i_strName) const
+SAnchorLayoutDscr CGraphObj::getLabelDescriptor(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    SLinkedChildObjDscr linkedChildDscr = m_hshLabelDscrs.value(i_strName, SLinkedChildObjDscr());
+    SAnchorLayoutDscr linkedChildDscr = m_hshLabelDscrs.value(i_strName, SAnchorLayoutDscr());
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
         linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
@@ -5534,7 +5534,7 @@ bool CGraphObj::addLabel(
         if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
-        SLinkedChildObjDscr linkedChildDscr(
+        SAnchorLayoutDscr linkedChildDscr(
             EGraphObjTypeLabel, i_strName, strText,
             SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
         m_hshLabelDscrs.insert(i_strName, linkedChildDscr);
@@ -5600,7 +5600,7 @@ bool CGraphObj::addLabel(
         if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
-        SLinkedChildObjDscr linkedChildDscr(EGraphObjTypeLabel, i_strName);
+        SAnchorLayoutDscr linkedChildDscr(EGraphObjTypeLabel, i_strName);
         linkedChildDscr.m_strText = strText;
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
         m_hshLabelDscrs.insert(i_strName, linkedChildDscr);
@@ -5697,7 +5697,7 @@ bool CGraphObj::renameLabel(const QString& i_strName, const QString& i_strNameNe
 
     bool bCanRename = !isPredefinedLabelName(i_strName);
     if (bCanRename) {
-        SLinkedChildObjDscr linkedChildDscr = m_hshLabelDscrs[i_strName];
+        SAnchorLayoutDscr linkedChildDscr = m_hshLabelDscrs[i_strName];
         m_hshLabelDscrs.remove(i_strName);
         linkedChildDscr.m_strKey = i_strNameNew;
         m_hshLabelDscrs.insert(i_strNameNew, linkedChildDscr);
@@ -5826,7 +5826,7 @@ void CGraphObj::setLabelAnchorPoint(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     if (linkedChildDscr.m_selPt1.m_selPtType != i_selPtType || linkedChildDscr.m_selPt1.m_selPt != i_selPt) {
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
@@ -5885,7 +5885,7 @@ void CGraphObj::setLabelAnchorPoint(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     if (linkedChildDscr.m_selPt1.m_selPtType != i_selPtType || linkedChildDscr.m_selPt1.m_idxPt != i_idxPt) {
         linkedChildDscr.m_selPt1.m_selPtType = i_selPtType;
         linkedChildDscr.m_selPt1.m_idxPt = i_idxPt;
@@ -5941,7 +5941,7 @@ void CGraphObj::showLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
         linkedChildDscr.m_bIsVisible = true;
@@ -5996,7 +5996,7 @@ void CGraphObj::hideLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
         if (pGraphObjLabel->scene() == nullptr) {
@@ -6063,7 +6063,7 @@ void CGraphObj::setLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strNam
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     if (linkedChildDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
         linkedChildDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
@@ -6119,7 +6119,7 @@ void CGraphObj::showLabelAnchorLine(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     if (!linkedChildDscr.m_bShowAnchorLine) {
         linkedChildDscr.m_bShowAnchorLine = true;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
@@ -6159,7 +6159,7 @@ void CGraphObj::hideLabelAnchorLine(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshLabelDscrs[i_strName];
     if (linkedChildDscr.m_bShowAnchorLine) {
         linkedChildDscr.m_bShowAnchorLine = false;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
@@ -6240,10 +6240,10 @@ CGraphObjLabel* CGraphObj::getGeometryLabel(const QString& i_strName) const
 //------------------------------------------------------------------------------
 /*! @brief Returns the label descriptor for the given label name.
 */
-SLinkedChildObjDscr CGraphObj::getGeometryLabelDescriptor(const QString& i_strName) const
+SAnchorLayoutDscr CGraphObj::getGeometryLabelDescriptor(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    SLinkedChildObjDscr linkedChildDscr = m_hshGeometryLabelDscrs.value(i_strName, SLinkedChildObjDscr());
+    SAnchorLayoutDscr linkedChildDscr = m_hshGeometryLabelDscrs.value(i_strName, SAnchorLayoutDscr());
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
         linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
@@ -6297,7 +6297,7 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
         CGraphObjLabel* pGraphObjLabel = nullptr;
@@ -6377,7 +6377,7 @@ void CGraphObj::hideGeometryLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
         if (pGraphObjLabel->scene() == nullptr) {
@@ -6448,7 +6448,7 @@ void CGraphObj::setGeometryLabelPolarCoorsToLinkedSelectionPoint(const QString& 
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
     if (linkedChildDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
         linkedChildDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -6504,7 +6504,7 @@ void CGraphObj::showGeometryLabelAnchorLine(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
     if (!linkedChildDscr.m_bShowAnchorLine) {
         linkedChildDscr.m_bShowAnchorLine = true;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -6544,7 +6544,7 @@ void CGraphObj::hideGeometryLabelAnchorLine(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshGeometryLabelDscrs[i_strName];
     if (linkedChildDscr.m_bShowAnchorLine) {
         linkedChildDscr.m_bShowAnchorLine = false;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -6624,7 +6624,7 @@ bool CGraphObj::addGeometryLabel(
 
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLinkedChildObjDscr linkedChildDscr(i_labelType, i_strName);
+        SAnchorLayoutDscr linkedChildDscr(i_labelType, i_strName);
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt1);
         if (i_selPt2 != ESelectionPoint::None) {
             linkedChildDscr.m_selPt2 = SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt2);
@@ -6684,7 +6684,7 @@ bool CGraphObj::addGeometryLabel(
 
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLinkedChildObjDscr linkedChildDscr(i_labelType, i_strName);
+        SAnchorLayoutDscr linkedChildDscr(i_labelType, i_strName);
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt1);
         if (i_idxPt2 >= 0) {
             linkedChildDscr.m_selPt2 = SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt2);
@@ -6764,10 +6764,10 @@ CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName
 //------------------------------------------------------------------------------
 /*! @brief Returns the connection point descriptor for the given name.
 */
-SLinkedChildObjDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
+SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    SLinkedChildObjDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SLinkedChildObjDscr());
+    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SAnchorLayoutDscr());
     CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
     if (pGraphObjConnectionPoint != nullptr) {
         linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint();
@@ -6862,7 +6862,7 @@ bool CGraphObj::addConnectionPoint(
 
     bool bCanAdd = !m_hshConnectionPointsDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLinkedChildObjDscr linkedChildDscr(
+        SAnchorLayoutDscr linkedChildDscr(
             EGraphObjTypeConnectionPoint, i_strName, i_strText,
             SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
         m_hshConnectionPointsDscrs.insert(i_strName, linkedChildDscr);
@@ -6918,7 +6918,7 @@ bool CGraphObj::addConnectionPoint(
 
     bool bCanAdd = !m_hshConnectionPointsDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLinkedChildObjDscr linkedChildDscr(EGraphObjTypeConnectionPoint, i_strName);
+        SAnchorLayoutDscr linkedChildDscr(EGraphObjTypeConnectionPoint, i_strName);
         linkedChildDscr.m_strText = i_strText;
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
         m_hshConnectionPointsDscrs.insert(i_strName, linkedChildDscr);
@@ -7012,7 +7012,7 @@ bool CGraphObj::renameConnectionPoint(const QString& i_strName, const QString& i
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
+    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     m_hshConnectionPointsDscrs.remove(i_strName);
     linkedChildDscr.m_strKey = i_strNameNew;
     m_hshConnectionPointsDscrs.insert(i_strNameNew, linkedChildDscr);
@@ -7079,7 +7079,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     if (linkedChildDscr.m_selPt1.m_selPtType != i_selPtType || linkedChildDscr.m_selPt1.m_selPt != i_selPt) {
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
@@ -7139,7 +7139,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     if (linkedChildDscr.m_selPt1.m_selPtType != i_selPtType || linkedChildDscr.m_selPt1.m_idxPt != i_idxPt) {
         linkedChildDscr.m_selPt1.m_selPtType = i_selPtType;
         linkedChildDscr.m_selPt1.m_idxPt = i_idxPt;
@@ -7200,7 +7200,7 @@ void CGraphObj::setConnectionPointPolarCoorsToLinkedSelectionPoint(const QString
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     if (linkedChildDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
         linkedChildDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
@@ -7259,7 +7259,7 @@ void CGraphObj::showConnectionPointAnchorLine(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     if (!linkedChildDscr.m_bShowAnchorLine) {
         linkedChildDscr.m_bShowAnchorLine = true;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
@@ -7299,7 +7299,7 @@ void CGraphObj::hideConnectionPointAnchorLine(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    SLinkedChildObjDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
+    SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     if (linkedChildDscr.m_bShowAnchorLine) {
         linkedChildDscr.m_bShowAnchorLine = false;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);

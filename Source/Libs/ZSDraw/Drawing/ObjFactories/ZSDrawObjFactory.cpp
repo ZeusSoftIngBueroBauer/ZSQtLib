@@ -359,7 +359,7 @@ void CObjFactory::saveGraphObjTextLabels(
     QSet<QString> strlstLabelNamesAdded;
     for (const QString& strName : strlstPredefinedLabelNames) {
         if (!i_pGraphObj->labelHasDefaultValues(strName)) {
-            SLinkedChildObjDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
+            SAnchorLayoutDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
@@ -381,7 +381,7 @@ void CObjFactory::saveGraphObjTextLabels(
     for (const QString& strName : strlstLabelNames) {
         if (!strlstLabelNamesAdded.contains(strName)) {
             if (!i_pGraphObj->labelHasDefaultValues(strName)) {
-                SLinkedChildObjDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
+                SAnchorLayoutDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
                 i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
                 // To keep the XML file as short as possible the properties of
                 // the labels are stored as attributes and not as text elements.
@@ -402,17 +402,17 @@ void CObjFactory::saveGraphObjTextLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<SLinkedChildObjDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
+QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<SLinkedChildObjDscr> arLabelDscrs;
+    QList<SAnchorLayoutDscr> arLabelDscrs;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameLabel) {
-                    SLinkedChildObjDscr labelDscr;
+                    SAnchorLayoutDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 
@@ -474,7 +474,7 @@ void CObjFactory::saveGraphObjGeometryLabels(
     strlstLabelNames.sort();
     for (const QString& strName : strlstLabelNames) {
         if (!i_pGraphObj->geometryLabelHasDefaultValues(strName)) {
-            SLinkedChildObjDscr labelDscr = i_pGraphObj->getGeometryLabelDescriptor(strName);
+            SAnchorLayoutDscr labelDscr = i_pGraphObj->getGeometryLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
@@ -491,17 +491,17 @@ void CObjFactory::saveGraphObjGeometryLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<SLinkedChildObjDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader)
+QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<SLinkedChildObjDscr> arLabelDscrs;
+    QList<SAnchorLayoutDscr> arLabelDscrs;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameLabel) {
-                    SLinkedChildObjDscr labelDscr;
+                    SAnchorLayoutDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 

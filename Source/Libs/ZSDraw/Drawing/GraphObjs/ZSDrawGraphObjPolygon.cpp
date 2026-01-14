@@ -2081,7 +2081,7 @@ bool CGraphObjPolygon::labelHasDefaultValues(const QString& i_strName) const
     bool bHasDefaultValues = false;
     if (isPredefinedLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const SLinkedChildObjDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        const SAnchorLayoutDscr& labelDscr = m_hshLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }
@@ -2129,7 +2129,7 @@ bool CGraphObjPolygon::geometryLabelHasDefaultValues(const QString& i_strName) c
     bool bHasDefaultValues = false;
     if (m_strlstGeometryLabelNames.contains(i_strName)) {
         bHasDefaultValues = true;
-        const SLinkedChildObjDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        const SAnchorLayoutDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }
@@ -3663,8 +3663,8 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
         for (int idxPt = (iCountNew - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt - m_idxsAdded.second);
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
-            SLinkedChildObjDscr& labelDscrOld = m_hshLabelDscrs[strLabelNameOld];
-            SLinkedChildObjDscr& labelDscrNew = m_hshLabelDscrs[strLabelNameNew];
+            SAnchorLayoutDscr& labelDscrOld = m_hshLabelDscrs[strLabelNameOld];
+            SAnchorLayoutDscr& labelDscrNew = m_hshLabelDscrs[strLabelNameNew];
             labelDscrNew.m_bIsVisible = labelDscrOld.m_bIsVisible;
             labelDscrNew.m_bShowAnchorLine = labelDscrOld.m_bShowAnchorLine;
             labelDscrNew.m_polarCoorsToLinkedSelPt = labelDscrOld.m_polarCoorsToLinkedSelPt;
@@ -3687,7 +3687,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
             for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
                 if (!isPolygonPointLabelName(strLabelName)) {
                     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
-                    SLinkedChildObjDscr& labelDscr = m_hshLabelDscrs[strLabelName];
+                    SAnchorLayoutDscr& labelDscr = m_hshLabelDscrs[strLabelName];
                     if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
                         || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
@@ -3725,8 +3725,8 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
         for (int idxPt = (iCountNew - 1); idxPt >= (m_idxsAdded.first + m_idxsAdded.second); --idxPt) {
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt - m_idxsAdded.second);
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
-            SLinkedChildObjDscr& labelDscrOld = m_hshGeometryLabelDscrs[strLabelNameOld];
-            SLinkedChildObjDscr& labelDscrNew = m_hshGeometryLabelDscrs[strLabelNameNew];
+            SAnchorLayoutDscr& labelDscrOld = m_hshGeometryLabelDscrs[strLabelNameOld];
+            SAnchorLayoutDscr& labelDscrNew = m_hshGeometryLabelDscrs[strLabelNameNew];
             labelDscrNew.m_bIsVisible = labelDscrOld.m_bIsVisible;
             labelDscrNew.m_bShowAnchorLine = labelDscrOld.m_bShowAnchorLine;
             labelDscrNew.m_polarCoorsToLinkedSelPt = labelDscrOld.m_polarCoorsToLinkedSelPt;
@@ -3778,7 +3778,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
         for (int idxPt = m_idxsRemoved.first; idxPt < iCountNew; ++idxPt) {
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
-            SLinkedChildObjDscr labelDscr = m_hshLabelDscrs[strLabelNameOld];
+            SAnchorLayoutDscr labelDscr = m_hshLabelDscrs[strLabelNameOld];
             labelDscr.m_strKey = strLabelNameNew;
             labelDscr.m_strText = strLabelNameNew;
             labelDscr.m_selPt1.m_idxPt = idxPt;
@@ -3802,7 +3802,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
             for (const QString& strLabelName : m_hshLabelDscrs.keys()) {
                 if (!isPolygonPointLabelName(strLabelName)) {
                     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
-                    SLinkedChildObjDscr& labelDscr = m_hshLabelDscrs[strLabelName];
+                    SAnchorLayoutDscr& labelDscr = m_hshLabelDscrs[strLabelName];
                     if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
                         || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
@@ -3840,7 +3840,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
         for (int idxPt = m_idxsRemoved.first; idxPt < iCountNew; ++idxPt) {
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
-            SLinkedChildObjDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
+            SAnchorLayoutDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
             labelDscr.m_strKey = strLabelNameNew;
             labelDscr.m_strText = strLabelNameNew;
             labelDscr.m_selPt1.m_idxPt = idxPt;

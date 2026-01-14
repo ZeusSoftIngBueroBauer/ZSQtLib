@@ -118,11 +118,11 @@ public: // instance methods
     CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
-public: // overridables
+public: // instance methods
     void setKey(const QString& i_strKey);
     QString key() const;
 public: // replacing methods of QGraphicsSimpleTextItem
-    void setText( const QString& i_strText );
+    void setText(const QString& i_strText);
     QString text() const;
 public: // instance methods
     void setSelectionPoint1( const SGraphObjSelectionPoint& i_selPt );
@@ -140,12 +140,6 @@ public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
-public: // must overridables of base class CGraphObj
-    //virtual void setIsHit( bool i_bHit ) override;
-public: // overridables of base class CGraphObj
-    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
-public: // reimplementing methods of base class QGraphicItem
-    //void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {};
 public: // must overridables of base class QGraphicsItem
@@ -162,7 +156,6 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 public slots: // overridables of base class CGraphObj
-    //void onGraphObjParentScenePosChanged( CGraphObj* i_pGraphObjParent ) override;
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     virtual void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem
@@ -173,26 +166,22 @@ protected: // overridable auxiliary instance methods
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
-    //void traceInternalStates(
-    //    ZS::System::CMethodTracer& i_mthTracer,
-    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
-    /*!< Key and selection point(s) of the label. */
-    SLinkedChildObjDscr m_labelDscr;
+    /*!< Key and selection point(s) the label is linked to. */
+    SAnchorLayoutDscr m_anchorLayoutDscr;
     /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
          in local coordinates drawn from the label to the selection point(s) of the parent.
          The start point of the line at the label depend on the position of the label relative
          to the selection point(s) of the parent (see "updatePosition" for more details). */
     QList<QLineF> m_anchorLines;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
-    bool m_bUpdatePositionInProgress;
+    bool m_bUpdatePositionInProgress = false;
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
          to the linked selection point is changed if the position is updated because the parent's
          geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged;
+    bool m_bPositionUpdateOnParentGeometryChanged = false;
 
 }; // class CGraphObjLabel
 

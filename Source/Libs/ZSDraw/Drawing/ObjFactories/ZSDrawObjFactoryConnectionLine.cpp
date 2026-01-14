@@ -264,8 +264,8 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
     CDrawSettings drawSettings(EGraphObjTypePolyline);
     CPhysValPolygon physValPolygon(*i_pDrawingScene, false);
     double fZValue = 0.0;
-    QList<SLinkedChildObjDscr> arTextLabels;
-    QList<SLinkedChildObjDscr> arGeometryLabels;
+    QList<SAnchorLayoutDscr> arTextLabels;
+    QList<SAnchorLayoutDscr> arGeometryLabels;
 
     CGraphObjConnectionPoint* pCnctPtStart = nullptr;
     CGraphObjConnectionPoint* pCnctPtEnd   = nullptr;
@@ -363,7 +363,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
     if (!i_xmlStreamReader.hasError()) {
         pGraphObj->setConnectionPoint(ELinePoint::Start, pCnctPtStart);
         pGraphObj->setConnectionPoint(ELinePoint::End, pCnctPtEnd);
-        for (const SLinkedChildObjDscr& labelDscr : arTextLabels) {
+        for (const SAnchorLayoutDscr& labelDscr : arTextLabels) {
             if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->addLabel(
@@ -395,7 +395,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
         // Geometry Labels
-        for (const SLinkedChildObjDscr& labelDscr : arGeometryLabels) {
+        for (const SAnchorLayoutDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");

@@ -1725,7 +1725,7 @@ QString SPolarCoors::toString(bool i_bAddUnit, const QString& i_strSeparator) co
 
 
 /*******************************************************************************
-struct SLinkedChildObjDscr
+struct SAnchorLayoutDscr
 *******************************************************************************/
 
 /*==============================================================================
@@ -1733,7 +1733,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr() :
+SAnchorLayoutDscr::SAnchorLayoutDscr() :
 //------------------------------------------------------------------------------
     m_strKey(),
     m_graphObjType(EGraphObjTypeUndefined),
@@ -1747,7 +1747,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr() :
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(EGraphObjType i_graphObjType) :
+SAnchorLayoutDscr::SAnchorLayoutDscr(EGraphObjType i_graphObjType) :
 //------------------------------------------------------------------------------
     m_strKey(),
     m_graphObjType(i_graphObjType),
@@ -1761,7 +1761,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(EGraphObjType i_graphObjType) :
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey) :
+SAnchorLayoutDscr::SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
     m_graphObjType(i_graphObjType),
@@ -1775,7 +1775,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QSt
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(
+SAnchorLayoutDscr::SAnchorLayoutDscr(
     EGraphObjType i_graphObjType, const QString& i_strKey,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
@@ -1791,7 +1791,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(
+SAnchorLayoutDscr::SAnchorLayoutDscr(
     EGraphObjType i_graphObjType, const QString& i_strKey,
     const SGraphObjSelectionPoint& i_selPt1,
     const SGraphObjSelectionPoint& i_selPt2) :
@@ -1808,7 +1808,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(
+SAnchorLayoutDscr::SAnchorLayoutDscr(
     EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
@@ -1824,7 +1824,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(
+SAnchorLayoutDscr::SAnchorLayoutDscr(
     EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
@@ -1840,7 +1840,7 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(
 }
 
 //------------------------------------------------------------------------------
-SLinkedChildObjDscr::SLinkedChildObjDscr(const SLinkedChildObjDscr& i_other) :
+SAnchorLayoutDscr::SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other) :
 //------------------------------------------------------------------------------
     m_strKey(i_other.m_strKey),
     m_graphObjType(i_other.m_graphObjType),
@@ -1851,6 +1851,18 @@ SLinkedChildObjDscr::SLinkedChildObjDscr(const SLinkedChildObjDscr& i_other) :
     m_bIsVisible(i_other.m_bIsVisible),
     m_bShowAnchorLine(i_other.m_bShowAnchorLine)
 {
+}
+
+//------------------------------------------------------------------------------
+QString SAnchorLayoutDscr::toString() const
+//------------------------------------------------------------------------------
+{
+    return graphObjType2Str(m_graphObjType) + ", Key: " + m_strKey +
+        ", SelPt1 {" + m_selPt1.toString() + "}" +
+        ", SelPt2 {" + m_selPt2.toString() + "}" +
+        ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
+        ", Visible: " + bool2Str(m_bIsVisible) +
+        ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
 }
 
 } // namespace Draw

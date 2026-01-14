@@ -1050,18 +1050,20 @@ public: // struct members
     are not created but the descriptors are kept in the parent object. This way
     the labels can be created with the desired properties on demand.
 */
-struct ZSDRAWDLL_API SLinkedChildObjDscr
+struct ZSDRAWDLL_API SAnchorLayoutDscr
 //******************************************************************************
 {
 public: // ctors
-    SLinkedChildObjDscr();
-    SLinkedChildObjDscr(EGraphObjType i_graphObjType);
-    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
-    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SLinkedChildObjDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLinkedChildObjDscr(const SLinkedChildObjDscr& i_other);
+    SAnchorLayoutDscr();
+    SAnchorLayoutDscr(EGraphObjType i_graphObjType);
+    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
+    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other);
+public: // struct methods
+    QString toString() const;
 public: // struct members
     /*!< Key of the linked object within the parent's list of linked objects. */
     QString m_strKey;
@@ -1091,7 +1093,7 @@ public: // struct members
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine;
 
-}; // struct SLinkedChildObjDscr
+}; // struct SAnchorLayoutDscr
 
 } // namespace Draw
 
