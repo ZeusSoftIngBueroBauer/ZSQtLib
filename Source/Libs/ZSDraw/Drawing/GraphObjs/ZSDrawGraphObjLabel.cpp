@@ -276,19 +276,6 @@ CGraphObjLabel::~CGraphObjLabel()
 }
 
 /*==============================================================================
-public: // overridables of base class QGraphicsItem
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Overrides the type method of QGraphicsItem.
-*/
-int CGraphObjLabel::type() const
-//------------------------------------------------------------------------------
-{
-    return EGraphObjTypeLabel;
-}
-
-/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -305,6 +292,47 @@ CGraphObj* CGraphObjLabel::clone()
 
     CGraphObjLabel* pGraphObj = nullptr;
     return pGraphObj;
+}
+
+/*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjLabel::type() const
+//------------------------------------------------------------------------------
+{
+    return EGraphObjTypeLabel;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::setName(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setName",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_anchorLayoutDscr.m_strKey != i_strName) {
+        setName(i_strName);
+        m_anchorLayoutDscr.m_strKey = i_strName;
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
 }
 
 /*==============================================================================
@@ -351,41 +379,6 @@ QString CGraphObjLabel::path() const
         strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
     }
     return strPath;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjLabel::setKey(const QString& i_strKey)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strKey;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setKey",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_strKey != i_strKey) {
-        setName(i_strKey);
-        m_anchorLayoutDscr.m_strKey = i_strKey;
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjLabel::key() const
-//------------------------------------------------------------------------------
-{
-    return m_anchorLayoutDscr.m_strKey;
 }
 
 /*==============================================================================

@@ -60,18 +60,20 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjConnectionPoint(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strKey);
+        const QString& i_strObjName = "");
     CGraphObjConnectionPoint(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strKey,
+        const QString& i_strObjName,
         const SGraphObjSelectionPoint& i_selPt);
     ~CGraphObjConnectionPoint() override;
 protected: // initialisation in ctors
-    void init(const QString& i_strKey);
-public: // overridables of base class QGraphicsItem
-    virtual int type() const override;
+    void init(const QString& i_strObjName);
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
+public: // overridables of base class QGraphicsItem
+    virtual int type() const override;
+public: // overridables of base class CGraphObj
+    void setName(const QString& i_strName) override;
 public: // instance methods
     void appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
     void removeConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine);
@@ -137,9 +139,6 @@ public: // instance methods
     QString pathNameOfLinkedObject() const;
     QString path() const override;
 public: // instance methods
-    void setKey(const QString& i_strKey);
-    QString key() const;
-public: // instance methods
     void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
     SGraphObjSelectionPoint selectionPoint() const;
 public: // instance methods
@@ -188,7 +187,11 @@ protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
-protected: // auxiliary instance methods (method tracing)
+protected: // overridable auxiliary instance methods
+    virtual void updatePosition();
+    virtual void updatePolarCoorsToLinkedSelPt();
+    virtual void updateAnchorLine();
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
     QRectF QGraphicsEllipseItem_setRect(const QRectF& i_rect);
     QRectF QGraphicsEllipseItem_setRect(double i_fX, double i_fY, double i_fWidth, double i_fHeight);
@@ -255,6 +258,12 @@ protected: // instance members
          The scaled and rotated rectangle is returned by the "getRect" method
          (and all other methods retrieving the resulting coordinates in the current unit). */
     CPhysValRect m_physValRectScaledAndRotated;
+    /*!< Flag used to avoid recursive calls of "updatePosition". */
+    bool m_bUpdatePositionInProgress = false;
+    /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
+         to the linked selection point is changed if the position is updated because the parent's
+         geometry is changed. */
+    bool m_bPositionUpdateOnParentGeometryChanged = false;
     /*!< Counter to block debug trace outputs for connection lines. */
     int m_iTraceConnectionLinesBlockedCounter = 0;
 

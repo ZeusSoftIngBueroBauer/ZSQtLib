@@ -5704,7 +5704,7 @@ bool CGraphObj::renameLabel(const QString& i_strName, const QString& i_strNameNe
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
             m_hshpLabels.remove(i_strName);
-            pGraphObjLabel->setKey(i_strNameNew);
+            pGraphObjLabel->setName(i_strNameNew);
             m_hshpLabels.insert(i_strNameNew, pGraphObjLabel);
             if (i_strNameNew == c_strLabelName) {
                 pGraphObjLabel->setText(m_strName);
@@ -7019,7 +7019,7 @@ bool CGraphObj::renameConnectionPoint(const QString& i_strName, const QString& i
     CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
     if (pGraphObjConnectionPoint != nullptr) {
         m_hshpConnectionPoints.remove(i_strName);
-        pGraphObjConnectionPoint->setKey(i_strNameNew);
+        pGraphObjConnectionPoint->setName(i_strNameNew);
         m_hshpConnectionPoints.insert(i_strNameNew, pGraphObjConnectionPoint);
     }
     emit_connectionPointRenamed(i_strName, i_strNameNew);
@@ -7084,7 +7084,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setSelectionPoint1(linkedChildDscr.m_selPt1);
+            pGraphObjConnectionPoint->setSelectionPoint(linkedChildDscr.m_selPt1);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7145,7 +7145,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         linkedChildDscr.m_selPt1.m_idxPt = i_idxPt;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setSelectionPoint1(linkedChildDscr.m_selPt1);
+            pGraphObjConnectionPoint->setSelectionPoint(linkedChildDscr.m_selPt1);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7884,8 +7884,8 @@ void CGraphObj::onLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel)
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = dynamic_cast<CGraphObjLabel*>(i_pGraphObjLabel);
-    if( m_hshpLabels.contains(pGraphObjLabel->key())) {
-        m_hshpLabels.remove(pGraphObjLabel->key());
+    if( m_hshpLabels.contains(pGraphObjLabel->name())) {
+        m_hshpLabels.remove(pGraphObjLabel->name());
     }
 }
 
@@ -7915,8 +7915,8 @@ void CGraphObj::onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel)
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = dynamic_cast<CGraphObjLabel*>(i_pGraphObjLabel);
-    if (m_hshpGeometryLabels.contains(pGraphObjLabel->key())) {
-        m_hshpGeometryLabels.remove(pGraphObjLabel->key());
+    if (m_hshpGeometryLabels.contains(pGraphObjLabel->name())) {
+        m_hshpGeometryLabels.remove(pGraphObjLabel->name());
     }
 }
 
@@ -7946,8 +7946,8 @@ void CGraphObj::onConnectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjConnec
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjConnectionPoint);
-    if( m_hshpConnectionPoints.contains(pGraphObjConnectionPoint->key())) {
-        m_hshpConnectionPoints.remove(pGraphObjConnectionPoint->key());
+    if( m_hshpConnectionPoints.contains(pGraphObjConnectionPoint->name())) {
+        m_hshpConnectionPoints.remove(pGraphObjConnectionPoint->name());
     }
 }
 

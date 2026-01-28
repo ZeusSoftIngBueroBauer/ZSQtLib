@@ -110,17 +110,16 @@ protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition
         const SGraphObjSelectionPoint& i_selPt2);
 public: // dtor
     ~CGraphObjLabel() override;
-public: // overridables of base class QGraphicsItem
-    int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
+public: // overridables of base class QGraphicsItem
+    int type() const override;
+public: // overridables of base class CGraphObj
+    void setName(const QString& i_strName) override;
 public: // instance methods
     CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
-public: // instance methods
-    void setKey(const QString& i_strKey);
-    QString key() const;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);
     QString text() const;

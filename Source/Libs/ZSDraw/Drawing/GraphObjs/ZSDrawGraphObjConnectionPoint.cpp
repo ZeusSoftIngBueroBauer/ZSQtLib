@@ -130,17 +130,16 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjConnectionPoint::CGraphObjConnectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    const QString& i_strKey) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
-        /* strObjName          */ i_strKey.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strKey),
+        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem(),
-    m_anchorLayoutDscr(EGraphObjTypeConnectionPoint, i_strKey),
+    m_anchorLayoutDscr(EGraphObjTypeConnectionPoint, i_strObjName),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),
     m_physValRectScaledAndRotated(*m_pDrawingScene)
@@ -153,7 +152,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Key: " + i_strKey;
+        strMthInArgs = "ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -162,13 +161,13 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    init(i_strKey);
+    init(i_strObjName);
 }
 
 //------------------------------------------------------------------------------
 CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strKey,
+    const QString& i_strObjName,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
@@ -176,9 +175,9 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
-        /* strObjName          */ i_strKey.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strKey),
+        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem(),
-    m_anchorLayoutDscr(EGraphObjTypeConnectionPoint, i_strKey, i_selPt),
+    m_anchorLayoutDscr(EGraphObjTypeConnectionPoint, i_strObjName, i_selPt),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),
     m_physValRectScaledAndRotated(*m_pDrawingScene)
@@ -191,7 +190,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Key: " + i_strKey + ", SelPt {" + i_selPt.toString(true) + "}";
+        strMthInArgs = "ObjName: " + i_strObjName + ", SelPt {" + i_selPt.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -200,7 +199,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    init(i_strKey);
+    init(i_strObjName);
 }
 
 //------------------------------------------------------------------------------
@@ -237,7 +236,7 @@ protected: // initialisation
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::init(const QString& i_strKey)
+void CGraphObjConnectionPoint::init(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -245,10 +244,10 @@ void CGraphObjConnectionPoint::init(const QString& i_strKey)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "init",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ i_strObjName );
 
     m_strlstPredefinedLabelNames.append(c_strLabelName);
-    addLabel(c_strLabelName, i_strKey, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    addLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
 
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
@@ -295,19 +294,6 @@ void CGraphObjConnectionPoint::init(const QString& i_strKey)
 }
 
 /*==============================================================================
-public: // overridables of base class QGraphicsItem
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Overrides the type method of QGraphicsItem.
-*/
-int CGraphObjConnectionPoint::type() const
-//------------------------------------------------------------------------------
-{
-    return EGraphObjTypeConnectionPoint;
-}
-
-/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -322,6 +308,47 @@ CGraphObj* CGraphObjConnectionPoint::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
     return nullptr;
+}
+
+/*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjConnectionPoint::type() const
+//------------------------------------------------------------------------------
+{
+    return EGraphObjTypeConnectionPoint;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::setName(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setName",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_anchorLayoutDscr.m_strKey != i_strName) {
+        setName(i_strName);
+        m_anchorLayoutDscr.m_strKey = i_strName;
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
 }
 
 /*==============================================================================
@@ -1384,41 +1411,6 @@ QString CGraphObjConnectionPoint::path() const
         strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
     }
     return strPath;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setKey(const QString& i_strKey)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strKey;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setKey",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_strKey != i_strKey) {
-        setName(i_strKey);
-        m_anchorLayoutDscr.m_strKey = i_strKey;
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjConnectionPoint::key() const
-//------------------------------------------------------------------------------
-{
-    return m_anchorLayoutDscr.m_strKey;
 }
 
 /*==============================================================================
@@ -2993,7 +2985,159 @@ CPhysValRect CGraphObjConnectionPoint::getPhysValRectScaled(const CPhysValRect& 
 }
 
 /*==============================================================================
-protected: // auxiliary instance methods (method tracing)
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the position of the label and the
+           coordinates (start and end point) of the anchor line.
+
+    If the geometry of the parent item changes (position moved or size changed or
+    any other geometry change) the label must be moved so that the relative position
+    (distance and angle) of the label to the selection point remains the same.
+*/
+void CGraphObjConnectionPoint::updatePosition()
+//------------------------------------------------------------------------------
+{
+    // "setPos" leads to a "itemChange" call with ItemPositionChange(d) whereupon
+    // "updatePosition" would be called again. This reentry is not desired.
+    if (m_bUpdatePositionInProgress) {
+        return;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updatePosition",
+        /* strAddInfo   */ "" );
+
+    m_bUpdatePositionInProgress = true;
+
+    // Get anchor line in scene coordinates.
+    QLineF anchorLine;
+    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    }
+    else {
+        anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+    }
+
+    // The position of a QGraphicsTextItem is defined by its top left corner.
+    // Move text item so that its center point is at the line end point of the anchor line.
+    QRectF rctBoundingThis = getBoundingRect();
+    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strRuntimeInfo = "Pos {" + qPoint2Str(anchorLineP2ScenePos) + "} px";
+        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+    }
+    setPos(anchorLineP2ScenePos);
+
+    // Please note that on calling setPos the itemChange method of the
+    // label is called invoking updateAnchorLines.
+
+    m_bUpdatePositionInProgress = false;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the relative position in polar
+           coordinates (length in pixels, angle in degress) from the labels center
+           point and the selection point the label is linked to.
+
+    On moving the label the distance and the angle (polar coordinates) to the
+    selection point have to be updated and saved.
+
+    When positioniong labels the distance to selection point the label
+    is linked to should remain the same.
+    This is managed by defining the length and the angle to the line
+    the selection point is positioned.
+
+    Defining the length to the selection point with a relative size
+    as a scale factor will not lead to the desired result. If the
+    object of the selection point is resized the distance between the
+    label and the object may increase to an undesired value (far away
+    from the object or to close).
+*/
+void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
+//------------------------------------------------------------------------------
+{
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
+    if (m_bPositionUpdateOnParentGeometryChanged) {
+        return;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
+        /* strAddInfo   */ "" );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    QRectF rctBoundingThis = getBoundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+    QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
+    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+            ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    }
+    else {
+        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+            ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
+            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+    }
+    updateAnchorLine();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the coordinates (start and end point)
+           of the anchor lines.
+
+    The anchor lines will be drawn to one of the selection points at the bounding rectangle
+    or to one of the polygon shape points of the linked graphical object.
+*/
+void CGraphObjConnectionPoint::updateAnchorLine()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateAnchorLine",
+        /* strAddInfo   */ "" );
+
+    QPointF ptSelScenePosParent;
+    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelScenePosParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    }
+    else {
+        ptSelScenePosParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+    }
+
+    QRectF rctBoundingThis = getBoundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+    m_anchorLine = QLineF(ptCenterThis, mapFromScene(ptSelScenePosParent));
+
+    QGraphicsItem_prepareGeometryChange();
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strRuntimeInfo = "AnchorLine {" + qLine2Str(m_anchorLine) + "} px";
+        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+    }
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

@@ -3074,7 +3074,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
             if (pGraphObjLabel != nullptr) {
                 m_hshpLabels.remove(strLabelNameOld);
                 m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
-                pGraphObjLabel->setKey(strLabelNameNew);
+                pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
                 pGraphObjLabel->setSelectionPoint1(labelDscrNew.m_selPt1);
                 pGraphObjLabel->setSelectionPoint2(labelDscrNew.m_selPt2);
@@ -3136,7 +3136,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
             if (pGraphObjLabel != nullptr) {
                 m_hshpGeometryLabels.remove(strLabelNameOld);
                 m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
-                pGraphObjLabel->setKey(strLabelNameNew);
+                pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
                 pGraphObjLabel->setSelectionPoint1(labelDscrNew.m_selPt1);
                 pGraphObjLabel->setSelectionPoint2(labelDscrNew.m_selPt2);
@@ -3192,7 +3192,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
             if (pGraphObjLabel != nullptr) {
                 m_hshpLabels.remove(strLabelNameOld);
                 m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
-                pGraphObjLabel->setKey(strLabelNameNew);
+                pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
                 pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
                 pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
@@ -3254,7 +3254,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
             if (pGraphObjLabel != nullptr) {
                 m_hshpGeometryLabels.remove(strLabelNameOld);
                 m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
-                pGraphObjLabel->setKey(strLabelNameNew);
+                pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
                 pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
                 pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
