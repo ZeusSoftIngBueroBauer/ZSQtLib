@@ -541,11 +541,10 @@ void CGraphObjEllipse::setRect(const CPhysValPoint& i_physValTL, const CPhysValS
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Depending on the Y scale orientation of the drawing scene,
-           returns the item's coordinates either
-           - relative to the top left corner or
-           - relative to the bottom right corner
-           of the parent's bounding rectangle in the current unit of the drawing scene.
+/*! @brief Depending on the Y scale orientation of the drawing scene, returns
+           the item's coordinates either relative to the top or bottom left
+           corner of the parent's bounding rectangle in the current unit of
+           the drawing scene.
 */
 CPhysValRect CGraphObjEllipse::getRect() const
 //------------------------------------------------------------------------------
@@ -554,17 +553,16 @@ CPhysValRect CGraphObjEllipse::getRect() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Depending on the Y scale orientation of the drawing scene,
-           returns the item's coordinates either
-           - relative to the top left corner or
-           - relative to the bottom right corner
-           of the parent's bounding rectangle in the current unit of the drawing scene.
+/*! @brief Depending on the Y scale orientation of the drawing scene, returns
+           the item's coordinates either relative to the top or bottom left
+           corner of the parent's bounding rectangle in the desired unit.
 
     @param [in] i_unit
-        Unit in which the line coordinates should be returned.
+        Unit in which the object coordinates should be returned.
 
-    @return Physical rectangle (scaled and rotated) in parent or scene coordinates,
-            if the object has no parent group.
+    @return Physical rectangle (scaled and rotated) relative to the parent's
+            bounding rectangle. If the object has no parent object, the rectangle
+            is in returned in scene coordinates.
 */
 CPhysValRect CGraphObjEllipse::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------

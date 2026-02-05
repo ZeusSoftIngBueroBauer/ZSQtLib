@@ -327,7 +327,7 @@ void CGraphObjLabel::setName(const QString& i_strName)
         /* strAddInfo   */ strMthInArgs );
 
     if (m_anchorLayoutDscr.m_strKey != i_strName) {
-        setName(i_strName);
+        CGraphObj::setName(i_strName);
         m_anchorLayoutDscr.m_strKey = i_strName;
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);

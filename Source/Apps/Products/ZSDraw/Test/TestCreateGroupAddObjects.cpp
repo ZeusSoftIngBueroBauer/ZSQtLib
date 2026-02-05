@@ -8198,7 +8198,8 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
     strlstExpectedValues.clear();
     // Group SmallCross2
     m_pPhysValRectSmallCross2->setAngle(m_physValAngleSmallCross2);
-    strlstExpectedValues.append(resultValuesForGroup(strObjName, m_ptPosSmallCross2, *m_pPhysValRectSmallCross2, false, iResultValuesPrecision));
+    strlstExpectedValues.append(resultValuesForGroup(
+        strObjName, m_ptPosSmallCross2, *m_pPhysValRectSmallCross2, false, iResultValuesPrecision));
     // SmallCross2-VerticalBar
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameSmallCross2VerticalBar, m_ptPosRectSmallCross2VerticalBar,

@@ -6763,7 +6763,7 @@ QStringList CTest::resultValuesForLine(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
             strGraphObjName + ".line {" + qLine2Str(i_lineItemCoors) + "} px",
-            strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
             strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
             strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
             strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
@@ -6774,7 +6774,7 @@ QStringList CTest::resultValuesForLine(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
             strGraphObjName + ".line {" + qLine2Str(i_lineItemCoors, ", ", 'f', i_iPrecision) + "} px",
-            strGraphObjName + ".position {" + i_physValLine.center().toString(false, ", ", 1) + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValLine.center().toString(false, ", ", 1) + "} " + i_physValLine.unit().symbol(),
             strGraphObjName + ".getLine {" + i_physValLine.toString(false, ", ", i_iPrecision) + "} " + i_physValLine.unit().symbol(),
             strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
             strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
@@ -6797,7 +6797,7 @@ QStringList CTest::resultValuesForRect(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(i_rectItemCoors) + "} px",
             strGraphObjName + ".rect {" + qRect2Str(i_rectItemCoors) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
@@ -6808,7 +6808,7 @@ QStringList CTest::resultValuesForRect(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(i_rectItemCoors, ", ", 'f', 1) + "} px",
             strGraphObjName + ".rect {" + qRect2Str(i_rectItemCoors, ", ", 'f', i_iPrecision) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
@@ -6831,7 +6831,7 @@ QStringList CTest::resultValuesForEllipse(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(i_rectItemCoors) + "} px",
             strGraphObjName + ".rect {" + qRect2Str(i_rectItemCoors) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
@@ -6842,7 +6842,7 @@ QStringList CTest::resultValuesForEllipse(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(i_rectItemCoors, ", ", 'f', 1) + "} px",
             strGraphObjName + ".rect {" + qRect2Str(i_rectItemCoors, ", ", 'f', i_iPrecision) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
@@ -6866,7 +6866,7 @@ QStringList CTest::resultValuesForText(
         strlst = QStringList({
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString(),
@@ -6877,7 +6877,7 @@ QStringList CTest::resultValuesForText(
         strlst = QStringList({
             strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString(),
@@ -6902,7 +6902,7 @@ QStringList CTest::resultValuesForPolygon(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
             strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors) + "} px",
-            strGraphObjName + ".position {" + i_physValPolygon.center().toString() + "} " + i_physValPolygon.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValPolygon.center().toString() + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
         });
@@ -6912,7 +6912,7 @@ QStringList CTest::resultValuesForPolygon(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
             strGraphObjName + ".polygon {" + qPolygon2Str(i_polygonItemCoors, ", ", 'f', i_iPrecision) + "} px",
-            strGraphObjName + ".position {" + i_physValPolygon.center().toString(false, ", ", 1) + "} " + i_physValPolygon.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValPolygon.center().toString(false, ", ", 1) + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
         });
@@ -6988,7 +6988,7 @@ QStringList CTest::resultValuesForGroup(
         strlst = QStringList({
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
@@ -6998,7 +6998,7 @@ QStringList CTest::resultValuesForGroup(
         strlst = QStringList({
             strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
-            strGraphObjName + ".position {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
