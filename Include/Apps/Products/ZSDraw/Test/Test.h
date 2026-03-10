@@ -294,7 +294,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallCross1 = "SmallCross1";
     const QString c_strGraphObjNameSmallCross2 = "SmallCross2";
     const QString c_strGraphObjNamePolygons = "Polygons";
-    const QString c_strGraphObjNameConnectionPoints = "ConnectionPoints";
+    const QString c_strGraphObjNameGroupConnectionPointsPt1Pt2 = "ConnectionPointsPt1Pt2";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -353,7 +353,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupTextsCrossesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupConnectionLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);

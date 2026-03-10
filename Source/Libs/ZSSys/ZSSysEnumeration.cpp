@@ -397,101 +397,65 @@ public: // instance methods
 SEnumEntry* CEnumeration::index2EnumEntry( int i_idx ) const
 //------------------------------------------------------------------------------
 {
-    QString strMth = "index2EnumEntry";
-    QString strAddErrInfo;
-
+    const QString strMth = "index2EnumEntry";
     SEnumEntry* pEntry = nullptr;
-
-    if( i_idx >= 0 && i_idx < m_arpEntries.size() )
-    {
+    if ((i_idx >= 0) && (i_idx < m_arpEntries.size())) {
         SEnumEntry* pEntryTmp = m_arpEntries[i_idx];
-        bool        bErrLogEntryAdded = false;
-
-        if( pEntryTmp->m_iEnumerator == i_idx )
-        {
+        if (pEntryTmp->m_iEnumerator == i_idx) {
             pEntry = pEntryTmp;
         }
-        else if( !bErrLogEntryAdded )
-        {
-            if( CErrLog::GetInstance() != nullptr )
-            {
-                strAddErrInfo  = "Enum entry index " + QString::number(pEntry->m_iEnumerator);
-                strAddErrInfo += " of " + pEntryTmp->getName();
-                strAddErrInfo += " does not correspond to array index " + QString::number(i_idx);
+        else if (CErrLog::GetInstance() != nullptr) {
+            const QString strAddErrInfo = "Enum entry index " + QString::number(pEntryTmp->m_iEnumerator) +
+                " of " + pEntryTmp->getName() + " does not correspond to array index " + QString::number(i_idx);
+            SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                NameSpace(), ClassName(), keyInTree(), strMth,
+                EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    if ((pEntry == nullptr) && (i_idx >= 0) && (i_idx < m_arpEntries.size())) { // !! Should never ever happen !!
+        for (int idxVal = 0; idxVal < m_arpEntries.size(); idxVal++) {
+            SEnumEntry* pEntryTmp = m_arpEntries[idxVal];
+            if (pEntryTmp->m_iEnumerator == i_idx) {
+                pEntry = pEntryTmp;
+                break;
+            }
+            else if (CErrLog::GetInstance() != nullptr) {
+                const QString strAddErrInfo = "Enum entry index " + QString::number(pEntryTmp->m_iEnumerator) +
+                    " of " + pEntryTmp->getName() + " does not correspond to array index " + QString::number(idxVal);
                 SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                     NameSpace(), ClassName(), keyInTree(), strMth,
                     EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
-            bErrLogEntryAdded = true;
         }
-    } // if( i_idx >= 0 && i_idx < m_arpEntries.size() )
-
-    if( pEntry == nullptr && i_idx >= 0 && i_idx < m_arpEntries.size() ) // !! Should never ever happen !!
-    {
-        SEnumEntry* pEntryTmp;
-        int         idxVal;
-
-        for( idxVal = 0; idxVal < m_arpEntries.size(); idxVal++ )
-        {
-            pEntryTmp = m_arpEntries[idxVal];
-
-            if( pEntryTmp->m_iEnumerator == i_idx )
-            {
-                pEntry = pEntryTmp;
-                break;
-            }
-            else // if( pEntryTmp->m_iEnumerator != i_idx )
-            {
-                if( CErrLog::GetInstance() != nullptr )
-                {
-                    strAddErrInfo  = "Enum entry index " + QString::number(pEntryTmp->m_iEnumerator);
-                    strAddErrInfo += " of " + pEntryTmp->getName();
-                    strAddErrInfo += " does not correspond to array index " + QString::number(idxVal);
-                    SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                        NameSpace(), ClassName(), keyInTree(), strMth,
-                        EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
-            }
-        } // for( idxVal = 0; idxVal < i_iArrLen; idxVal++ )
-    } // if( pEntry == nullptr ) // !! Should never ever happen !!
-
+    }
     return pEntry;
-
-} // index2EnumEntry
+}
 
 //------------------------------------------------------------------------------
 QString CEnumeration::index2Name( int i_idx, int i_alias ) const
 //------------------------------------------------------------------------------
 {
     QString strName;
-
     const SEnumEntry* pEntry = index2EnumEntry(i_idx);
-
-    if( pEntry != nullptr )
-    {
+    if (pEntry != nullptr) {
         strName = pEntry->getName(i_alias);
     }
     return strName;
-
-} // index2Name
+}
 
 //------------------------------------------------------------------------------
 QVariant CEnumeration::index2Val( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     QVariant val;
-
     const SEnumEntry* pEntry = index2EnumEntry(i_idx);
-
-    if( pEntry != nullptr )
-    {
+    if (pEntry != nullptr) {
         val = pEntry->m_val;
     }
     return val;
-
-} // index2Val
+}
 
 /*==============================================================================
 public: // instance methods
@@ -499,106 +463,69 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 SEnumEntry* CEnumeration::name2EnumEntry(
-    const QString&      i_strName,
+    const QString& i_strName,
     Qt::CaseSensitivity i_caseSensitivity,
-    int                 i_alias ) const
+    int i_alias ) const
 //------------------------------------------------------------------------------
 {
-    QString strMth = "name2EnumEntry";
-    QString strAddErrInfo;
-
+    const QString strMth = "name2EnumEntry";
     SEnumEntry* pEntry = nullptr;
-
     bool bConverted = false;
-
     int idxVal = i_strName.toInt(&bConverted);
-
-    if( !bConverted )
-    {
+    if (!bConverted) {
         idxVal = -1;
     }
-
     // If the name is not the index value itself ..
-    if( idxVal >= 0 && idxVal < m_arpEntries.count() )
-    {
+    if ((idxVal >= 0) && (idxVal < m_arpEntries.count())) {
         pEntry = m_arpEntries[idxVal];
     }
-    else // if( idxVal < 0 || idxVal >= i_iArrLen )
-    {
-        SEnumEntry* pEntryTmp;
-        int         idxTmp;
-        int         idxStrLstMin;
-        int         idxStrLstMax;
-        int         idxStrLst;
-
-        for( idxTmp = 0; idxTmp < m_arpEntries.count(); idxTmp++ )
-        {
-            pEntryTmp = m_arpEntries[idxTmp];
-
-            if( i_alias == EEnumEntryAliasStrUndefined )
-            {
+    else {
+        for (int idxTmp = 0; idxTmp < m_arpEntries.count(); idxTmp++) {
+            SEnumEntry* pEntryTmp = m_arpEntries[idxTmp];
+            int idxStrLstMin = i_alias;
+            int idxStrLstMax = i_alias;
+            if (i_alias == EEnumEntryAliasStrUndefined) {
                 idxStrLstMin = 0;
                 idxStrLstMax = pEntryTmp->m_strlstNames.size()-1;
             }
-            else
-            {
-                idxStrLstMin = i_alias;
-                idxStrLstMax = i_alias;
-            }
-
-            for( idxStrLst = idxStrLstMin; idxStrLst <= idxStrLstMax; idxStrLst++ )
-            {
-                if( idxStrLst >= 0 && idxStrLst < pEntryTmp->m_strlstNames.size() )
-                {
-                    if( pEntryTmp->m_strlstNames[idxStrLst].compare(i_strName,i_caseSensitivity) == 0 )
-                    {
+            for (int idxStrLst = idxStrLstMin; idxStrLst <= idxStrLstMax; idxStrLst++) {
+                if ((idxStrLst >= 0) && (idxStrLst < pEntryTmp->m_strlstNames.size())) {
+                    if (pEntryTmp->m_strlstNames[idxStrLst].compare(i_strName,i_caseSensitivity) == 0) {
                         pEntry = pEntryTmp;
                         break;
                     }
                 }
-                else
-                {
-                    if( CErrLog::GetInstance() != nullptr )
-                    {
-                        strAddErrInfo  = "Enum entry " + pEntryTmp->getName();
-                        strAddErrInfo += " does not have an alias string at index " + QString::number(idxStrLst);
-                        SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                            NameSpace(), ClassName(), keyInTree(), strMth,
-                            EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
-                        CErrLog::GetInstance()->addEntry(errResultInfo);
-                    }
+                else if (CErrLog::GetInstance() != nullptr) {
+                    const QString strAddErrInfo = "Enum entry " + pEntryTmp->getName() +
+                        " does not have an alias string at index " + QString::number(idxStrLst);
+                    SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
+                        NameSpace(), ClassName(), keyInTree(), strMth,
+                        EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
-
-            if( pEntry != nullptr )
-            {
+            if (pEntry != nullptr) {
                 break;
             }
-        } // for( idxTmp = 0; idxTmp < m_arpEntries.count(); idxTmp++ )
-    } // if( idxVal < 0 || idxVal >= i_iArrLen )
-
+        }
+    }
     return pEntry;
-
-} // name2EnumEntry
+}
 
 //------------------------------------------------------------------------------
 int CEnumeration::name2Index(
-    const QString&      i_strName,
+    const QString& i_strName,
     Qt::CaseSensitivity i_caseSensitivity,
-    int                 i_alias ) const
+    int i_alias ) const
 //------------------------------------------------------------------------------
 {
     int idx = -1;
-
     const SEnumEntry* pEntry = name2EnumEntry(i_strName, i_caseSensitivity, i_alias);
-
-    if( pEntry != nullptr )
-    {
+    if (pEntry != nullptr) {
         idx = pEntry->m_iEnumerator;
     }
     return idx;
-
-} // name2Index
+}
 
 /*==============================================================================
 public: // instance methods
@@ -609,124 +536,79 @@ SEnumEntry* CEnumeration::val2EnumEntry( const QVariant& i_val ) const
 //------------------------------------------------------------------------------
 {
     SEnumEntry* pEntry = nullptr;
-    SEnumEntry* pEntryTmp;
-    int         idxTmp;
-
-    for( idxTmp = 0; idxTmp < m_arpEntries.count(); idxTmp++ )
-    {
-        pEntryTmp = m_arpEntries[idxTmp];
-
-        if( pEntryTmp->m_val == i_val )
-        {
+    for (int idxTmp = 0; idxTmp < m_arpEntries.count(); idxTmp++) {
+        SEnumEntry* pEntryTmp = m_arpEntries[idxTmp];
+        if (pEntryTmp->m_val == i_val) {
             pEntry = pEntryTmp;
-        }
-
-        if( pEntry != nullptr )
-        {
             break;
         }
-    } // for( idxTmp = 0; idxTmp < m_arpEntries.count(); idxTmp++ )
-
+    }
     return pEntry;
-
-} // val2EnumEntry
+}
 
 //------------------------------------------------------------------------------
 int CEnumeration::val2Index( const QVariant& i_val ) const
 //------------------------------------------------------------------------------
 {
     int idx = -1;
-
     const SEnumEntry* pEntry = val2EnumEntry(i_val);
-
-    if( pEntry != nullptr )
-    {
+    if (pEntry != nullptr) {
         idx = pEntry->m_iEnumerator;
     }
     return idx;
-
-} // val2Index
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
+}
 
 //------------------------------------------------------------------------------
 QString CEnumeration::val2Name( const QVariant& i_val, int i_alias ) const
 //------------------------------------------------------------------------------
 {
-    QString strMth = "val2Name";
-    QString strAddErrInfo;
-
+    const QString strMth = "val2Name";
     QString strVal;
-
     const SEnumEntry* pEntry = val2EnumEntry(i_val);
-
-    if( pEntry != nullptr )
-    {
-        int idxStrLstMin;
-        int idxStrLstMax;
-        int idxStrLst;
-
-        if( i_alias == EEnumEntryAliasStrUndefined )
-        {
+    if (pEntry != nullptr) {
+        int idxStrLstMin = i_alias;
+        int idxStrLstMax = i_alias;
+        if (i_alias == EEnumEntryAliasStrUndefined) {
             idxStrLstMin = 0;
             idxStrLstMax = pEntry->m_strlstNames.size()-1;
         }
-        else
-        {
-            idxStrLstMin = i_alias;
-            idxStrLstMax = i_alias;
-        }
-
-        for( idxStrLst = idxStrLstMin; idxStrLst <= idxStrLstMax; idxStrLst++ )
-        {
-            if( idxStrLst >= 0 && idxStrLst < pEntry->m_strlstNames.size() )
-            {
+        for (int idxStrLst = idxStrLstMin; idxStrLst <= idxStrLstMax; idxStrLst++) {
+            if (idxStrLst >= 0 && idxStrLst < pEntry->m_strlstNames.size()) {
                 strVal = pEntry->m_strlstNames[idxStrLst];
             }
-            else
-            {
+            else {
                 strVal = i_val.toString();
-
-                if( CErrLog::GetInstance() != nullptr )
-                {
-                    strAddErrInfo  = "Enum entry " + pEntry->getName();
-                    strAddErrInfo += " does not have an alias string at index " + QString::number(idxStrLst);
+                if (CErrLog::GetInstance() != nullptr) {
+                    const QString strAddErrInfo = "Enum entry " + pEntry->getName() +
+                        " does not have an alias string at index " + QString::number(idxStrLst);
                     SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
                         NameSpace(), ClassName(), keyInTree(), strMth,
                         EResultListCorrupted, ZS::System::EResultSeverityCritical, strAddErrInfo);
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
-        } // for( idxStrLst = idxStrLstMin; idxStrLst <= idxStrLstMax; idxStrLst++ )
+        }
     }
-    else // if( pEntry == nullptr )
-    {
+    else {
         strVal = i_val.toString();
     }
     return strVal;
-
-} // val2Name
+}
 
 //------------------------------------------------------------------------------
 QVariant CEnumeration::name2Val(
-    const QString&      i_strName,
+    const QString& i_strName,
     Qt::CaseSensitivity i_caseSensitivity,
-    int                 i_alias ) const
+    int i_alias ) const
 //------------------------------------------------------------------------------
 {
     QVariant val;
-
     const SEnumEntry* pEntry = name2EnumEntry(i_strName, i_caseSensitivity, i_alias);
-
-    if( pEntry != nullptr )
-    {
+    if (pEntry != nullptr) {
         val = pEntry->m_val;
     }
     return val;
-
-} // name2Val
+}
 
 /*==============================================================================
 public: // instance methods

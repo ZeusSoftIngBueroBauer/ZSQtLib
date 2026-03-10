@@ -95,7 +95,7 @@ CTestStep::CTestStep(
     const QString&  i_strName,
     const QString&  i_strOperation,
     CTestStepGroup* i_pTSGrpParent,
-    const char*     i_szDoTestStepSlotFct ) :
+    const char*     i_szDoTestStepSlotFct) :
 //------------------------------------------------------------------------------
     CAbstractTestStepIdxTreeEntry(
         i_pTest, CIdxTreeEntry::EEntryType::Leave, i_strName, i_pTSGrpParent),
@@ -116,12 +116,11 @@ CTestStep::CTestStep(
         /* pObjSender   */ this,
         /* szSignal     */ SIGNAL(doTestStep(ZS::Test::CTestStep*)),
         /* pObjReceiver */ i_pTest,
-        /* szSlot       */ i_szDoTestStepSlotFct ) )
+        /* szSlot       */ i_szDoTestStepSlotFct))
     {
         throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
     }
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Destroys the test step instance.
@@ -168,8 +167,7 @@ public: // instance methods
 void CTestStep::setOperation( const QString& i_strOperation )
 //------------------------------------------------------------------------------
 {
-    if( m_strOperation != i_strOperation )
-    {
+    if (m_strOperation != i_strOperation) {
         m_strOperation = i_strOperation;
         emit_changed();
     }
@@ -190,8 +188,7 @@ void CTestStep::setOperation( const QString& i_strOperation )
 void CTestStep::setDescription( const QString& i_strDescription )
 //------------------------------------------------------------------------------
 {
-    if( m_strDescription != i_strDescription )
-    {
+    if (m_strDescription != i_strDescription) {
         m_strDescription = i_strDescription;
         emit_changed();
     }
@@ -281,8 +278,7 @@ void CTestStep::removeConfigValue( const QString& i_strKey )
 void CTestStep::setInstruction( const QString& i_strInstruction )
 //------------------------------------------------------------------------------
 {
-    if( m_strInstruction != i_strInstruction )
-    {
+    if (m_strInstruction != i_strInstruction) {
         m_strInstruction = i_strInstruction;
         emit_changed();
     }
@@ -298,11 +294,10 @@ void CTestStep::setInstruction( const QString& i_strInstruction )
 void CTestStep::setExpectedValues( const QStringList& i_strlstExpectedValues )
 //------------------------------------------------------------------------------
 {
-    if( m_strlstExpectedValues != i_strlstExpectedValues )
-    {
+    //if (m_strlstExpectedValues != i_strlstExpectedValues) {
         m_strlstExpectedValues = i_strlstExpectedValues;
         emit_changed();
-    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -318,9 +313,7 @@ void CTestStep::setExpectedValue( const QString& i_strExpectedValue )
 //------------------------------------------------------------------------------
 {
     QStringList strlstExpectedValues;
-
-    if( !i_strExpectedValue.isEmpty() )
-    {
+    if (!i_strExpectedValue.isEmpty()) {
         strlstExpectedValues << i_strExpectedValue;
     }
     setExpectedValues(strlstExpectedValues);
@@ -340,9 +333,7 @@ void CTestStep::setResultValues( const QStringList& i_strlstResultValues )
 //------------------------------------------------------------------------------
 {
     m_strlstResultValues = i_strlstResultValues;
-
     CEnumTestResult result = detectTestResult(m_strlstExpectedValues, m_strlstResultValues);
-
     // Not necessary here to inform the index tree that the content of the entry
     // has been changed. Thats been done by "setTestResult".
     setTestResult(result);
@@ -364,9 +355,7 @@ void CTestStep::setResultValue( const QString& i_strResultValue )
 //------------------------------------------------------------------------------
 {
     QStringList strlstResultValues;
-
-    if( !i_strResultValue.isEmpty() )
-    {
+    if (!i_strResultValue.isEmpty()) {
         strlstResultValues << i_strResultValue;
     }
     setResultValues(strlstResultValues);
@@ -395,17 +384,12 @@ CEnumTestResult CTestStep::detectTestResult(
 //------------------------------------------------------------------------------
 {
     CEnumTestResult result = ETestResult::TestPassed;
-
-    if( i_strlstExpectedValues.size() != i_strlstResultValues.size() )
-    {
+    if (i_strlstExpectedValues.size() != i_strlstResultValues.size()) {
         result = ETestResult::TestFailed;
     }
-    else
-    {
-        for( int idxVal = 0; idxVal < i_strlstExpectedValues.size(); idxVal++ )
-        {
-            if( i_strlstExpectedValues[idxVal] != i_strlstResultValues[idxVal] )
-            {
+    else {
+        for (int idxVal = 0; idxVal < i_strlstExpectedValues.size(); idxVal++) {
+            if (i_strlstExpectedValues[idxVal] != i_strlstResultValues[idxVal]) {
                 result = ETestResult::TestFailed;
                 break;
             }
@@ -434,16 +418,12 @@ CEnumTestResult CTestStep::detectTestResult(
 {
     QStringList strlstExpectedValues;
     QStringList strlstResultValues;
-
-    if( !i_strExpectedValue.isEmpty() )
-    {
+    if (!i_strExpectedValue.isEmpty()) {
         strlstExpectedValues << i_strExpectedValue;
     }
-    if( !i_strResultValue.isEmpty() )
-    {
+    if (!i_strResultValue.isEmpty()) {
         strlstResultValues << i_strResultValue;
     }
-
     return detectTestResult(strlstExpectedValues, strlstResultValues);
 }
 
@@ -473,8 +453,7 @@ public: // instance methods
 void CTestStep::setBreakpoint()
 //------------------------------------------------------------------------------
 {
-    if( !m_bBreakpoint )
-    {
+    if (!m_bBreakpoint) {
         m_bBreakpoint = true;
         emit_changed();
     }
@@ -487,8 +466,7 @@ void CTestStep::setBreakpoint()
 void CTestStep::removeBreakpoint()
 //------------------------------------------------------------------------------
 {
-    if( m_bBreakpoint )
-    {
+    if (m_bBreakpoint) {
         m_bBreakpoint = false;
         emit_changed();
     }
@@ -503,8 +481,7 @@ void CTestStep::removeBreakpoint()
 void CTestStep::setBreakpointEnabled( EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
-    if( m_breakpointEnabled != i_enabled )
-    {
+    if (m_breakpointEnabled != i_enabled) {
         m_breakpointEnabled = i_enabled;
         emit_changed();
     }
@@ -527,7 +504,6 @@ void CTestStep::reset()
     m_testResult = static_cast<ETestResult>(0);
     m_fTimeTestStart_s = 0.0;
     m_fTimeTestEnd_s = 0.0;
-
     emit_changed();
 }
 
@@ -544,9 +520,7 @@ void CTestStep::setTestResult( const CEnumTestResult& i_testResult )
 //------------------------------------------------------------------------------
 {
     m_fTimeTestEnd_s = ZS::System::Time::getProcTimeInSec();
-
     CEnumTestResult testResultPrev = m_testResult;
-
     m_testResult = i_testResult;
 
     // The end time has been changed even if the result is the same.
@@ -554,28 +528,20 @@ void CTestStep::setTestResult( const CEnumTestResult& i_testResult )
 
     // Inform parent groups only if the test result of the
     // test step has really been changed.
-    if( testResultPrev != i_testResult )
-    {
+    if (testResultPrev != i_testResult) {
         CTestStepGroup* pParentGroup = getParentGroup();
-
-        if( pParentGroup != nullptr )
-        {
+        if (pParentGroup != nullptr) {
             pParentGroup->onTestStepResultChanged(this, m_testResult);
         }
-        else
-        {
+        else {
             CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
-
-            if( pRootEntry != nullptr )
-            {
+            if (pRootEntry != nullptr) {
                 pRootEntry->onTestStepResultChanged(this, m_testResult);
             }
         }
-    } // if( testResultPrev != i_testResult )
-
+    }
     emit testStepFinished(this);
-
-} // setTestResult
+}
 
 /*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -606,8 +572,6 @@ void CTestStep::doTestStep()
 {
     m_fTimeTestStart_s = ZS::System::Time::getProcTimeInSec();
     m_fTimeTestEnd_s = -1.0;
-
     emit_changed();
-
     emit doTestStep(this);
 }

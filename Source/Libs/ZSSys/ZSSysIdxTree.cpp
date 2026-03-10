@@ -4553,7 +4553,13 @@ void CIdxTree::onTreeEntryChanged( CIdxTreeEntry* i_pTreeEntry )
         /* strMethod          */ "onTreeEntryChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    emit_treeEntryChanged(i_pTreeEntry->keyInTree());
+    if (i_pTreeEntry != nullptr) {
+        if (!m_mappTreeEntries.contains(i_pTreeEntry->keyInTree())) {
+            throw CException(__FILE__, __LINE__, EResultInternalProgramError,
+                "The given tree entry does not belong to the tree.");
+        }
+        emit_treeEntryChanged(i_pTreeEntry->keyInTree());
+    }
 }
 
 /*==============================================================================

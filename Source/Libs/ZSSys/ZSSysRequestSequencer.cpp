@@ -1493,83 +1493,61 @@ void CRequestSequencer::clear( SRequestSeqEntry* i_pReqSeqEntry )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        int iAddTrcInfoDetailLevel = 0;
-        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iAddTrcInfoDetailLevel = 2;
-        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iAddTrcInfoDetailLevel = 1;
-
-        strAddTrcInfo  = "Request {";
-        strAddTrcInfo += i_pReqSeqEntry == nullptr ? "nullptr" : i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iAddTrcInfoDetailLevel);
-        strAddTrcInfo += "}";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        int iDetailLevel = 0;
+        if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsVerbose ) iDetailLevel = 2;
+        else if( m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ) iDetailLevel = 1;
+        strAddTrcInfo = "Request {" +
+            QString(i_pReqSeqEntry == nullptr ? "nullptr" : i_pReqSeqEntry->m_reqDscr.getAddTrcInfoStr(iDetailLevel)) + "}";
     }
-
-    QString strMth = "clear";
-
+    const QString strMth = "clear";
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ strMth,
         /* strAddInfo   */ strAddTrcInfo );
 
-    SRequestSeqEntry* pReqSeqEntry;
-    qint64            iReqId;
-    int               idxReq;
-
-    // First recursively remove and delete all children.
-    if( i_pReqSeqEntry != nullptr && i_pReqSeqEntry->m_reqDscr.m_ariChildIds.size() > 0 )
-    {
-        for( idxReq = i_pReqSeqEntry->m_reqDscr.m_ariChildIds.size()-1; idxReq >= 0; idxReq-- )
-        {
-            iReqId = i_pReqSeqEntry->m_reqDscr.m_ariChildIds[idxReq];
-
-            pReqSeqEntry = m_hshReqSeqs[iReqId];
-
-            if( pReqSeqEntry != nullptr )
-            {
-                clear(pReqSeqEntry);
+    if (i_pReqSeqEntry != nullptr) {
+        // First recursively remove and delete all children.
+        if (i_pReqSeqEntry->m_reqDscr.m_ariChildIds.size() > 0) {
+            for (int idxReq = i_pReqSeqEntry->m_reqDscr.m_ariChildIds.size()-1; idxReq >= 0; idxReq--) {
+                qint64 iReqId = i_pReqSeqEntry->m_reqDscr.m_ariChildIds[idxReq];
+                SRequestSeqEntry* pReqSeqEntry = m_hshReqSeqs[iReqId];
+                if (pReqSeqEntry != nullptr) {
+                    clear(pReqSeqEntry);
+                }
+                i_pReqSeqEntry->m_reqDscr.m_ariChildIds.removeLast();
+                m_hshReqSeqs.remove(iReqId);
+                delete pReqSeqEntry;
+                pReqSeqEntry = nullptr;
+                emit requestRemoved(iReqId);
             }
-
-            i_pReqSeqEntry->m_reqDscr.m_ariChildIds.removeLast();
-
-            m_hshReqSeqs.remove(iReqId);
-
-            delete pReqSeqEntry;
-            pReqSeqEntry = nullptr;
-
-            emit requestRemoved(iReqId);
         }
-    } // if( i_pReqSeqEntry != nullptr && i_pReqSeqEntry->m_reqDscr.m_ariChildIds.size() > 0 )
 
-    // If the corresponding request has already been started ..
-    if( m_hshpReqs.contains(i_pReqSeqEntry->m_reqDscr.m_iId) )
-    {
-        CRequest* pReq = m_hshpReqs[i_pReqSeqEntry->m_reqDscr.m_iId];
+        // If the corresponding request has already been started ..
+        if (m_hshpReqs.contains(i_pReqSeqEntry->m_reqDscr.m_iId)) {
+            CRequest* pReq = m_hshpReqs[i_pReqSeqEntry->m_reqDscr.m_iId];
+            m_hshpReqs.remove(i_pReqSeqEntry->m_reqDscr.m_iId);
 
-        m_hshpReqs.remove(i_pReqSeqEntry->m_reqDscr.m_iId);
-
-        // Please note that the owner of the request is the creator of the request.
-        // On receiving the "changed" signal (on applying the "update" method) the
-        // creator must abort the request in process and delete the request.
-        if( pReq->getProgressInPerCent() < 100 )
-        {
-            SErrResultInfo errResultInfo(
-                /* errSource     */ NameSpace(), ClassName(), objectName(), strMth,
-                /* result        */ EResultRequestAborted,
-                /* severity      */ EResultSeverityError,
-                /* strAddErrInfo */ "Removed from request sequencer" );
-            pReq->setErrResultInfo(errResultInfo);
-            pReq->setProgressInPerCent(100);
-            pReq->update();
-
-            // The one who calls update for the finished request must delete the request.
-            deleteRequest(pReq);
-            pReq = nullptr;
+            // Please note that the owner of the request is the creator of the request.
+            // On receiving the "changed" signal (on applying the "update" method) the
+            // creator must abort the request in process and delete the request.
+            if (pReq->getProgressInPerCent() < 100) {
+                SErrResultInfo errResultInfo(
+                    /* errSource     */ NameSpace(), ClassName(), objectName(), strMth,
+                    /* result        */ EResultRequestAborted,
+                    /* severity      */ EResultSeverityError,
+                    /* strAddErrInfo */ "Removed from request sequencer" );
+                pReq->setErrResultInfo(errResultInfo);
+                pReq->setProgressInPerCent(100);
+                pReq->update();
+                // The one who calls update for the finished request must delete the request.
+                deleteRequest(pReq);
+                pReq = nullptr;
+            }
         }
-    } // if( m_hshpReqs.contains(i_pReqSeqEntry->m_reqDscr.m_iId) )
-
-} // clear
+    }
+}
 
 /*==============================================================================
 protected: // instance methods
