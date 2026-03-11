@@ -13,6 +13,11 @@
 # - PATH
 #   - Add install directory of qmake.exe (e.g. C:\Qt\5.15.2\msvc2019_64\bin).
 #     To show the current PATH setting in powershell use $Env:Path
+
+# Since Qt6 it may be necessary to explicitly define the CMAKE_PREFIX_PATH and pass it to the cmake call:
+#
+# - Exmample:
+#   cmake -G "Visual Studio 17 2022" -A x64 . -B ..\Build\msvc2022_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2022_x64" -DCMAKE_PREFIX_PATH="C:/Qt6/6.10.2/msvc2022_64/lib/cmake"
 #
 # Change working directory to where this CMakeList file is located ("<root of the repository>/Make").
 #
@@ -255,8 +260,8 @@ else()
 endif()
 
 message(STATUS "")
-message(STATUS "Platform: ${Platform}")
-message(STATUS "Compiler: ${Compiler}")
+message(STATUS "Platform:          ${Platform}")
+message(STATUS "Compiler:          ${Compiler}")
 message(STATUS "")
 
 if(WIN32)
@@ -272,7 +277,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
-#message(STATUS "")
 message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY:         ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG}")
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY:         ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}")
 message(STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY:         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}")
@@ -282,10 +286,16 @@ message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG:   ${CMAKE_LIBRARY_OUTPUT_D
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
 set(QT_MINIMUM_VERSION 5.15.4)
-find_program(QMAKE_EXECUTABLE NAMES qmake HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
-execute_process(COMMAND ${QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE QT_VERSION)
 message(STATUS "")
-message(STATUS "QT_VERSION:                         ${QT_VERSION}")
+message(STATUS "QTDIR:             $ENV{QTDIR}")
+if(Platform MATCHES "x64")
+    find_program(QMAKE_EXECUTABLE NAMES qmake HINTS $ENV{QTDIR}/${Compiler}_64/bin)
+else()
+    find_program(QMAKE_EXECUTABLE NAMES qmake HINTS $ENV{QTDIR}/${Compiler}_x86/bin)
+endif()
+message(STATUS "QMAKE_EXECUTABLE:  ${QMAKE_EXECUTABLE}")
+execute_process(COMMAND ${QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE QT_VERSION)
+message(STATUS "QT_VERSION:        ${QT_VERSION}")
 message(STATUS "")
 if(QT_VERSION LESS QT_MINIMUM_VERSION)
     MESSAGE(FATAL_ERROR "Minimum supported Qt version: ${QT_MINIMUM_VERSION}.
@@ -355,7 +365,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 enable_testing()
 include(CTest)
-include(Dart)
+#include(Dart)
 
 add_subdirectory(Libs/ZSSys)
 add_subdirectory(Libs/ZSSysGUI)

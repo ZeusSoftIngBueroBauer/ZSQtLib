@@ -919,9 +919,11 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                         /* strObjName      */ strObjName,
                                         /* xmlStreamReader */ xmlStreamReader );
                                 }
-                                catch(CException& exc) {
+                                catch (CException& exc) {
                                     QString strAddErrInfo = exc.toString();
                                     errResultInfo = ErrResultInfoError("load", EResultFileReadContent, strAddErrInfo);
+                                    xmlStreamReader.raiseError(
+                                        strElemName + ": " + strFactoryGroupName + "::" + strGraphObjType + "::" + strObjName + ": " + strAddErrInfo);
                                 }
                             }
                         }

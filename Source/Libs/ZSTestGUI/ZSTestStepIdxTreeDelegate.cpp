@@ -54,19 +54,16 @@ public: // ctors and dtor
 CDelegateIdxTreeTestSteps::CDelegateIdxTreeTestSteps( QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QItemDelegate(i_pObjParent),
-    m_rectChkBoxBreakpoint(0,0,10,10),
-    m_rectChkBoxEnabled(0,0,10,10)
+    m_rectChkBoxBreakpoint(0, 0, 10, 10),
+    m_rectChkBoxEnabled(0, 0, 10, 10)
 {
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CDelegateIdxTreeTestSteps::~CDelegateIdxTreeTestSteps()
 //------------------------------------------------------------------------------
 {
-    //m_rectChkBoxBreakpoiont;
-    //m_rectChkBoxEnabled;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -74,8 +71,8 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 bool CDelegateIdxTreeTestSteps::isCheckBoxBreakpointHit(
-    const QRect&       i_rectVisual,
-    const QPoint&      i_ptPos,
+    const QRect& i_rectVisual,
+    const QPoint& i_ptPos,
     const QModelIndex& /*i_modelIdx*/ )
 //------------------------------------------------------------------------------
 {

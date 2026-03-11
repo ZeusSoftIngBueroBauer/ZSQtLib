@@ -234,7 +234,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 //------------------------------------------------------------------------------
 {
     if (i_pDrawingScene == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr");
     }
 
     QString strMthInArgs;

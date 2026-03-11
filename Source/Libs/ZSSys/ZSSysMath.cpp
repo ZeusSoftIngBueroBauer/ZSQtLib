@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -91,7 +91,7 @@ double Math::abs( double i_fVal )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns an angle in the range between 0� and 360� (0.0 <= angle < 2PI).
+/*! @brief Returns an angle in the range between 0° and 360° (0.0 <= angle < 2PI).
 
     @param i_fAngle_rad [in]
         Angle in radiants.
@@ -120,7 +120,7 @@ double Math::normalizeAngleInRad( double i_fAngle_rad )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns an angle in the range between 0� and 360�.
+/*! @brief Returns an angle in the range between 0° and 360°.
 
     @param i_fAngle_degree [in]
         Angle in degrees.
@@ -244,10 +244,10 @@ double Math::degree2Rad( double i_fAngle_degree, bool i_bNormalize )
 /*! @brief Converts the given angle counted counterclockwise into an angle
            counted clock wise.
 
-    The clockwise counted angle of 45� is in 4th Quadrant and will become the
-    angle 315� if counted counterclockwise.
-    The clockwise counted angle of 225� is in 2nd Quadrant and will become the
-    angle 135� if counted counterclockwise.
+    The clockwise counted angle of 45° is in 4th Quadrant and will become the
+    angle 315° if counted counterclockwise.
+    The clockwise counted angle of 225° is in 2nd Quadrant and will become the
+    angle 135° if counted counterclockwise.
 
     @param i_fAngle_rad [in]
         Angle in rad counted clockwise.
@@ -269,10 +269,10 @@ double Math::toClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize )
 /*! @brief Converts the given angle counted clockwise into an angle
            counted counterclock wise.
 
-    The counterclockwise counted angle of 45� is in 1st Quadrant and will become the
-    angle 315� if counted clockwise.
-    The counterclockwise counted angle of 225� is in 3rd Quadrant and will become the
-    angle 135� if counted counterclockwise.
+    The counterclockwise counted angle of 45° is in 1st Quadrant and will become the
+    angle 315° if counted clockwise.
+    The counterclockwise counted angle of 225° is in 3rd Quadrant and will become the
+    angle 135° if counted counterclockwise.
 
     @param i_fAngle_rad [in]
         Angle in rad counted counterclockwise.
@@ -294,10 +294,10 @@ double Math::toCounterClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize 
 /*! @brief Converts the given angle counted counterclockwise into an angle
            counted clock wise.
 
-    The clockwise counted angle of 45� is in 4th Quadrant and will become the
-    angle 315� if counted counterclockwise.
-    The clockwise counted angle of 225� is in 2nd Quadrant and will become the
-    angle 135� if counted counterclockwise.
+    The clockwise counted angle of 45° is in 4th Quadrant and will become the
+    angle 315° if counted counterclockwise.
+    The clockwise counted angle of 225° is in 2nd Quadrant and will become the
+    angle 135° if counted counterclockwise.
 
     @param i_fAngle_rad [in]
         Angle in rad counted clockwise.
@@ -319,10 +319,10 @@ double Math::toClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize )
 /*! @brief Converts the given angle counted clockwise into an angle
            counted counterclock wise.
 
-    The counterclockwise counted angle of 45� is in 1st Quadrant and will become the
-    angle 315� if counted clockwise.
-    The counterclockwise counted angle of 225� is in 3rd Quadrant and will become the
-    angle 135� if counted counterclockwise.
+    The counterclockwise counted angle of 45° is in 1st Quadrant and will become the
+    angle 315° if counted clockwise.
+    The counterclockwise counted angle of 225° is in 3rd Quadrant and will become the
+    angle 135° if counted counterclockwise.
 
     @param i_fAngle_rad [in]
         Angle in rad counted counterclockwise.

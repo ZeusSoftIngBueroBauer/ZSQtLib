@@ -777,7 +777,7 @@ void CLogFile::addEntry( const QString& i_strEntry )
     // therefore accessing the files must be serialized using a mutex ..
     QMutexLocker mtxLocker(&s_mtx);
 
-    if( !m_strAbsFilePath.isEmpty() )
+    if (!m_strAbsFilePath.isEmpty())
     {
         if( m_pFile == nullptr )
         {
@@ -786,13 +786,13 @@ void CLogFile::addEntry( const QString& i_strEntry )
 
         if( !m_pFile->isOpen() )
         {
-            if( m_pFile->exists() )
+            if (m_pFile->exists())
             {
-                m_pFile->open(QIODevice::Append|QIODevice::Text);
+                (void) m_pFile->open(QIODevice::Append|QIODevice::Text);
             }
             else
             {
-                m_pFile->open(QIODevice::WriteOnly|QIODevice::Text);
+                (void) m_pFile->open(QIODevice::WriteOnly|QIODevice::Text);
             }
         }
 

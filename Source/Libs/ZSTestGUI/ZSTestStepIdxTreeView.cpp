@@ -74,13 +74,13 @@ CTreeViewIdxTreeTestSteps::CTreeViewIdxTreeTestSteps(
     m_pActionDisableTestGroups(nullptr),
     m_pTreeEntryGroupContextAction(nullptr)
 {
-    m_pDelegate = new CDelegateIdxTreeTestSteps(this);
-
     setModel(i_pModel);
+
+    m_pDelegate = new CDelegateIdxTreeTestSteps(this);
     setItemDelegate(m_pDelegate);
 
-    setSelectionBehavior(QAbstractItemView::SelectItems);
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    //setSelectionBehavior(QAbstractItemView::SelectItems);
+    //setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
     setAllColumnsShowFocus(true);
 

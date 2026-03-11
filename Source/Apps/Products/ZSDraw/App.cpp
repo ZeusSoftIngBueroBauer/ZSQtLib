@@ -49,7 +49,9 @@ may result in using the software modules.
 //#include <QtCore/qtimer.h>
 //#include <QtGui/qbitmap.h>
 //#include <QtGui/qevent.h>
-//
+#include <QtWidgets/qstyle.h>
+#include <QtWidgets/qstylefactory.h>
+
 //#if QT_VERSION < 0x050000
 //#include <QtGui/qlabel.h>
 //#include <QtGui/qmenubar.h>
@@ -105,9 +107,7 @@ CApplication::CApplication(
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("theApp");
-
-    if( thread()->objectName().length() == 0 )
-    {
+    if (thread()->objectName().isEmpty() == 0){
         thread()->setObjectName("GUIMain");
     }
 
@@ -121,45 +121,18 @@ CApplication::CApplication(
     //QGuiApplication::setApplicationDisplayName(i_strWindowTitle);
 
     QIcon iconApp;
-
-    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
-    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
-    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
-
-    iconApp.addPixmap(pxmApp32x32);
-    iconApp.addPixmap(pxmApp48x48);
-    iconApp.addPixmap(pxmApp64x64);
-
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_32x32.png"));
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_48x48.png"));
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_64x64.png"));
     QApplication::setWindowIcon(iconApp);
-
-    setStyleSheet(
-        "QDoubleSpinBox:read-only { "
-            "color: #7070F0;"
-            "background-color: #F8F8F8; }"
-        "QSpinBox:read-only { "
-            "color: #7070F0;"
-            "background-color: #F8F8F8; }"
-        "QLineEdit:read-only { "
-            "color: #7070F0;"
-            "background-color: #F8F8F8; }");
-
-    // Create error manager
-    //------------------------
 
     CErrLog::CreateInstance();
 
-    // Create trace server
-    //--------------------
-
     m_pTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance();
-
     m_pTrcServer->setCacheTrcDataIfNotConnected(true);
     m_pTrcServer->setCacheTrcDataMaxArrLen(1000);
     m_pTrcServer->recallAdminObjs();
     m_pTrcServer->startup();
-
-    // Get trace admin object
-    //-----------------------
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CApplication", objectName());
 
@@ -169,38 +142,62 @@ CApplication::CApplication(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    // Parse command arguments
-    //------------------------
-
     QStringList strlstArgsPar;
     QStringList strlstArgsVal;
-
     ZS::System::parseAppArgs(i_argc, i_argv, strlstArgsPar, strlstArgsVal);
 
-    bool bTest = false;
-
+    QString strDesiredStyle = "Fusion";
     #if QT_VERSION >= 0x040501
-    for( int idxArg = 0; idxArg < strlstArgsPar.length() && idxArg < strlstArgsVal.length(); idxArg++ )
+    for (int idxArg = 0; idxArg < strlstArgsPar.length() && idxArg < strlstArgsVal.length(); idxArg++)
     #else
-    for( int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++)
     #endif
     {
         QString strArg = strlstArgsPar[idxArg];
         QString strVal = strlstArgsVal[idxArg];
-
-        if( strArg.compare("Test",Qt::CaseInsensitive) == 0 )
-        {
-            bTest = true;
+        if (strArg.compare("Test",Qt::CaseInsensitive) == 0) {
+            if (m_pTest == nullptr) m_pTest = new CTest();
+        }
+        else if (strArg.compare("Style",Qt::CaseInsensitive) == 0) {
+            strDesiredStyle = strVal;
         }
     }
 
-    // Create Test (if desired)
-    //-------------------------
-
-    if( bTest )
-    {
-        m_pTest = new CTest();
+    QStringList strlstStyles = QStyleFactory::keys();
+    QString strCurrentStyle;
+    QStyle* pStyle = style();
+    if (pStyle != nullptr) {
+        strCurrentStyle = pStyle->name();
     }
+    if (strCurrentStyle != strDesiredStyle) {
+        if (strlstStyles.contains(strDesiredStyle, Qt::CaseInsensitive)) {
+            QApplication::setStyle(QStyleFactory::create(strDesiredStyle));
+        }
+        else {
+            QString strAddErrInfo = "Desired style '" + strDesiredStyle + "' is not available. "
+                "Current style '" + strCurrentStyle + "' is used. "
+                "Available styles are (" + strlstStyles.join(", ") + ")";
+            SErrResultInfo errResultInfo(
+                /* strNameSpace  */ NameSpace(),
+                /* strClassName  */ ClassName(),
+                /* strObjName    */ objectName(),
+                /* strMthName    */ "ctor",
+                /* result        */ EResult::EResultArgOutOfRange,
+                /* severity      */ EResultSeverityError,
+                /* strAddErrInfo */ strAddErrInfo);
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
+    //setStyleSheet(
+    //    "QDoubleSpinBox:read-only { "
+    //        "color: #7070F0;"
+    //        "background-color: #F8F8F8; }"
+    //    "QSpinBox:read-only { "
+    //        "color: #7070F0;"
+    //        "background-color: #F8F8F8; }"
+    //    "QLineEdit:read-only { "
+    //        "color: #7070F0;"
+    //        "background-color: #F8F8F8; }");
 }
 
 //------------------------------------------------------------------------------
@@ -213,29 +210,19 @@ CApplication::~CApplication()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    // Save settings of the application
-    //--------------------------------------
-
     m_pTrcServer->saveAdminObjs();
 
-    // Destroy objects created and controlled by the application
-    //----------------------------------------------------------
-
-    try
-    {
+    try {
         delete m_pMainWindow;
     }
-    catch(...)
-    {
+    catch (...) {
     }
     m_pMainWindow = nullptr;
 
-    try
-    {
+    try {
         delete m_pTest;
     }
-    catch(...)
-    {
+    catch (...) {
     }
     m_pTest = nullptr;
 
@@ -247,22 +234,18 @@ CApplication::~CApplication()
     // of the event (message) is called.
 
     mthTracer.onAdminObjAboutToBeReleased();
-
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     m_pTrcServer->saveAdminObjs();
 
-    try
-    {
+    try {
         ZS::System::CTrcServer::ReleaseInstance();
     }
-    catch(...)
-    {
+    catch (...) {
     }
     m_pTrcServer = nullptr;
 
     CErrLog::ReleaseInstance();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -276,11 +259,9 @@ void CApplication::createAndShowMainWindow(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "MainWindowTitle: " + i_strMainWindowTitle;
-        strMthInArgs += ", FileName: " + i_strFileName;
-        strMthInArgs += ", ObjFactories: " + i_strlstObjFactories.join(", ");
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "MainWindowTitle: " + i_strMainWindowTitle +
+            ", FileName: " + i_strFileName + ", ObjFactories: " + i_strlstObjFactories.join(", ");
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

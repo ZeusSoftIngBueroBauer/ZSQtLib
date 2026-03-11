@@ -1496,18 +1496,11 @@ void CErrLog::recall()
 {
     /* This protected method is called from public methods and the mutex is already locked
     QMutexLocker mtxLockerInst(m_pMtx); */
-
     m_bRecallingModel = true;
-
-    if( !m_strAbsFilePath.isEmpty() && m_pFile != nullptr )
-    {
-        m_pFile->open(QIODevice::ReadOnly);
-
-        if( m_pFile->isOpen() )
-        {
+    if (!m_strAbsFilePath.isEmpty() && (m_pFile != nullptr)) {
+        if (m_pFile->open(QIODevice::ReadOnly)) {
             QXmlStreamReader            xmlStreamReader(m_pFile);
             QXmlStreamReader::TokenType xmlStreamTokenType;
-
             QString         strElemName;
             QString         strElemText;
             QDate           date;

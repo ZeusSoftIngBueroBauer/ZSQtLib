@@ -106,7 +106,7 @@ target_link_libraries(${PROJECT_NAME} ${_Libs})
 
 enable_testing()
 include(CTest)
-include(Dart)
+#include(Dart)
 add_test(ZSIpcTrace ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TargetOutputName} "AutoStartTest")
 
 include(GNUInstallDirs)

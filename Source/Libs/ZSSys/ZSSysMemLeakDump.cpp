@@ -178,7 +178,7 @@ static void __cdecl dumpClientHookImpl(void* i_pvUserData, size_t i_nSizeInBytes
 }
 
 //------------------------------------------------------------------------------
-/*! \brief Exported hook matching original signatures — keep names & calling convention.
+/*! \brief Exported hook matching original signatures - keep names & calling convention.
 */
 void __cdecl ZS::dumpClientHook(void* i_pvUserData, size_t i_nSizeInBytes)
 //------------------------------------------------------------------------------

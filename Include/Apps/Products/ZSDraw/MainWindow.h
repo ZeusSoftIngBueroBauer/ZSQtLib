@@ -109,8 +109,7 @@ class CObjFactoryWdgtGroupBox;
 class CObjFactoryWdgtLabel;
 class CObjFactoryWdgtLineEdit;
 class CObjFactoryWdgtPushButton;
-
-} // namespace QtWidgets
+}
 
 namespace Electricity
 {
@@ -121,8 +120,7 @@ class CObjFactoryResistor;
 class CObjFactorySwitch;
 class CObjFactoryTransistor;
 class CObjFactoryVoltageSource;
-
-} // namespace Electricity
+}
 
 } // namespace Draw
 

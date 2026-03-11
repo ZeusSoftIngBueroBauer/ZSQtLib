@@ -72,16 +72,10 @@ CException::CException(
         /* severity      */ i_severity,
         /* strAddErrInfo */ i_strAddErrInfo )
 {
-    if( i_bAdd2ErrLog )
-    {
-        CErrLog* pErrLog = CErrLog::GetInstance();
-
-        if( pErrLog != nullptr )
-        {
-            addErrorLogFileEntry();
-        }
+    if (i_bAdd2ErrLog) {
+        addErrorLogFileEntry();
     }
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! Constructs an exception instance.
@@ -95,16 +89,10 @@ CException::CException( const SErrResultInfo& i_errResultInfo, bool i_bAdd2ErrLo
 //------------------------------------------------------------------------------
     m_errResultInfo(i_errResultInfo)
 {
-    if( i_bAdd2ErrLog )
-    {
-        CErrLog* pErrLog = CErrLog::GetInstance();
-
-        if( pErrLog != nullptr )
-        {
-            addErrorLogFileEntry();
-        }
+    if (i_bAdd2ErrLog) {
+        addErrorLogFileEntry();
     }
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! Constructs an exception instance.
@@ -125,17 +113,10 @@ CException::CException(
     m_errResultInfo(i_errResultInfo)
 {
     m_errResultInfo.setErrSource(i_strFile, i_iLine);
-
-    if( i_bAdd2ErrLog )
-    {
-        CErrLog* pErrLog = CErrLog::GetInstance();
-
-        if( pErrLog != nullptr )
-        {
-            addErrorLogFileEntry();
-        }
+    if (i_bAdd2ErrLog) {
+        addErrorLogFileEntry();
     }
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! Destroys the exception instance.
@@ -143,7 +124,7 @@ CException::CException(
 CException::~CException()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables
@@ -162,14 +143,10 @@ public: // overridables
 QString CException::toString( const QString& i_strSeparator ) const
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str  = type() + "( " + getSeverityStr() + ", " + getResultStr() + " )" + i_strSeparator;
-    str += "Source: " + getErrSource().toString() + i_strSeparator;
-
-    return str;
-
-} // toString
+    return type() + "( " + getSeverityStr() + ", " + getResultStr() + " )" + i_strSeparator +
+        QString(getAddErrInfo().isEmpty() ? "" : "AddInfo {" + getAddErrInfo() + "}" + i_strSeparator) + 
+        "Source: " + getErrSource().toString();
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -182,11 +159,8 @@ void CException::addErrorLogFileEntry()
 //------------------------------------------------------------------------------
 {
     CErrLog* pErrLog = CErrLog::GetInstance();
-
-    if( pErrLog != nullptr )
-    {
+    if (pErrLog != nullptr) {
         pErrLog->addEntry(m_errResultInfo);
-
         m_errResultInfo.setAddedToErrLogModel();
     }
-} // addErrorLogFileEntry
+}

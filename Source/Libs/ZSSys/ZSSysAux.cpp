@@ -2180,7 +2180,11 @@ static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
     /* 087: 0x000000b2 (     178) */ SEnumEntry( Qt::Key_twosuperior, "Key_twosuperior", "", "" ),
     /* 088: 0x000000b3 (     179) */ SEnumEntry( Qt::Key_threesuperior, "Key_threesuperior", "", "" ),
     /* 089: 0x000000b4 (     180) */ SEnumEntry( Qt::Key_acute, "Key_acute", "", "" ),
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     /* 090: 0x000000b5 (     181) */ SEnumEntry( Qt::Key_mu, "Key_mu", "", "" ),
+    #else
+    /* 090: 0x000000b5 (     181) */ SEnumEntry( Qt::Key_micro, "Key_micro", "", "" ),
+    #endif
     /* 091: 0x000000b6 (     182) */ SEnumEntry( Qt::Key_paragraph, "Key_paragraph", "", "" ),
     /* 092: 0x000000b7 (     183) */ SEnumEntry( Qt::Key_periodcentered, "Key_periodcentered", "", "" ),
     /* 093: 0x000000b8 (     184) */ SEnumEntry( Qt::Key_cedilla, "Key_cedilla", "", "" ),
@@ -3541,30 +3545,67 @@ QString ZS::System::qVariantType2Str( int i_type )
 QString ZS::System::qVariant2Str( const QVariant& i_var, bool i_bAddType )
 //------------------------------------------------------------------------------
 {
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QString str = i_bAddType ? QString(qVariantType2Str(static_cast<int>(i_var.type())) + ": ") : "";
     switch (i_var.type()) {
+    #else
+    QString str = i_bAddType ? QString(qVariantType2Str(static_cast<int>(i_var.typeId())) + ": ") : "";
+    switch (i_var.typeId()) {
+    #endif
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::Rect:
+        #else
+        case QMetaType::QRect:
+        #endif
             str = qRect2Str(i_var.toRect());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::RectF:
+        #else
+        case QMetaType::QRectF:
+        #endif
             str = qRect2Str(i_var.toRectF());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::Size:
+        #else
+        case QMetaType::QSize:
+        #endif
             str = qSize2Str(i_var.toSize());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::SizeF:
+        #else
+        case QMetaType::QSizeF:
+        #endif
             str = qSize2Str(i_var.toSizeF());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::Line:
+        #else
+        case QMetaType::QLine:
+        #endif
             str = qLine2Str(i_var.toLine());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::LineF:
+        #else
+        case QMetaType::QLineF:
+        #endif
             str = qLine2Str(i_var.toLineF());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::Point:
+        #else
+        case QMetaType::QPoint:
+        #endif
             str = qPoint2Str(i_var.toPoint());
             break;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         case QVariant::PointF:
+        #else
+        case QMetaType::QPointF:
+        #endif
             str = qPoint2Str(i_var.toPointF());
             break;
         default:

@@ -150,6 +150,7 @@ CGraphObj::CGraphObj(
     m_physValSizeMaximum(*i_pDrawingScene),
     m_physValSizeFixed(*i_pDrawingScene),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
+    m_physValRotationAngle(0.0, Units.Angle.Degree),
     m_physValRectParentGroupOrig(*i_pDrawingScene),
     m_arpSelPtsPolygon(),
     m_arpSelPtsBoundingRect(CEnumSelectionPoint::count())

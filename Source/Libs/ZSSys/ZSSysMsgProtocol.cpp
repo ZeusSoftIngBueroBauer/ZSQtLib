@@ -196,7 +196,12 @@ QDateTime STimeStamp::toDateTime() const
 //------------------------------------------------------------------------------
 {
     return QDateTime(
-        /* date     */ QDate(m_iYear,m_iMonth,m_iDay),
-        /* time     */ QTime(m_iHour,m_iMinute,m_iSecond,m_iMilliSecond),
-        /* timeSpec */ Qt::UTC );
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QDate(m_iYear,m_iMonth,m_iDay),
+        QTime(m_iHour,m_iMinute,m_iSecond,m_iMilliSecond),
+        Qt::UTC );
+        #else
+        QDate(m_iYear,m_iMonth,m_iDay),
+        QTime(m_iHour,m_iMinute,m_iSecond,m_iMilliSecond));
+        #endif
 }

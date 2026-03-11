@@ -362,6 +362,11 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
 
     //setItemDelegate(m_pDelegate);
 
+    //setSelectionBehavior(QAbstractItemView::SelectItems);
+    //setSelectionMode(QAbstractItemView::SingleSelection);
+    //setAlternatingRowColors(true);
+    setAllColumnsShowFocus(true);
+
     for( int idxClm = 0; idxClm < CModelIdxTreeGraphObjs::EColumnCount; ++idxClm ) {
         if (idxClm != CModelIdxTreeGraphObjs::EColumnTreeEntryName ) {
             hideColumn(idxClm);

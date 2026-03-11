@@ -78,7 +78,8 @@ code lines below exclude the memory block from the memory leak dump:
 
 ==============================================================================*/
 
-#pragma once
+#ifndef ZSSys_MemLeakDump_h
+#define ZSSys_MemLeakDump_h
 
 namespace ZS::System {}
 
@@ -138,3 +139,5 @@ void __declspec(dllimport) dumpClientHook(void* i_pvUserData, void* i_pvContext)
 #endif // #ifdef _DEBUG
 
 #endif // #ifdef _WINDOWS
+
+#endif // #ifdef ZSSys_MemLeakDump_h
