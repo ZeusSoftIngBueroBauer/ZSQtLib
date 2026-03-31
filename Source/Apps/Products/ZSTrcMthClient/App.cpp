@@ -24,19 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qsettings.h>
-#include <QtCore/qtimer.h>
-#include <QtCore/qthread.h>
-#include <QtGui/qbitmap.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qmessagebox.h>
-#else
-#include <QtWidgets/qmessagebox.h>
-#endif
-
 #include "App.h"
 #include "MainWindow.h"
 
@@ -47,6 +34,21 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysRequestExecTree.h"
 #include "ZSSys/ZSSysTime.h"
+
+#include <QtCore/qdir.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qsettings.h>
+#include <QtCore/qtimer.h>
+#include <QtCore/qthread.h>
+#include <QtGui/qbitmap.h>
+#include <QtWidgets/qstyle.h>
+#include <QtWidgets/qstylefactory.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qmessagebox.h>
+#else
+#include <QtWidgets/qmessagebox.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -118,74 +120,58 @@ CApplication::CApplication(
     m_pMainWindow(nullptr)
 {
     setObjectName("theApp");
-
-    if( thread()->objectName().length() == 0 )
-    {
+    if (thread()->objectName().isEmpty()) {
         thread()->setObjectName("GUIMain");
     }
 
+    QCoreApplication::setOrganizationName(i_strOrganizationName);
+    QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
+    QCoreApplication::setApplicationName(i_strAppName);
+
     QIcon iconApp;
-
-    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
-    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
-    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
-
-    iconApp.addPixmap(pxmApp32x32);
-    iconApp.addPixmap(pxmApp48x48);
-    iconApp.addPixmap(pxmApp64x64);
-
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_32x32.png"));
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_48x48.png"));
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_64x64.png"));
     QApplication::setWindowIcon(iconApp);
+
+    CErrLog::CreateInstance();
 
     SClientHostSettings trcClientHostSettingsDefault = m_trcClientHostSettings;
 
     // Parse command arguments (first part, IniFile)
     //----------------------------------------------
 
-    int         idxArg;
-    QString     strArg;
-    QString     strVal;
-    int         iVal;
-    bool        bConverted;
     QStringList strListArgsPar;
     QStringList strListArgsVal;
-    QString     strAppName = i_strAppName;
-    QString     strWindowTitle = i_strWindowTitle;
-    QString     strRemoteAppName;
+    parseAppArgs(i_argc, i_argv, strListArgsPar, strListArgsVal);
 
+    QString strRemoteAppName;
     QString strIniFileScope = "User";
-
-    parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
-
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++)
     #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++)
     #endif
     {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
+        QString strArg = strListArgsPar[idxArg];
+        QString strVal = strListArgsVal[idxArg];
 
         // Here only the command arguments concerning the location of the ini file are parsed.
         // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
-        {
+        if (strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0) {
             strIniFileScope = strVal;
         }
-        else if( strArg.compare("RemoteAppName",Qt::CaseInsensitive) == 0 )
-        {
+        else if (strArg.compare("RemoteAppName",Qt::CaseInsensitive) == 0) {
             strRemoteAppName = strVal;
         }
     }
 
-    if( !strRemoteAppName.isEmpty() )
-    {
+    QString strAppName = i_strAppName;
+    QString strWindowTitle = i_strWindowTitle;
+    if (!strRemoteAppName.isEmpty()) {
         strAppName += "-" + strRemoteAppName;
         strWindowTitle += " / " + strRemoteAppName;
     }
-
-    QCoreApplication::setOrganizationName(i_strOrganizationName);
-    QCoreApplication::setOrganizationDomain(i_strOrganizationDomain);
-    QCoreApplication::setApplicationName(strAppName);
 
     // Calculate default file paths and create ini file
     //-------------------------------------------------
@@ -215,39 +201,61 @@ CApplication::CApplication(
     // Parse command arguments (second part, overwriting IniFile settings)
     //--------------------------------------------------------------------
 
+    QString strDesiredStyle = "Fusion";
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++)
     #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++)
     #endif
     {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
+        QString strArg = strListArgsPar[idxArg];
+        QString strVal = strListArgsVal[idxArg];
 
-        if( strArg.compare("RemoteHostName",Qt::CaseInsensitive) == 0 )
-        {
+        if (strArg.compare("RemoteHostName",Qt::CaseInsensitive) == 0) {
             m_trcClientHostSettings.m_strRemoteHostName = strVal;
         }
-        else if( strArg.compare("RemotePort",Qt::CaseInsensitive) == 0 )
-        {
-            iVal = strVal.toInt(&bConverted);
-            if( bConverted && iVal >= 1000 && iVal <= UINT16_MAX )
-            {
+        else if (strArg.compare("RemotePort",Qt::CaseInsensitive) == 0) {
+            bool bConverted = false;
+            int iVal = strVal.toInt(&bConverted);
+            if (bConverted && iVal >= 1000 && iVal <= UINT16_MAX) {
                 m_trcClientHostSettings.m_uRemotePort = static_cast<quint16>(iVal);
             }
         }
+        else if (strArg.compare("Style",Qt::CaseInsensitive) == 0) {
+            strDesiredStyle = strVal;
+        }
     }
 
-    // Create error manager
-    //------------------------
-
-    CErrLog::CreateInstance();
+    QStringList strlstStyles = QStyleFactory::keys();
+    QString strCurrentStyle;
+    QStyle* pStyle = style();
+    if (pStyle != nullptr) {
+        strCurrentStyle = pStyle->name();
+    }
+    if (strCurrentStyle != strDesiredStyle) {
+        if (strlstStyles.contains(strDesiredStyle, Qt::CaseInsensitive)) {
+            QApplication::setStyle(QStyleFactory::create(strDesiredStyle));
+        }
+        else {
+            QString strAddErrInfo = "Desired style '" + strDesiredStyle + "' is not available. "
+                "Current style '" + strCurrentStyle + "' is used. "
+                "Available styles are (" + strlstStyles.join(", ") + ")";
+            SErrResultInfo errResultInfo(
+                /* strNameSpace  */ NameSpace(),
+                /* strClassName  */ ClassName(),
+                /* strObjName    */ objectName(),
+                /* strMthName    */ "ctor",
+                /* result        */ EResult::EResultArgOutOfRange,
+                /* severity      */ EResultSeverityError,
+                /* strAddErrInfo */ strAddErrInfo);
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
     // Request Execution Tree
     //------------------------
 
     m_pReqExecTree = CRequestExecTree::CreateInstance();
-
     m_pReqExecTree->setGarbageCollectorEnabled(m_bReqExecTreeGarbageCollectorEnabled);
     m_pReqExecTree->setGarbageCollectorIntervalInSec(m_fReqExecTreeGarbageCollectorInterval_s);
     m_pReqExecTree->setGarbageCollectorElapsedInSec(m_fReqExecTreeGarbageCollectorElapsed_s);
@@ -256,7 +264,6 @@ CApplication::CApplication(
     //-------------
 
     m_pTrcClient = new CIpcTrcClient("MthTrcClient");
-
     m_pTrcClient->setWatchDogTimerUsed(false);
     m_pTrcClient->setHostSettings(m_trcClientHostSettings);
     m_pTrcClient->changeSettings();
@@ -272,8 +279,7 @@ CApplication::CApplication(
 
     m_pMainWindow = new CMainWindow(strWindowTitle, m_pTrcClient);
     m_pMainWindow->show();
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CApplication::~CApplication()
@@ -281,44 +287,26 @@ CApplication::~CApplication()
 {
     saveSettings();
 
-    try
-    {
+    try {
         delete m_pMainWindow;
     }
-    catch(...)
-    {
+    catch (...) {
     }
-
-    try
-    {
+    try {
         delete m_pTrcClient;
     }
-    catch(...)
-    {
+    catch (...) {
     }
-
-    try
-    {
+    try {
         delete m_pSettingsFile;
     }
-    catch(...)
-    {
+    catch (...) {
     }
 
     CRequestExecTree::DestroyInstance();
 
     CErrLog::ReleaseInstance();
-
-    m_pSettingsFile = nullptr;
-    m_bReqExecTreeGarbageCollectorEnabled = false;
-    m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
-    m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
-    m_pReqExecTree = nullptr;
-    //m_trcClientHostSettings;
-    m_pTrcClient = nullptr;
-    m_pMainWindow = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods

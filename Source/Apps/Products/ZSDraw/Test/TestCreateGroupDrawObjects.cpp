@@ -192,7 +192,7 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
 
     ZS::Test::CTestStepGroup* pGrpRectanglesRectangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect1,
         /* pTSGrpParent */ pGrpRectangles );
     createTestGroupDrawStandardShapesRect(pGrpRectanglesRectangle);
     createTestGroupDrawStandardShapesRectModifications(pGrpRectanglesRectangle);
@@ -955,24 +955,24 @@ void CTest::createTestGroupDrawStandardShapesRect(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameRect + ")",
-        /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameRect + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameRect1 + ")",
+        /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameRect1 + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
-    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameRect, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect));
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameRect1, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameRect);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameRect1);
     pTestStep->setConfigValue("P1", QPoint(275, 275));
     pTestStep->setConfigValue("P2", QPoint(325, 325));
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     QSizeF sizeRect = QSizeF(50.0, 50.0);
-    m_ptPosRectangle = QPointF(300, 300.0);
-    m_rectRectangle = QRectF(QPointF(-25.0, -25.0), sizeRect);
-    m_pPhysValRectRectangle->setSize(sizeRect);
-    m_pPhysValRectRectangle->setCenter(QPointF(300, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0));
+    m_ptPosRect1 = QPointF(300, 300.0);
+    m_rectRect1 = QRectF(QPointF(-25.0, -25.0), sizeRect);
+    m_pPhysValRect1->setSize(sizeRect);
+    m_pPhysValRect1->setCenter(QPointF(300, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        c_strGraphObjNameRect, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        c_strGraphObjNameRect1, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -1015,10 +1015,10 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    QString strObjName = c_strGraphObjNameRect;
+    QString strObjName = c_strGraphObjNameRect1;
     QString strMethod;
     QString strMthArgs;
-    CPhysValRect physValRectNew = *m_pPhysValRectRectangle;
+    CPhysValRect physValRectNew = *m_pPhysValRect1;
     CEnumSelectionPoint eSelPt;
     QPointF pt1SelPt;
     QPointF pt2SelPt;
@@ -1032,9 +1032,9 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
     //-----------------
 
     iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strObjName = c_strGraphObjNameRect;
+    strObjName = c_strGraphObjNameRect1;
     eSelPt = bYAxisTopDown ? ESelectionPoint::RotateTop : ESelectionPoint::RotateBottom;
-    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew = *m_pPhysValRect1;
     physValRectNew.setAngle(45.0);
     strMethod = "setRotationAngle";
     strMthArgs = physValRectNew.angle().toString();
@@ -1044,32 +1044,32 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
     pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P0", m_ptPosRect1);
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_physValAngleRectangle = physValRectNew.angle();
-    *m_pPhysValRectRectangle = physValRectNew;
+    m_pPhysValAngleRect1 = physValRectNew.angle();
+    *m_pPhysValRect1 = physValRectNew;
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setWidth
     //---------
 
     iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strObjName = c_strGraphObjNameRect;
-    QSizeF sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
+    strObjName = c_strGraphObjNameRect1;
+    QSizeF sizeRectangle = m_pPhysValRect1->size().toQSizeF();
     sizeRectangle.setWidth(100.0);
     eSelPt = ESelectionPoint::RightCenter;
-    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew = *m_pPhysValRect1;
     physValRectNew.setWidth(sizeRectangle.width());
     strMethod = "setWidth";
     strMthArgs = physValRectNew.width().toString();
@@ -1079,34 +1079,34 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
     pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P0", m_ptPosRect1);
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosRectangle = QPointF(317.661165, 317.661165);
-    m_rectRectangle = QRectF(QPointF(-49.976659, -25.0), QSizeF(99.953319, 50.0));
-    m_pPhysValRectRectangle->setSize(QSizeF(99.953319, 50.0));
-    m_pPhysValRectRectangle->setCenter(QPointF(317.661165, bYAxisTopDown ? 317.661165 : 282.338835));
+    m_ptPosRect1 = QPointF(317.661165, 317.661165);
+    m_rectRect1 = QRectF(QPointF(-49.976659, -25.0), QSizeF(99.953319, 50.0));
+    m_pPhysValRect1->setSize(QSizeF(99.953319, 50.0));
+    m_pPhysValRect1->setCenter(QPointF(317.661165, bYAxisTopDown ? 317.661165 : 282.338835));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setHeight
     //----------
 
     iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strObjName = c_strGraphObjNameRect;
-    sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
+    strObjName = c_strGraphObjNameRect1;
+    sizeRectangle = m_pPhysValRect1->size().toQSizeF();
     sizeRectangle.setHeight(100.0);
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomCenter : ESelectionPoint::TopCenter;
-    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew = *m_pPhysValRect1;
     physValRectNew.setHeight(sizeRectangle.height());
     strMethod = "setHeight";
     strMthArgs = physValRectNew.height().toString();
@@ -1116,33 +1116,33 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
     pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P0", m_ptPosRect1);
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 300.0 : 335.322330, bYAxisTopDown ? 335.322330 : 300.0);
-    m_rectRectangle = QRectF(QPointF(-49.976659, -49.976659), QSizeF(99.953319, 99.953319));
-    m_pPhysValRectRectangle->setSize(QSizeF(99.953319, 99.953319));
-    m_pPhysValRectRectangle->setCenter(QPointF(bYAxisTopDown ? 300.0 : 335.322330, bYAxisTopDown ? 335.322330 : 300.0));
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 300.0 : 335.322330, bYAxisTopDown ? 335.322330 : 300.0);
+    m_rectRect1 = QRectF(QPointF(-49.976659, -49.976659), QSizeF(99.953319, 99.953319));
+    m_pPhysValRect1->setSize(QSizeF(99.953319, 99.953319));
+    m_pPhysValRect1->setCenter(QPointF(bYAxisTopDown ? 300.0 : 335.322330, bYAxisTopDown ? 335.322330 : 300.0));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setSize
     //--------
 
     iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strObjName = c_strGraphObjNameRect;
+    strObjName = c_strGraphObjNameRect1;
     sizeRectangle = QSizeF(150.0, 150.0);
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomRight : ESelectionPoint::TopRight;
-    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew = *m_pPhysValRect1;
     physValRectNew.setSize(sizeRectangle);
     strMethod = "setSize";
     strMthArgs = physValRectNew.size().toString();
@@ -1152,33 +1152,33 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
     pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P0", m_ptPosRect1);
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 300.0 : 370.822330, bYAxisTopDown ? 370.822330 : 300.0);
-    m_rectRectangle = QRectF(QPointF(-75.078950, -75.078950), QSizeF(150.157900, 150.157900));
-    m_pPhysValRectRectangle->setSize(QSizeF(150.157900, 150.157900));
-    m_pPhysValRectRectangle->setCenter(QPointF(bYAxisTopDown ? 300.000000 : 370.822330, bYAxisTopDown ? 370.822330 : 300.000000));
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 300.0 : 370.822330, bYAxisTopDown ? 370.822330 : 300.0);
+    m_rectRect1 = QRectF(QPointF(-75.078950, -75.078950), QSizeF(150.157900, 150.157900));
+    m_pPhysValRect1->setSize(QSizeF(150.157900, 150.157900));
+    m_pPhysValRect1->setCenter(QPointF(bYAxisTopDown ? 300.000000 : 370.822330, bYAxisTopDown ? 370.822330 : 300.000000));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setWidth
     //---------
 
     iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strObjName = c_strGraphObjNameRect;
+    strObjName = c_strGraphObjNameRect1;
     sizeRectangle.setWidth(50.0);
     eSelPt = ESelectionPoint::RightCenter;
-    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew = *m_pPhysValRect1;
     physValRectNew.setWidth(sizeRectangle.width());
     strMethod = "setWidth";
     strMthArgs = physValRectNew.width().toString();
@@ -1188,33 +1188,33 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
     pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P0", m_ptPosRect1);
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 264.5 : 335.322330, bYAxisTopDown ? 335.322330 : 264.5);
-    m_rectRectangle = QRectF(QPointF(-24.874369, -75.078950), QSizeF(49.748737, 150.157900));
-    m_pPhysValRectRectangle->setSize(QSizeF(49.748737, 150.157900));
-    m_pPhysValRectRectangle->setCenter(QPointF(bYAxisTopDown ? 264.5 : 335.322330, bYAxisTopDown ? 335.322330 : 335.5));
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 264.5 : 335.322330, bYAxisTopDown ? 335.322330 : 264.5);
+    m_rectRect1 = QRectF(QPointF(-24.874369, -75.078950), QSizeF(49.748737, 150.157900));
+    m_pPhysValRect1->setSize(QSizeF(49.748737, 150.157900));
+    m_pPhysValRect1->setCenter(QPointF(bYAxisTopDown ? 264.5 : 335.322330, bYAxisTopDown ? 335.322330 : 335.5));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setHeight
     //----------
 
     iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strObjName = c_strGraphObjNameRect;
+    strObjName = c_strGraphObjNameRect1;
     sizeRectangle.setHeight(50.0);
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomCenter : ESelectionPoint::TopCenter;
-    physValRectNew = *m_pPhysValRectRectangle;
+    physValRectNew = *m_pPhysValRect1;
     physValRectNew.setHeight(sizeRectangle.height());
     strMethod = "setHeight";
     strMthArgs = physValRectNew.height().toString();
@@ -1224,23 +1224,23 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*)) );
-    pt1SelPt = getSelectionPointCoors(*m_pPhysValRectRectangle, eSelPt.enumerator());
+    pt1SelPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
     pt2SelPt = getSelectionPointCoors(physValRectNew, eSelPt.enumerator());
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosRectangle);
+    pTestStep->setConfigValue("P0", m_ptPosRect1);
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 299.750000 : 300.072330, bYAxisTopDown ? 300.072330 : 299.749000);
-    m_rectRectangle = QRectF(QPointF(-24.874369, -25.227922), QSizeF(49.748737, 50.455844));
-    m_pPhysValRectRectangle->setSize(QSizeF(49.748737, 50.455844));
-    m_pPhysValRectRectangle->setCenter(QPointF(bYAxisTopDown ? 299.750000 : 300.072330, bYAxisTopDown ? 300.072330 : 300.250000));
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 299.750000 : 300.072330, bYAxisTopDown ? 300.072330 : 299.749000);
+    m_rectRect1 = QRectF(QPointF(-24.874369, -25.227922), QSizeF(49.748737, 50.455844));
+    m_pPhysValRect1->setSize(QSizeF(49.748737, 50.455844));
+    m_pPhysValRect1->setCenter(QPointF(bYAxisTopDown ? 299.750000 : 300.072330, bYAxisTopDown ? 300.072330 : 300.250000));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 

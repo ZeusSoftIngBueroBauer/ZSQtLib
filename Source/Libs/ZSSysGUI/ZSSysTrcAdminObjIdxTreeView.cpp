@@ -117,8 +117,8 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     setItemDelegateForColumn(
         CModelIdxTreeTrcAdminObjs::EColumnRuntimeInfoDetailLevel, new CComboBoxItemDelegate(m_pModel, this));
 
-    setSelectionBehavior(QAbstractItemView::SelectItems);
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    //setSelectionBehavior(QAbstractItemView::SelectItems);
+    //setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
     setAllColumnsShowFocus(true);
     setEditTriggers(

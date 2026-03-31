@@ -184,8 +184,14 @@ CTest::~CTest()
     delete m_pPhysValLineSmallRectLeftLine;
     m_pPhysValLineSmallRectLeftLine = nullptr;
 
-    delete m_pPhysValRectRectangle;
-    m_pPhysValRectRectangle = nullptr;
+    delete m_pPhysValRect1;
+    m_pPhysValRect1 = nullptr;
+    delete m_pPhysValRect2;
+    m_pPhysValRect2 = nullptr;
+    delete m_pPhysValRect3;
+    m_pPhysValRect3 = nullptr;
+    delete m_pPhysValRect4;
+    m_pPhysValRect4 = nullptr;
     delete m_pPhysValRectBigCrossVerticalBar;
     m_pPhysValRectBigCrossVerticalBar = nullptr;
     delete m_pPhysValRectBigCrossHorizontalBar;
@@ -301,7 +307,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Rectangles
     //-----------
-    m_pPhysValRectRectangle = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRect1 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRect2 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRect3 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRect4 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectBigCrossVerticalBar = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectBigCrossHorizontalBar = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectSmallCross1VerticalBar = new CPhysValRect(*m_pDrawingScene);
@@ -3415,8 +3424,8 @@ void CTest::doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep)
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    EGraphObjType graphObjType = EGraphObjTypeRect;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -3468,8 +3477,8 @@ void CTest::doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep)
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    EGraphObjType graphObjType = EGraphObjTypeEllipse;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -3521,8 +3530,8 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    EGraphObjType graphObjType = EGraphObjTypeText;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -3595,8 +3604,14 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    EGraphObjType graphObjType = EGraphObjTypePolygon;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
+
+    // Could also be Polyline
+    if (i_pTestStep->hasConfigValue("GraphObjType")) {
+        strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+        graphObjType = str2GraphObjType(strGraphObjType);
+    }
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -3644,28 +3659,38 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameConnections;
 
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    EGraphObjType graphObjType = EGraphObjTypeConnectionPoint;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
-
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
-    if (pObjFactory != nullptr) {
-        QPointF ptPos = i_pTestStep->getConfigValue("Point").value<QPointF>();
-        CUnit unit = drawingSize.unit();
-        if (i_pTestStep->hasConfigValue("Point.Unit")) {
-            QString strUnit = i_pTestStep->getConfigValue("Point.Unit").toString();
-            unit = strUnit;
+    CGraphObj* pGraphObjParent = nullptr;
+    QString strKeyInTreeParent;
+    if (i_pTestStep->hasConfigValue("GraphObjKeyInTreeParent")) {
+        strKeyInTreeParent = i_pTestStep->getConfigValue("GraphObjKeyInTreeParent").toString();
+        pGraphObjParent = m_pDrawingScene->findGraphObj(strKeyInTreeParent);
+    }
+    if (pGraphObjParent == nullptr) {
+        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+        if (pObjFactory != nullptr) {
+            QPointF ptPos = i_pTestStep->getConfigValue("Point").value<QPointF>();
+            CUnit unit = drawingSize.unit();
+            if (i_pTestStep->hasConfigValue("Point.Unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Point.Unit").toString();
+                unit = strUnit;
+            }
+            CDrawSettings drawSettings(graphObjType);
+            CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
+            m_pDrawingScene->addGraphObj(pGraphObj);
+            CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObj);
+            if (pGraphObjConnectionPoint != nullptr) {
+                pGraphObjConnectionPoint->setPosition(CPhysValPoint(*m_pDrawingScene, ptPos, unit));
+            }
+            pGraphObj->rename(strGraphObjName);
         }
-        CDrawSettings drawSettings(graphObjType);
-        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
-        m_pDrawingScene->addGraphObj(pGraphObj);
-        CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObj);
-        if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setPosition(CPhysValPoint(*m_pDrawingScene, ptPos, unit));
-        }
-        pGraphObj->rename(strGraphObjName);
+    }
+    else {
+        pGraphObjParent->addConnectionPoint(strGraphObjName, "", ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
     }
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
@@ -3697,8 +3722,8 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameConnections;
 
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
+    EGraphObjType graphObjType = EGraphObjTypeConnectionLine;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
@@ -3976,9 +4001,15 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
+    EGraphObjType graphObjType = EGraphObjTypePolygon;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
+
+    // Could also be Polyline
+    if (i_pTestStep->hasConfigValue("GraphObjType")) {
+        strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+        graphObjType = str2GraphObjType(strGraphObjType);
+    }
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
@@ -4202,9 +4233,9 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameConnections;
 
+    EGraphObjType graphObjType = EGraphObjTypeConnectionLine;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
@@ -4651,7 +4682,7 @@ void CTest::doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*
     CUnit unit = drawingSize.unit();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
@@ -4784,7 +4815,7 @@ void CTest::doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestSt
     CUnit unit = drawingSize.unit();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
@@ -4917,7 +4948,7 @@ void CTest::doTestStepModifyGraphObjTextByDirectMethodCalls(ZS::Test::CTestStep*
     CUnit unit = drawingSize.unit();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeText);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
@@ -5050,7 +5081,7 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
     CUnit unit = drawingSize.unit();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypePolygon);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
@@ -5224,7 +5255,7 @@ void CTest::doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::
     CUnit unit = drawingSize.unit();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
@@ -6184,10 +6215,25 @@ void CTest::initObjectCoors()
     // Rectangles
     //-----------
 
-    m_ptPosRectangle = QPointF();
-    m_rectRectangle = QRectF();
-    *m_pPhysValRectRectangle = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleRectangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosRect1 = QPointF();
+    m_rectRect1 = QRectF();
+    *m_pPhysValRect1 = CPhysValRect(*m_pDrawingScene);
+    m_pPhysValAngleRect1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRect2 = QPointF();
+    m_rectRect2 = QRectF();
+    *m_pPhysValRect2 = CPhysValRect(*m_pDrawingScene);
+    m_pPhysValAngleRect2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRect3 = QPointF();
+    m_rectRect3 = QRectF();
+    *m_pPhysValRect3 = CPhysValRect(*m_pDrawingScene);
+    m_pPhysValAngleRect3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRect4 = QPointF();
+    m_rectRect4 = QRectF();
+    *m_pPhysValRect4 = CPhysValRect(*m_pDrawingScene);
+    m_pPhysValAngleRect4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRectBigCrossVerticalBar = QPointF();
     m_rectRectBigCrossVerticalBar = QRectF();

@@ -107,7 +107,7 @@ CApplication::CApplication(
     m_pTrcAdminObj(nullptr)
 {
     setObjectName("theApp");
-    if (thread()->objectName().isEmpty() == 0){
+    if (thread()->objectName().isEmpty()) {
         thread()->setObjectName("GUIMain");
     }
 

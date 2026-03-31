@@ -61,6 +61,9 @@ class CApplication : public ZS::System::GUI::CGUIApp
 {
     Q_OBJECT
 public: // class methods
+    static QString NameSpace() { return "Apps::Products::MethodTraceClient"; }
+    static QString ClassName() { return "CApplication"; }
+public: // class methods
     static CApplication* GetInstance();
 public: // ctors and dtor
     CApplication(

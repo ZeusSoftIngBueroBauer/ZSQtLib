@@ -1154,7 +1154,7 @@ void CDrawingScene::clear()
         before to the drawing scene. The given graph object will be added as a child
         to the parents index tree entry as well as to the parents graphics item.
 */
-void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGraphObjParent )
+void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1203,8 +1203,9 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObjGroup* i_pGrap
     //m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
     m_pGraphObjsIdxTree->add(i_pGraphObj);
 
-    if (i_pGraphObjParent != nullptr && i_pGraphObj->parent() != i_pGraphObjParent) {
-        i_pGraphObjParent->addToGroup(i_pGraphObj, true);
+    if (i_pGraphObjParent != nullptr && i_pGraphObjParent->isGroup() && i_pGraphObj->parent() != i_pGraphObjParent) {
+        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+        pGraphObjGroupParent->addToGroup(i_pGraphObj, true);
     }
     QObject::connect(
         i_pGraphObj, &CGraphObj::aboutToBeDestroyed,

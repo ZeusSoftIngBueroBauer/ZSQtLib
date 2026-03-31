@@ -186,7 +186,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     ZS::Test::CTestStepGroup* pGrpRectanglesRectangle = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameRect1,
         /* pTSGrpParent */ pGrpRectangles );
     createTestGroupAddStandardShapesRect(pGrpRectanglesRectangle);
     createTestGroupAddStandardShapesRectModifications(pGrpRectanglesRectangle);
@@ -1207,7 +1207,7 @@ void CTest::createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTe
         Decimals: 2
     -----------------------------------------------------------------------*/
 
-    strGraphObjName = c_strGraphObjNameRect;
+    strGraphObjName = c_strGraphObjNameRect1;
     strMthArgs = strGraphObjName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -1216,19 +1216,19 @@ void CTest::createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTe
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRectangle = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_ptPosRect1 = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     QSizeF sizeRectangle(50.0, 50.0);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
-    m_pPhysValRectRectangle->setCenter(m_ptPosRectangle);
+    m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRect1->setSize(sizeRectangle);
+    m_pPhysValRect1->setCenter(m_ptPosRect1);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("Rect", m_pPhysValRectRectangle->toQRectF());
+    pTestStep->setConfigValue("Rect", m_pPhysValRect1->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strGraphObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strGraphObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -1270,7 +1270,7 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    QString strObjName = c_strGraphObjNameRect;
+    QString strObjName = c_strGraphObjNameRect1;
     QString strMethod;
     QString strMthArgs;
 
@@ -1282,31 +1282,31 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
     // setRotationAngle
     //-----------------
 
-    m_physValAngleRectangle.setVal(45.0);
+    m_pPhysValAngleRect1.setVal(45.0);
     strMethod = "setRotationAngle";
-    strMthArgs = m_physValAngleRectangle.toString();
+    strMthArgs = m_pPhysValAngleRect1.toString();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_pPhysValRectRectangle->setAngle(m_physValAngleRectangle);
+    m_pPhysValRect1->setAngle(m_pPhysValAngleRect1);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Angle", m_physValAngleRectangle.toString());
+    pTestStep->setConfigValue("Angle", m_pPhysValAngleRect1.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setWidth
     //---------
 
-    QSizeF sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
+    QSizeF sizeRectangle = m_pPhysValRect1->size().toQSizeF();
     sizeRectangle.setWidth(100.0);
     strMethod = "setWidth";
     strMthArgs = QString::number(sizeRectangle.width()) + " " + strUnit;
@@ -1316,25 +1316,25 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosRectangle = QPointF(317.7, 317.7);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
+    m_ptPosRect1 = QPointF(317.7, 317.7);
+    m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRect1->setSize(sizeRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Width", m_rectRectangle.width());
+    pTestStep->setConfigValue("Width", m_rectRect1.width());
     pTestStep->setConfigValue("Width.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setHeight
     //----------
 
-    sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
+    sizeRectangle = m_pPhysValRect1->size().toQSizeF();
     sizeRectangle.setHeight(100.0);
     strMethod = "setHeight";
     strMthArgs = QString::number(sizeRectangle.height()) + " " + strUnit;
@@ -1344,19 +1344,19 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 300.0 : 335.4, bYAxisTopDown ? 335.4 : 300.0);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 300.0 : 335.4, bYAxisTopDown ? 335.4 : 300.0);
+    m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRect1->setSize(sizeRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Height", m_rectRectangle.width());
+    pTestStep->setConfigValue("Height", m_rectRect1.width());
     pTestStep->setConfigValue("Height.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setSize
@@ -1371,25 +1371,25 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 300.0 : 370.7, bYAxisTopDown ? 370.7 : 300.0);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 300.0 : 370.7, bYAxisTopDown ? 370.7 : 300.0);
+    m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRect1->setSize(sizeRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Size", m_rectRectangle.size());
+    pTestStep->setConfigValue("Size", m_rectRect1.size());
     pTestStep->setConfigValue("Size.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setWidth
     //---------
 
-    sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
+    sizeRectangle = m_pPhysValRect1->size().toQSizeF();
     sizeRectangle.setWidth(50.0);
     strMethod = "setWidth";
     strMthArgs = QString::number(sizeRectangle.width()) + " " + strUnit;
@@ -1399,25 +1399,25 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosRectangle = QPointF(bYAxisTopDown ? 264.6 : 335.4, bYAxisTopDown ? 335.4 : 264.6);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
+    m_ptPosRect1 = QPointF(bYAxisTopDown ? 264.6 : 335.4, bYAxisTopDown ? 335.4 : 264.6);
+    m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRect1->setSize(sizeRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Width", m_rectRectangle.width());
+    pTestStep->setConfigValue("Width", m_rectRect1.width());
     pTestStep->setConfigValue("Width.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // setHeight
     //----------
 
-    sizeRectangle = m_pPhysValRectRectangle->size().toQSizeF();
+    sizeRectangle = m_pPhysValRect1->size().toQSizeF();
     sizeRectangle.setHeight(50.0);
     strMethod = "setHeight";
     strMthArgs = QString::number(sizeRectangle.height()) + " " + strUnit;
@@ -1427,19 +1427,19 @@ void CTest::createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestSte
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosRectangle = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
+    m_ptPosRect1 = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
+    m_pPhysValRect1->setSize(sizeRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Height", m_rectRectangle.width());
+    pTestStep->setConfigValue("Height", m_rectRect1.width());
     pTestStep->setConfigValue("Height.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
@@ -4130,7 +4130,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
-    QString strGraphObjType;
+    QString strGraphObjKeyInTreeParent;
     QString strGraphObjName;
     QString strMethod;
     QString strMthArgs;
@@ -4140,11 +4140,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Connections",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    // Add Rectangle
-    //--------------
+    // Rectangle 1
+    //------------
 
-    strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    strGraphObjName = c_strGraphObjNameRect;
+    strGraphObjName = c_strGraphObjNameRect1;
     strMethod = "DrawingScene.addGraphObj";
     strMthArgs = strGraphObjName;
     pTestStep = new ZS::Test::CTestStep(
@@ -4154,25 +4153,105 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRectangle = QPointF(175.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
-    QSizeF sizeRectangle(50.0, 50.0);
-    m_rectRectangle = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
-    m_pPhysValRectRectangle->setSize(sizeRectangle);
-    m_pPhysValRectRectangle->setCenter(m_ptPosRectangle);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    m_ptPosRect1 = QPointF(175.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
+    QSizeF sizeRect1(50.0, 50.0);
+    m_rectRect1 = QRectF(QPointF(-sizeRect1.width()/2.0, -sizeRect1.height()/2.0), sizeRect1);
+    m_pPhysValRect1->setSize(sizeRect1);
+    m_pPhysValRect1->setCenter(m_ptPosRect1);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("Rect", m_pPhysValRectRectangle->toQRectF());
+    pTestStep->setConfigValue("Rect", m_pPhysValRect1->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
-        strGraphObjName, m_ptPosRectangle, m_rectRectangle, *m_pPhysValRectRectangle, false, iResultValuesPrecision));
+        strGraphObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Rectangle 2
+    //------------
+
+    strGraphObjName = c_strGraphObjNameRect2;
+    strMethod = "DrawingScene.addGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpAddCncts,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    m_ptPosRect2 = QPointF(175.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
+    QSizeF sizeRect2(50.0, 50.0);
+    m_rectRect2 = QRectF(QPointF(-sizeRect2.width()/2.0, -sizeRect2.height()/2.0), sizeRect2);
+    m_pPhysValRect2->setSize(sizeRect2);
+    m_pPhysValRect2->setCenter(m_ptPosRect2);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Rect", m_pPhysValRect2->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosRect2, m_rectRect2, *m_pPhysValRect2, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Rectangle 3
+    //------------
+
+    strGraphObjName = c_strGraphObjNameRect3;
+    strMethod = "DrawingScene.addGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpAddCncts,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    m_ptPosRect3 = QPointF(600.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
+    QSizeF sizeRect3(50.0, 50.0);
+    m_rectRect3 = QRectF(QPointF(-sizeRect3.width()/2.0, -sizeRect3.height()/2.0), sizeRect3);
+    m_pPhysValRect3->setSize(sizeRect3);
+    m_pPhysValRect3->setCenter(m_ptPosRect3);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Rect", m_pPhysValRect3->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Rectangle 4
+    //------------
+
+    strGraphObjName = c_strGraphObjNameRect4;
+    strMethod = "DrawingScene.addGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpAddCncts,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    m_ptPosRect4 = QPointF(600.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
+    QSizeF sizeRect4(50.0, 50.0);
+    m_rectRect4 = QRectF(QPointF(-sizeRect4.width()/2.0, -sizeRect4.height()/2.0), sizeRect4);
+    m_pPhysValRect4->setSize(sizeRect4);
+    m_pPhysValRect4->setCenter(m_ptPosRect4);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Rect", m_pPhysValRect4->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosRect4, m_rectRect4, *m_pPhysValRect4, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point 1
     //---------------------
 
-    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionPoint);
+    strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1);
     strGraphObjName = c_strGraphObjNameConnectionPoint1;
     strMethod = "DrawingScene.addGraphObj";
     strMthArgs = strGraphObjName;
@@ -4185,10 +4264,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
     m_ptPosConnectionPoint1 = QPointF(200.0, 250.0);
     *m_pPhysValConnectionPoint1 = QPointF(200.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjKeyInTreeParent", strGraphObjKeyInTreeParent);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("Point", m_pPhysValConnectionPoint1->toQPointF());
-    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionPoint(

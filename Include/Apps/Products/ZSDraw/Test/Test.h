@@ -250,7 +250,10 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
     // Rectangles
     //-----------
-    const QString c_strGraphObjNameRect = "Rect";
+    const QString c_strGraphObjNameRect1 = "Rect-1";
+    const QString c_strGraphObjNameRect2 = "Rect-2";
+    const QString c_strGraphObjNameRect3 = "Rect-3";
+    const QString c_strGraphObjNameRect4 = "Rect-4";
     const QString c_strGraphObjNameBigCrossVerticalBar = "BigCross-VerticalBar";
     const QString c_strGraphObjNameBigCrossHorizontalBar = "BigCross-HorizontalBar";
     const QString c_strGraphObjNameSmallCross1VerticalBar = "SmallCross1-VerticalBar";
@@ -521,11 +524,26 @@ protected: // instance members
 
     // Rectangles
     //-----------
-    // Rectangle
-    QPointF m_ptPosRectangle;
-    QRectF m_rectRectangle;
-    ZS::Draw::CPhysValRect* m_pPhysValRectRectangle = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleRectangle;
+    // Rectangle 1
+    QPointF m_ptPosRect1;
+    QRectF m_rectRect1;
+    ZS::Draw::CPhysValRect* m_pPhysValRect1 = nullptr;
+    ZS::PhysVal::CPhysVal m_pPhysValAngleRect1;
+    // Rectangle 2
+    QPointF m_ptPosRect2;
+    QRectF m_rectRect2;
+    ZS::Draw::CPhysValRect* m_pPhysValRect2 = nullptr;
+    ZS::PhysVal::CPhysVal m_pPhysValAngleRect2;
+    // Rectangle 3
+    QPointF m_ptPosRect3;
+    QRectF m_rectRect3;
+    ZS::Draw::CPhysValRect* m_pPhysValRect3 = nullptr;
+    ZS::PhysVal::CPhysVal m_pPhysValAngleRect3;
+    // Rectangle 4
+    QPointF m_ptPosRect4;
+    QRectF m_rectRect4;
+    ZS::Draw::CPhysValRect* m_pPhysValRect4 = nullptr;
+    ZS::PhysVal::CPhysVal m_pPhysValAngleRect4;
     // Rect-BigCross-VerticalBar
     QPointF m_ptPosRectBigCrossVerticalBar;
     QRectF m_rectRectBigCrossVerticalBar;

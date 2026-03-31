@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -165,44 +165,6 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
 }
 
 //------------------------------------------------------------------------------
-CGraphObjConnectionPoint::CGraphObjConnectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    const QString& i_strObjName,
-    const SGraphObjSelectionPoint& i_selPt) :
-//------------------------------------------------------------------------------
-    CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
-        /* type                */ EGraphObjTypeConnectionPoint,
-        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
-        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
-    QGraphicsEllipseItem(),
-    m_anchorLayoutDscr(EGraphObjTypeConnectionPoint, i_strObjName, i_selPt),
-    m_physValRectOrig(*m_pDrawingScene),
-    m_physValRectScaled(*m_pDrawingScene),
-    m_physValRectScaledAndRotated(*m_pDrawingScene)
-{
-    // Just incremented by the ctor but not decremented by the dtor.
-    // Used to create a unique name for newly created objects of this type.
-    s_iInstCount++;
-
-    createTraceAdminObjs("Connections::" + ClassName());
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ObjName: " + i_strObjName + ", SelPt {" + i_selPt.toString(true) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
-
-    init(i_strObjName);
-}
-
-//------------------------------------------------------------------------------
 CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
 //------------------------------------------------------------------------------
 {
@@ -250,13 +212,13 @@ void CGraphObjConnectionPoint::init(const QString& i_strObjName)
     addLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
 
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
+    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameCenter) {
@@ -510,7 +472,7 @@ public: // instance methods
     @param [in] i_physValRect
         Rectangle to be set in parent coordinates, depending on the Y scale orientation
         relative to the top left or bottom left corner of parent item's bounding rectangle.
-        The passed rectangle may be rotated (the angle may be in range 0 .. 360°).
+        The passed rectangle may be rotated (the angle may be in range 0 .. 360Â°).
 */
 void CGraphObjConnectionPoint::setRect( const CPhysValRect& i_physValRect )
 //------------------------------------------------------------------------------
@@ -1370,6 +1332,30 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "AnchoredTo {" + i_anchorLayoutDscr.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setLinkedObject",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_anchorLayoutDscr = i_anchorLayoutDscr;
+    m_anchorLayoutDscr.m_graphObjType = EGraphObjTypeConnectionPoint;
+    m_anchorLayoutDscr.m_strKey = m_strKeyInTree;
+    updatePosition();
+    if (m_pTree != nullptr) {
+        m_pTree->onTreeEntryChanged(this);
+    }
+}
+
+//------------------------------------------------------------------------------
 CGraphObj* CGraphObjConnectionPoint::linkedObject() const
 //------------------------------------------------------------------------------
 {
@@ -1430,8 +1416,7 @@ void CGraphObjConnectionPoint::setSelectionPoint(const SGraphObjSelectionPoint& 
         /* strMethod    */ "setSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_anchorLayoutDscr.m_selPt1 != i_selPt)
-    {
+    if (m_anchorLayoutDscr.m_selPt1 != i_selPt) {
         m_anchorLayoutDscr.m_selPt1 = i_selPt;
         updatePosition();
         if (m_pTree != nullptr) {
@@ -2685,11 +2670,11 @@ void CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged(CGraphObj*
                 break;
             }
             case ESelectionPoint::RotateTop: {
-                // The angle returned by getAngleDegree is counted counterclockwise with 0° at 3 o'clock.
+                // The angle returned by getAngleDegree is counted counterclockwise with 0Â° at 3 o'clock.
                 double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
-                // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
+                // setRotationAngle expects the angle counted clockwise with 0Â° at 3 o'clock.
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateTop is at 270°.
+                // RotateTop is at 270Â°.
                 fAngle_degree -= 270.0;
                 fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
                 setRotationAngle(fAngle_degree);
@@ -2698,7 +2683,7 @@ void CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged(CGraphObj*
             case ESelectionPoint::RotateBottom: {
                 double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
                 fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateBottom is at 90°.
+                // RotateBottom is at 90Â°.
                 fAngle_degree -= 90.0;
                 fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
                 setRotationAngle(fAngle_degree);
@@ -3024,7 +3009,7 @@ void CGraphObjConnectionPoint::updatePosition()
     }
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
-    // Move text item so that its center point is at the line end point of the anchor line.
+    // Move item so that its center point is at the line end point of the anchor line.
     QRectF rctBoundingThis = getBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

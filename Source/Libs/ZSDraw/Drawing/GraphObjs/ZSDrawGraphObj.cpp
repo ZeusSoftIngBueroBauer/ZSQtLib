@@ -234,7 +234,7 @@ CGraphObj::~CGraphObj()
     } catch (...) {
     }
 
-    if (m_arpSelPtsBoundingRect.size() > 0) {
+    if (!m_arpSelPtsBoundingRect.isEmpty()) {
         for (int idxSelPt = m_arpSelPtsBoundingRect.size()-1; idxSelPt >= 0; idxSelPt--) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
             if (pGraphObjSelPt != nullptr) {
@@ -249,7 +249,7 @@ CGraphObj::~CGraphObj()
         }
     }
 
-    if (m_arpSelPtsPolygon.size() > 0) {
+    if (!m_arpSelPtsPolygon.isEmpty()) {
         for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
             if (pGraphObjSelPt != nullptr) {
@@ -257,7 +257,7 @@ CGraphObj::~CGraphObj()
                 try {
                     delete pGraphObjSelPt;
                 }
-                catch(...) {
+                catch (...) {
                 }
                 pGraphObjSelPt = nullptr;
             }
@@ -271,7 +271,7 @@ CGraphObj::~CGraphObj()
             try {
                 delete pGraphObjLabel;
             }
-            catch(...) {
+            catch (...) {
             }
             pGraphObjLabel = nullptr;
         }
@@ -284,7 +284,7 @@ CGraphObj::~CGraphObj()
             try {
                 delete pGraphObjLabel;
             }
-            catch(...) {
+            catch (...) {
             }
             pGraphObjLabel = nullptr;
         }
@@ -294,24 +294,19 @@ CGraphObj::~CGraphObj()
     // the dictionary, the index list, and the sorted object pools of the drawing scene.
     // But selection points and labels have only been added to the item list of the graphics scene
     // and therefore don't have valid keys in the index tree.
-    //if( m_pDrawingScene != nullptr )
-    //{
-    //    if( !m_strKeyInTree.isEmpty() )
-    //    {
-    //        try
-    //        {
+    //if (m_pDrawingScene != nullptr) {
+    //    if (!m_strKeyInTree.isEmpty()) {
+    //        try {
     //            m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
     //        }
-    //        catch(...)
-    //        {
+    //        catch (...) {
     //        }
     //    }
-    //    else
-    //    {
+    //    else {
     //        //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     //        //m_pDrawingScene->removeItem(pGraphicsItem);
     //    }
-    //} // if( m_pDrawingScene != nullptr )
+    //}
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -5949,9 +5944,6 @@ void CGraphObj::showLabel(const QString& i_strName)
         pGraphObjLabel = new CGraphObjLabel(
             m_pDrawingScene, i_strName, linkedChildDscr.m_strText, linkedChildDscr.m_selPt1);
         m_hshpLabels.insert(i_strName, pGraphObjLabel);
-        QObject::connect(
-            pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
-            this, &CGraphObj::onLabelAboutToBeDestroyed);
         // Please note that labels should not belong as child to the graphics items
         // for which the labels are created. Otherwise the "boundingRect" call of groups
         // (which implicitly calls childrenBoundingRect) does not work as expected as
@@ -5962,6 +5954,9 @@ void CGraphObj::showLabel(const QString& i_strName)
         pGraphObjLabel->setVisible(true);
         pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(linkedChildDscr.m_polarCoorsToLinkedSelPt);
         linkedChildDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLines() : pGraphObjLabel->hideAnchorLines();
+        QObject::connect(
+            pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
+            this, &CGraphObj::onLabelAboutToBeDestroyed);
         // The labels anchor line should be drawn before the object is drawn.
         // Otherwise the anchor lines may cover the painting of this object.
         emit_labelChanged(i_strName);
@@ -6867,6 +6862,24 @@ bool CGraphObj::addConnectionPoint(
             EGraphObjTypeConnectionPoint, i_strName, i_strText,
             SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
         m_hshConnectionPointsDscrs.insert(i_strName, linkedChildDscr);
+        CGraphObjConnectionPoint* pGraphObjCnctPt = new CGraphObjConnectionPoint(m_pDrawingScene, i_strName);
+        pGraphObjCnctPt->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+        CPhysValSize physValSize(*m_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+        physValSize = m_pDrawingScene->convert(physValSize);
+        pGraphObjCnctPt->setFixedSize(physValSize);
+        m_hshpConnectionPoints.insert(i_strName, pGraphObjCnctPt);
+        // Please note that connection points should not belong as child to the graphics items
+        // for which the points are created. Otherwise the "boundingRect" call of groups
+        // (which implicitly calls childrenBoundingRect) does not work as expected as
+        // the connection points would be included.
+        m_pDrawingScene->addItem(pGraphObjCnctPt);
+        m_pDrawingScene->getGraphObjsIdxTree()->add(pGraphObjCnctPt, this);
+        pGraphObjCnctPt->setVisible(true);
+        pGraphObjCnctPt->setLinkedObject(linkedChildDscr);
+        //linkedChildDscr.m_bShowAnchorLine ? pGraphObjCnctPt->showAnchorLines() : pGraphObjCnctPt->hideAnchorLines();
+        QObject::connect(
+            pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
+            this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
         emit_connectionPointAdded(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);

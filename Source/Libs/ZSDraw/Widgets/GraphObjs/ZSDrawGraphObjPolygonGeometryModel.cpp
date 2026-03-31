@@ -1672,9 +1672,11 @@ void CModelGraphObjPolygonGeometry::updateXYValueSizeHint()
     size.setWidth(size.width() + 40); // Add additional space for spin box arrows
     if (m_sizeXYValSizeHint != size) {
         m_sizeXYValSizeHint = size;
-        QModelIndex modelIdxTL = index(0, EColumnXVal);
-        QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
-        emit_dataChanged(modelIdxTL, modelIdxBR);
+        if (!m_arLabelSettings.isEmpty()) {
+            QModelIndex modelIdxTL = index(0, EColumnXVal);
+            QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
+            emit_dataChanged(modelIdxTL, modelIdxBR);
+        }
     }
 }
 

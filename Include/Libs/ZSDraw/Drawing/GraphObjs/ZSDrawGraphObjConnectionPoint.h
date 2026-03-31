@@ -61,10 +61,6 @@ public: // ctors and dtor
     CGraphObjConnectionPoint(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strObjName = "");
-    CGraphObjConnectionPoint(
-        CDrawingScene* i_pDrawingScene,
-        const QString& i_strObjName,
-        const SGraphObjSelectionPoint& i_selPt);
     ~CGraphObjConnectionPoint() override;
 protected: // initialisation in ctors
     void init(const QString& i_strObjName);
@@ -135,6 +131,7 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
+    void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
     CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
     QString path() const override;

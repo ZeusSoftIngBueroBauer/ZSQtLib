@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSSys/ZSSysAux.h"
@@ -326,13 +327,22 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
         QGraphicsItem* pGraphicsItem = i_value.value<QGraphicsItem*>();
         if (pGraphicsItem != nullptr) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            str += QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+            str += " {" + QString(pGraphObj == nullptr ? "null" : pGraphObj->path()) + "}";
         } else {
-            str += "null";
+            str += " {null}";
+        }
+    }
+    else if ((i_change == QGraphicsItem::ItemSceneChange) || (i_change == QGraphicsItem::ItemSceneHasChanged)) {
+        QGraphicsScene* pGraphicsScene = i_value.value<QGraphicsScene*>();
+        if (pGraphicsScene != nullptr) {
+            CDrawingScene* pDrawingScene = dynamic_cast<CDrawingScene*>(pGraphicsScene);
+            str += " {" + QString(pDrawingScene == nullptr ? "null" : pDrawingScene->objectName()) + "}";
+        } else {
+            str += " {null}";
         }
     }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    else if (i_value.type() == QVariant::Point) {
+    if (i_value.type() == QVariant::Point) {
         str += " {" + qPoint2Str(i_value.toPoint()) + "}";
     } else if (i_value.type() == QVariant::PointF) {
         str += " {" + qPoint2Str(i_value.toPointF()) + "}";
@@ -343,7 +353,7 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
     } else if (i_value.type() == QVariant::Cursor) {
         str += " {Pos {" + qPoint2Str(i_value.value<QCursor>().pos()) + "}}";
 #else
-    else if (i_value.typeId() == QMetaType::QPoint) {
+    if (i_value.typeId() == QMetaType::QPoint) {
         str += " {" + qPoint2Str(i_value.toPoint()) + "}";
     } else if (i_value.typeId() == QMetaType::QPointF) {
         str += " {" + qPoint2Str(i_value.toPointF()) + "}";
@@ -355,7 +365,8 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
         str += " {Pos {" + qPoint2Str(i_value.value<QCursor>().pos()) + "}}";
 #endif
     } else {
-        str += " {" + i_value.toString() + "}";
+        QString strVal = i_value.toString();
+        str += strVal.isEmpty() ? "" : " {" + strVal + "}";
     }
     return str;
 }

@@ -25,7 +25,6 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSPhysVal/ZSPhysVal.h"
@@ -1857,12 +1856,25 @@ SAnchorLayoutDscr::SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other) :
 QString SAnchorLayoutDscr::toString() const
 //------------------------------------------------------------------------------
 {
-    return graphObjType2Str(m_graphObjType) + ", Key: " + m_strKey +
-        ", SelPt1 {" + m_selPt1.toString() + "}" +
-        ", SelPt2 {" + m_selPt2.toString() + "}" +
-        ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
-        ", Visible: " + bool2Str(m_bIsVisible) +
-        ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
+    QString str;
+    if (m_selPt1.isValid() || m_selPt2.isValid()) {
+        if (m_selPt1.isValid()) {
+            str = "SelPt1 {" + m_selPt1.toString(true) + "}";
+        }
+        if (m_selPt2.isValid()) {
+            if (!str.isEmpty()) {
+                str += ", ";
+            }
+            str += "SelPt2 {" + m_selPt2.toString(true) + "}";
+        }
+        str +=  ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
+                ", Visible: " + bool2Str(m_bIsVisible) +
+                ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
+    }
+    else {
+        str = "-";
+    }
+    return str;
 }
 
 } // namespace Draw

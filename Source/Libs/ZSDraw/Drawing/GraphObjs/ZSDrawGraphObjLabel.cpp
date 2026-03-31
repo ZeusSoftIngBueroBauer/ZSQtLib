@@ -1319,7 +1319,7 @@ void CGraphObjLabel::updatePosition()
     }
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
-    // Move text item so that its center point is at the line end point of the anchor line.
+    // Move item so that its center point is at the line end point of the anchor line.
     QRectF rctBoundingThis = getBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
