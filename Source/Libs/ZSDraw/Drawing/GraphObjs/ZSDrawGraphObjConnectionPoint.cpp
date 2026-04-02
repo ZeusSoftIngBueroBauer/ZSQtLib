@@ -1346,10 +1346,28 @@ void CGraphObjConnectionPoint::setLinkedObject(const SAnchorLayoutDscr& i_anchor
         /* strMethod    */ "setLinkedObject",
         /* strAddInfo   */ strMthInArgs );
 
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        QObject::disconnect(
+            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
+        QObject::disconnect(
+            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+            this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+    }
     m_anchorLayoutDscr = i_anchorLayoutDscr;
     m_anchorLayoutDscr.m_graphObjType = EGraphObjTypeConnectionPoint;
     m_anchorLayoutDscr.m_strKey = m_strKeyInTree;
+
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        QObject::connect(
+            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
+        QObject::connect(
+            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+            this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+    }
     updatePosition();
+
     if (m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
@@ -1417,7 +1435,24 @@ void CGraphObjConnectionPoint::setSelectionPoint(const SGraphObjSelectionPoint& 
         /* strAddInfo   */ strMthInArgs );
 
     if (m_anchorLayoutDscr.m_selPt1 != i_selPt) {
+        if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+            QObject::disconnect(
+                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
+            QObject::disconnect(
+                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+        }
         m_anchorLayoutDscr.m_selPt1 = i_selPt;
+
+        if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+            QObject::connect(
+                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
+            QObject::connect(
+                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+        }
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -2358,6 +2393,65 @@ void CGraphObjConnectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 }
 
 /*==============================================================================
+protected: // overridable slots of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
+void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
+
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
+    m_bPositionUpdateOnParentGeometryChanged = true;
+    updatePosition();
+    m_bPositionUpdateOnParentGeometryChanged = false;
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
+    emit_geometryOnSceneChanged();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    // The labels anchor line should be drawn above the parent object.
+    // Otherwise the anchor lines may be covered by the painting of the parent object.
+    double fZValueParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetConnectionPoints);
+}
+
+/*==============================================================================
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -2486,215 +2580,6 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
-}
-
-/*==============================================================================
-protected: // overridable slots of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Reimplements the method of base class CGraphObj.
-*/
-void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
-//------------------------------------------------------------------------------
-{
-    if (m_iIgnoreParentGeometryChange > 0) {
-        return;
-    }
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
-        /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
-    }
-
-    bool bGeometryOnSceneChanged = false;
-
-    {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
-
-        if (i_pGraphObjParent->isGroup()) {
-            CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
-            if (i_bParentOfParentChanged) {
-                initParentTransform();
-                updateTransformedCoorsOnParentGeometryChanged();
-            }
-            CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-                setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
-            }
-            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-                setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
-            }
-
-            // The relative distance of the center point to the top left or bottom left corner
-            // of the parent's bounding rectangle should remain the same.
-            CPhysValRect physValRect = getPhysValRectScaled(m_physValRectOrig);
-            setPhysValRectScaled(physValRect);
-            physValRect.setAngle(m_physValRotationAngle);
-            setPhysValRectScaledAndRotated(physValRect);
-
-            QPointF ptPosPrev = pos();
-
-            QRectF rectF;
-            CPhysVal physValAngle;
-            QPointF ptPos = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
-
-            // Prepare the item for a geometry change. This function must be called before
-            // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
-            QGraphicsItem_prepareGeometryChange();
-
-            {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
-                CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-
-                // Set the rectangle in local coordinate system.
-                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
-                QGraphicsEllipseItem_setRect(rectF);
-
-                // Please note that QGraphicsRectItem::setRect did not update the position of the
-                // item in the parent. This has to be done "manually" afterwards.
-
-                // Move the object to the parent position.
-                // This has to be done after resizing the item which updates the local coordinates
-                // of the item with origin (0/0) at the center point.
-                // "setPos" will trigger an itemChange call which will update the position of the
-                // selection points and labels. To position the selection points and labels correctly
-                // the local coordinate system must be up-to-date.
-                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
-                // If the position is not changed, itemChange is not called with PositionHasChanged and
-                // the position of the arrow heads will not be updated. We got to do this here "manually".
-                if (ptPos != ptPosPrev) {
-                    QGraphicsItem_setPos(ptPos);
-                }
-            }
-            // If the geometry of the parent on the scene of this item changes, also the geometry
-            // on the scene of this item is changed.
-            bGeometryOnSceneChanged = true;
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
-    }
-
-    // Emit signal after updated position info has been traced.
-    if (bGeometryOnSceneChanged) {
-        emit_geometryOnSceneChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Reimplements the method of base class CGraphObj.
-*/
-void CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pSelectionPoint->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onSelectionPointGeometryOnSceneChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QPointF ptPosThis = pos();
-    CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
-    QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
-    QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
-    QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
-    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValPointParentSelPt(*m_pDrawingScene);
-    if (parentGroup() != nullptr) {
-        physValPointParentSelPt = parentGroup()->convert(ptParentPosSelPt);
-    }
-    else {
-        physValPointParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
-    }
-
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
-    if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        // Moving a selection point will modify the shape of the object and the position
-        // of all other selection points got to be updated. If the position of the other
-        // selection points will be changed, those selection points are emitting the
-        // geometryOnSceneChanged signal whereupon this slot method would be called again
-        // for each other selection point. This will not end up in an endless loop but
-        // is useless and anything else but performant. So the slot will be temporarily
-        // disconnected from the geometryOnSceneChanged signal of the selection points.
-        disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
-
-        switch (selPt.m_selPt) {
-            case ESelectionPoint::TopLeft: {
-                setTopLeft(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::TopRight: {
-                setTopRight(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::BottomRight: {
-                setBottomRight(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::BottomLeft: {
-                setBottomLeft(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::TopCenter: {
-                setHeightByMovingTopCenter(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::RightCenter: {
-                setWidthByMovingRightCenter(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::BottomCenter: {
-                setHeightByMovingBottomCenter(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::LeftCenter: {
-                setWidthByMovingLeftCenter(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::Center: {
-                setCenter(physValPointParentSelPt);
-                break;
-            }
-            case ESelectionPoint::RotateTop: {
-                // The angle returned by getAngleDegree is counted counterclockwise with 0° at 3 o'clock.
-                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
-                // setRotationAngle expects the angle counted clockwise with 0° at 3 o'clock.
-                fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateTop is at 270°.
-                fAngle_degree -= 270.0;
-                fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
-                setRotationAngle(fAngle_degree);
-                break;
-            }
-            case ESelectionPoint::RotateBottom: {
-                double fAngle_degree = ZS::Draw::getAngleDegree(ptPosThis, ptParentPosSelPt);
-                fAngle_degree = ZS::System::Math::toClockWiseAngleDegree(fAngle_degree);
-                // RotateBottom is at 90°.
-                fAngle_degree -= 90.0;
-                fAngle_degree = ZS::System::Math::normalizeAngleInDegree(fAngle_degree);
-                setRotationAngle(fAngle_degree);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-        connectGeometryOnSceneChangedSlotWithSelectionPoints();
-    }
 }
 
 /*==============================================================================

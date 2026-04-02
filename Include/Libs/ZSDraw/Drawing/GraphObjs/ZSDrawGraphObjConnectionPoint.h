@@ -171,11 +171,11 @@ protected: // overridables of base class QGraphicsItem
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
-protected: // overridables of base class QGraphicsItem
-    QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
     void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+    virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent) override;
+protected: // overridables of base class QGraphicsItem
+    QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 public: // must overridables of base class CGraphObj
     void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     void updateTransformedCoorsOnParentGeometryChanged() override;

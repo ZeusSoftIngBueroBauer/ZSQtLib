@@ -738,12 +738,14 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
-    CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
-    virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints(const QString& i_strName) const;
-    virtual bool isConnectionPointAdded(const QString& i_strName) const;
-    virtual bool addConnectionPoint(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
-    virtual bool addConnectionPoint(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt);
+    //CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
+    //SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
+    //virtual bool isConnectionPointAdded(const QString& i_strName) const;
+    QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
+    QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, int i_idxPt) const;
+    virtual QString addConnectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual QString addConnectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
     virtual bool removeConnectionPoint(const QString& i_strName);
     virtual bool renameConnectionPoint(const QString& i_strName, const QString& i_strNameNew);
     virtual void setConnectionPointAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);

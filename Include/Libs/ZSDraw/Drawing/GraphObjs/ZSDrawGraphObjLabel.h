@@ -144,21 +144,21 @@ protected: // must overridables of base class CGraphObj
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
+    virtual void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 public slots: // overridables of base class CGraphObj
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    virtual void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
+    virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent) override;
 protected: // overridables of base class QGraphicsItem
-    virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+    virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable auxiliary instance methods
     virtual void updatePosition();
     virtual void updatePolarCoorsToLinkedSelPt();

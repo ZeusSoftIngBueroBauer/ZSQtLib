@@ -6748,28 +6748,28 @@ bool CGraphObj::removeGeometryLabel(const QString& i_strName)
 public: // overridables (connection points)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Returns the connection point for the given name.
-*/
-CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName) const
-//------------------------------------------------------------------------------
-{
-    return m_hshpConnectionPoints.value(i_strName, nullptr);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the connection point descriptor for the given name.
-*/
-SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
-//------------------------------------------------------------------------------
-{
-    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SAnchorLayoutDscr());
-    CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
-    if (pGraphObjConnectionPoint != nullptr) {
-        linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint();
-    }
-    return linkedChildDscr;
-}
+////------------------------------------------------------------------------------
+///*! @brief Returns the connection point for the given name.
+//*/
+//CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName) const
+////------------------------------------------------------------------------------
+//{
+//    return m_hshpConnectionPoints.value(i_strName, nullptr);
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Returns the connection point descriptor for the given name.
+//*/
+//SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
+////------------------------------------------------------------------------------
+//{
+//    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SAnchorLayoutDscr());
+//    CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
+//    if (pGraphObjConnectionPoint != nullptr) {
+//        linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint();
+//    }
+//    return linkedChildDscr;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the list of the possible selection points a connection point may be anchored to.
@@ -6787,20 +6787,20 @@ SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strNa
         If PolygonPoint is contained in the list of returned selection points the possible
         anchor points depend on the number of line points of the polygon or polyline.
 */
-QList<SGraphObjSelectionPoint> CGraphObj::getPossibleConnectionPointAnchorPoints(const QString& i_strName) const
-//------------------------------------------------------------------------------
-{
-    static QList<SGraphObjSelectionPoint> s_arSelPts;
-    if (s_arSelPts.isEmpty()) {
-        s_arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObj*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
-    }
-    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
-    if (s_hshSelPtsPredefined.isEmpty()) {
-        s_hshSelPtsPredefined.insert(c_strLabelName, s_arSelPts);
-    }
-    return s_hshSelPtsPredefined.value(i_strName, QList<SGraphObjSelectionPoint>());
-}
+//QList<SGraphObjSelectionPoint> CGraphObj::getPossibleConnectionPointAnchorPoints(const QString& i_strName) const
+////------------------------------------------------------------------------------
+//{
+//    static QList<SGraphObjSelectionPoint> s_arSelPts;
+//    if (s_arSelPts.isEmpty()) {
+//        s_arSelPts.append(SGraphObjSelectionPoint(
+//            const_cast<CGraphObj*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+//    }
+//    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
+//    if (s_hshSelPtsPredefined.isEmpty()) {
+//        s_hshSelPtsPredefined.insert(c_strLabelName, s_arSelPts);
+//    }
+//    return s_hshSelPtsPredefined.value(i_strName, QList<SGraphObjSelectionPoint>());
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns whether a label with the passed name has been added to the
@@ -6811,99 +6811,43 @@ QList<SGraphObjSelectionPoint> CGraphObj::getPossibleConnectionPointAnchorPoints
 
     @return true if the given name belongs to the list of text labels, false otherwise.
 */
-bool CGraphObj::isConnectionPointAdded(const QString& i_strName) const
-//------------------------------------------------------------------------------
-{
-    return m_hshConnectionPointsDscrs.contains(i_strName);
-}
+//bool CGraphObj::isConnectionPointAdded(const QString& i_strName) const
+////------------------------------------------------------------------------------
+//{
+//    return m_hshConnectionPointsDscrs.contains(i_strName);
+//}
 
 //------------------------------------------------------------------------------
-/*! @brief Adds a new connection point with the given name anchored to the given
-           selection point at the bounding rectangle.
+/*! @brief Generates a unique name for a connection point.
 
-    Only the descriptor is added but the connection point is not added to the graphics
-    scene and remains invisible. To add the connection point to the graphics scene,
-    the connection point must be shown.
-
-    @param [in] i_strName
-        Name of the connection point. The name must be unique otherwise no connection
-        point is created.
-    @param [in] i_strText (optional)
-        If not empty defines the text to be shown.
     @param [in] i_selPtType
         Selection point type.
         Range [BoundingRectangle]
     @param [in] i_selPt
         Selection point the connection point should be anchored to.
 
-    @return true, if the connection point descriptor has been created and added, false otherwise.
+    @return Unique name for a connection point.
 */
-bool CGraphObj::addConnectionPoint(
-    const QString& i_strName, const QString& i_strText,
-    ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
+QString CGraphObj::generateUniqueConnectionPointName(
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strText +
-            ", " + CEnumSelectionPointType(i_selPtType).toString() +
-            ", " + CEnumSelectionPoint(i_selPt).toString();
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::addConnectionPoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bCanAdd = !m_hshConnectionPointsDscrs.contains(i_strName);
-    if (bCanAdd) {
-        SAnchorLayoutDscr linkedChildDscr(
-            EGraphObjTypeConnectionPoint, i_strName, i_strText,
-            SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
-        m_hshConnectionPointsDscrs.insert(i_strName, linkedChildDscr);
-        CGraphObjConnectionPoint* pGraphObjCnctPt = new CGraphObjConnectionPoint(m_pDrawingScene, i_strName);
-        pGraphObjCnctPt->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
-        CPhysValSize physValSize(*m_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
-        physValSize = m_pDrawingScene->convert(physValSize);
-        pGraphObjCnctPt->setFixedSize(physValSize);
-        m_hshpConnectionPoints.insert(i_strName, pGraphObjCnctPt);
-        // Please note that connection points should not belong as child to the graphics items
-        // for which the points are created. Otherwise the "boundingRect" call of groups
-        // (which implicitly calls childrenBoundingRect) does not work as expected as
-        // the connection points would be included.
-        m_pDrawingScene->addItem(pGraphObjCnctPt);
-        m_pDrawingScene->getGraphObjsIdxTree()->add(pGraphObjCnctPt, this);
-        pGraphObjCnctPt->setVisible(true);
-        pGraphObjCnctPt->setLinkedObject(linkedChildDscr);
-        //linkedChildDscr.m_bShowAnchorLine ? pGraphObjCnctPt->showAnchorLines() : pGraphObjCnctPt->hideAnchorLines();
-        QObject::connect(
-            pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
-            this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
-        emit_connectionPointAdded(i_strName);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
+    QString strBaseName = CEnumSelectionPoint(i_selPt1).toString() + "-";
+    int idxPt = 1;
+    QString strName = strBaseName + QString::number(idxPt);
+    while (m_hshConnectionPointsDscrs.contains(strName)) {
+        idxPt++;
+        strName = strBaseName + QString::number(idxPt);
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bCanAdd);
-    }
-    return bCanAdd;
+    return strName;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Adds a new connection point with the given name anchored to the given
-           polygon shape point.
+/*! @brief Generates a unique name for a connection point.
 
-    Only the descriptor is added but the connection point is not added to the graphics
-    scene and remains invisible. To add the connection point to the graphics scene,
-    the connection point must be shown.
-
-    @param [in] i_strName
-        Name of the connection point. The name must be unique otherwise no connection
-        point is created.
-    @param [in] i_strText (optional)
-        If not empty defines the text to be shown.
     @param [in] i_selPtType
         Selection point type.
         Range [PolygonPoint, LineCenterPoint]
@@ -6912,16 +6856,45 @@ bool CGraphObj::addConnectionPoint(
         Defines either the index of a polygon (or line) point or the index
         of the line segment of a polygon.
 
-    @return true, if the connection point descriptor has been created and added, false otherwise.
+    @return Unique name for a connection point.
 */
-bool CGraphObj::addConnectionPoint(
-    const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt)
+QString CGraphObj::generateUniqueConnectionPointName(
+    ESelectionPointType i_selPtType, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+    if ((i_selPtType != ESelectionPointType::PolygonPoint) || (i_selPtType != ESelectionPointType::LineCenterPoint)) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+    QString strBaseName = "P" + QString::number(i_idxPt) + "-";
+    int idxPt = 1;
+    QString strName = strBaseName + QString::number(idxPt);
+    while (m_hshConnectionPointsDscrs.contains(strName)) {
+        idxPt++;
+        strName = strBaseName + QString::number(idxPt);
+    }
+    return strName;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Adds a new connection point with the given name anchored to the given
+           selection point at the bounding rectangle.
+
+    @param [in] i_selPtType
+        Selection point type.
+        Range [BoundingRectangle]
+    @param [in] i_selPt
+        Selection point the connection point should be anchored to.
+
+    @return Name of the connection point. The returned name is unique for the
+            graphical object the connection point is added to.
+*/
+QString CGraphObj::addConnectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strText + + ", " +
-            CEnumSelectionPointType(i_selPtType).toString() + ", P" + QString::number(i_idxPt);
+        strMthInArgs = CEnumSelectionPointType(i_selPtType).toString() +
+                ", " + CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6930,21 +6903,101 @@ bool CGraphObj::addConnectionPoint(
         /* strMethod    */ "CGraphObj::addConnectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    bool bCanAdd = !m_hshConnectionPointsDscrs.contains(i_strName);
-    if (bCanAdd) {
-        SAnchorLayoutDscr linkedChildDscr(EGraphObjTypeConnectionPoint, i_strName);
-        linkedChildDscr.m_strText = i_strText;
-        linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
-        m_hshConnectionPointsDscrs.insert(i_strName, linkedChildDscr);
-        emit_connectionPointAdded(i_strName);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
+    QString strName = generateUniqueConnectionPointName(i_selPtType, i_selPt);
+    SAnchorLayoutDscr linkedChildDscr(
+        EGraphObjTypeConnectionPoint, strName, "",
+        SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
+    // TODO: implement internal private method to create and add the connection point
+    m_hshConnectionPointsDscrs.insert(strName, linkedChildDscr);
+    CGraphObjConnectionPoint* pGraphObjCnctPt = new CGraphObjConnectionPoint(m_pDrawingScene, strName);
+    pGraphObjCnctPt->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    CPhysValSize physValSize(*m_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    physValSize = m_pDrawingScene->convert(physValSize);
+    pGraphObjCnctPt->setFixedSize(physValSize);
+    m_hshpConnectionPoints.insert(strName, pGraphObjCnctPt);
+    // Please note that connection points should not belong as child to the graphics items
+    // for which the points are created. Otherwise the "boundingRect" call of groups
+    // (which implicitly calls childrenBoundingRect) does not work as expected as
+    // the connection points would be included.
+    m_pDrawingScene->addItem(pGraphObjCnctPt);
+    m_pDrawingScene->getGraphObjsIdxTree()->add(pGraphObjCnctPt, this);
+    pGraphObjCnctPt->setVisible(true);
+    pGraphObjCnctPt->setLinkedObject(linkedChildDscr);
+    //linkedChildDscr.m_bShowAnchorLine ? pGraphObjCnctPt->showAnchorLines() : pGraphObjCnctPt->hideAnchorLines();
+    QObject::connect(
+        pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
+        this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
+    emit_connectionPointAdded(strName);
+    if (m_pTree != nullptr) {
+        m_pTree->onTreeEntryChanged(this);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bCanAdd);
+        mthTracer.setMethodReturn(strName);
     }
-    return bCanAdd;
+    return strName;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Adds a new connection point with the given name anchored to the given
+           polygon shape point.
+
+    @param [in] i_selPtType
+        Selection point type.
+        Range [PolygonPoint, LineCenterPoint]
+    @param [in] i_idxPt
+        Selection point the connection point should be anchored to.
+        Defines either the index of a polygon (or line) point or the index
+        of the line segment of a polygon.
+
+    @return Name of the connection point. The returned name is unique for the
+            graphical object the connection point is added to.
+*/
+QString CGraphObj::addConnectionPoint(ESelectionPointType i_selPtType, int i_idxPt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumSelectionPointType(i_selPtType).toString() + ", P" + QString::number(i_idxPt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::addConnectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strName = generateUniqueConnectionPointName(i_selPtType, i_idxPt);
+    SAnchorLayoutDscr linkedChildDscr(
+        EGraphObjTypeConnectionPoint, strName, "",
+        SGraphObjSelectionPoint(this, i_selPtType, i_idxPt));
+    // TODO: implement internal private method to create and add the connection point
+    m_hshConnectionPointsDscrs.insert(strName, linkedChildDscr);
+    CGraphObjConnectionPoint* pGraphObjCnctPt = new CGraphObjConnectionPoint(m_pDrawingScene, strName);
+    pGraphObjCnctPt->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    CPhysValSize physValSize(*m_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    physValSize = m_pDrawingScene->convert(physValSize);
+    pGraphObjCnctPt->setFixedSize(physValSize);
+    m_hshpConnectionPoints.insert(strName, pGraphObjCnctPt);
+    // Please note that connection points should not belong as child to the graphics items
+    // for which the points are created. Otherwise the "boundingRect" call of groups
+    // (which implicitly calls childrenBoundingRect) does not work as expected as
+    // the connection points would be included.
+    m_pDrawingScene->addItem(pGraphObjCnctPt);
+    m_pDrawingScene->getGraphObjsIdxTree()->add(pGraphObjCnctPt, this);
+    pGraphObjCnctPt->setVisible(true);
+    pGraphObjCnctPt->setLinkedObject(linkedChildDscr);
+    //linkedChildDscr.m_bShowAnchorLine ? pGraphObjCnctPt->showAnchorLines() : pGraphObjCnctPt->hideAnchorLines();
+    QObject::connect(
+        pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
+        this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
+    emit_connectionPointAdded(strName);
+    if (m_pTree != nullptr) {
+        m_pTree->onTreeEntryChanged(this);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(strName);
+    }
+    return strName;
 }
 
 //------------------------------------------------------------------------------
@@ -7080,19 +7133,6 @@ void CGraphObj::setConnectionPointAnchorPoint(
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    bool bSelPtAllowed = false;
-    QList<SGraphObjSelectionPoint> arSelPts = getPossibleConnectionPointAnchorPoints(i_strName);
-    for (const SGraphObjSelectionPoint& selPt : arSelPts) {
-        if (selPt.m_selPtType == i_selPtType && selPt.m_selPt == i_selPt) {
-            bSelPtAllowed = true;
-            break;
-        }
-    }
-    if (!bSelPtAllowed) {
-        SGraphObjSelectionPoint selPt(this, i_selPtType, i_selPt);
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
-    }
-
     SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
     if (linkedChildDscr.m_selPt1.m_selPtType != i_selPtType || linkedChildDscr.m_selPt1.m_selPt != i_selPt) {
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
@@ -7138,19 +7178,6 @@ void CGraphObj::setConnectionPointAnchorPoint(
 
     if (!m_hshConnectionPointsDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
-
-    bool bSelPtAllowed = false;
-    QList<SGraphObjSelectionPoint> arSelPts = getPossibleConnectionPointAnchorPoints(i_strName);
-    for (const SGraphObjSelectionPoint& selPt : arSelPts) {
-        if (selPt.m_selPtType == i_selPtType && selPt.m_idxPt == i_idxPt) {
-            bSelPtAllowed = true;
-            break;
-        }
-    }
-    if (!bSelPtAllowed) {
-        SGraphObjSelectionPoint selPt(this, i_selPtType, i_idxPt);
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, i_strName + ": Invalid selection point " + selPt.toString());
     }
 
     SAnchorLayoutDscr& linkedChildDscr = m_hshConnectionPointsDscrs[i_strName];
