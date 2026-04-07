@@ -117,8 +117,8 @@ public: // overridables of base class QGraphicsItem
 public: // overridables of base class CGraphObj
     void setName(const QString& i_strName) override;
 public: // instance methods
-    CGraphObj* linkedObject() const;
-    QString pathNameOfLinkedObject() const;
+    CGraphObj* linkedObject() const override;
+    QString pathNameOfLinkedObject() const override;
     QString path() const override;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);

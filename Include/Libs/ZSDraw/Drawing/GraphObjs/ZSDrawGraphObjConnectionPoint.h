@@ -132,8 +132,8 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
     void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
-    CGraphObj* linkedObject() const;
-    QString pathNameOfLinkedObject() const;
+    CGraphObj* linkedObject() const override;
+    QString pathNameOfLinkedObject() const override;
     QString path() const override;
 public: // instance methods
     void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );

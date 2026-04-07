@@ -388,7 +388,6 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
                 pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
-        // Geometry Labels
         for (const SAnchorLayoutDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(

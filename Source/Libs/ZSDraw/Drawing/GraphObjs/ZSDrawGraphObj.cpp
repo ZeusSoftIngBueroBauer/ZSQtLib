@@ -708,8 +708,36 @@ void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGrap
 }
 
 /*==============================================================================
-public: // instance methods
+protected: // overridables of base class CIdxTreeEntry
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Method to be overridded to return the graphical object this object is
+           linked to.
+
+    Labels, Selection points and Connection Points are graphical objects which are
+    linked to other objects and are usually anchored to selection points of the
+    objects they are linked to.
+*/
+CGraphObj* CGraphObj::linkedObject() const
+//------------------------------------------------------------------------------
+{
+    return nullptr;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Method to be overridded to return the path in the index tree of the
+           drawing scence of the object this object is linked to.
+
+    Labels, Selection points and Connection Points are graphical objects which are
+    linked to other objects and are usually anchored to selection points of the
+    objects they are linked to.
+*/
+QString CGraphObj::pathNameOfLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    return QString();
+}
 
 ////------------------------------------------------------------------------------
 ///*! @brief Sets the parent object the object belongs to.
@@ -6748,6 +6776,18 @@ bool CGraphObj::removeGeometryLabel(const QString& i_strName)
 public: // overridables (connection points)
 ==============================================================================*/
 
+//------------------------------------------------------------------------------
+/*! @brief This method returns the names for all connection points assigned to
+           (anchored at) this graphical object.
+
+    @return Names of the connection points.
+*/
+QStringList CGraphObj::getConnectionPointsNames() const
+//------------------------------------------------------------------------------
+{
+    return m_hshConnectionPointsDscrs.keys();
+}
+
 ////------------------------------------------------------------------------------
 ///*! @brief Returns the connection point for the given name.
 //*/
@@ -6756,20 +6796,20 @@ public: // overridables (connection points)
 //{
 //    return m_hshpConnectionPoints.value(i_strName, nullptr);
 //}
-//
-////------------------------------------------------------------------------------
-///*! @brief Returns the connection point descriptor for the given name.
-//*/
-//SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
-////------------------------------------------------------------------------------
-//{
-//    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SAnchorLayoutDscr());
-//    CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
-//    if (pGraphObjConnectionPoint != nullptr) {
-//        linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint();
-//    }
-//    return linkedChildDscr;
-//}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the connection point descriptor for the given name.
+*/
+SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SAnchorLayoutDscr());
+    CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
+    if (pGraphObjConnectionPoint != nullptr) {
+        linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint();
+    }
+    return linkedChildDscr;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the list of the possible selection points a connection point may be anchored to.

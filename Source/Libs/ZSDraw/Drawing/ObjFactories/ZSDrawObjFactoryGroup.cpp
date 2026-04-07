@@ -226,6 +226,11 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         saveGraphObjGeometryLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
+    if (!i_pGraphObj->getConnectionPointsNames().isEmpty()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameConnectionPoints);
+        saveGraphObjConnectionPoints(i_pGraphObj, i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     // Connection points need to be recalled before the connection lines as on
     // creating the connection lines their connection points must already exist.
@@ -312,6 +317,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     double fZValue = 0.0;
     QList<SAnchorLayoutDscr> arTextLabels;
     QList<SAnchorLayoutDscr> arGeometryLabels;
+    QList<SAnchorLayoutDscr> arConnectionPoints;
     bool bGeometrySet = false;
     bool bAddedToParentGroup = false;
 
@@ -438,6 +444,9 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
                         arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameConnectionPoints) {
+                        arConnectionPoints = loadGraphObjConnectionPoints(i_xmlStreamReader);
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
                         // The group has been added to the drawing scene at position (0, 0) right after creating the group.
@@ -571,7 +580,6 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
-        // Geometry Labels
         for (const SAnchorLayoutDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
@@ -587,6 +595,13 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                     pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
                     pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
             }
+        }
+        for (const SAnchorLayoutDscr& labelDscr : arConnectionPoints) {
+            pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
+                labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+            labelDscr.m_bShowAnchorLine ?
+                pGraphObj->showConnectionPointAnchorLine(labelDscr.m_strKey) :
+                pGraphObj->hideConnectionPointAnchorLine(labelDscr.m_strKey);
         }
     }
     else {

@@ -222,6 +222,11 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
         saveGraphObjGeometryLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
+    if (!i_pGraphObj->getConnectionPointsNames().isEmpty()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameConnectionPoints);
+        saveGraphObjConnectionPoints(i_pGraphObj, i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
@@ -262,6 +267,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     double fZValue = 0.0;
     QList<SAnchorLayoutDscr> arTextLabels;
     QList<SAnchorLayoutDscr> arGeometryLabels;
+    QList<SAnchorLayoutDscr> arConnectionPoints;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
@@ -346,6 +352,9 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
                     arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
                 }
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameConnectionPoints) {
+                    arConnectionPoints = loadGraphObjConnectionPoints(i_xmlStreamReader);
+                }
                 else {
                     i_xmlStreamReader.raiseError(
                         "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
@@ -397,7 +406,6 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                 pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
                 pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
         }
-        // Geometry Labels
         for (const SAnchorLayoutDscr& labelDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
@@ -413,6 +421,13 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                     pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
                     pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
             }
+        }
+        for (const SAnchorLayoutDscr& labelDscr : arConnectionPoints) {
+            pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
+                labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+            labelDscr.m_bShowAnchorLine ?
+                pGraphObj->showConnectionPointAnchorLine(labelDscr.m_strKey) :
+                pGraphObj->hideConnectionPointAnchorLine(labelDscr.m_strKey);
         }
     }
     else {

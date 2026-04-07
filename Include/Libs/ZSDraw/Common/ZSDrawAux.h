@@ -161,6 +161,8 @@ const QString c_strXmlElemNameShapePoints = "ShapePoints";
 const QString c_strXmlElemNameShapePointP = "P";
 const QString c_strXmlElemNameShapePointP1 = "P1";
 const QString c_strXmlElemNameShapePointP2 = "P2";
+const QString c_strXmlElemNameLineStart = "LineStart";
+const QString c_strXmlElemNameLineEnd = "LineEnd";
 const QString c_strXmlElemNameRectangle = "Rectangle";
 const QString c_strXmlElemNameTopLeft = "TopLeft";
 const QString c_strXmlElemNameTopRight = "TopRight";
@@ -176,6 +178,8 @@ const QString c_strXmlElemNameZValue = "ZValue";
 const QString c_strXmlElemNameTextLabels = "TextLabels";
 const QString c_strXmlElemNameGeometryLabels = "GeometryLabels";
 const QString c_strXmlElemNameLabel = "Label";
+const QString c_strXmlElemNameConnectionPoints = "ConnectionPoints";
+const QString c_strXmlElemNameConnectionPoint = "ConnectionPoint";
 
 const QString c_strXmlElemNameGraphObjFactoryGroupName = "FactoryGroupName";
 const QString c_strXmlElemNameGraphObjType = "ObjectType";

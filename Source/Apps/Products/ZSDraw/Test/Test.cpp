@@ -3179,17 +3179,21 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         QString strGraphObjName = dataRow["GraphObjName"].toString();
         QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
         QString strLabelName = dataRow["LabelName"].toString();
-        QPointF pos;
+        QPointF posToSet;
         if (dataRow.contains("setPos")) {
-            pos = dataRow["setPos"].toPointF();
+            posToSet = dataRow["setPos"].toPointF();
         }
         SGraphObjSelectionPoint selPt;
         if (dataRow.contains("AnchorPoint")) {
             selPt = SGraphObjSelectionPoint::fromString(dataRow["AnchorPoint"].toString());
         }
         QString strExpectedText = dataRow["ExpectedText"].toString();
+        QPointF posExpected = posToSet;
+        if (dataRow.contains("ExpectedPos")) {
+            posExpected = dataRow["ExpectedPos"].toPointF();
+        }
         strlstExpectedValues.append(resultValuesForLabel(
-            strGraphObjName + "." + strLabelName, pos, strExpectedText));
+            strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
         CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showLabel(strLabelName);
@@ -3205,8 +3209,8 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
                         pGraphObj->setLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_idxPt);
                     }
                 }
-                if (!pos.isNull()) {
-                    pGraphicsItemLabel->setPos(pos);
+                if (!posToSet.isNull()) {
+                    pGraphicsItemLabel->setPos(posToSet);
                 }
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(resultValuesForLabel(
@@ -4816,9 +4820,21 @@ void CTest::doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues") ?
+        i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        if (!strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            for (const QString& strGraphObjKeyEntry : strlstGraphObjsKeyInTreeGetResultValues) {
+                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->findGraphObj(strGraphObjKeyEntry);
+                if (pGraphObjAddResultValues != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjAddResultValues, false, false, iResultValuesPrecision));
+                }
+            }
+        }
+        else {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        }
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }

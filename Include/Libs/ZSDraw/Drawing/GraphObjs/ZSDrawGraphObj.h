@@ -531,6 +531,8 @@ public: // instance methods
     CGraphObjGroup* parentGroup() const;
     void onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
+    virtual CGraphObj* linkedObject() const;
+    virtual QString pathNameOfLinkedObject() const;
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename(const QString& i_strNameNew);
 protected: // overridables of base class CIdxTreeEntry
@@ -738,8 +740,9 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
+    virtual QStringList getConnectionPointsNames() const;
     //CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    //SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
     //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
     //virtual bool isConnectionPointAdded(const QString& i_strName) const;
     QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;

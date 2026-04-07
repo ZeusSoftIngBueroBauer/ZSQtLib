@@ -1536,7 +1536,7 @@ bool CGraphObjRect::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::LeftCenter) {
                 bHasDefaultValues = false;
             }
             else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::RightCenter) {

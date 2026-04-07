@@ -139,6 +139,8 @@ protected: // class methods
     static QList<SAnchorLayoutDscr> loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReade);
     static void saveGraphObjGeometryLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
     static QList<SAnchorLayoutDscr> loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader);
+    static void saveGraphObjConnectionPoints(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter);
+    static QList<SAnchorLayoutDscr> loadGraphObjConnectionPoints(QXmlStreamReader& i_xmlStreamReader);
 protected: // class members
     /*! Counts the number of created object factories. On creating the first factory, the index tree is created.
         On destroying the factories, the counter is decremented and if the counter reaches 0 the index is destroyed. */

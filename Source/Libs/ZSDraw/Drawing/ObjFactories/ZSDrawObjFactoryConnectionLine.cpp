@@ -179,8 +179,8 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     // Connection lines don't belong to groups. But their connection points may.
     // To find the connection point it's not sufficient just to store the name in
     // the XML file but it's necessary to store the id of the connection point.
-    i_xmlStreamWriter.writeTextElement("ObjIdCnctPtStart", pCnctPtStart->keyInTree());
-    i_xmlStreamWriter.writeTextElement("ObjIdCnctPtEnd", pCnctPtEnd->keyInTree());
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameLineStart, pCnctPtStart->keyInTree());
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameLineEnd, pCnctPtEnd->keyInTree());
 
     const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
     const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
@@ -276,12 +276,12 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
             QString strElemName = i_xmlStreamReader.name().toString();
             QString strElemAttr;
             if (i_xmlStreamReader.isStartElement()) {
-                if (strElemName == "ObjIdCnctPtStart") {
+                if (strElemName == XmlStreamParser::c_strXmlElemNameLineStart) {
                     QString strObjId = i_xmlStreamReader.readElementText();
                     CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
                     pCnctPtStart = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
                 }
-                else if (strElemName == "ObjIdCnctPtEnd") {
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameLineEnd) {
                     QString strObjId = i_xmlStreamReader.readElementText();
                     CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
                     pCnctPtEnd = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
