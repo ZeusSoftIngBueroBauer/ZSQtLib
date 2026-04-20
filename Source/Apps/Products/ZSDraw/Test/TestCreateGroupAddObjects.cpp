@@ -1920,7 +1920,7 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjText(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    QSizeF sizeText(72.0, 31.0); // adjusted to text size with margins
+    QSizeF sizeText(100.0, 40.0); // adjusted to text size with margins
     m_pPhysValRectText->setCenter(QPointF(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0));
     m_pPhysValRectText->setSize(sizeText);
     m_ptPosText.setX(m_pPhysValRectText->center().toQPointF().x());
@@ -1930,7 +1930,8 @@ void CTest::createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTe
     pTestStep->setConfigValue("Rect", m_pPhysValRectText->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("Text", strText);
-    pTestStep->setConfigValue("AdjustSize", true);
+    // Note: when invoking adjustSize the size of the text item depends on the text style.
+    //pTestStep->setConfigValue("AdjustSize", true);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(

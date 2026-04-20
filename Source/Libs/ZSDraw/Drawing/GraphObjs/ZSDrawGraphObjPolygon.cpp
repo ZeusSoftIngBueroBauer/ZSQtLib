@@ -633,6 +633,7 @@ void CGraphObjPolygon::setPolygon(const CPhysValPolygon& i_physValPolygon)
         }
         else if (m_idxsRemoved.second > 0) {
             updateSelectionPointsOnPolygonPointsRemoved();
+            updateLabelsOnPolygonPointsRemoved();
         }
         m_idxsAdded = qMakePair(-1, 0);
         m_idxsRemoved = qMakePair(-1, 0);

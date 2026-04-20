@@ -900,6 +900,10 @@ CIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
     // When the mutex creates trace output also this method should be traced.
     EMethodTraceDetailLevel eTrcDetailLevel =
         m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    QString strMthInArgs;
+    if (eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "Idx: " + QString::number(i_idxObj);
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
@@ -909,7 +913,7 @@ CIdxTreeEntry* CIdxTree::getEntry( int i_idxObj ) const
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "getEntry",
-        /* strMethodInArgs    */ "" );
+        /* strMethodInArgs    */ strMthInArgs );
 
     CIdxTreeEntry* pTreeEntry = nullptr;
     CMutexLocker mtxLocker(m_pMtx);
@@ -938,6 +942,10 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
     // When the mutex creates trace output also this method should be traced.
     EMethodTraceDetailLevel eTrcDetailLevel =
         m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    QString strMthInArgs;
+    if (eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = i_strPath;
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
@@ -947,7 +955,7 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findBranch",
-        /* strMethodInArgs    */ "" );
+        /* strMethodInArgs    */ strMthInArgs );
 
     QString strEntryType =
         CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
@@ -1016,6 +1024,10 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
     // When the mutex creates trace output also this method should be traced.
     EMethodTraceDetailLevel eTrcDetailLevel =
         m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    QString strMthInArgs;
+    if (eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "Parent: " + i_strParentPath + ", Branch: " + i_strBranchName;
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
@@ -1025,7 +1037,7 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findBranch",
-        /* strMethodInArgs    */ "" );
+        /* strMethodInArgs    */ strMthInArgs );
 
     QString strEntryType =
         CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
@@ -1108,7 +1120,12 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel = m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel =
+        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    QString strMthInArgs;
+    if (eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = i_strPath;
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
@@ -1118,7 +1135,7 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findLeave",
-        /* strMethodInArgs    */ "" );
+        /* strMethodInArgs    */ strMthInArgs );
 
     QString strEntryType =
         CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
@@ -1199,6 +1216,10 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
     // When the mutex creates trace output also this method should be traced.
     EMethodTraceDetailLevel eTrcDetailLevel =
         m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    QString strMthInArgs;
+    if (eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "Parent: " + i_strParentPath + ", Leave: " + i_strLeaveName;
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
@@ -1208,7 +1229,7 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findLeave",
-        /* strMethodInArgs    */ "" );
+        /* strMethodInArgs    */ strMthInArgs );
 
     QString strEntryType =
         CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Leave, EEnumEntryAliasStrSymbol);
@@ -1291,8 +1312,14 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
 //------------------------------------------------------------------------------
 {
     // When the mutex creates trace output also this method should be traced.
-    EMethodTraceDetailLevel eTrcDetailLevel =
-        m_pMtx == nullptr ? EMethodTraceDetailLevel::None : m_pMtx->getMethodTraceDetailLevel();
+    EMethodTraceDetailLevel eTrcDetailLevel = m_eTrcMthFileDetailLevel;
+    if (m_pMtx != nullptr && m_pMtx->getMethodTraceDetailLevel() > eTrcDetailLevel) {
+        eTrcDetailLevel = m_pMtx->getMethodTraceDetailLevel();
+    }
+    QString strMthInArgs;
+    if (eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = i_strKeyInTree;
+    }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* pTrcMthFile        */ m_pTrcMthFile,
@@ -1302,7 +1329,7 @@ CIdxTreeEntry* CIdxTree::findEntry( const QString& i_strKeyInTree ) const
         /* strClassName       */ className(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "findEntry",
-        /* strMethodInArgs    */ "" );
+        /* strMethodInArgs    */ strMthInArgs );
 
     CMutexLocker mtxLocker(m_pMtx);
 

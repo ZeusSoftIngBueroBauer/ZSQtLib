@@ -1391,26 +1391,21 @@ CGraphObj* CGraphObjConnectionPoint::linkedObject() const
 QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
 //------------------------------------------------------------------------------
 {
-    QString strPath;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->path();
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->path();
-    }
-    return strPath;
+    CGraphObj* pGraphObjLinked = linkedObject();
+    return pGraphObjLinked == nullptr ? "" : pGraphObjLinked->path();
 }
 
 //------------------------------------------------------------------------------
 QString CGraphObjConnectionPoint::path() const
 //------------------------------------------------------------------------------
 {
-    QString strPath = pathNameOfLinkedObject();
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    CGraphObj* pGraphObjLinked = linkedObject();
+    QString strPath;
+    if (pGraphObjLinked == nullptr) {
+        strPath = CIdxTreeEntry::path();
     }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    else {
+        strPath = pGraphObjLinked->tree()->buildPathStr(pGraphObjLinked->path(), m_strName);
     }
     return strPath;
 }
@@ -2393,65 +2388,6 @@ void CGraphObjConnectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 }
 
 /*==============================================================================
-protected: // overridable slots of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Reimplements the method of base class CGraphObj.
-*/
-void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
-        /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
-    }
-
-    // If the position is updated because the parent's geometry is changed,
-    // the relative distance in polar coordinates (length and angle) to the
-    // linked selection point must not be changed.
-    m_bPositionUpdateOnParentGeometryChanged = true;
-    updatePosition();
-    m_bPositionUpdateOnParentGeometryChanged = false;
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
-    }
-    emit_geometryOnSceneChanged();
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentZValueChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    // The labels anchor line should be drawn above the parent object.
-    // Otherwise the anchor lines may be covered by the painting of the parent object.
-    double fZValueParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetConnectionPoints);
-}
-
-/*==============================================================================
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -2580,6 +2516,138 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected: // overridable slots of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
+void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+//------------------------------------------------------------------------------
+{
+    if (m_iIgnoreParentGeometryChange > 0) {
+        return;
+    }
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
+
+    bool bGeometryOnSceneChanged = false;
+
+    if (linkedObject() == nullptr) {
+        // If the position is updated because the parent's geometry is changed,
+        // the relative distance in polar coordinates (length and angle) to the
+        // linked selection point must not be changed.
+        m_bPositionUpdateOnParentGeometryChanged = true;
+        updatePosition();
+        bGeometryOnSceneChanged = true;
+        m_bPositionUpdateOnParentGeometryChanged = false;
+    }
+    else {
+        CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
+
+        if (i_pGraphObjParent->isGroup()) {
+            CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+            if (i_bParentOfParentChanged) {
+                initParentTransform();
+                updateTransformedCoorsOnParentGeometryChanged();
+            }
+            CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
+            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+                setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
+            }
+            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+                setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
+            }
+
+            // The relative distance of the center point to the top left or bottom left corner
+            // of the parent's bounding rectangle should remain the same.
+            CPhysValRect physValRect = getPhysValRectScaled(m_physValRectOrig);
+            setPhysValRectScaled(physValRect);
+            physValRect.setAngle(m_physValRotationAngle);
+            setPhysValRectScaledAndRotated(physValRect);
+
+            QPointF ptPosPrev = pos();
+
+            QRectF rectF;
+            CPhysVal physValAngle;
+            QPointF ptPos = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
+
+            // Prepare the item for a geometry change. This function must be called before
+            // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
+            QGraphicsItem_prepareGeometryChange();
+
+            {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+                CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+                // Set the rectangle in local coordinate system.
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
+                QGraphicsEllipseItem_setRect(rectF);
+
+                // Please note that QGraphicsRectItem::setRect did not update the position of the
+                // item in the parent. This has to be done "manually" afterwards.
+
+                // Move the object to the parent position.
+                // This has to be done after resizing the item which updates the local coordinates
+                // of the item with origin (0/0) at the center point.
+                // "setPos" will trigger an itemChange call which will update the position of the
+                // selection points and labels. To position the selection points and labels correctly
+                // the local coordinate system must be up-to-date.
+                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
+                // If the position is not changed, itemChange is not called with PositionHasChanged and
+                // the position of the arrow heads will not be updated. We got to do this here "manually".
+                if (ptPos != ptPosPrev) {
+                    QGraphicsItem_setPos(ptPos);
+                }
+            }
+            // If the geometry of the parent on the scene of this item changes, also the geometry
+            // on the scene of this item is changed.
+            bGeometryOnSceneChanged = true;
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
+
+    // Emit signal after updated position info has been traced.
+    if (bGeometryOnSceneChanged) {
+        emit_geometryOnSceneChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    // The labels anchor line should be drawn above the parent object.
+    // Otherwise the anchor lines may be covered by the painting of the parent object.
+    double fZValueParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetConnectionPoints);
 }
 
 /*==============================================================================
@@ -2857,12 +2925,12 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the position of the label and the
-           coordinates (start and end point) of the anchor line.
+/*! @brief Internal auxiliary method to update the position of the anchored item
+           and the coordinates (start and end point) of the anchor line.
 
     If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the relative position
-    (distance and angle) of the label to the selection point remains the same.
+    any other geometry change) the item must be moved so that the relative position
+    (distance and angle) of the item to the linked selection point remains the same.
 */
 void CGraphObjConnectionPoint::updatePosition()
 //------------------------------------------------------------------------------
@@ -2880,33 +2948,32 @@ void CGraphObjConnectionPoint::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    m_bUpdatePositionInProgress = true;
-
-    // Get anchor line in scene coordinates.
     QLineF anchorLine;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
-    }
-    else {
-        anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
-    }
+    CGraphObj* pGraphObjLinked = linkedObject();
+    if (pGraphObjLinked != nullptr) {
+        m_bUpdatePositionInProgress = true;
+        // Get anchor line in scene coordinates.
+        if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+            anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+                m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+        }
+        else {
+            anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+                m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        }
 
-    // The position of a QGraphicsTextItem is defined by its top left corner.
-    // Move item so that its center point is at the line end point of the anchor line.
-    QRectF rctBoundingThis = getBoundingRect();
-    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "Pos {" + qPoint2Str(anchorLineP2ScenePos) + "} px";
-        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+        // The position of a QGraphicsTextItem is defined by its top left corner.
+        // Move item so that its center point is at the line end point of the anchor line.
+        QRectF rctBoundingThis = getBoundingRect();
+        QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+            QString strRuntimeInfo = "Pos {" + qPoint2Str(anchorLineP2ScenePos) + "} px";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+        }
+        // Please note that on calling setPos the itemChange method is called invoking updateAnchorLines.
+        setPos(anchorLineP2ScenePos);
+        m_bUpdatePositionInProgress = false;
     }
-    setPos(anchorLineP2ScenePos);
-
-    // Please note that on calling setPos the itemChange method of the
-    // label is called invoking updateAnchorLines.
-
-    m_bUpdatePositionInProgress = false;
 }
 
 //------------------------------------------------------------------------------
