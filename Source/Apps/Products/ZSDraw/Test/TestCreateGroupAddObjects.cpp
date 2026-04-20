@@ -1216,11 +1216,12 @@ void CTest::createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTe
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRect1 = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
+    m_ptPosRect1 = QPointF(300.0, 300.0);
+    QPointF ptCenterRectangle(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     QSizeF sizeRectangle(50.0, 50.0);
     m_rectRect1 = QRectF(QPointF(-sizeRectangle.width()/2.0, -sizeRectangle.height()/2.0), sizeRectangle);
     m_pPhysValRect1->setSize(sizeRectangle);
-    m_pPhysValRect1->setCenter(m_ptPosRect1);
+    m_pPhysValRect1->setCenter(ptCenterRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRect1->toQRectF());
@@ -4163,11 +4164,12 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRect1 = QPointF(175.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
+    m_ptPosRect1 = QPointF(175.0, 250.0);
+    QPointF ptCenterRect1(175.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
     QSizeF sizeRect1(50.0, 50.0);
     m_rectRect1 = QRectF(QPointF(-sizeRect1.width()/2.0, -sizeRect1.height()/2.0), sizeRect1);
     m_pPhysValRect1->setSize(sizeRect1);
-    m_pPhysValRect1->setCenter(m_ptPosRect1);
+    m_pPhysValRect1->setCenter(ptCenterRect1);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRect1->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
@@ -4197,7 +4199,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4222,7 +4224,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4240,11 +4242,12 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRect2 = QPointF(175.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
+    m_ptPosRect2 = QPointF(175.0, 350.0);
+    QPointF ptCenterRect2(175.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
     QSizeF sizeRect2(50.0, 50.0);
     m_rectRect2 = QRectF(QPointF(-sizeRect2.width()/2.0, -sizeRect2.height()/2.0), sizeRect2);
     m_pPhysValRect2->setSize(sizeRect2);
-    m_pPhysValRect2->setCenter(m_ptPosRect2);
+    m_pPhysValRect2->setCenter(ptCenterRect2);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRect2->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
@@ -4274,7 +4277,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect2, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4299,7 +4302,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect2, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4317,11 +4320,12 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRect3 = QPointF(600.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
+    m_ptPosRect3 = QPointF(600.0, 250.0);
+    QPointF ptCenterRect3(600.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
     QSizeF sizeRect3(50.0, 50.0);
     m_rectRect3 = QRectF(QPointF(-sizeRect3.width()/2.0, -sizeRect3.height()/2.0), sizeRect3);
     m_pPhysValRect3->setSize(sizeRect3);
-    m_pPhysValRect3->setCenter(m_ptPosRect3);
+    m_pPhysValRect3->setCenter(ptCenterRect3);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRect3->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
@@ -4351,7 +4355,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect3, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4376,7 +4380,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect3, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4394,11 +4398,12 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    m_ptPosRect4 = QPointF(600.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
+    m_ptPosRect4 = QPointF(600.0, 350.0);
+    QPointF ptCenterRect4(600.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
     QSizeF sizeRect4(50.0, 50.0);
     m_rectRect4 = QRectF(QPointF(-sizeRect4.width()/2.0, -sizeRect4.height()/2.0), sizeRect4);
     m_pPhysValRect4->setSize(sizeRect4);
-    m_pPhysValRect4->setCenter(m_ptPosRect4);
+    m_pPhysValRect4->setCenter(ptCenterRect4);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("Rect", m_pPhysValRect4->toQRectF());
     pTestStep->setConfigValue("Rect.Unit", strUnit);
@@ -4428,7 +4433,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect4, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4453,7 +4458,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     ptCnctPt = getSelectionPointCoors(*m_pPhysValRect4, eSelPt.enumerator());
-    physValCnctPt = ptCnctPt;
+    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
         strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -4476,8 +4481,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {0.0,  25.0}
     });
     *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-        {QPointF(175.0, 275.0)},
-        {QPointF(175.0, 325.0)}
+        {QPointF(175.0, bYAxisTopDown ? 275.0 : fYAxisMaxVal - 275.0)},
+        {QPointF(175.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)}
     });
     strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
@@ -4556,8 +4561,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         { 187.5,  50.0}
     });
     *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-        {QPointF(200.0, 250.0)},
-        {QPointF(575.0, 350.0)}
+        {QPointF(200.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0)},
+        {QPointF(575.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0)}
     });
     strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
@@ -4636,8 +4641,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {0.0,  25.0}
     });
     *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-        {QPointF(600.0, 275.0)},
-        {QPointF(600.0, 325.0)}
+        {QPointF(600.0, bYAxisTopDown ? 275.0 : fYAxisMaxVal - 275.0)},
+        {QPointF(600.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)}
     });
     strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
@@ -4716,8 +4721,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {-187.5,  50.0}
     });
     *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-        {QPointF(575.0, 250.0)},
-        {QPointF(200.0, 350.0)}
+        {QPointF(575.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0)},
+        {QPointF(200.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0)}
     });
     strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
@@ -4879,9 +4884,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
     strGraphObjName = c_strGraphObjNameRect1;
     strMethod = "setPosition";
-    m_ptPosRect1 = QPointF(275.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    m_ptPosRect1 = QPointF(275.0, 200.0);
     m_pPhysValRect1->setCenter(QPointF(275.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0));
-    strMthArgs = qPoint2Str(m_ptPosRect1) + " " + strUnit;
+    strMthArgs = m_pPhysValRect1->toString(true);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -4892,7 +4897,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Pos", m_ptPosRect1);
+    pTestStep->setConfigValue("Pos", m_pPhysValRect1->center().toQPointF());
     pTestStep->setConfigValue("Pos.unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameRect1]},
@@ -4909,8 +4914,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         { -50.0,  50.0}
     });
     *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-        {QPointF(275.0, 225.0)},
-        {QPointF(175.0, 325.0)}
+        {QPointF(275.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0)},
+        {QPointF(175.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
@@ -4924,8 +4929,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         { 137.5,  75.0}
     });
     *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-        {QPointF(300.0, 200.0)},
-        {QPointF(575.0, 350.0)}
+        {QPointF(300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0)},
+        {QPointF(575.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter,
@@ -4940,9 +4945,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
     strGraphObjName = c_strGraphObjNameRect2;
     strMethod = "setPosition";
-    m_ptPosRect2 = QPointF(275.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    m_ptPosRect2 = QPointF(275.0, 400.0);
     m_pPhysValRect2->setCenter(QPointF(275.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0));
-    strMthArgs = qPoint2Str(m_ptPosRect2) + " " + strUnit;
+    strMthArgs = m_pPhysValRect2->toString(true);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -4953,7 +4958,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Pos", m_ptPosRect2);
+    pTestStep->setConfigValue("Pos", m_pPhysValRect2->center().toQPointF());
     pTestStep->setConfigValue("Pos.unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameRect2]},
@@ -4970,8 +4975,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         {  0.0,  75.0}
     });
     *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-        {QPointF(275.0, 225.0)},
-        {QPointF(275.0, 375.0)}
+        {QPointF(275.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0)},
+        {QPointF(275.0, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
@@ -4985,8 +4990,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         {-137.5,  75.0}
     });
     *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-        {QPointF(575.0, 250.0)},
-        {QPointF(300.0, 400.0)}
+        {QPointF(575.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0)},
+        {QPointF(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter,
@@ -5001,9 +5006,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
     strGraphObjName = c_strGraphObjNameRect3;
     strMethod = "setPosition";
-    m_ptPosRect3 = QPointF(525.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    m_ptPosRect3 = QPointF(525.0, 200.0);
     m_pPhysValRect3->setCenter(QPointF(525.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0));
-    strMthArgs = qPoint2Str(m_ptPosRect3) + " " + strUnit;
+    strMthArgs = m_pPhysValRect3->toString(true);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -5014,7 +5019,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Pos", m_ptPosRect3);
+    pTestStep->setConfigValue("Pos", m_pPhysValRect3->center().toQPointF());
     pTestStep->setConfigValue("Pos.unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameRect3]},
@@ -5031,8 +5036,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         {  37.5,  50.0}
     });
     *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-        {QPointF(525.0, 225.0)},
-        {QPointF(600.0, 325.0)}
+        {QPointF(525.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0)},
+        {QPointF(600.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter,
@@ -5046,8 +5051,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         {-100.0,  100.0}
     });
     *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-        {QPointF(500.0, 200.0)},
-        {QPointF(300.0, 400.0)}
+        {QPointF(500.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0)},
+        {QPointF(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter,
@@ -5062,9 +5067,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
     strGraphObjName = c_strGraphObjNameRect4;
     strMethod = "setPosition";
-    m_ptPosRect4 = QPointF(525.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    m_ptPosRect4 = QPointF(525.0, 400.0);
     m_pPhysValRect4->setCenter(QPointF(525.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0));
-    strMthArgs = qPoint2Str(m_ptPosRect4) + " " + strUnit;
+    strMthArgs = m_pPhysValRect4->toString(true);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -5075,7 +5080,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("Pos", m_ptPosRect4);
+    pTestStep->setConfigValue("Pos", m_pPhysValRect4->center().toQPointF());
     pTestStep->setConfigValue("Pos.unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameRect4]},
@@ -5092,8 +5097,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         { 100.0,  100.0}
     });
     *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-        {QPointF(300.0, 200.0)},
-        {QPointF(500.0, 400.0)}
+        {QPointF(300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0)},
+        {QPointF(500.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter,
@@ -5107,8 +5112,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         {  0.0,  75.0}
     });
     *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-        {QPointF(525.0, 225.0)},
-        {QPointF(525.0, 375.0)}
+        {QPointF(525.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0)},
+        {QPointF(525.0, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0)}
     });
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter,

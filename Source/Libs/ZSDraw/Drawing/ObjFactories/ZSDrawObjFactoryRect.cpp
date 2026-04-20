@@ -436,11 +436,23 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
             }
         }
         for (const SAnchorLayoutDscr& labelDscr : arConnectionPoints) {
-            pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
-                labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
-            labelDscr.m_bShowAnchorLine ?
-                pGraphObj->showConnectionPointAnchorLine(labelDscr.m_strKey) :
-                pGraphObj->hideConnectionPointAnchorLine(labelDscr.m_strKey);
+            if (pGraphObj->isConnectionPointAdded(labelDscr.m_strKey)) {
+                i_xmlStreamReader.raiseError(
+                    "Connection point with name \"" + labelDscr.m_strKey + "\". already existing.");
+            }
+            else {
+                if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPtType, labelDscr.m_selPt1.m_selPt);
+                }
+                else {
+                    pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPtType, labelDscr.m_selPt1.m_idxPt);
+                }
+                pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
+                    labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+                labelDscr.m_bShowAnchorLine ?
+                    pGraphObj->showConnectionPointAnchorLine(labelDscr.m_strKey) :
+                    pGraphObj->hideConnectionPointAnchorLine(labelDscr.m_strKey);
+            }
         }
     }
     else {

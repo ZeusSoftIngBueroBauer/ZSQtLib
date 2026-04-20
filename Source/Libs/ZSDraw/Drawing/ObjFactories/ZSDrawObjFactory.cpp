@@ -556,6 +556,8 @@ void CObjFactory::saveGraphObjConnectionPoints(
         // the connection points are stored as attributes and not as text elements.
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
+        SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
         if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
@@ -586,6 +588,16 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamRea
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameKey)) {
                         layoutDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
                     }
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameText)) {
+                        layoutDscr.m_strText = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameText).toString();
+                    }
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameSelPt)) {
+                        strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameSelPt).toString();
+                        SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(strAttr, &bConverted);
+                        if (bConverted) {
+                            layoutDscr.m_selPt1 = selPtTmp;
+                        }
+                    }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
                         SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
@@ -607,7 +619,7 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamRea
                 }
             }
             else /* if (i_xmlStreamReader.isEndElement())*/ {
-                if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
+                if (strElemName == XmlStreamParser::c_strXmlElemNameConnectionPoints) {
                     break;
                 }
             }

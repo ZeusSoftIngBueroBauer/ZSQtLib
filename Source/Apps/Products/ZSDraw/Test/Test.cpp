@@ -6145,6 +6145,7 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
         i_pTestStep->setResultValue(errResultInfoSave.toString());
     }
     else {
+        QMap<QString, CGraphObj*> mapGraphObjsByKeys;
         QStringList strlstExpectedValues;
         CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
         CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
@@ -6153,18 +6154,25 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
             if (pGraphObj != nullptr && !pGraphObj->isConnectionLine()) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, false, true, iResultValuesPrecision));
+                mapGraphObjsByKeys.insert(pGraphObj->keyInTree(), pGraphObj);
             }
             ++itIdxTree;
         }
+        for (const std::pair<QString, CGraphObj*> elem : mapGraphObjsByKeys.asKeyValueRange()) {
+            strlstExpectedValues.append(resultValuesForGraphObj(elem.second, false, true, iResultValuesPrecision));
+        }
+        mapGraphObjsByKeys.clear();
         itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
         while (itIdxTree != pIdxTree->end()) {
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
             if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, false, true, iResultValuesPrecision));
+                mapGraphObjsByKeys.insert(pGraphObj->keyInTree(), pGraphObj);
             }
             ++itIdxTree;
+        }
+        for (const std::pair<QString, CGraphObj*> elem : mapGraphObjsByKeys.asKeyValueRange()) {
+            strlstExpectedValues.append(resultValuesForGraphObj(elem.second, false, true, iResultValuesPrecision));
         }
         i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
@@ -6176,16 +6184,33 @@ void CTest::doTestStepSaveLoadFile(ZS::Test::CTestStep* i_pTestStep)
             i_pTestStep->setResultValue(errResultInfoLoad.toString());
         }
         else {
+            QMap<QString, CGraphObj*> mapGraphObjsByKeys;
             QStringList strlstResultValues;
             CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
             CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
             while (itIdxTree != pIdxTree->end()) {
                 CIdxTreeEntry* pTreeEntry = *itIdxTree;
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-                if (pGraphObj != nullptr) {
-                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, true, iResultValuesPrecision));
+                if (pGraphObj != nullptr && !pGraphObj->isConnectionLine()) {
+                    mapGraphObjsByKeys.insert(pGraphObj->keyInTree(), pGraphObj);
                 }
                 ++itIdxTree;
+            }
+            for (const std::pair<QString, CGraphObj*> elem : mapGraphObjsByKeys.asKeyValueRange()) {
+                strlstResultValues.append(resultValuesForGraphObj(elem.second, false, true, iResultValuesPrecision));
+            }
+            mapGraphObjsByKeys.clear();
+            itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+            while (itIdxTree != pIdxTree->end()) {
+                CIdxTreeEntry* pTreeEntry = *itIdxTree;
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
+                    mapGraphObjsByKeys.insert(pGraphObj->keyInTree(), pGraphObj);
+                }
+                ++itIdxTree;
+            }
+            for (const std::pair<QString, CGraphObj*> elem : mapGraphObjsByKeys.asKeyValueRange()) {
+                strlstResultValues.append(resultValuesForGraphObj(elem.second, false, true, iResultValuesPrecision));
             }
             i_pTestStep->setResultValues(strlstResultValues);
         }
@@ -6369,6 +6394,18 @@ void CTest::initObjectCoors()
 
     m_polygonConnectionLineCnctPt3CnctPt2 = QPolygonF();
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------

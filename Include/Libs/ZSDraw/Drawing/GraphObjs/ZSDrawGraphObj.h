@@ -744,9 +744,11 @@ public: // overridables (connection points)
     //CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
     SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
     //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
-    //virtual bool isConnectionPointAdded(const QString& i_strName) const;
+    virtual bool isConnectionPointAdded(const QString& i_strName) const;
     QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
     QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, int i_idxPt) const;
+    virtual bool addConnectionPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual bool addConnectionPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
     virtual QString addConnectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
     virtual QString addConnectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
     virtual bool removeConnectionPoint(const QString& i_strName);
