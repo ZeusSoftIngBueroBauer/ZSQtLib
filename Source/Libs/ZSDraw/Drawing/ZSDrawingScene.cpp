@@ -3755,6 +3755,14 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                                 }
                             }
                         }
+                        else {
+                            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                                QString strRuntimeInfo = "ItemPressed: " + qGraphicsItemType2Str(pGraphicsItemPressed->type()) +
+                                    ", ScenePos {" + qPoint2Str(pGraphicsItemPressed->scenePos()) + "}" +
+                                    ", BoundingRect {" + qRect2Str(pGraphicsItemPressed->boundingRect()) + "}";
+                                mthTracer.trace(strRuntimeInfo);
+                            }
+                        }
                         QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
                         if (!arpGraphicsItemsSelected.empty()) {
                             if (arpGraphicsItemsSelected.contains(pGraphicsItemPressed)) {
@@ -5744,20 +5752,31 @@ void CDrawingScene::traceItems(
     if (!arpGraphicsItems.isEmpty()) {
         // Sort by ZVal-Path
         QMultiMap<QString, QGraphicsItem*> mapGraphicsItemsSortedByZVal;
+        int idxItem = 0;
         for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if (pGraphObj != nullptr) {
                 QString strKey = QString::number(pGraphicsItem->zValue()) + "-" + pGraphObj->path();
                 mapGraphicsItemsSortedByZVal.insert(strKey, pGraphicsItem);
             }
+            else if (pGraphicsItem != nullptr) {
+                QString strKey = QString::number(pGraphicsItem->zValue()) + "-" + QString::number(idxItem);
+                mapGraphicsItemsSortedByZVal.insert(strKey, pGraphicsItem);
+            }
+            idxItem++;
         }
         for (QGraphicsItem* pGraphicsItem : mapGraphicsItemsSortedByZVal) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ . ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- . ";
+            else strRuntimeInfo = "   . ";
             if (pGraphObj != nullptr) {
-                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ . ";
-                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- . ";
-                else strRuntimeInfo = "   . ";
                 strRuntimeInfo += pGraphObj->typeAsString() + " " + pGraphObj->path() + " {";
+            }
+            else if (pGraphicsItem != nullptr) {
+                strRuntimeInfo += qGraphicsItemType2Str(pGraphicsItem->type()) + "{";
+            }
+            if (pGraphicsItem != nullptr) {
                 if (i_strFilter.isEmpty() || i_strFilter.contains("StackingOrder")) {
                     if (!strRuntimeInfo.endsWith("{")) strRuntimeInfo += ", ";
                     strRuntimeInfo += "ZVal: " + QString::number(pGraphicsItem->zValue());
@@ -5774,9 +5793,9 @@ void CDrawingScene::traceItems(
                     if (!strRuntimeInfo.endsWith("{")) strRuntimeInfo += ", ";
                     strRuntimeInfo += "Shape {" + qPainterPath2Str(pGraphicsItem, pGraphicsItem->shape()) + "}";
                 }
-                strRuntimeInfo += "}";
-                i_mthTracer.trace(strRuntimeInfo);
             }
+            strRuntimeInfo += "}";
+            i_mthTracer.trace(strRuntimeInfo);
         }
     }
 }

@@ -2549,15 +2549,6 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
     bool bGeometryOnSceneChanged = false;
 
     if (linkedObject() == nullptr) {
-        // If the position is updated because the parent's geometry is changed,
-        // the relative distance in polar coordinates (length and angle) to the
-        // linked selection point must not be changed.
-        m_bPositionUpdateOnParentGeometryChanged = true;
-        updatePosition();
-        bGeometryOnSceneChanged = true;
-        m_bPositionUpdateOnParentGeometryChanged = false;
-    }
-    else {
         CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
         if (i_pGraphObjParent->isGroup()) {
@@ -2618,6 +2609,15 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
             // on the scene of this item is changed.
             bGeometryOnSceneChanged = true;
         }
+    }
+    else {
+        // If the position is updated because the parent's geometry is changed,
+        // the relative distance in polar coordinates (length and angle) to the
+        // linked selection point must not be changed.
+        m_bPositionUpdateOnParentGeometryChanged = true;
+        updatePosition();
+        bGeometryOnSceneChanged = true;
+        m_bPositionUpdateOnParentGeometryChanged = false;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Leave);

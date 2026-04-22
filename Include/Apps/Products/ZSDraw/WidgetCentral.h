@@ -40,6 +40,10 @@ class QVBoxLayout;
 
 namespace ZS
 {
+namespace System
+{
+class CTrcAdminObj;
+}
 namespace Draw
 {
 class CDrawingScene;
@@ -59,6 +63,8 @@ class CWidgetCentral : public QWidget
 {
     Q_OBJECT
 public: // class methods
+    static QString NameSpace() { return "ZS::Apps::Products::Draw"; }
+    static QString ClassName() { return "CWidgetCentral"; }
     static CWidgetCentral* GetInstance(); // singleton class
 public: // ctors and dtor
     CWidgetCentral(
@@ -69,11 +75,14 @@ public: // instance methods
     ZS::Draw::CWdgtDrawing* drawingWidget();
     ZS::Draw::CDrawingView* drawingView();
     ZS::Draw::CDrawingScene* drawingScene();
+protected: // overridables of base class QWidget
+    void closeEvent(QCloseEvent* i_pEv) override;
 protected: // class members
     static CWidgetCentral* s_pThis; // singleton class
 protected: // instance members
-    QVBoxLayout* m_pLyt;
-    ZS::Draw::CWdgtDrawing* m_pWdgtDrawing;
+    QVBoxLayout* m_pLyt = nullptr;
+    ZS::Draw::CWdgtDrawing* m_pWdgtDrawing = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj = nullptr;
 
 }; // class CWidgetCentral
 

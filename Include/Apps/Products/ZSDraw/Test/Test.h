@@ -41,7 +41,7 @@ may result in using the software modules.
 class QGraphicsItem;
 class QPainterPath;
 
-#define TEST_ALL 1
+#define TEST_ALL 0
 
 #if TEST_ALL == 0
 
@@ -50,7 +50,7 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS 1
 #define TEST_PIXELS_DRAWINGS_100x100 0
 #define TEST_PIXELS_DRAWINGS_101x101 0
-#define TEST_PIXELS_DRAWINGS_800x600 1
+#define TEST_PIXELS_DRAWINGS_800x600 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_0 0
@@ -62,21 +62,21 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_210 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALPOLYGON 0
-#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
+#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 0
 #define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
@@ -87,8 +87,8 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
@@ -97,8 +97,8 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 1
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
@@ -302,6 +302,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallCross2 = "SmallCross2";
     const QString c_strGraphObjNamePolygons = "Polygons";
     const QString c_strGraphObjNameGroupConnectionPointsPt1Pt2 = "ConnectionPointsPt1Pt2";
+    const QString c_strGraphObjNameGroupRect1Rect2 = "Rect1Rect2";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -362,7 +363,8 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupTextsCrossesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupConnectionPoints(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupConnectionPointsNotAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupConnectionPointsAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -701,6 +703,10 @@ protected: // instance members
     QSizeF m_sizeConnectionPoints;
     ZS::Draw::CPhysValRect* m_pPhysValRectConnectionPoints = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleConnectionPoints;
+    QPointF m_ptPosRect1Rect2;
+    QSizeF m_sizeRect1Rect2;
+    ZS::Draw::CPhysValRect* m_pPhysValRect1Rect2 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleRect1Rect2;
     // TopGroup
     QPointF m_ptPosTopGroup;
     QSizeF m_sizeTopGroup;

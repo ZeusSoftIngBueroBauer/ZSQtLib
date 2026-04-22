@@ -35,6 +35,9 @@ may result in using the software modules.
 #endif
 
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -70,21 +73,24 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWidgetCentral::CWidgetCentral(
-    QWidget* i_pWdgtParent,
-    Qt::WindowFlags i_wflags ) :
+CWidgetCentral::CWidgetCentral(QWidget* i_pWdgtParent, Qt::WindowFlags i_wflags) :
 //------------------------------------------------------------------------------
-    QWidget(i_pWdgtParent, i_wflags),
-    m_pLyt(nullptr),
-    m_pWdgtDrawing(nullptr)
+    QWidget(i_pWdgtParent, i_wflags)
 {
-    if( s_pThis != nullptr )
-    {
+    if (s_pThis != nullptr) {
         throw CException(__FILE__, __LINE__, EResultSingletonClassAlreadyInstantiated);
     }
     s_pThis = this;
 
-    setObjectName("CentralWidget");
+    setObjectName("theInst");
+
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ "" );
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -98,12 +104,19 @@ CWidgetCentral::CWidgetCentral(
 CWidgetCentral::~CWidgetCentral()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "dtor",
+        /* strAddInfo   */ "" );
+
     s_pThis = nullptr;
 
-    m_pLyt = nullptr;
-    m_pWdgtDrawing = nullptr;
+    mthTracer.onAdminObjAboutToBeReleased();
 
-} // dtor
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    m_pTrcAdminObj = nullptr;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -128,4 +141,21 @@ CDrawingScene* CWidgetCentral::drawingScene()
 //------------------------------------------------------------------------------
 {
     return m_pWdgtDrawing->drawingScene();
+}
+
+/*==============================================================================
+protected: // overridables of base class QWidget
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWidgetCentral::closeEvent(QCloseEvent* i_pEv)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "closeEvent",
+        /* strAddInfo   */ "" );
+
+    QWidget::closeEvent(i_pEv);
 }

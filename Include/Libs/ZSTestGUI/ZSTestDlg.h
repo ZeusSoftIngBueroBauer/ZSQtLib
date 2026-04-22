@@ -56,9 +56,9 @@ class ZSTESTGUIDLL_API CDlgTest : public QDialog
     Q_OBJECT
 public: // ctors and dtor
     CDlgTest(
-        const QString&  i_strObjName,
-        CTest*          i_pTest = nullptr,
-        QWidget*        i_pWdgtParent = nullptr,
+        const QString& i_strObjName,
+        CTest* i_pTest = nullptr,
+        QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags());
     ~CDlgTest();
 public: // instance methods
@@ -67,8 +67,8 @@ public: // instance methods
 protected: // overridables of base class QDialog
     virtual void closeEvent( QCloseEvent* i_pEv );
 protected: // instance members
-    QString                m_strSettingsKey;
-    QVBoxLayout*           m_pLytMain;
+    QString m_strSettingsKey;
+    QVBoxLayout* m_pLytMain;
     CWdgtIdxTreeTestSteps* m_pWdgtTest;
 
 }; // class CDlgTest

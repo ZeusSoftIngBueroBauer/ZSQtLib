@@ -138,7 +138,7 @@ class CMainWindow : public QMainWindow
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "Apps::Products::Draw"; }
+    static QString NameSpace() { return "ZS::Apps::Products::Draw"; }
     static QString ClassName() { return "CMainWindow"; }
 public: // class methods
     static CMainWindow* GetInstance(); // singleton class

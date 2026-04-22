@@ -466,20 +466,22 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
         rctBounding.width() + static_cast<double>(iPenWidth),
         rctBounding.height() + static_cast<double>(iPenWidth));
 
-    if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
-        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
-        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-        QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
-        rctBounding |= rctBoundingAnchorLine;
-    }
-    else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
-        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-        QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
-        rctBounding |= rctBoundingAnchorLine;
-    }
+    // When including the anchor lines in the bounding rectangle, the bounding rectangle of the
+    // rotation selection points overlap the top and bottom center selection points.
+    //if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+    //    rctBounding |= rctBoundingAnchorLine;
+    //}
+    //else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+    //    rctBounding |= rctBoundingAnchorLine;
+    //}
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);

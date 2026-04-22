@@ -266,6 +266,8 @@ CTest::~CTest()
     m_pPhysValRectPolygons = nullptr;
     delete m_pPhysValRectConnectionPoints;
     m_pPhysValRectConnectionPoints = nullptr;
+    delete m_pPhysValRect1Rect2;
+    m_pPhysValRect1Rect2 = nullptr;
     delete m_pPhysValRectTopGroup;
     m_pPhysValRectTopGroup = nullptr;
 
@@ -371,6 +373,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValRectSmallCross2 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectPolygons = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectConnectionPoints = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRect1Rect2 = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
     CDrawGridSettings gridSettings;
@@ -3991,7 +3994,8 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
             if (pGraphObjText != nullptr) {
                 QString strText = i_pTestStep->getConfigValue("Text").toString();
                 pGraphObjText->setPlainText(strText);
-                pGraphObjText->adjustSize();
+                // When adjustin the size, the resulting size depends on the applied theme style.
+                //pGraphObjText->adjustSize();
             }
             i_pTestStep->setConfigValue("Method", "setResultValues");
             triggerDoTestStep();
@@ -6459,6 +6463,11 @@ void CTest::initObjectCoors()
     m_sizeConnectionPoints = QSizeF();
     *m_pPhysValRectConnectionPoints = CPhysValRect(*m_pDrawingScene);
     m_physValAngleConnectionPoints = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosRect1Rect2 = QPointF();
+    m_sizeRect1Rect2 = QSizeF();
+    *m_pPhysValRect1Rect2 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleRect1Rect2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosTopGroup = QPointF();
     m_sizeTopGroup = QSizeF();

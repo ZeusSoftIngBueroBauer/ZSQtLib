@@ -55,9 +55,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CDlgTest::CDlgTest(
-    const QString&  i_strObjName,
-    CTest*          i_pTest,
-    QWidget*        i_pWdgtParent,
+    const QString& i_strObjName,
+    CTest* i_pTest,
+    QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QDialog(i_pWdgtParent,i_wflags),
@@ -69,24 +69,20 @@ CDlgTest::CDlgTest(
 
     m_strSettingsKey = "DlgTest" + i_strObjName;
 
-    setWindowTitle( QCoreApplication::applicationName() + ": " + i_strObjName );
+    setWindowTitle(QCoreApplication::applicationName() + ": " + i_strObjName);
 
     m_pLytMain = new QVBoxLayout;
     setLayout(m_pLytMain);
 
     m_pWdgtTest = new CWdgtIdxTreeTestSteps(i_pTest);
     m_pLytMain->addWidget(m_pWdgtTest);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CDlgTest::~CDlgTest()
 //------------------------------------------------------------------------------
 {
-    m_pLytMain = nullptr;
-    m_pWdgtTest = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -96,37 +92,21 @@ public: // instance methods
 void CDlgTest::show()
 //------------------------------------------------------------------------------
 {
-    // Restore position and size of dialog
-    //------------------------------------
-
     QSettings settings;
-
-    restoreGeometry( settings.value(m_strSettingsKey+"/Geometry").toByteArray() );
-
-    // Call base method to show the dialog
-    //------------------------------------
+    restoreGeometry(settings.value(m_strSettingsKey+"/Geometry").toByteArray());
 
     QDialog::show();
-
-} // show
+}
 
 //------------------------------------------------------------------------------
 void CDlgTest::hide()
 //------------------------------------------------------------------------------
 {
-    // Save position and size of dialog
-    //------------------------------------
-
     QSettings settings;
-
-    settings.setValue( m_strSettingsKey+"/Geometry", saveGeometry() );
-
-    // Call base method to hide the dialog
-    //------------------------------------
+    settings.setValue(m_strSettingsKey+"/Geometry", saveGeometry());
 
     QDialog::hide();
-
-} // hide
+}
 
 /*==============================================================================
 protected: // overridables of base class QDialog
@@ -136,17 +116,9 @@ protected: // overridables of base class QDialog
 void CDlgTest::closeEvent( QCloseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    // Save position and size of dialog
-    //------------------------------------
-
     QSettings settings;
-
-    settings.setValue( m_strSettingsKey+"/Geometry", saveGeometry() );
-
-    // Call base method to hide the dialog
-    //------------------------------------
+    settings.setValue(m_strSettingsKey+"/Geometry", saveGeometry());
 
     QDialog::closeEvent(i_pEv);
-
-} // closeEvent
+}
 

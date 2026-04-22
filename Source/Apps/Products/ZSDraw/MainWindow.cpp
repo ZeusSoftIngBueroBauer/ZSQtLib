@@ -374,30 +374,27 @@ CMainWindow::CMainWindow(
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjMouseEvents(nullptr)
 {
-    if( s_pThis != nullptr )
-    {
+    if (s_pThis != nullptr) {
         throw CException(__FILE__,__LINE__,EResultSingletonClassAlreadyInstantiated);
     }
     s_pThis = this;
 
-    setObjectName("MainWindow");
+    setObjectName("theInst");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CMainWindow", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName() + "-MouseEvents");
 
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "WindowTitle: " + i_strWindowTitleAppName;
-        strMthInArgs += ", Test: " + QString(i_pTest == nullptr ? "-" : i_pTest->objectName());
-        strMthInArgs += ", ObjFactories [" + i_strlstObjFactories.join(", ") + "]";
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "WindowTitle: " + i_strWindowTitleAppName +
+            ", Test: " + QString(i_pTest == nullptr ? "-" : i_pTest->objectName()) +
+            ", ObjFactories [" + i_strlstObjFactories.join(", ") + "]";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
-
-    m_pTrcAdminObjMouseEvents = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CMainWindow", objectName() + "-MouseEvents");
 
     updateWindowTitle();
 

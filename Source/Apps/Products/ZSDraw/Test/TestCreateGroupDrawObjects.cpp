@@ -1633,6 +1633,9 @@ void CTest::createTestGroupDrawStandardShapesText(
     //----------
 
     iResultValuesPrecision = -1;
+    QSizeF sizeText(100.0, 50.0); // adjusted to text size with margins
+    QPoint pt1(250, 275);
+    QPoint pt2(350, 325);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
@@ -1642,15 +1645,14 @@ void CTest::createTestGroupDrawStandardShapesText(
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
-    pTestStep->setConfigValue("P1", QPoint(264.0, 384.0));
-    pTestStep->setConfigValue("P2", QPoint(264.0 + 100.0, 384.0 + 50.0));
+    pTestStep->setConfigValue("P1", pt1);
+    pTestStep->setConfigValue("P2", pt2);
     pTestStep->setConfigValue("Text", strText);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    QSizeF sizeText(72.0, 31.0); // adjusted to text size with margins
+    QRect rectText(pt1, pt2);
+    m_ptPosText = rectText.center();
     m_pPhysValRectText->setSize(sizeText);
-    m_pPhysValRectText->setCenter(QPointF(300.0, bYAxisTopDown ? 399.5 : 181.5));
-    m_ptPosText.setX(m_pPhysValRectText->center().toQPointF().x());
-    m_ptPosText.setY(bYAxisTopDown ? m_pPhysValRectText->center().toQPointF().y() : fYAxisMaxVal - m_pPhysValRectText->center().toQPointF().y());
+    m_pPhysValRectText->setCenter(m_ptPosText);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1732,11 +1734,11 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosText);
+    pTestStep->setConfigValue("P0", QPoint(m_ptPosText.x() + 25, m_ptPosText.y() + 10));
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    physValRectNew.setAngle(44.4);
+    physValRectNew.setAngle(45.0);
     m_physValAngleText = physValRectNew.angle();
     *m_pPhysValRectText = physValRectNew;
     strlstExpectedValues.clear();
@@ -1750,7 +1752,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     QSizeF sizeRectangle = m_pPhysValRectText->size().toQSizeF();
-    sizeRectangle.setWidth(100.0);
+    sizeRectangle.setWidth(125.0);
     eSelPt = ESelectionPoint::RightCenter;
     physValRectNew = *m_pPhysValRectText;
     physValRectNew.setWidth(sizeRectangle.width());
@@ -1768,14 +1770,14 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosText);
+    pTestStep->setConfigValue("P0", QPoint(m_ptPosText.x(), m_ptPosText.y() + 20));
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(309.997208, bYAxisTopDown ? 409.301185 : fYAxisMaxVal - 171.698815);
-    m_pPhysValRectText->setSize(QSizeF(100.000528, 31.0));
-    m_pPhysValRectText->setCenter(QPointF(309.997208, bYAxisTopDown ? 409.301185 : 171.698815));
     strlstExpectedValues.clear();
+    m_ptPosText = QPointF(308.822330, 308.822330);
+    m_pPhysValRectText->setSize(QSizeF(124.953319, 50.000000));
+    m_pPhysValRectText->setCenter(m_ptPosText);
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -1786,7 +1788,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     iResultValuesPrecision = 6; //bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strObjName = c_strGraphObjNameText;
     sizeRectangle = m_pPhysValRectText->size().toQSizeF();
-    sizeRectangle.setHeight(100.0);
+    sizeRectangle.setHeight(125.0);
     eSelPt = bYAxisTopDown ? ESelectionPoint::BottomCenter : ESelectionPoint::TopCenter;
     physValRectNew = *m_pPhysValRectText;
     physValRectNew.setHeight(sizeRectangle.height());
@@ -1804,13 +1806,13 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
-    pTestStep->setConfigValue("P0", m_ptPosText);
+    pTestStep->setConfigValue("P0", QPoint(m_ptPosText.x(), m_ptPosText.y() + 20));
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 285.793768 : 334.102629, bYAxisTopDown ? 433.988694 : fYAxisMaxVal - 196.286345);
-    m_pPhysValRectText->setSize(QSizeF(100.000528, bYAxisTopDown ? 100.145634 : 99.865606));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 285.793768 : 334.102629, bYAxisTopDown ? 433.988694 : 196.286345));
+    m_ptPosText = QPointF(282.161165, 335.483496);
+    m_pPhysValRectText->setSize(QSizeF(124.953319, 125.409163));
+    m_pPhysValRectText->setCenter(m_ptPosText);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1843,9 +1845,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 286.072242 : 369.721135, bYAxisTopDown ? 469.114650 : fYAxisMaxVal - 196.817221);
-    m_pPhysValRectText->setSize(QSizeF(bYAxisTopDown ? 149.579586 : 150.125641, bYAxisTopDown ? 149.920712 : 150.494770));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 286.072242 : 369.721135, bYAxisTopDown ? 469.114650 : 196.817221));
+    m_ptPosText = QPointF(282.161165, 352.983496);
+    m_pPhysValRectText->setSize(QSizeF(149.702056, 150.157900));
+    m_pPhysValRectText->setCenter(m_ptPosText);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1878,9 +1880,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 250.484220 : 334.108118, bYAxisTopDown ? 434.224432 : fYAxisMaxVal - 231.731943);
-    m_pPhysValRectText->setSize(QSizeF(bYAxisTopDown ? 49.903418 : 50.379467, bYAxisTopDown ? 149.920712 : 150.494770));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 250.484220 : 334.108118, bYAxisTopDown ? 434.224432 : 231.731943));
+    m_ptPosText = QPointF(246.911165, 317.733496);
+    m_pPhysValRectText->setSize(QSizeF(50.000000, 150.157900));
+    m_pPhysValRectText->setCenter(m_ptPosText);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1913,9 +1915,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(bYAxisTopDown ? 285.570478 : 298.899336, bYAxisTopDown ? 398.436450 : fYAxisMaxVal - 195.818985);
-    m_pPhysValRectText->setSize(QSizeF(bYAxisTopDown ? 49.903418 : 50.379467, bYAxisTopDown ? 49.684487 : 49.908510));
-    m_pPhysValRectText->setCenter(QPointF(bYAxisTopDown ? 285.570478 : 298.899336, bYAxisTopDown ? 398.436450 : 195.818985));
+    m_ptPosText = QPointF(282.411165, 282.233496);
+    m_pPhysValRectText->setSize(QSizeF(50.000000, 49.748737));
+    m_pPhysValRectText->setCenter(m_ptPosText);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -2325,7 +2327,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     m_physValAngleTriangle = physValPolygonTriangleNew.angle();
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // replace(2, )
@@ -2392,7 +2394,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // append()
@@ -2463,7 +2465,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -2611,7 +2613,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -2703,7 +2705,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     m_pPhysValPolygonTriangle->append(physValPoint);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -2807,7 +2809,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     m_pPhysValPolygonTriangle->removeLast();
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Hide Labels
@@ -2819,6 +2821,12 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ c_strGraphObjNameTriangle + ".hideLabels()",
         /* pGrpParent      */ pGrpModifyTriangle,
         /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameTriangle},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameTriangle + "." + CGraphObj::c_strLabelName + " not found"}
+    });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameTriangle},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
@@ -2893,7 +2901,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     *m_pPhysValPolygonTriangle = physValPolygonTriangleNew;
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+        c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
