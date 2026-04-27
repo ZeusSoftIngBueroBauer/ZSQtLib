@@ -406,7 +406,7 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
         /* pTSGrpParent */ pGrpGroupsSmallPlusSign );
 
     createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(pGrpGroupsSmallPlusSignDrawShapes);
-    createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(pGrpGroupsSmallPlusSign);
+    createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(pGrpGroupsSmallPlusSign);
     createTestStepSaveLoadFile(pGrpGroupsSmallPlusSign);
 
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN
@@ -444,7 +444,7 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
 
     createTestGroupDrawStandardShapesGroupLinesBigPlusSign(pGrpGroupsBigPlusSignRotateTopDrawShapes);
     createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(pGrpGroupsBigPlusSignRotateTop);
-    createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateTop, 2);
+    createTestStepSaveLoadFile(pGrpGroupsBigPlusSignRotateTop, 1);
 
     ZS::Test::CTestStepGroup* pGrpGroupsBigPlusSignRotateAndResize = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -1777,7 +1777,7 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     strlstExpectedValues.clear();
     m_ptPosText = QPointF(308.822330, 308.822330);
     m_pPhysValRectText->setSize(QSizeF(124.953319, 50.000000));
-    m_pPhysValRectText->setCenter(m_ptPosText);
+    m_pPhysValRectText->setCenter(QPointF(m_ptPosText.x(), bYAxisTopDown ? m_ptPosText.y() : fYAxisMaxVal - m_ptPosText.y()));
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -1810,9 +1810,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(282.161165, 335.483496);
+    m_ptPosText = bYAxisTopDown ? QPointF(282.161165, 335.483496) : QPointF(335.483496, 282.161165);
     m_pPhysValRectText->setSize(QSizeF(124.953319, 125.409163));
-    m_pPhysValRectText->setCenter(m_ptPosText);
+    m_pPhysValRectText->setCenter(QPointF(m_ptPosText.x(), bYAxisTopDown ? m_ptPosText.y() : fYAxisMaxVal - m_ptPosText.y()));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1845,9 +1845,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(282.161165, 352.983496);
+    m_ptPosText = bYAxisTopDown ? QPointF(282.161165, 352.983496) : QPointF(352.983496, 282.161165);
     m_pPhysValRectText->setSize(QSizeF(149.702056, 150.157900));
-    m_pPhysValRectText->setCenter(m_ptPosText);
+    m_pPhysValRectText->setCenter(QPointF(m_ptPosText.x(), bYAxisTopDown ? m_ptPosText.y() : fYAxisMaxVal - m_ptPosText.y()));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1880,9 +1880,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(246.911165, 317.733496);
+    m_ptPosText = bYAxisTopDown ? QPointF(246.911165, 317.733496) : QPointF(317.733496, 246.911165);
     m_pPhysValRectText->setSize(QSizeF(50.000000, 150.157900));
-    m_pPhysValRectText->setCenter(m_ptPosText);
+    m_pPhysValRectText->setCenter(QPointF(m_ptPosText.x(), bYAxisTopDown ? m_ptPosText.y() : fYAxisMaxVal - m_ptPosText.y()));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -1915,9 +1915,9 @@ void CTest::createTestGroupDrawStandardShapesTextModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_ptPosText = QPointF(282.411165, 282.233496);
+    m_ptPosText = bYAxisTopDown ? QPointF(282.411165, 282.233496) : QPointF(282.233496, 282.411165);
     m_pPhysValRectText->setSize(QSizeF(50.000000, 49.748737));
-    m_pPhysValRectText->setCenter(m_ptPosText);
+    m_pPhysValRectText->setCenter(QPointF(m_ptPosText.x(), bYAxisTopDown ? m_ptPosText.y() : fYAxisMaxVal - m_ptPosText.y()));
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForText(
         strObjName, m_ptPosText, *m_pPhysValRectText, strText, false, iResultValuesPrecision));
@@ -4841,7 +4841,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::C
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4851,7 +4851,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize(ZS::T
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupDrawStandardShapesGroupLinesSmallPlusSignResize",
+        /* strMethod    */ "createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications",
         /* strAddInfo   */ strMthInArgs );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;

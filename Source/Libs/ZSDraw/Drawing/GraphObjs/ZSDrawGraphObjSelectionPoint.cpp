@@ -505,24 +505,26 @@ QPainterPath CGraphObjSelectionPoint::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsEllipseItem::shape();
-    if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
-        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
-        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-        QPolygonF polygon({pos(), ptSelPosParent});
-        painterPath.closeSubpath();
-        painterPath.moveTo(0.0, 0.0);
-        painterPath.addPolygon(polygon);
-    }
-    else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
-        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-        QPolygonF polygon({pos(), ptSelPosParent});
-        painterPath.closeSubpath();
-        painterPath.moveTo(0.0, 0.0);
-        painterPath.addPolygon(polygon);
-    }
+    // When including the anchor lines in the bounding rectangle, the bounding rectangle of the
+    // rotation selection points overlap the top and bottom center selection points.
+    //if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+    //    QPolygonF polygon({pos(), ptSelPosParent});
+    //    painterPath.closeSubpath();
+    //    painterPath.moveTo(0.0, 0.0);
+    //    painterPath.addPolygon(polygon);
+    //}
+    //else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+    //    QPolygonF polygon({pos(), ptSelPosParent});
+    //    painterPath.closeSubpath();
+    //    painterPath.moveTo(0.0, 0.0);
+    //    painterPath.addPolygon(polygon);
+    //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);

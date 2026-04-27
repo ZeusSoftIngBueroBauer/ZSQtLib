@@ -392,9 +392,9 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     // Pixels Drawings
     //----------------
 
-#if TEST_PIXELS_DRAWINGS == 1
-
     CDrawingSize drawingSize;
+
+#if TEST_PIXELS_DRAWINGS == 1
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
     drawingSize.setScreenResolutionInPxPerMM(1.0);
 
