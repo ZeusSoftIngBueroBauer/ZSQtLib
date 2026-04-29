@@ -3888,14 +3888,55 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
+    QPolygon points;
+    QString strMethod = "setCurrentDrawingTool";
+    if (i_pTestStep->hasConfigValue("Method")) {
+        strMethod = i_pTestStep->getConfigValue("Method").toString();
+    }
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "Method: " + strMethod;
+        mthTracer.trace(strRuntimeInfo);
+        strRuntimeInfo = "GraphObj {Type";
+        if (i_pTestStep->hasConfigValue("GraphObjType")) {
+            strRuntimeInfo += i_pTestStep->getConfigValue("GraphObjType").toString();
+        }
+        strRuntimeInfo += ", Name: ";
+        if (i_pTestStep->hasConfigValue("GraphObjName")) {
+            strRuntimeInfo += i_pTestStep->getConfigValue("GraphObjName").toString();
+        }
+        strRuntimeInfo += "}";
+        if (i_pTestStep->hasConfigValue("P1")) {
+            strRuntimeInfo += ", P1 {" + qPoint2Str(i_pTestStep->getConfigValue("P1").toPoint()) + "}";
+        }
+        if (i_pTestStep->hasConfigValue("P2")) {
+            strRuntimeInfo += ", P2 {" + qPoint2Str(i_pTestStep->getConfigValue("P2").toPoint()) + "}";
+        }
+        mthTracer.trace(strRuntimeInfo);
+        strRuntimeInfo = "DataRows [" + QString::number(i_pTestStep->getDataRowCount()) + "]";
+        mthTracer.trace(strRuntimeInfo);
+        if (i_pTestStep->getDataRowCount() > 0) {
+            for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
+                QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+                strRuntimeInfo = " {";
+                if (dataRow.keys().contains("Method")) {
+                    strRuntimeInfo += "Method: " + qVariant2Str(dataRow["Method"]);
+                }
+                for (const QString& strKey : dataRow.keys()) {
+                    if (strKey != "Method") {
+                        strRuntimeInfo += ", " + strKey + ": " + qVariant2Str(dataRow[strKey]);
+                    }
+                }
+                strRuntimeInfo += "}";
+                mthTracer.trace(strRuntimeInfo);
+            }
+        }
+    }
+
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         QPointF pt1 = i_pTestStep->getConfigValue("P1").toPointF();
         QPointF pt2 = i_pTestStep->getConfigValue("P2").toPointF();
-        QString strMethod = "setCurrentDrawingTool";
-        if (i_pTestStep->hasConfigValue("Method")) {
-            strMethod = i_pTestStep->getConfigValue("Method").toString();
-        }
 
         if (strMethod == "setCurrentDrawingTool") {
             m_pDrawingScene->setCurrentDrawingTool(strFactoryGroupName, strGraphObjType);
