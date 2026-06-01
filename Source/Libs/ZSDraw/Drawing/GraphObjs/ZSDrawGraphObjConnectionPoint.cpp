@@ -2132,13 +2132,14 @@ void CGraphObjConnectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv 
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         if (cursor() != Qt::SizeAllCursor) {
             QGraphicsItem_setCursor(Qt::SizeAllCursor);
         }
     }
-    // Indicate that connection line can be started or terminated here.
+    // Unless connection lines are to be drawn.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
         QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
         QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
@@ -2173,13 +2174,14 @@ void CGraphObjConnectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         if (cursor() != Qt::SizeAllCursor) {
             QGraphicsItem_setCursor(Qt::SizeAllCursor);
         }
     }
-    // Indicate that connection line can be started or terminated here.
+    // Unless connection lines are to be drawn.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
     else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
         QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
         QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);

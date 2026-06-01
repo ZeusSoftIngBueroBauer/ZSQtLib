@@ -62,6 +62,9 @@ class CGraphObjLabel;
 class CPhysValPoint;
 
 //******************************************************************************
+/*! 
+    TODO: Introduce class CObjFactories (or FactoryContainer).
+*/
 class ZSDRAWDLL_API CObjFactory : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {

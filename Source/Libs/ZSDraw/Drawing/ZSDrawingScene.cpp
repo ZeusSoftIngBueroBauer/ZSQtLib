@@ -1927,6 +1927,9 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
                         cursor = m_pGraphObjUnderConstruction->getProposedCursor(ptLocalItemPos);
                     }
                 }
+                else if (m_pObjFactory->graphObjType() == EGraphObjType::EGraphObjTypeConnectionLine) {
+                    cursor = Qt::ForbiddenCursor;
+                }
                 else {
                     cursor = Qt::CrossCursor;
                 }

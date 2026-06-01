@@ -960,7 +960,7 @@ public: // struct members
 
 
 //******************************************************************************
-/*! @brief Provides information about where a polygon has been hit.
+/*! @brief Provides information about where a graphical object has been hit.
 
     Only one of the following hit conditions are set:
 

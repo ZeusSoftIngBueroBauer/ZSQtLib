@@ -3895,9 +3895,9 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = "Method: " + strMethod;
+        QString strRuntimeInfo = "-+ Method: " + strMethod;
         mthTracer.trace(strRuntimeInfo);
-        strRuntimeInfo = "GraphObj {Type";
+        strRuntimeInfo = "-+ GraphObj {Type";
         if (i_pTestStep->hasConfigValue("GraphObjType")) {
             strRuntimeInfo += i_pTestStep->getConfigValue("GraphObjType").toString();
         }
@@ -3913,12 +3913,12 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
             strRuntimeInfo += ", P2 {" + qPoint2Str(i_pTestStep->getConfigValue("P2").toPoint()) + "}";
         }
         mthTracer.trace(strRuntimeInfo);
-        strRuntimeInfo = "DataRows [" + QString::number(i_pTestStep->getDataRowCount()) + "]";
+        strRuntimeInfo = "-+ DataRows [" + QString::number(i_pTestStep->getDataRowCount()) + "]";
         mthTracer.trace(strRuntimeInfo);
         if (i_pTestStep->getDataRowCount() > 0) {
             for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
                 QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
-                strRuntimeInfo = " {";
+                strRuntimeInfo = " . {";
                 if (dataRow.keys().contains("Method")) {
                     strRuntimeInfo += "Method: " + qVariant2Str(dataRow["Method"]);
                 }
@@ -4095,7 +4095,7 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = "Method: " + strMethod;
+        QString strRuntimeInfo = "-+ Method: " + strMethod;
         strRuntimeInfo += ", Points {Idx: ";
         if (i_pTestStep->hasConfigValue("Points.Idx")) {
             strRuntimeInfo += QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt());
@@ -4279,7 +4279,7 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = "Method: ";
+        QString strRuntimeInfo = "+- Method: ";
         if (i_pTestStep->hasConfigValue("Method")) {
             strRuntimeInfo += i_pTestStep->getConfigValue("Method").toString();
         }
@@ -4321,9 +4321,9 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
     }
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = "Method: " + strMethod;
+        QString strRuntimeInfo = "-+ Method: " + strMethod;
         mthTracer.trace(strRuntimeInfo);
-        strRuntimeInfo = "Points {Idx: ";
+        strRuntimeInfo = "-+ Points {Idx: ";
         if (i_pTestStep->hasConfigValue("Points.Idx")) {
             strRuntimeInfo += QString::number(i_pTestStep->getConfigValue("Points.Idx").toInt());
         }
@@ -4341,7 +4341,7 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
         }
         strRuntimeInfo += "}";
         mthTracer.trace(strRuntimeInfo);
-        strRuntimeInfo = "DataRows [" + QString::number(i_pTestStep->getDataRowCount()) + "]";
+        strRuntimeInfo = "-+ DataRows [" + QString::number(i_pTestStep->getDataRowCount()) + "]";
         mthTracer.trace(strRuntimeInfo);
         if (i_pTestStep->getDataRowCount() > 0) {
             for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
@@ -4511,7 +4511,7 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
         if (i_pTestStep->hasConfigValue("Method")) {
             strMethod = i_pTestStep->getConfigValue("Method").toString();
         }
-        QString strRuntimeInfo = "Method: " + strMethod;
+        QString strRuntimeInfo = "+- Method: " + strMethod;
         mthTracer.trace(strRuntimeInfo);
     }
 }

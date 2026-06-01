@@ -4992,11 +4992,11 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::
     // If more than 3 points are defined, the points from index 2 to the penultimate
     // index are additional polygon points.
     QPolygon points({
-        QPoint(240, 250),
-        ptCnctPt1.toPoint(),
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), ptCnctPt1.toPoint().y() - 1),
         QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
                (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
-        ptCnctPt2.toPoint()
+        QPoint(ptCnctPt2.toPoint().x(), ptCnctPt2.toPoint().y() + 1),
     });
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);

@@ -1457,7 +1457,7 @@ bool ZS::Draw::isRectHit(
             }
         }
         if (!bIsHit) {
-            plg = i_rct; // this cast return 5 points (left top corner twice)
+            plg = i_rct; // this cast returns 5 points (left top corner twice)
             for (int idxPt = 0; idxPt < plg.size()-1; idxPt++) {
                 QLineF lin(plg[idxPt], plg[idxPt+1]);
                 if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {

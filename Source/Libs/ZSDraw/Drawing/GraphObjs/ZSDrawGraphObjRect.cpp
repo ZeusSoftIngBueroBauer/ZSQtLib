@@ -1688,10 +1688,31 @@ void CGraphObjRect::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isRectHit(rect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -1716,10 +1737,31 @@ void CGraphObjRect::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isRectHit(rect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
