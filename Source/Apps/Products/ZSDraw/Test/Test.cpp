@@ -3052,7 +3052,7 @@ void CTest::doTestStepSetDrawSettings(ZS::Test::CTestStep* i_pTestStep)
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     bool bImmediatelyApplySetting = i_pTestStep->getConfigValue("ImmediatelyApplySettings").toBool();
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
     if (pGraphObj != nullptr) {
         for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
             QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
@@ -3168,7 +3168,7 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
     QString strLabelName = i_pTestStep->getConfigValue("LabelName").toString();
 
     QString strKeyInTree = "B:" + strGraphObjName;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         pGraphObj->showLabel(strLabelName);
         pGraphObj->showLabelAnchorLine(strLabelName);
@@ -3197,7 +3197,7 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         }
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showLabel(strLabelName);
             pGraphObj->showLabelAnchorLine(strLabelName);
@@ -3254,7 +3254,7 @@ void CTest::doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep)
         QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
         QString strLabelName = dataRow["LabelName"].toString();
         strlstExpectedValues.append(dataRow["ExpectedValue"].toString());
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->hideLabel(strLabelName);
             pGraphObj->hideLabelAnchorLine(strLabelName);
@@ -3306,7 +3306,7 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
         QString strExpectedText = dataRow["ExpectedText"].toString();
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, pos, strExpectedText));
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showGeometryLabel(strLabelName);
             pGraphObj->showGeometryLabelAnchorLine(strLabelName);
@@ -3356,7 +3356,7 @@ void CTest::doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
         QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
         QString strLabelName = dataRow["LabelName"].toString();
         strlstExpectedValues.append(dataRow["ExpectedValue"].toString());
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->hideGeometryLabel(strLabelName);
             pGraphObj->hideGeometryLabelAnchorLine(strLabelName);
@@ -3423,7 +3423,7 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3476,7 +3476,7 @@ void CTest::doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep)
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3529,7 +3529,7 @@ void CTest::doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep)
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3603,7 +3603,7 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3658,7 +3658,7 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3693,7 +3693,7 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
     CGraphObj* pGraphObjParent = nullptr;
     if (i_pTestStep->hasConfigValue("GraphObjKeyInTreeParent")) {
         strKeyInTreeParent = i_pTestStep->getConfigValue("GraphObjKeyInTreeParent").toString();
-        pGraphObjParent = m_pDrawingScene->findGraphObj(strKeyInTreeParent);
+        pGraphObjParent = m_pDrawingScene->getGraphObj(strKeyInTreeParent);
     }
     if (pGraphObjParent == nullptr) {
         CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
@@ -3729,7 +3729,7 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3764,8 +3764,8 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
     QPolygonF polygon = i_pTestStep->getConfigValue("Points").value<QPolygonF>();
     QString strKeyInTreeCnctPt1 = i_pTestStep->getConfigValue("GraphObjKeyInTreeCnctPt1").toString();
     QString strKeyInTreeCnctPt2 = i_pTestStep->getConfigValue("GraphObjKeyInTreeCnctPt2").toString();
-    CGraphObjConnectionPoint* pCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->findGraphObj(strKeyInTreeCnctPt1));
-    CGraphObjConnectionPoint* pCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->findGraphObj(strKeyInTreeCnctPt2));
+    CGraphObjConnectionPoint* pCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->getGraphObj(strKeyInTreeCnctPt1));
+    CGraphObjConnectionPoint* pCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->getGraphObj(strKeyInTreeCnctPt2));
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
 
@@ -3787,7 +3787,7 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
         strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
     }
@@ -3834,7 +3834,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
             pGraphObjGroup->rename(strGroupName);
             for (const QString& strGraphObjNameChild : strlstGraphObjsAddToGroup) {
                 strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjNameChild);
-                CGraphObj* pGraphObjChild = m_pDrawingScene->findGraphObj(strKeyInTree);
+                CGraphObj* pGraphObjChild = m_pDrawingScene->getGraphObj(strKeyInTree);
                 if (pGraphObjChild != nullptr) {
                     pGraphObjGroup->addToGroup(pGraphObjChild);
                 }
@@ -3853,7 +3853,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
         }
@@ -4031,7 +4031,7 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
             int iInstCount = pObjFactory->getNumberOfCreatedGraphObjects();
             QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(iInstCount-1));
             QStringList strlstResultValues;
-            CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+            CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pDrawingScene->getGraphObj(strKeyInTreeCreated));
             if (pGraphObjText != nullptr) {
                 QString strText = i_pTestStep->getConfigValue("Text").toString();
                 pGraphObjText->setPlainText(strText);
@@ -4047,7 +4047,7 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
             int iInstCount = pObjFactory->getNumberOfCreatedGraphObjects();
             QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjType + QString::number(iInstCount-1));
             QStringList strlstResultValues;
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(m_pDrawingScene->getGraphObj(strKeyInTreeCreated));
             if (pGraphObj != nullptr) {
                 pGraphObj->rename(strGraphObjName);
                 strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
@@ -4268,7 +4268,7 @@ void CTest::doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
         // Also for EGraphObjTypePolyline a CGraphObjPolygon object is created (the type can be changed during runtime).
         QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(
             strEntryType, graphObjType2Str(EGraphObjTypePolygon) + QString::number(CGraphObjPolygon::s_iInstCount-1));
-        CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+        CGraphObjPolygon* pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->getGraphObj(strKeyInTreeCreated));
         if (pGraphObjPolygon != nullptr) {
             pGraphObjPolygon->rename(strGraphObjName);
             strlstResultValues.append(resultValuesForGraphObj(pGraphObjPolygon, false, false, iResultValuesPrecision));
@@ -4496,7 +4496,7 @@ void CTest::doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestSte
         QStringList strlstResultValues;
         QString strKeyInTreeCreated = pIdxTree->buildKeyInTreeStr(
             strEntryType, strGraphObjType + QString::number(CGraphObjConnectionLine::s_iInstCount-1));
-        CGraphObjConnectionLine* pGraphObjConnectionLine = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+        CGraphObjConnectionLine* pGraphObjConnectionLine = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->getGraphObj(strKeyInTreeCreated));
         if (pGraphObjConnectionLine != nullptr) {
             pGraphObjConnectionLine->rename(strGraphObjName);
             strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, false, iResultValuesPrecision));
@@ -4642,7 +4642,7 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
             strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
         }
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strKeyInTreeCreated));
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->getGraphObj(strKeyInTreeCreated));
         if (pGraphObjGroup != nullptr) {
             // Deselect the object before changing the name. Otherwise the selection points keep their current names.
             // This would not be a problem. But this might be confusing when reading the log file.
@@ -4658,7 +4658,7 @@ void CTest::doTestStepDrawGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-            CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+            CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
             if (pGraphObj != nullptr) {
                 strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }
@@ -4691,7 +4691,7 @@ void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
-    CGraphObjLine* pGraphObj = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjLine* pGraphObj = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setLine", Qt::CaseInsensitive) == 0) {
             if (i_pTestStep->hasConfigValue("P1")) {
@@ -4762,7 +4762,7 @@ void CTest::doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
-    CGraphObjRect* pGraphObj= dynamic_cast<CGraphObjRect*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjRect* pGraphObj= dynamic_cast<CGraphObjRect*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
             CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
@@ -4871,7 +4871,7 @@ void CTest::doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*
     if (pGraphObj != nullptr) {
         if (!strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
             for (const QString& strGraphObjKeyEntry : strlstGraphObjsKeyInTreeGetResultValues) {
-                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->findGraphObj(strGraphObjKeyEntry);
+                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->getGraphObj(strGraphObjKeyEntry);
                 if (pGraphObjAddResultValues != nullptr) {
                     strlstResultValues.append(resultValuesForGraphObj(pGraphObjAddResultValues, false, false, iResultValuesPrecision));
                 }
@@ -4907,7 +4907,7 @@ void CTest::doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestSt
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
-    CGraphObjEllipse* pGraphObj= dynamic_cast<CGraphObjEllipse*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjEllipse* pGraphObj= dynamic_cast<CGraphObjEllipse*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
             CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
@@ -5040,7 +5040,7 @@ void CTest::doTestStepModifyGraphObjTextByDirectMethodCalls(ZS::Test::CTestStep*
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
-    CGraphObjText* pGraphObj= dynamic_cast<CGraphObjText*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjText* pGraphObj= dynamic_cast<CGraphObjText*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
             CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
@@ -5174,7 +5174,7 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
     CPhysValPoint physValPointTaken(*m_pDrawingScene);
 
-    CGraphObjPolygon* pGraphObj = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjPolygon* pGraphObj = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setPolygon", Qt::CaseInsensitive) == 0) {
             if (i_pTestStep->hasConfigValue("polygon")) {
@@ -5289,7 +5289,7 @@ void CTest::doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test:
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
-    CGraphObjConnectionPoint* pGraphObj = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjConnectionPoint* pGraphObj = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("Pos").toPointF();
@@ -5311,7 +5311,7 @@ void CTest::doTestStepModifyGraphObjConnectionPointByDirectMethodCalls(ZS::Test:
         if (!strlstGraphObjConnectionLinesKeyEntry.isEmpty()) {
             for (const QString& strGraphObjKeyEntry : strlstGraphObjConnectionLinesKeyEntry) {
                 CGraphObjConnectionLine* pGraphObjConnectionLine =
-                    dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyEntry));
+                    dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->getGraphObj(strGraphObjKeyEntry));
                 if (pGraphObjConnectionLine != nullptr) {
                     strlstResultValues.append(resultValuesForGraphObj(pGraphObjConnectionLine, false, false, iResultValuesPrecision));
                 }
@@ -5348,7 +5348,7 @@ void CTest::doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
     CPhysValPoint physValPointTaken(*m_pDrawingScene);
 
-    CGraphObjConnectionLine* pGraphObj = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+    CGraphObjConnectionLine* pGraphObj = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
         if (strMethod.compare("replace", Qt::CaseInsensitive) == 0) {
             int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
@@ -5455,10 +5455,10 @@ void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep
         strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
     }
 
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupKeyInTree));
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->getGraphObj(strGroupKeyInTree));
     CGraphObj* pGraphObjChild = nullptr;
     if (!strGraphObjChildKeyInTree.isEmpty()) {
-        pGraphObjChild = m_pDrawingScene->findGraphObj(strGraphObjChildKeyInTree);
+        pGraphObjChild = m_pDrawingScene->getGraphObj(strGraphObjChildKeyInTree);
     }
     if (pGraphObjGroup != nullptr) {
         if (strMethod.compare("ungroup", Qt::CaseInsensitive) == 0) {
@@ -5633,7 +5633,7 @@ void CTest::doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
     QStringList strlstResultValues;
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
         }
@@ -5807,7 +5807,7 @@ void CTest::doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*
         if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
             strlstGraphObjsKeyInTreeGetResultValues.append(strGraphObjKeyInTree);
             if (graphObjType == EGraphObjTypeGroup) {
-                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
                 if (pGraphObjGroup != nullptr) {
                     for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
                         strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
@@ -5818,7 +5818,7 @@ void CTest::doTestStepModifyGraphObjByMovingSelectionPoints(ZS::Test::CTestStep*
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-            CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+            CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
             if (pGraphObj != nullptr) {
                 strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }
@@ -6025,7 +6025,7 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
         if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
             strlstGraphObjsKeyInTreeGetResultValues.append(strGraphObjKeyInTree);
             if (graphObjType == EGraphObjTypeGroup) {
-                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
                 if (pGraphObjGroup != nullptr) {
                     for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
                         strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
@@ -6036,7 +6036,7 @@ void CTest::doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep* i_pTestSt
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-            CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+            CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
             QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
             if (pGraphObj != nullptr && pGraphicsItem != nullptr) {
                 strlstResultValues.append(resultValuesForGraphObj(pGraphObj, pGraphicsItem->isSelected(), false, iResultValuesPrecision));
@@ -6136,7 +6136,7 @@ void CTest::doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep)
         if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
             strlstGraphObjsKeyInTreeGetResultValues.append(strGraphObjKeyInTree);
             if (graphObjType == EGraphObjTypeGroup) {
-                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
                 if (pGraphObjGroup != nullptr) {
                     for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
                         strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
@@ -6147,7 +6147,7 @@ void CTest::doTestStepSelectAndUngroup(ZS::Test::CTestStep* i_pTestStep)
         int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
             i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
         for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-            CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+            CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
             if (pGraphObj != nullptr) {
                 strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
             }

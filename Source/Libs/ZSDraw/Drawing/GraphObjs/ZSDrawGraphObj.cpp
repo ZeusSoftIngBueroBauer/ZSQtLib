@@ -4487,6 +4487,22 @@ CGraphObjSelectionPoint* CGraphObj::getSelectionPointHit(const QPointF& i_pt) co
     return pGraphObjSelPtHit;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Returns a hit info struct defining where the object has bin hit at the given point.
+
+    @param i_pt [in] Point to be check in local coordinates.
+
+    @return Selection point hit info.
+*/
+SGraphObjHitInfo CGraphObj::getSelectionPointHitInfo(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    SGraphObjHitInfo hitInfo;
+    return hitInfo;
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
@@ -6788,14 +6804,14 @@ QStringList CGraphObj::getConnectionPointsNames() const
     return m_hshConnectionPointsDscrs.keys();
 }
 
-////------------------------------------------------------------------------------
-///*! @brief Returns the connection point for the given name.
-//*/
-//CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName) const
-////------------------------------------------------------------------------------
-//{
-//    return m_hshpConnectionPoints.value(i_strName, nullptr);
-//}
+//------------------------------------------------------------------------------
+/*! @brief Returns the connection point for the given name.
+*/
+CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    return m_hshpConnectionPoints.value(i_strName, nullptr);
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the connection point descriptor for the given name.
@@ -6858,6 +6874,67 @@ bool CGraphObj::isConnectionPointAdded(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether a connection point at the specified selection point is existing.
+
+    @param [in] i_selPtType
+        Range [BoundingRectangle]
+        For this method the selection point type must be set to BoundingRectangle.
+    @param [in] i_selPt1
+        Defines the selection point at the bounding rectangle.
+
+    @return true if a connection point at the given selection point is existing, false otherwise.
+*/
+bool CGraphObj::isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const
+//------------------------------------------------------------------------------
+{
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+    bool bIsAdded = false;
+    for (const SAnchorLayoutDscr& linkedChildDscr : m_hshConnectionPointsDscrs) {
+        if (    (linkedChildDscr.m_graphObjType == EGraphObjTypeConnectionPoint)
+            &&  (linkedChildDscr.m_selPt1.m_selPtType == i_selPtType)
+            &&  (linkedChildDscr.m_selPt1.m_selPt == i_selPt1))
+        {
+            bIsAdded = true;
+            break;
+        }
+    }
+    return bIsAdded;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether a connection point at the specified selection point is existing.
+
+    @param [in] i_selPtType
+        Range [PolygonPoint, LineCenterPoint]
+        Defines whether the selection point is located at a polygon line point or at a line segment.
+    @param [in] i_selPt1
+        Defines either the index of a polygon (or polyline) point or the index
+        of the line segment of a polygon.
+
+    @return true if a connection point at the given selection point is existing, false otherwise.
+*/
+bool CGraphObj::isConnectionPointAdded(ESelectionPointType i_selPtType, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+    if ((i_selPtType != ESelectionPointType::PolygonPoint) && (i_selPtType != ESelectionPointType::LineCenterPoint)) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+    bool bIsAdded = false;
+    for (const SAnchorLayoutDscr& linkedChildDscr : m_hshConnectionPointsDscrs) {
+        if (    (linkedChildDscr.m_graphObjType == EGraphObjTypeConnectionPoint)
+            &&  (linkedChildDscr.m_selPt1.m_selPtType == i_selPtType)
+            &&  (linkedChildDscr.m_selPt1.m_idxPt == i_idxPt))
+        {
+            bIsAdded = true;
+            break;
+        }
+    }
+    return bIsAdded;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Generates a unique name for a connection point.
 
     @param [in] i_selPtType
@@ -6893,7 +6970,7 @@ QString CGraphObj::generateUniqueConnectionPointName(
         Range [PolygonPoint, LineCenterPoint]
     @param [in] i_idxPt
         Selection point the connection point should be anchored to.
-        Defines either the index of a polygon (or line) point or the index
+        Defines either the index of a polygon (or polyline) point or the index
         of the line segment of a polygon.
 
     @return Unique name for a connection point.
@@ -6902,7 +6979,7 @@ QString CGraphObj::generateUniqueConnectionPointName(
     ESelectionPointType i_selPtType, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
-    if ((i_selPtType != ESelectionPointType::PolygonPoint) || (i_selPtType != ESelectionPointType::LineCenterPoint)) {
+    if ((i_selPtType != ESelectionPointType::PolygonPoint) && (i_selPtType != ESelectionPointType::LineCenterPoint)) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
     QString strBaseName = "P" + QString::number(i_idxPt) + "-";

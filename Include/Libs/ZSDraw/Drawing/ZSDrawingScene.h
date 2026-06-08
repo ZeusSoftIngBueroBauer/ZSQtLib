@@ -146,8 +146,11 @@ public: // instance methods
     void clear();
     void addGraphObj(CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr);
     void deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall = true);
-    QGraphicsItem* findGraphicsItem(const QString& i_strKeyInTree);
-    CGraphObj* findGraphObj(const QString& i_strKeyInTree);
+    QGraphicsItem* getGraphicsItem(const QString& i_strKeyInTree);
+    CGraphObj* getGraphObj(const QString& i_strKeyInTree);
+    QGraphicsItem* getGraphicsItem(const QPointF& i_ptScenePos);
+    CGraphObj* getGraphObj(const QPointF& i_ptScenePos);
+    CGraphObjConnectionPoint* getConnectionPoint(const QPointF& i_ptScenePos);
 public: // instance methods (replacing methods of QGraphicScene)
     void removeItem(QGraphicsItem* i_pGraphicsItem);
 public: // instance methods
@@ -158,10 +161,6 @@ public: // instance methods
     void removeAndDeleteAllPhysValShapes();
 public: // instance methods
     void setMode(const ZS::System::CEnumMode& i_mode);
-        //const CEnumEditTool&         i_editTool = EEditTool::Undefined,
-        //const CEnumEditMode&         i_editMode = EEditMode::Undefined,
-        //const CEnumEditResizeMode&   i_editResizeMode = EEditResizeMode::Undefined,
-        //bool                         i_bObjFactoryTypeChanged = false );
     ZS::System::CEnumMode getMode() const { return m_mode; }
     //CEnumEditTool getEditTool() const { return m_editTool; }
     //CEnumEditMode getEditMode() const { return m_editMode; }
@@ -175,9 +174,7 @@ public: // instance methods
     //QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }
     //CGraphObj* getGraphObjCreating() const { return m_pGraphObjCreating; }
 public: // instance methods
-    CGraphObjConnectionPoint* getConnectionPoint( const QPointF& i_ptScenePos );
-public: // instance methods
-    QCursor getProposedCursor( const QPointF& i_ptPos ) const;
+    QCursor getProposedCursor(const QPointF& i_ptPos) const;
 public: // instance methods
     double bringToFront( QGraphicsItem* i_pGraphicsItem, const QPointF& i_ptScenePos );
     double sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF& i_ptScenePos );

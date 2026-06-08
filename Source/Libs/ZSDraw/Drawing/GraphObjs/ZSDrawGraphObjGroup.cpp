@@ -735,7 +735,7 @@ void CGraphObjGroup::resizeToContent()
 }
 
 //------------------------------------------------------------------------------
-CGraphObj* CGraphObjGroup::findGraphObj( const QString& i_strObjName )
+CGraphObj* CGraphObjGroup::getGraphObj( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CGraphObj*>(find(i_strObjName));

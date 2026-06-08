@@ -357,7 +357,7 @@ bool CModelGraphObjEllipseGeometry::setKeyInTree(const QString& i_strKeyInTree)
             m_pGraphObjEllipse = nullptr;
         }
         else {
-            m_pGraphObjEllipse = dynamic_cast<CGraphObjEllipse*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
+            m_pGraphObjEllipse = dynamic_cast<CGraphObjEllipse*>(m_pDrawingScene->getGraphObj(i_strKeyInTree));
         }
 
         if (m_pGraphObjEllipse != nullptr) {

@@ -1238,6 +1238,15 @@ CPhysValRect CGraphObjRect::getPhysValBoundingRect(const CUnit& i_unit) const
     return physValRectBounding;
 }
 
+//------------------------------------------------------------------------------
+SGraphObjHitInfo CGraphObjRect::getSelectionPointHitInfo(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    SGraphObjHitInfo hitInfo;
+    isRectHit(rect(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    return hitInfo;
+}
+
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/

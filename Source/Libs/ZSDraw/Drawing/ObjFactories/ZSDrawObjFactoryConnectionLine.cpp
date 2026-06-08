@@ -278,12 +278,12 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameLineStart) {
                     QString strObjId = i_xmlStreamReader.readElementText();
-                    CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
+                    CGraphObj* pGraphObjTmp = i_pDrawingScene->getGraphObj(strObjId);
                     pCnctPtStart = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameLineEnd) {
                     QString strObjId = i_xmlStreamReader.readElementText();
-                    CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
+                    CGraphObj* pGraphObjTmp = i_pDrawingScene->getGraphObj(strObjId);
                     pCnctPtEnd = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {

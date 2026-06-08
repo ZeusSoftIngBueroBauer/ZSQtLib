@@ -1258,7 +1258,7 @@ void CDrawingScene::deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall)
 }
 
 //------------------------------------------------------------------------------
-QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strKeyInTree )
+QGraphicsItem* CDrawingScene::getGraphicsItem(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QGraphicsItem* pGraphicsItem = nullptr;
@@ -1271,7 +1271,7 @@ QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strKeyInTree )
 }
 
 //------------------------------------------------------------------------------
-CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
+CGraphObj* CDrawingScene::getGraphObj(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     CGraphObj* pGraphObj = nullptr;
@@ -1281,6 +1281,121 @@ CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
         pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
     }
     return pGraphObj;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the graphics item at the given scene position or nullptr, if there
+    is no item at the given position.
+
+    @param i_ptScenePos [in] Scene coordinates to be checked.
+
+    @return Pointer to graphics item if there is an item at the given position,
+            nullptr otherwise.
+*/
+QGraphicsItem* CDrawingScene::getGraphicsItem(const QPointF& i_ptScenePos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getGraphicsItem",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItem = nullptr;
+    QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+    }
+    if (!arpGraphicsItems.isEmpty()) {
+        pGraphicsItem = arpGraphicsItems[0];
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphicsItem == nullptr ? "null" : "Item"));
+    }
+    return pGraphicsItem;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the connection point at the given scene position or nullptr, if there
+    is no connection point at the given position.
+
+    @param i_ptScenePos [in] Scene coordinates to be checked.
+
+    @return Pointer to connection point if there is a connection point at
+            the given position, nullptr otherwise.
+*/
+CGraphObj* CDrawingScene::getGraphObj(const QPointF& i_ptScenePos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getGraphObj",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObj = nullptr;
+    QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+    }
+    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+        CGraphObj* pGraphObjTmp = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        if (pGraphObjTmp != nullptr) {
+            pGraphObj = pGraphObjTmp;
+            break;
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphObj == nullptr ? "null" : pGraphObj->path()));
+    }
+    return pGraphObj;
+}
+
+//------------------------------------------------------------------------------
+/*! Returns the connection point at the given scene position or nullptr, if there
+    is no connection point at the given position.
+
+    @param i_ptScenePos [in] Scene coordinates to be checked.
+
+    @return Pointer to connection point if there is a connection point at
+            the given position, nullptr otherwise.
+*/
+CGraphObjConnectionPoint* CDrawingScene::getConnectionPoint(const QPointF& i_ptScenePos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getConnectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
+    QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+    }
+    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
+            pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(pGraphicsItem);
+            break;
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphObjCnctPt == nullptr ? "null" : pGraphObjCnctPt->path()));
+    }
+    return pGraphObjCnctPt;
 }
 
 /*==============================================================================
@@ -1841,48 +1956,6 @@ EGraphObjType CDrawingScene::getCurrentDrawingToolGraphObjType() const
         graphObjFactoryType = m_pObjFactory->graphObjType();
     }
     return graphObjFactoryType;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Checks whether a connection point is at the given position.
-
-    @param i_ptScenePos [in] Scene coordinates to be checked.
-
-    @return Pointer to connection point item if there is a connection point at
-            the given position. nullptr otherwise.
-*/
-CGraphObjConnectionPoint* CDrawingScene::getConnectionPoint( const QPointF& i_ptScenePos )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCursor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "getConnectionPoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-    QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
-    }
-    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
-        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
-            pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(pGraphicsItem);
-            break;
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString(pGraphObjCnctPt == nullptr ? "null" : pGraphObjCnctPt->path()));
-    }
-    return pGraphObjCnctPt;
 }
 
 /*==============================================================================
@@ -3362,7 +3435,7 @@ bool CDrawingScene::event(QEvent* i_pEv)
                         if (pMsgReqDeleteGraphObj == nullptr) {
                             throw CException(__FILE__, __LINE__, EResultMessageTypeMismatch);
                         }
-                        CGraphObj* pGraphObj = this->findGraphObj(pMsgReqDeleteGraphObj->keyInTree());
+                        CGraphObj* pGraphObj = this->getGraphObj(pMsgReqDeleteGraphObj->keyInTree());
                         if (pGraphObj != nullptr) {
                             delete pGraphObj;
                             pGraphObj = nullptr;
@@ -3665,8 +3738,24 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // Connection lines may only be created on connection points.
                 // A connection point must have been hit to create connection lines.
                 if (graphObjFactoryType == EGraphObjTypeConnectionLine) {
-                    // Check whether a connection point has been hit.
+                    // Check whether an already existing connection point has been hit.
                     pGraphObjCnctPtHit = getConnectionPoint(i_pEv->scenePos());
+                    if (pGraphObjCnctPtHit == nullptr) {
+                        // If a connection line should be linked to an object, a connection point has
+                        // to be created if a selection point has been hit.
+                        CGraphObj* pGraphObjHit = getGraphObj(i_pEv->scenePos());
+                        QGraphicsItem* pGraphicsItemHit = dynamic_cast<QGraphicsItem*>(pGraphObjHit);
+                        if (pGraphicsItemHit != nullptr) {
+                            QPointF ptPos = pGraphicsItemHit->mapFromScene(i_pEv->scenePos());
+                            SGraphObjHitInfo hitInfo = pGraphObjHit->getSelectionPointHitInfo(ptPos);
+                            if (hitInfo.isSelectionPointHit()) {
+                                if (!pGraphObjHit->isConnectionPointAdded(ESelectionPointType::BoundingRectangle, hitInfo.m_selPtBoundingRect.enumerator())) {
+                                    QString strCnctPtName = pGraphObjHit->addConnectionPoint(ESelectionPointType::BoundingRectangle, hitInfo.m_selPtBoundingRect.enumerator());
+                                    pGraphObjCnctPtHit = pGraphObjHit->getConnectionPoint(strCnctPtName);
+                                }
+                            }
+                        }
+                    }
                     if (pGraphObjCnctPtHit == nullptr) {
                         bCreateObj = false;
                     }
@@ -3701,7 +3790,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         m_pGraphObjUnderConstruction->setEditMode(EEditMode::CreatingByMouseEvents);
                         QObject::connect(
                             m_pGraphObjUnderConstruction, &CGraphObj::editModeChanged,
-                            this, &CDrawingScene::onGraphObjEditModeChanged );
+                            this, &CDrawingScene::onGraphObjEditModeChanged);
 
                         CGraphObjConnectionLine* pGraphObjCnctLineCreating = nullptr;
                         //CGraphObjConnectionPoint* pGraphObjCnctPtCreating = nullptr;
@@ -4267,7 +4356,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
                 }
             }
             for (const QString& strGraphObjId : strlstGraphObjIdsSelected) {
-                CGraphObj* pGraphObj = findGraphObj(strGraphObjId);
+                CGraphObj* pGraphObj = getGraphObj(strGraphObjId);
                 if (pGraphObj != nullptr) {
                     delete pGraphObj;
                     pGraphObj = nullptr;
@@ -4839,7 +4928,7 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
     }
     for (int idxChild = 0; idxChild < strlstGraphObjIdsChilds.size(); idxChild++) {
         QString strGraphObjIdChild = strlstGraphObjIdsChilds[idxChild];
-        CGraphObj* pGraphObjChild = findGraphObj(strGraphObjIdChild);
+        CGraphObj* pGraphObjChild = getGraphObj(strGraphObjIdChild);
         if (pGraphObjChild != nullptr) {
             deleteItem(pGraphObjChild);
             pGraphObjChild = nullptr;

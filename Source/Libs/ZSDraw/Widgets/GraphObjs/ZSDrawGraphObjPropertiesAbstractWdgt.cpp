@@ -309,7 +309,7 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
             m_pGraphObj = nullptr;
         }
         else {
-            m_pGraphObj = m_pDrawingScene->findGraphObj(i_strKeyInTree);
+            m_pGraphObj = m_pDrawingScene->getGraphObj(i_strKeyInTree);
         }
         if (m_pGraphObj == nullptr) {
             m_graphObjTypeCurr = EGraphObjTypeUndefined;

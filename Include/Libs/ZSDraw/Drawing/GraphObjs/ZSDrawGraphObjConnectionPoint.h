@@ -75,7 +75,7 @@ public: // instance methods
     void removeConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine);
     int getConnectionLineIdx(CGraphObjConnectionLine* i_pGraphObjCnctLine);
     int getConnectionLinesCount() const;
-    CGraphObjConnectionLine* getConnectionLine( int i_iLineIdx );
+    CGraphObjConnectionLine* getConnectionLine(int i_iLineIdx);
 protected slots:
     void onConnectionLineZValueChanged(CGraphObj* i_pGraphObjCnctLine, double i_fZValue);
 public: // instance methods

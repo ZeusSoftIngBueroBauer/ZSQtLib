@@ -357,7 +357,7 @@ bool CModelGraphObjTextGeometry::setKeyInTree(const QString& i_strKeyInTree)
             m_pGraphObjText = nullptr;
         }
         else {
-            m_pGraphObjText = dynamic_cast<CGraphObjText*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
+            m_pGraphObjText = dynamic_cast<CGraphObjText*>(m_pDrawingScene->getGraphObj(i_strKeyInTree));
         }
 
         if (m_pGraphObjText != nullptr) {

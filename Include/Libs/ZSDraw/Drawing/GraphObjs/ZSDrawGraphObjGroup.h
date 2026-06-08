@@ -125,7 +125,7 @@ public: // instance methods
     void addToGroup(CGraphObj* i_pGraphObj, bool i_bGraphObjCoordinatesRelativeToThisGroup = false);
     void removeFromGroup(CGraphObj* i_pGraphObj);
     void resizeToContent();
-    CGraphObj* findGraphObj(const QString& i_strObjName);
+    CGraphObj* getGraphObj(const QString& i_strObjName);
     QVector<CGraphObj*> childs() const;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);

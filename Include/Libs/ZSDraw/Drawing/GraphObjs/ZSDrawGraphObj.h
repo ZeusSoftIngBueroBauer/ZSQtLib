@@ -671,7 +671,8 @@ public: // overridables
     double getStackingOrderValue(ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current) const;
     double resetStackingOrderValueToOriginalValue();
 public: // overridables
-    CGraphObjSelectionPoint* getSelectionPointHit(const QPointF& i_pt) const;
+    virtual CGraphObjSelectionPoint* getSelectionPointHit(const QPointF& i_pt) const;
+    virtual SGraphObjHitInfo getSelectionPointHitInfo(const QPointF& i_pt) const;
 public: // overridables
     virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
     virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const;
@@ -741,10 +742,12 @@ protected: // overridables (geometry labels)
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;
-    //CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
+    CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
     SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
     //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
+    virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
+    virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, int i_idxPt) const;
     QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
     QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, int i_idxPt) const;
     virtual bool addConnectionPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);

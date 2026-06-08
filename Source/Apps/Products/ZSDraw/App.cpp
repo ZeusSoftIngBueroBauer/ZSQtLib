@@ -94,8 +94,8 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CApplication::CApplication(
-    int            i_argc,
-    char*          i_argv[],
+    int i_argc,
+    char* i_argv[],
     const QString& i_strOrganizationName,
     const QString& i_strOrganizationDomain,
     const QString& i_strAppName ) :

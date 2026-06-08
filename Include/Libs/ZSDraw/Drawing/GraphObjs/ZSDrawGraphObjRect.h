@@ -115,15 +115,16 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // must overridables of base class CGraphObj
-    virtual QRectF getBoundingRect() const override;
-    virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    QRectF getBoundingRect() const override;
+    CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    SGraphObjHitInfo getSelectionPointHitInfo(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
-    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
-    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+    QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    bool labelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
-    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
+    bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

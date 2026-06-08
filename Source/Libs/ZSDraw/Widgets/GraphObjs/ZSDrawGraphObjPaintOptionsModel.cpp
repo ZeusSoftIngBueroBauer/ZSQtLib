@@ -221,7 +221,7 @@ bool CModelGraphObjPaintOptions::setKeyInTree(const QString& i_strKeyInTree)
             m_pGraphObj = nullptr;
         }
         else {
-            m_pGraphObj = m_pDrawingScene->findGraphObj(i_strKeyInTree);
+            m_pGraphObj = m_pDrawingScene->getGraphObj(i_strKeyInTree);
         }
 
         if (m_pGraphObj != nullptr) {

@@ -358,7 +358,7 @@ bool CModelGraphObjConnectionLineGeometry::setKeyInTree(const QString& i_strKeyI
             m_pGraphObjConnectionLine = nullptr;
         }
         else {
-            m_pGraphObjConnectionLine = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
+            m_pGraphObjConnectionLine = dynamic_cast<CGraphObjConnectionLine*>(m_pDrawingScene->getGraphObj(i_strKeyInTree));
         }
 
         if (m_pGraphObjConnectionLine != nullptr) {

@@ -357,7 +357,7 @@ bool CModelGraphObjPolygonGeometry::setKeyInTree(const QString& i_strKeyInTree)
             m_pGraphObjPolygon = nullptr;
         }
         else {
-            m_pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
+            m_pGraphObjPolygon = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->getGraphObj(i_strKeyInTree));
         }
 
         if (m_pGraphObjPolygon != nullptr) {
