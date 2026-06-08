@@ -24,6 +24,12 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSIpcTraceGUI/ZSIpcTrcMthListWdgtSettingsDlg.h"
+#include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
+#include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSysGUI/ZSSysSepLine.h"
+
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qsettings.h>
 
@@ -32,18 +38,14 @@ may result in using the software modules.
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qpushbutton.h>
+#include <QtGui/qspinbox.h>
 #else
 #include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qpushbutton.h>
+#include <QtWidgets/qspinbox.h>
 #endif
-
-#include "ZSIpcTraceGUI/ZSIpcTrcMthListWdgtSettingsDlg.h"
-#include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSysGUI/ZSSysSepLine.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -64,28 +66,25 @@ public: // class methods
 
 //------------------------------------------------------------------------------
 CDlgWdgtTrcMthListSettings* CDlgWdgtTrcMthListSettings::CreateInstance(
-    const QString&  i_strDlgTitle,
-    const QString&  i_strObjName,
-    QWidget*        i_pWdgtParent,
+    const QString& i_strDlgTitle,
+    const QString& i_strObjName,
+    QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
 {
-    if( CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName) != nullptr )
-    {
+    if (CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName) != nullptr) {
         QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strObjName);
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
-
     return new CDlgWdgtTrcMthListSettings(
         /* strDlgTitle  */ i_strDlgTitle,
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags );
-
-} // CreateInstance
+}
 
 //------------------------------------------------------------------------------
-CDlgWdgtTrcMthListSettings* CDlgWdgtTrcMthListSettings::GetInstance( const QString& i_strObjName )
+CDlgWdgtTrcMthListSettings* CDlgWdgtTrcMthListSettings::GetInstance(const QString& i_strObjName)
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CDlgWdgtTrcMthListSettings*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
@@ -97,9 +96,9 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
-    const QString&  i_strDlgTitle,
-    const QString&  i_strObjName,
-    QWidget*        i_pWdgtParent,
+    const QString& i_strDlgTitle,
+    const QString& i_strObjName,
+    QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
     CDialog(
@@ -108,16 +107,7 @@ CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
         /* strClassName */ ClassName(),
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
-        /* wFlags       */ i_wFlags ),
-    m_pWdgtTrcMthList(nullptr),
-    m_pLyt(nullptr),
-    m_pLytLineShowTimeInfo(nullptr),
-    m_pLblShowTimeInfo(nullptr),
-    m_pChkShowTimeInfo(nullptr),
-    m_pLytBtns(nullptr),
-    m_pBtnApply(nullptr),
-    m_pBtnOk(nullptr),
-    m_pBtnCancel(nullptr)
+        /* wFlags       */ i_wFlags)
 {
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -125,7 +115,10 @@ CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
     m_pLytLineShowTimeInfo = new QHBoxLayout();
     m_pLyt->addLayout(m_pLytLineShowTimeInfo);
 
+    const int iClm1Width = 150;
+
     m_pLblShowTimeInfo = new QLabel("Show Time Info: ");
+    m_pLblShowTimeInfo->setFixedWidth(iClm1Width);
     m_pLytLineShowTimeInfo->addWidget(m_pLblShowTimeInfo);
 
     m_pChkShowTimeInfo = new QCheckBox();
@@ -136,6 +129,24 @@ CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
     QObject::connect(
         m_pChkShowTimeInfo, &QCheckBox::toggled,
         this, &CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled);
+
+    m_pLytLineMaxEditItems = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineMaxEditItems);
+
+    m_pLblMaxEditItems = new QLabel("Maximum Number of Lines: ");
+    m_pLblMaxEditItems->setFixedWidth(iClm1Width);
+    m_pLytLineMaxEditItems->addWidget(m_pLblMaxEditItems);
+
+    m_pEdtMaxEditItems = new QSpinBox();
+    m_pEdtMaxEditItems->setEnabled(false);
+    m_pEdtMaxEditItems->setReadOnly(true);
+    m_pEdtMaxEditItems->setMinimum(0);
+    m_pEdtMaxEditItems->setMaximum(std::numeric_limits<int>::max());
+    m_pLytLineMaxEditItems->addWidget(m_pEdtMaxEditItems);
+    m_pLytLineMaxEditItems->addStretch();
+    QObject::connect(
+        m_pEdtMaxEditItems, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CDlgWdgtTrcMthListSettings::onEdtMaxEditItemsValueChanged);
 
     m_pLyt->addWidget(new CSepLine(5, this));
 
@@ -170,24 +181,13 @@ CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
     QObject::connect(
         this, &CDlgWdgtTrcMthListSettings::rejected,
         this, &CDlgWdgtTrcMthListSettings::hide);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CDlgWdgtTrcMthListSettings::~CDlgWdgtTrcMthListSettings()
 //------------------------------------------------------------------------------
 {
-    m_pWdgtTrcMthList = nullptr;
-    m_pLyt = nullptr;
-    m_pLytLineShowTimeInfo = nullptr;
-    m_pLblShowTimeInfo = nullptr;
-    m_pChkShowTimeInfo = nullptr;
-    m_pLytBtns = nullptr;
-    m_pBtnApply = nullptr;
-    m_pBtnOk = nullptr;
-    m_pBtnCancel = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -197,76 +197,92 @@ public: // instance methods
 void CDlgWdgtTrcMthListSettings::setTraceMethodListWidget( CWdgtTrcMthList* i_pWdgtTrcMthList )
 //------------------------------------------------------------------------------
 {
-    if( m_pWdgtTrcMthList != i_pWdgtTrcMthList )
-    {
+    if (m_pWdgtTrcMthList != i_pWdgtTrcMthList) {
         QObject::disconnect(
             m_pChkShowTimeInfo, &QCheckBox::toggled,
             this, &CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled);
+        QObject::disconnect(
+            m_pEdtMaxEditItems, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &CDlgWdgtTrcMthListSettings::onEdtMaxEditItemsValueChanged);
 
         m_pWdgtTrcMthList = i_pWdgtTrcMthList;
 
-        if( m_pWdgtTrcMthList != nullptr )
-        {
-            m_pChkShowTimeInfo->setChecked(m_pWdgtTrcMthList->getShowTimeInfo());
+        if (m_pWdgtTrcMthList != nullptr) {
+            m_pChkShowTimeInfo->setChecked(m_pWdgtTrcMthList->showTimeInfo());
             m_pChkShowTimeInfo->setEnabled(true);
+            m_pEdtMaxEditItems->setEnabled(true);
+            m_pEdtMaxEditItems->setReadOnly(false);
+            m_pEdtMaxEditItems->setValue(m_pWdgtTrcMthList->maxEditItems());
         }
-        else
-        {
+        else {
             m_pChkShowTimeInfo->setChecked(false);
             m_pChkShowTimeInfo->setEnabled(false);
+            m_pEdtMaxEditItems->setEnabled(false);
+            m_pEdtMaxEditItems->setReadOnly(true);
+            m_pEdtMaxEditItems->setValue(0);
         }
 
-        if( hasChanges() )
-        {
+        if (hasChanges()) {
             m_pBtnApply->setEnabled(true);
         }
-        else
-        {
+        else {
             m_pBtnApply->setEnabled(false);
         }
 
         QObject::connect(
             m_pChkShowTimeInfo, &QCheckBox::toggled,
             this, &CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled);
+        QObject::connect(
+            m_pEdtMaxEditItems, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &CDlgWdgtTrcMthListSettings::onEdtMaxEditItemsValueChanged);
     }
-} // setTraceMethodListWidget
+}
 
 /*==============================================================================
 protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled( bool /*i_bChecked*/ )
+void CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
-    if( hasChanges() )
-    {
+    if (hasChanges()) {
         m_pBtnApply->setEnabled(true);
     }
-    else
-    {
+    else {
         m_pBtnApply->setEnabled(false);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDlgWdgtTrcMthListSettings::onBtnApplyClicked( bool /*i_bChecked*/ )
+void CDlgWdgtTrcMthListSettings::onEdtMaxEditItemsValueChanged(int i_iVal)
+//------------------------------------------------------------------------------
+{
+    if (hasChanges()) {
+        m_pBtnApply->setEnabled(true);
+    }
+    else {
+        m_pBtnApply->setEnabled(false);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CDlgWdgtTrcMthListSettings::onBtnApplyClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     applyChanges();
 }
 
 //------------------------------------------------------------------------------
-void CDlgWdgtTrcMthListSettings::onBtnOkClicked( bool /*i_bChecked*/ )
+void CDlgWdgtTrcMthListSettings::onBtnOkClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     applyChanges();
-
     emit accepted();
 }
 
 //------------------------------------------------------------------------------
-void CDlgWdgtTrcMthListSettings::onBtnCancelClicked( bool /*i_bChecked*/ )
+void CDlgWdgtTrcMthListSettings::onBtnCancelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     emit rejected();
@@ -281,11 +297,11 @@ bool CDlgWdgtTrcMthListSettings::hasChanges() const
 //------------------------------------------------------------------------------
 {
     bool bHasChanges = false;
-
-    if( m_pWdgtTrcMthList != nullptr )
-    {
-        if( m_pWdgtTrcMthList->getShowTimeInfo() != m_pChkShowTimeInfo->isChecked() )
-        {
+    if (m_pWdgtTrcMthList != nullptr) {
+        if (m_pWdgtTrcMthList->showTimeInfo() != m_pChkShowTimeInfo->isChecked()) {
+            bHasChanges = true;
+        }
+        else if (m_pWdgtTrcMthList->maxEditItems() != m_pEdtMaxEditItems->value()) {
             bHasChanges = true;
         }
     }
@@ -296,9 +312,9 @@ bool CDlgWdgtTrcMthListSettings::hasChanges() const
 void CDlgWdgtTrcMthListSettings::applyChanges()
 //------------------------------------------------------------------------------
 {
-    if( m_pWdgtTrcMthList != nullptr )
-    {
+    if (m_pWdgtTrcMthList != nullptr) {
          m_pWdgtTrcMthList->setShowTimeInfo(m_pChkShowTimeInfo->isChecked());
+         m_pWdgtTrcMthList->setMaxEditItems(m_pEdtMaxEditItems->value());
     }
     m_pBtnApply->setEnabled(false);
 }

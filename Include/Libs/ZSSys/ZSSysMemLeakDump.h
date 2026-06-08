@@ -78,15 +78,9 @@ code lines below exclude the memory block from the memory leak dump:
 
 ==============================================================================*/
 
-#ifndef ZSSys_MemLeakDump_h
-#define ZSSys_MemLeakDump_h
+#pragma once
 
-namespace ZS
-{
-namespace System
-{
-} // namespace System
-} // namespace ZS
+namespace ZS::System {}
 
 #ifdef _WINDOWS
 
@@ -100,31 +94,31 @@ namespace System
 
 #define _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE 0x0004
 
-inline void* __cdecl operator new( size_t cb, int nBlockUse, const char* szFileName, int nLine, void* )
+inline void* __cdecl operator new(size_t cb, int nBlockUse, const char* szFileName, int nLine, void*)
 {
     void* res = operator new(cb, nBlockUse, szFileName, nLine);
     if( res == 0 ) throw std::bad_alloc();
     return res;
 }
-inline void* __cdecl operator new[]( size_t cb, int nBlockUse, const char* szFileName, int nLine, void* )
+inline void* __cdecl operator new[](size_t cb, int nBlockUse, const char* szFileName, int nLine, void*)
 {
     void* res = operator new(cb, nBlockUse, szFileName, nLine);
-    if( res == 0 ) throw std::bad_alloc();
+    if (res == 0) throw std::bad_alloc();
     return res;
 }
 
 #if _MSC_VER >= 1200
-inline void __cdecl operator delete( void* _P, int, const char*, int, void* )
+inline void __cdecl operator delete(void* _P, int, const char*, int, void*)
 {
     ::operator delete(_P);
 }
-inline void __cdecl operator delete[]( void* _P, int, const char *, int, void* )
+inline void __cdecl operator delete[](void* _P, int, const char *, int, void*)
 {
     ::operator delete[](_P);
 }
 #endif  // _MSC_VER >= 1200
 
-#define _DEBUG_NEW new(_CLIENT_BLOCK|(_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE<<16),__FILE__,__LINE__)
+#define _DEBUG_NEW new(_CLIENT_BLOCK|(_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE<<16), __FILE__, __LINE__)
 #ifndef ZSSys_DbgNew_cpp
 #define new _DEBUG_NEW
 #endif
@@ -132,11 +126,11 @@ inline void __cdecl operator delete[]( void* _P, int, const char *, int, void* )
 namespace ZS
 {
 #ifdef ZSSYSDLL_EXPORTS
-    void __declspec(dllexport) dumpClientHook( void* i_pvUserData, size_t i_nSizeInBytes );
-    void __declspec(dllexport) dumpClientHook( void* i_pvUserData, void* i_pvContext );
+void __declspec(dllexport) dumpClientHook(void* i_pvUserData, size_t i_nSizeInBytes);
+void __declspec(dllexport) dumpClientHook(void* i_pvUserData, void* i_pvContext);
 #else
-    void __declspec(dllimport) dumpClientHook( void* i_pvUserData, size_t i_nSizeInBytes );
-    void __declspec(dllimport) dumpClientHook( void* i_pvUserData, void* i_pvContext );
+void __declspec(dllimport) dumpClientHook(void* i_pvUserData, size_t i_nSizeInBytes);
+void __declspec(dllimport) dumpClientHook(void* i_pvUserData, void* i_pvContext);
 #endif
 
 } // namespace ZS
@@ -144,5 +138,3 @@ namespace ZS
 #endif // #ifdef _DEBUG
 
 #endif // #ifdef _WINDOWS
-
-#endif // #ifndef ZSSys_MemLeakDump_h

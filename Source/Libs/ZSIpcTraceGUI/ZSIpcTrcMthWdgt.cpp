@@ -92,9 +92,9 @@ using namespace ZS::Trace::GUI;
 class CWdgtTrcMthList : public QWidget
 *******************************************************************************/
 
-static const QString c_strBtnConnect    = "Connect";
+static const QString c_strBtnConnect = "Connect";
 static const QString c_strBtnDisconnect = "Disconnect";
-static const QString c_strBtnAbort      = "Abort";
+static const QString c_strBtnAbort = "Abort";
 
 static const QString s_arstrThreadHtmlColorCodes[] = {
     /* Red   */ "#C82020",
@@ -126,48 +126,22 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CWdgtTrcMthList::CWdgtTrcMthList(
     CIpcTrcClient* i_pTrcClient,
-    int            i_iItemsCountMax,
-    QWidget*       i_pWdgtParent ) :
+    int i_iItemsCountMax,
+    QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
     m_pTrcClient(i_pTrcClient),
     m_dataRateCalculatorBytes(1000),
-    m_dataRateCalculatorLines(1000),
-    m_arfDataRateDiffsProcTime_s(),
-    m_ariDataRateDiffs_linesPerSec(),
-    m_pReqInProgress(nullptr),
-    m_strThreadClrFileAbsFilePath(),
-    m_bShowTimeInfo(true),
-    m_iEdtItemsCountMax(i_iItemsCountMax),
-    m_iEdtItems(0),
-    m_bEdtFull(false),
-    m_pEdt(nullptr),
-    m_hashThreads(),
-    m_pBtnClear(nullptr),
-    m_pLblServerTracingEnabled(nullptr),
-    m_pChkServerTracingEnabled(nullptr),
-    m_pLblServerUseIpcServer(nullptr),
-    m_pChkServerUseIpcServer(nullptr),
-    m_pBtnTrcAdminObjIdxTree(nullptr),
-    m_pBtnConnect(nullptr),
-    m_pProgressBarCnct(nullptr),
-    m_pLblFindText(nullptr),
-    m_pCmbFindText(nullptr),
-    m_pBtnFindTextNext(nullptr),
-    m_pBtnFindTextPrev(nullptr),
-    m_pTmrDataRateRefresh(nullptr),
-    m_iTimeSpanTooMuchData_s(10),
-    m_pLblTimeSpanTooMuchData(nullptr),
-    m_pEdtTimeSpanTooMuchData(nullptr),
-    m_pDlgEditTimeSpanTooMuchData(nullptr),
-    m_pLblCurrentDataRatesClient(nullptr),
-    m_pEdtCurrentDataRatesClient(nullptr),
-    m_pLblCurrentDataRatesServer(nullptr),
-    m_pEdtCurrentDataRatesServer(nullptr)
+    m_dataRateCalculatorLines(1000)
 {
     setObjectName("TrcMthList");
 
     QSettings settings;
+    settings.beginGroup(objectName());
+    m_bShowTimeInfo = settings.value("ShowTimeInfo", m_bShowTimeInfo).toBool();
+    m_iEdtItemsCountMax = settings.value("MaxEditItems", m_iEdtItemsCountMax).toInt();
+    m_iTimeSpanTooMuchData_s = settings.value("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s).toInt();
+    settings.endGroup();
 
     // <Widget> Trace Outputs
     //=======================
@@ -308,13 +282,10 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     // <Label> Data Rate
     //------------------
 
-    settings.beginGroup(objectName());
-    m_iTimeSpanTooMuchData_s = settings.value("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s).toInt();
     m_dataRateCalculatorBytes.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
     m_dataRateCalculatorBytes.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
     m_dataRateCalculatorLines.setRecordTimeSpanInSec(m_iTimeSpanTooMuchData_s);
     m_dataRateCalculatorLines.setMeasurePointsTimeSpanInSec(m_iTimeSpanTooMuchData_s);
-    settings.endGroup();
 
     m_pTmrDataRateRefresh = new QTimer(this);
     m_pTmrDataRateRefresh->start(1000);
@@ -366,8 +337,7 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     QObject::connect(
         m_pTrcClient, &CIpcTrcClient::traceDataReceived,
         this, &CWdgtTrcMthList::onTraceDataReceived);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CWdgtTrcMthList::~CWdgtTrcMthList()
@@ -376,52 +346,18 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     QSettings settings;
 
     settings.beginGroup(objectName());
+    settings.setValue("ShowTimeInfo", m_bShowTimeInfo);
+    settings.setValue("MaxEditItems", m_iEdtItemsCountMax);
     settings.setValue("TimeSpanDetectTooMuchData_s", m_iTimeSpanTooMuchData_s);
     settings.endGroup();
+    settings.sync();
 
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    if( !m_strThreadClrFileAbsFilePath.isEmpty() )
-    {
+    if (!m_strThreadClrFileAbsFilePath.isEmpty()) {
         saveThreadColors();
     }
     #endif
-
-    m_pTrcClient = nullptr;
-    //m_dataRateCalculatorBytes;
-    //m_dataRateCalculatorLines;
-    //m_arfDataRateDiffsProcTime_s;
-    //m_ariDataRateDiffs_linesPerSec;
-    m_pReqInProgress = nullptr;
-    //m_strThreadClrFileAbsFilePath;
-    m_bShowTimeInfo = false;
-    m_iEdtItemsCountMax = 0;
-    m_iEdtItems = 0;
-    m_bEdtFull = false;
-    m_pEdt = nullptr;
-    //m_hashThreads;
-    m_pBtnClear = nullptr;
-    m_pLblServerTracingEnabled = nullptr;
-    m_pChkServerTracingEnabled = nullptr;
-    m_pLblServerUseIpcServer = nullptr;
-    m_pChkServerUseIpcServer = nullptr;
-    m_pBtnTrcAdminObjIdxTree = nullptr;
-    m_pBtnConnect = nullptr;
-    m_pProgressBarCnct = nullptr;
-    m_pLblFindText = nullptr;
-    m_pCmbFindText = nullptr;
-    m_pBtnFindTextNext = nullptr;
-    m_pBtnFindTextPrev = nullptr;
-    m_pTmrDataRateRefresh = nullptr;
-    m_iTimeSpanTooMuchData_s = 0;
-    m_pLblTimeSpanTooMuchData = nullptr;
-    m_pEdtTimeSpanTooMuchData = nullptr;
-    m_pDlgEditTimeSpanTooMuchData = nullptr;
-    m_pLblCurrentDataRatesClient = nullptr;
-    m_pEdtCurrentDataRatesClient = nullptr;
-    m_pLblCurrentDataRatesServer = nullptr;
-    m_pEdtCurrentDataRatesServer = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -436,8 +372,7 @@ QString CWdgtTrcMthList::getDefaultThreadColorsFilePath() const
 
     QString strAppName = QString(m_pTrcClient != nullptr ? m_pTrcClient->getRemoteApplicationName() : "");
 
-    if( strAppName.isEmpty() )
-    {
+    if (strAppName.isEmpty()) {
         strAppName = QCoreApplication::applicationName();
     }
 
@@ -453,8 +388,7 @@ QString CWdgtTrcMthList::getDefaultThreadColorsFilePath() const
 
     QString strThreadClrFileBaseName = strAppName;
 
-    if( !strServerName.isEmpty() )
-    {
+    if (!strServerName.isEmpty()) {
         strThreadClrFileBaseName += "-" + strServerName;
     }
     strThreadClrFileBaseName += "-ThreadColors";
@@ -471,89 +405,65 @@ void CWdgtTrcMthList::loadThreadColors( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strFileName = i_strAbsFilePath;
-
-    if( strFileName.isEmpty() )
-    {
+    if (strFileName.isEmpty()) {
         strFileName = m_strThreadClrFileAbsFilePath;
     }
 
     QFile fileXML(strFileName);
-
-    if( fileXML.open(QIODevice::ReadOnly) )
-    {
+    if (fileXML.open(QIODevice::ReadOnly)) {
         QXmlStreamReader xmlStreamReader(&fileXML);
-
-        if( xmlStreamReader.readNext() != QXmlStreamReader::StartDocument )
-        {
+        if (xmlStreamReader.readNext() != QXmlStreamReader::StartDocument) {
             xmlStreamReader.raiseError("Invalid XML document");
         }
-        if( xmlStreamReader.readNext() != QXmlStreamReader::StartElement && xmlStreamReader.name() != QString("TrcMthClient") )
-        {
+        if (xmlStreamReader.readNext() != QXmlStreamReader::StartElement && xmlStreamReader.name() != QString("TrcMthClient")) {
             xmlStreamReader.raiseError("File does not seem to be an valid XML file for the trace method client");
         }
 
-        bool    bIsStartElement = false;
-        bool    bIsEndElement = false;
-        bool    bIsElement = false;
+        bool bIsStartElement = false;
+        bool bIsEndElement = false;
+        bool bIsElement = false;
         QString strElemName;
         QString strThreadName;
         QString strThreadHtmlClrCode;
 
-        while( !xmlStreamReader.atEnd() )
+        while (!xmlStreamReader.atEnd())
         {
             xmlStreamReader.readNext();
 
             bIsStartElement = xmlStreamReader.isStartElement();
-            bIsEndElement   = xmlStreamReader.isEndElement();
-            bIsElement      = bIsStartElement || bIsEndElement;
+            bIsEndElement = xmlStreamReader.isEndElement();
+            bIsElement = bIsStartElement || bIsEndElement;
 
-            if( bIsElement )
-            {
+            if (bIsElement) {
                 strElemName = xmlStreamReader.name().toString();
 
                 //---------------------------------------------
-                if( strElemName == "Thread" )
+                if (strElemName == "Thread") {
                 //---------------------------------------------
-                {
-                    if( bIsStartElement )
-                    {
+                    if (bIsStartElement) {
                         strThreadName = xmlStreamReader.attributes().value("Name").toString();
                         strThreadHtmlClrCode = xmlStreamReader.attributes().value("HtmlColorCode").toString();
-
-                        if( strThreadName.isEmpty() )
-                        {
+                        if (strThreadName.isEmpty()) {
                             xmlStreamReader.raiseError("Attribute \"Name\" for element \"" + strElemName + "\" not defined");
                         }
-                        else if( strThreadHtmlClrCode.isEmpty() )
-                        {
+                        else if (strThreadHtmlClrCode.isEmpty()) {
                             xmlStreamReader.raiseError("Attribute \"HtmlColorCode\" for element \"" + strElemName + "\" not defined");
                         }
-                        else
-                        {
+                        else {
                             STrcMthThreadEntry threadEntry(0,strThreadHtmlClrCode);
-
-                            if( m_hashThreads.contains(strThreadName) )
-                            {
+                            if (m_hashThreads.contains(strThreadName)) {
                                 threadEntry = m_hashThreads.value(strThreadName);
                             }
-                            else
-                            {
+                            else {
                                 m_hashThreads.insert(strThreadName,threadEntry);
                             }
                         }
-                    } // if( bIsStartElement )
-
-                    else if( bIsEndElement )
-                    {
-                    } // if( bIsEndElement )
-                } // if( strElemName == "ThreadColor" )
-            } // if( bIsElement )
-        } // while( !xmlStreamReader.atEnd() )
-
-        if( xmlStreamReader.hasError() )
-        {
-            if( CErrLog::GetInstance() != nullptr )
-            {
+                    }
+                }
+            }
+        }
+        if (xmlStreamReader.hasError()) {
+            if (CErrLog::GetInstance() != nullptr) {
                 QString strAddInfo;
                 strAddInfo += xmlStreamReader.errorString() + " on reading " + strFileName + " ";
                 strAddInfo += "Line:" + QString::number(xmlStreamReader.lineNumber()) + ", ";
@@ -562,9 +472,8 @@ void CWdgtTrcMthList::loadThreadColors( const QString& i_strAbsFilePath )
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
-    } // if( fileXML.open(QIODevice::ReadOnly) )
-
-} // loadThreadColors
+    }
+}
 #endif // #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 
 #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
@@ -573,36 +482,25 @@ void CWdgtTrcMthList::saveThreadColors( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strFileName = i_strAbsFilePath;
-
-    if( strFileName.isEmpty() )
-    {
+    if (strFileName.isEmpty()) {
         strFileName = m_strThreadClrFileAbsFilePath;
     }
 
     QFile fileXML(strFileName);
-
-    if( !fileXML.open(QIODevice::WriteOnly) )
-    {
-        if( CErrLog::GetInstance() != nullptr )
-        {
+    if (!fileXML.open(QIODevice::WriteOnly)) {
+        if (CErrLog::GetInstance() != nullptr) {
             SErrResultInfo errResultInfo = ErrResultInfoError("saveThreadColors", EResultFileOpenForWrite, strFileName);
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else // if( fileXML.open(QIODevice::WriteOnly) )
-    {
+    else {
         QXmlStreamWriter xmlStreamWriter(&fileXML);
-
         xmlStreamWriter.setAutoFormatting(true);
-
         xmlStreamWriter.writeStartDocument();
-
         xmlStreamWriter.writeStartElement("TrcMthClient");
 
         QHashIterator<QString,STrcMthThreadEntry> it(m_hashThreads);
-
-        while( it.hasNext() )
-        {
+        while (it.hasNext()) {
             it.next();
             xmlStreamWriter.writeStartElement("Thread");
             xmlStreamWriter.writeAttribute("Name",it.key());
@@ -686,12 +584,9 @@ void CWdgtTrcMthList::saveThreadColors( const QString& i_strAbsFilePath )
         //xmlStreamWriter.writeEndElement(); // ExampleColorCodes
 
         xmlStreamWriter.writeEndElement(); // TrcMthClient
-
         xmlStreamWriter.writeEndDocument();
-
-    } // if( fileXML.open(QIODevice::WriteOnly) )
-
-} // saveThreadColors
+    }
+}
 #endif // #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
 
 /*==============================================================================
@@ -703,91 +598,66 @@ SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFile
 //------------------------------------------------------------------------------
 {
     SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "readTraceMethodFile");
-
     QFile fileTrcMthFile;
-
-    if( i_strAbsFilePath.isEmpty() )
+    if (i_strAbsFilePath.isEmpty())
     {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultInvalidFileName);
     }
-    else
-    {
+    else {
         fileTrcMthFile.setFileName(i_strAbsFilePath);
-
-        if( !fileTrcMthFile.open(QIODevice::ReadOnly) )
-        {
+        if (!fileTrcMthFile.open(QIODevice::ReadOnly)) {
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileOpenForRead);
             errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
         }
     }
-
-    if( !errResultInfo.isErrorResult() )
-    {
+    if (!errResultInfo.isErrorResult()) {
         QTextStream txtstrmTrcMthFile(&fileTrcMthFile);
-
         QString strLine;
-
-        while( txtstrmTrcMthFile.readLineInto(&strLine) )
-        {
-            QString            strTrace;
-            int                idxPos = 0;
-            int                idxBeg;
-            int                idxEnd;
-            int                iStrLen;
-            int                idx;
-            QString            strMthThreadName;
-            QString            strThread;
+        while (txtstrmTrcMthFile.readLineInto(&strLine)) {
+            QString strTrace;
+            int idxPos = 0;
+            int iStrLen;
+            QString strMthThreadName;
+            QString strThread;
             STrcMthThreadEntry threadEntry;
-            QString            strDateTime;
-            QString            strSysTime;
-            QString            strMthCall;
+            QString strDateTime;
+            QString strSysTime;
+            QString strMthCall;
 
             // Thread Name
-            idxBeg = strLine.indexOf("<", idxPos);
-            idxEnd = strLine.indexOf("> ", idxPos);
-            if(idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
+            int idxBeg = strLine.indexOf("<", idxPos);
+            int idxEnd = strLine.indexOf("> ", idxPos);
+            if (idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
                 strMthThreadName = strLine.mid(idxBeg+1, idxEnd-idxBeg-1);
                 strMthThreadName = strMthThreadName.trimmed();
             }
             idxPos += idxEnd+2;
 
-            if( !strMthThreadName.isEmpty() )
-            {
-                if( m_hashThreads.contains(strMthThreadName) )
-                {
+            if (!strMthThreadName.isEmpty()) {
+                if (m_hashThreads.contains(strMthThreadName)) {
                     threadEntry = m_hashThreads.value(strMthThreadName);
                 }
-                else
-                {
-                    if( !strMthThreadName.contains("GUIMain",Qt::CaseInsensitive) )
-                    {
+                else {
+                    if (!strMthThreadName.contains("GUIMain",Qt::CaseInsensitive)) {
                         threadEntry.m_strHtmlClrCode = s_arstrThreadHtmlColorCodes[s_idxThreadHtmlColorCodes];
-
                         s_idxThreadHtmlColorCodes++;
-
-                        if( s_idxThreadHtmlColorCodes >= _ZSArrLen(s_arstrThreadHtmlColorCodes) )
-                        {
+                        if (s_idxThreadHtmlColorCodes >= _ZSArrLen(s_arstrThreadHtmlColorCodes)) {
                             s_idxThreadHtmlColorCodes = 0;
                         }
                     }
                     m_hashThreads.insert(strMthThreadName,threadEntry);
                 }
             }
-
             strThread = "&lt;";
 
-            if( strMthThreadName.length() > CTrcMthFile::c_iStrLenThreadMax )
-            {
+            if (strMthThreadName.length() > CTrcMthFile::c_iStrLenThreadMax) {
                 strThread += strMthThreadName.left(CTrcMthFile::c_iStrLenThreadMax);
             }
-            else // if( strMthThreadName.length() <= CTrcMthFile::c_iStrLenThreadMax )
-            {
+            else {
                 strThread += strMthThreadName;
-
-                for( int idx = strMthThreadName.length(); idx < CTrcMthFile::c_iStrLenThreadMax; idx++ )
-                {
+                for (int idx = strMthThreadName.length(); idx < CTrcMthFile::c_iStrLenThreadMax; idx++) {
                     strThread.append("&nbsp;");
                 }
             }
@@ -796,8 +666,7 @@ SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFile
             strTrace += strThread;
 
             // Date Time
-            if( m_bShowTimeInfo )
-            {
+            if (m_bShowTimeInfo) {
                 idxBeg = idxPos;
                 idxEnd = strLine.indexOf(" (", idxPos);
                 if(idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
@@ -808,19 +677,18 @@ SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFile
             }
 
             // System Time
-            if( m_bShowTimeInfo )
+            if (m_bShowTimeInfo)
             {
                 strTrace += " (";
                 idxBeg = idxPos;
                 idxEnd = strLine.indexOf("): ", idxPos);
-                if( idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
+                if (idxBeg >= 0 && idxEnd >= 0 && idxEnd > idxBeg) {
                     strSysTime = strLine.mid(idxBeg, idxEnd-idxBeg);
                     strSysTime = strSysTime.trimmed();
                 }
                 idxPos = idxEnd+3;
                 iStrLen = strSysTime.length();
-                for( idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++ )
-                {
+                for (int idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++) {
                     strSysTime.insert(0,"&nbsp;");
                 }
                 strTrace += strSysTime;
@@ -836,52 +704,37 @@ SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFile
             strTrace += strMthCall;
 
             addEdtItem(strTrace, threadEntry.m_strHtmlClrCode);
-
-        } // while( txtstrmTrcMthFile.readLineInto(&strLine) )
-
+        }
         fileTrcMthFile.close();
-
-    } // if( !errResultInfo.isErrorResult() )
-
+    }
     return errResultInfo;
-
-} // readTraceMethodFile
+}
 
 //------------------------------------------------------------------------------
 SErrResultInfo CWdgtTrcMthList::writeTraceMethodFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "writeTraceMethodFile");
-
     QFile fileTrcMthFile;
-
-    if( i_strAbsFilePath.isEmpty() )
-    {
+    if (i_strAbsFilePath.isEmpty()) {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultInvalidFileName);
     }
-    else
-    {
+    else {
         fileTrcMthFile.setFileName(i_strAbsFilePath);
-
-        if( !fileTrcMthFile.open(QIODevice::WriteOnly) )
-        {
+        if (!fileTrcMthFile.open(QIODevice::WriteOnly)) {
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileOpenForRead);
             errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
         }
     }
-
-    if( !errResultInfo.isErrorResult() )
-    {
+    if (!errResultInfo.isErrorResult()) {
         QTextStream txtstrmTrcMthFile(&fileTrcMthFile);
         txtstrmTrcMthFile << m_pEdt->toPlainText();
         fileTrcMthFile.close();
     }
-
     return errResultInfo;
-
-} // writeTraceMethodFile
+}
 
 /*==============================================================================
 public: // instance methods
@@ -899,7 +752,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtTrcMthList::getShowTimeInfo() const
+bool CWdgtTrcMthList::showTimeInfo() const
 //------------------------------------------------------------------------------
 {
     return m_bShowTimeInfo;
@@ -910,6 +763,30 @@ void CWdgtTrcMthList::setShowTimeInfo( bool i_bShow )
 //------------------------------------------------------------------------------
 {
     m_bShowTimeInfo = i_bShow;
+}
+
+//------------------------------------------------------------------------------
+int CWdgtTrcMthList::maxEditItems() const
+//------------------------------------------------------------------------------
+{
+    return m_iEdtItemsCountMax;
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcMthList::setMaxEditItems(int i_iMaxItems)
+//------------------------------------------------------------------------------
+{
+    m_iEdtItemsCountMax = i_iMaxItems;
+
+    if (m_iEdtItemsCountMax > 0 && m_iEdtItems >= m_iEdtItemsCountMax) {
+        if (!m_bEdtFull) {
+            QString strText = "---------- MAXIMUM NUMBER OF ENTRIES REACHED -----------";
+            m_bEdtFull = true;
+        }
+    }
+    else {
+        m_bEdtFull = false;
+    }
 }
 
 /*==============================================================================
@@ -1287,58 +1164,44 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
 //------------------------------------------------------------------------------
 {
     QXmlStreamReader xmlStreamReader(i_str);
-
     QString strAddErrInfo;
-
     SErrResultInfo errResultInfo = ErrResultInfoSuccess("onTraceDataReceived");
-
     STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
 
-    // If too much data Use Ipc Server has been set to false. Ignore following data.
-    if( trcServerSettings.m_bUseIpcServer )
-    {
-        QXmlStreamReader::TokenType xmlStreamTokenType;
-
-        QString strElemName;
-        QString strAttr;
-        int     iVal;
-        double  fVal;
-        bool    bOk;
-
+    // If use Ipc Server has been set to false. Ignore following data.
+    if (trcServerSettings.m_bUseIpcServer) {
         CIdxTreeTrcAdminObjs* pIdxTree = m_pTrcClient->getTraceAdminObjIdxTree();
 
-        CTrcAdminObj*      pTrcAdminObj = nullptr;
-        QString            strNameSpace;
-        QString            strClassName;
-        QString            strObjName;
-        QString            strMthName;
-        QString            strMthThreadName;
-        EMethodDir         mthDir = EMethodDir::Undefined;
+        CTrcAdminObj* pTrcAdminObj = nullptr;
+        QString strElemName;
+        QString strAttr;
+        int iVal;
+        double fVal;
+        bool bOk;
+        QString strNameSpace;
+        QString strClassName;
+        QString strObjName;
+        QString strMthName;
+        QString strMthThreadName;
+        EMethodDir mthDir = EMethodDir::Undefined;
+        QString strDateTime;
+        double fSysTime_s = -1.0;
         STrcMthThreadEntry threadEntry;
-        QString            strDateTime;
-        double             fSysTime_s = -1.0;
-        QString            strMthInArgs;
-        QString            strMthOutArgs;
-        QString            strMthRet;
-        QString            strAddInfo;
-        QString            strTrace;
+        QString strMthInArgs;
+        QString strMthOutArgs;
+        QString strMthRet;
+        QString strAddInfo;
+        QString strTrace;
 
-        xmlStreamTokenType = xmlStreamReader.readNext();
+        QXmlStreamReader::TokenType xmlStreamTokenType = xmlStreamReader.readNext();
 
-        if( xmlStreamTokenType == QXmlStreamReader::StartDocument )
-        {
-            while( !xmlStreamReader.atEnd() )
-            {
+        if (xmlStreamTokenType == QXmlStreamReader::StartDocument) {
+            while (!xmlStreamReader.atEnd()) {
                 xmlStreamTokenType = xmlStreamReader.readNext();
-
-                if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-                {
+                if (xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement()) {
                     strElemName = xmlStreamReader.name().toString();
-
-                    if( strElemName == "TrcData" )
-                    {
-                        if( xmlStreamReader.isStartElement() )
-                        {
+                    if (strElemName == "TrcData") {
+                        if (xmlStreamReader.isStartElement()) {
                             pTrcAdminObj = nullptr;
                             strNameSpace = "";
                             strClassName = "";
@@ -1354,25 +1217,16 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                             strMthRet = "";
                             strAddInfo = "";
                             strTrace = "";
-
-                        } // if( xmlStreamReader.isStartElement() )
-
-                        else if( xmlStreamReader.isEndElement() )
-                        {
-                            if( m_hashThreads.contains(strMthThreadName) )
-                            {
+                        }
+                        else if (xmlStreamReader.isEndElement()) {
+                            if (m_hashThreads.contains(strMthThreadName)) {
                                 threadEntry = m_hashThreads.value(strMthThreadName);
                             }
-                            else
-                            {
-                                if( !strMthThreadName.contains("GUIMain",Qt::CaseInsensitive) )
-                                {
+                            else {
+                                if (!strMthThreadName.contains("GUIMain",Qt::CaseInsensitive)) {
                                     threadEntry.m_strHtmlClrCode = s_arstrThreadHtmlColorCodes[s_idxThreadHtmlColorCodes];
-
                                     s_idxThreadHtmlColorCodes++;
-
-                                    if( s_idxThreadHtmlColorCodes >= _ZSArrLen(s_arstrThreadHtmlColorCodes) )
-                                    {
+                                    if (s_idxThreadHtmlColorCodes >= _ZSArrLen(s_arstrThreadHtmlColorCodes)) {
                                         s_idxThreadHtmlColorCodes = 0;
                                     }
                                 }
@@ -1380,17 +1234,12 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                             }
 
                             QString strThread = "&lt;";
-
-                            if( strMthThreadName.length() > CTrcMthFile::c_iStrLenThreadMax )
-                            {
+                            if (strMthThreadName.length() > CTrcMthFile::c_iStrLenThreadMax) {
                                 strThread += strMthThreadName.left(CTrcMthFile::c_iStrLenThreadMax);
                             }
-                            else // if( strMthThreadName.length() <= CTrcMthFile::c_iStrLenThreadMax )
-                            {
+                            else  {
                                 strThread += strMthThreadName;
-
-                                for( int idx = strMthThreadName.length(); idx < CTrcMthFile::c_iStrLenThreadMax; idx++ )
-                                {
+                                for (int idx = strMthThreadName.length(); idx < CTrcMthFile::c_iStrLenThreadMax; idx++) {
                                     strThread.append("&nbsp;");
                                 }
                             }
@@ -1398,55 +1247,44 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                             strThread.append("&gt; ");
                             strTrace += strThread;
 
-                            if( m_bShowTimeInfo )
-                            {
+                            if (m_bShowTimeInfo) {
                                 strTrace += strDateTime;
                                 strTrace += " (";
 
                                 QString strSysTime = QString::number(fSysTime_s, 'f', 6);
                                 int iStrLen = strSysTime.length();
-                                for( int idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++ )
-                                {
+                                for (int idx = 0; idx < CTrcMthFile::c_iStrLenSysTimeMax-iStrLen; idx++) {
                                     strSysTime.insert(0,"&nbsp;");
                                 }
                                 strTrace += strSysTime;
                                 strTrace += "):&nbsp;";
                             }
 
-                            if( mthDir == EMethodDir::Enter )
-                            {
-                                for( int idx = 0; idx < threadEntry.m_iCallDepth; idx++ )
-                                {
+                            if (mthDir == EMethodDir::Enter) {
+                                for (int idx = 0; idx < threadEntry.m_iCallDepth; idx++) {
                                     strTrace += "&nbsp;&nbsp;&nbsp;";
                                 }
                                 threadEntry.m_iCallDepth++;
-
                                 strTrace += "-&gt;&nbsp;";
                             }
-                            else if( mthDir == EMethodDir::Leave )
-                            {
-                                for( int idx = 0; idx < threadEntry.m_iCallDepth-1; idx++ )
-                                {
+                            else if (mthDir == EMethodDir::Leave) {
+                                for (int idx = 0; idx < threadEntry.m_iCallDepth-1; idx++) {
                                     strTrace += "&nbsp;&nbsp;&nbsp;";
                                 }
-                                if( threadEntry.m_iCallDepth > 0 )
-                                {
+                                if (threadEntry.m_iCallDepth > 0) {
                                     threadEntry.m_iCallDepth--;
                                 }
                                 strTrace += "&lt;-&nbsp;";
                             }
-                            else
-                            {
-                                for( int idx = 0; idx < threadEntry.m_iCallDepth; idx++ )
-                                {
+                            else {
+                                for (int idx = 0; idx < threadEntry.m_iCallDepth; idx++) {
                                     strTrace += "&nbsp;&nbsp;&nbsp;";
                                 }
                             }
 
                             m_hashThreads[strMthThreadName].m_iCallDepth = threadEntry.m_iCallDepth;
 
-                            if( pTrcAdminObj != nullptr )
-                            {
+                            if (pTrcAdminObj != nullptr) {
                                 strNameSpace = pTrcAdminObj->getNameSpace();
                                 strClassName = pTrcAdminObj->getClassName();
 
@@ -1455,21 +1293,16 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                                 // When using instance trace admin objects the object name should not be
                                 // provided to the method tracer when tracing instance methods.
                                 // But if the object name is passed to the method tracer use this object name.
-                                if( strObjName.isEmpty() )
-                                {
+                                if (strObjName.isEmpty()) {
                                     strObjName = pTrcAdminObj->getObjectName();
                                 }
                             }
 
                             QString strObjPath = pIdxTree->buildPathStr(strNameSpace, strClassName);
-
-                            if( !strObjPath.isEmpty() )
-                            {
+                            if (!strObjPath.isEmpty()) {
                                 strTrace += "&lt;" + strObjPath + "&gt;&nbsp;";
                             }
-
-                            if( !strObjName.isEmpty() )
-                            {
+                            if (!strObjName.isEmpty()) {
                                 strTrace += strObjName;
                                 strTrace += ".";
                             }
@@ -1481,145 +1314,111 @@ void CWdgtTrcMthList::onTraceDataReceived( QObject* /*i_pObjSender*/, const QStr
                             normalize(strMthRet);
                             normalize(strAddInfo);
 
-                            if( mthDir == EMethodDir::Enter )
-                            {
+                            if (mthDir == EMethodDir::Enter) {
                                 strTrace += "(";
                                 strTrace += strMthInArgs;
                                 strTrace += ")";
                             }
-                            else if( mthDir == EMethodDir::Leave )
-                            {
+                            else if (mthDir == EMethodDir::Leave) {
                                 strTrace += "(";
                                 strTrace += strMthOutArgs;
                                 strTrace += ")";
-                                if( !strMthRet.isEmpty() )
-                                {
+                                if (!strMthRet.isEmpty()) {
                                     strTrace += ": " + strMthRet;
                                 }
                             }
-                            else
-                            {
+                            else {
                                 strTrace += ":&nbsp;";
                                 strTrace += strAddInfo;
                             }
-
                             addEdtItem(strTrace, threadEntry.m_strHtmlClrCode);
-
-                        } // if( xmlStreamReader.isEndElement() )
-                    } // if( strElemName == "TrcData" )
-
-                    else if( strElemName == "TrcAdminObj" )
-                    {
-                        if( xmlStreamReader.isStartElement() )
-                        {
-                            if( !xmlStreamReader.attributes().hasAttribute("IdxInTree") )
-                            {
+                        }
+                    }
+                    else if (strElemName == "TrcAdminObj") {
+                        if (xmlStreamReader.isStartElement()) {
+                            if (!xmlStreamReader.attributes().hasAttribute("IdxInTree")) {
                                 xmlStreamReader.raiseError("Attribute \"IdxInTree\" of Element \"" + strElemName + "\" is missing");
                             }
-                            else // if( xmlStreamReader.attributes().hasAttribute("IdxInTree") )
-                            {
+                            else  {
                                 strAttr = xmlStreamReader.attributes().value("IdxInTree").toString();
                                 iVal = strAttr.toInt(&bOk);
-                                if( bOk && iVal >= 0 )
-                                {
+                                if (bOk && iVal >= 0) {
                                     pTrcAdminObj = pIdxTree->getTraceAdminObj(iVal, false);
-
-                                    if( pTrcAdminObj == nullptr )
-                                    {
+                                    if (pTrcAdminObj == nullptr) {
                                         xmlStreamReader.raiseError("There is no trace admin object with \"IdxInTree\"=" + strAttr);
                                     }
                                 }
-                                else
-                                {
+                                else {
                                     xmlStreamReader.raiseError("Attribute \"IdxInTree\" (" + strAttr + ") of Element \"" + strElemName + "\" is out of range");
                                 }
                             }
-                        } // if( xmlStreamReader.isStartElement() )
-                    } // if( strElemName == "TrcAdminObj" )
-
-                    else if( strElemName == "Method" )
-                    {
-                        if( xmlStreamReader.isStartElement() )
-                        {
-                            if( xmlStreamReader.attributes().hasAttribute("ObjName") )
-                            {
+                        }
+                    }
+                    else if (strElemName == "Method") {
+                        if (xmlStreamReader.isStartElement()) {
+                            if (xmlStreamReader.attributes().hasAttribute("ObjName")) {
                                 strObjName = xmlStreamReader.attributes().value("ObjName").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("Name") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("Name")) {
                                 strMthName = xmlStreamReader.attributes().value("Name").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("Name") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("Name")) {
                                 strMthThreadName = xmlStreamReader.attributes().value("Thread").toString();
                             }
-                            if( !xmlStreamReader.attributes().hasAttribute("Dir") )
-                            {
+                            if (!xmlStreamReader.attributes().hasAttribute("Dir")) {
                                 xmlStreamReader.raiseError("Attribute \"Dir\" of Element \"" + strElemName + "\" is missing");
                             }
-                            else
-                            {
+                            else {
                                 strAttr = xmlStreamReader.attributes().value("Dir").toString();
                                 mthDir = CEnumMethodDir::toEnumerator(strAttr);
-                                if( mthDir == EMethodDir::Undefined ) xmlStreamReader.raiseError("Attribute \"Dir\" (" + strAttr + ") of Element \"" + strElemName + "\" is out of range");
+                                if (mthDir == EMethodDir::Undefined ) {
+                                    xmlStreamReader.raiseError("Attribute \"Dir\" (" + strAttr + ") of Element \"" + strElemName + "\" is out of range");
+                                }
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("DateTime") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("DateTime")) {
                                 strDateTime = xmlStreamReader.attributes().value("DateTime").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("SysTime") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("SysTime")) {
                                 strAttr = xmlStreamReader.attributes().value("SysTime").toString();
                                 fVal = strAttr.toDouble(&bOk);
-                                if( bOk && fVal >= 0.0 ) fSysTime_s = fVal;
-
-                                if( m_iTimeSpanTooMuchData_s > 0 )
-                                {
+                                if (bOk && fVal >= 0.0) {
+                                    fSysTime_s = fVal;
+                                }
+                                if (m_iTimeSpanTooMuchData_s > 0) {
                                     m_dataRateCalculatorBytes.addMeasurement(fSysTime_s, 2 * static_cast<qint64>(i_str.size()));
                                     m_dataRateCalculatorLines.addMeasurement(fSysTime_s, 1);
-
                                     showAndCheckDataRates();
                                 }
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("InArgs") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("InArgs")) {
                                 strMthInArgs = xmlStreamReader.attributes().value("InArgs").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("OutArgs") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("OutArgs")) {
                                 strMthOutArgs = xmlStreamReader.attributes().value("OutArgs").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("Return") )
-                            {
+                            if (xmlStreamReader.attributes().hasAttribute("Return")) {
                                 strMthRet = xmlStreamReader.attributes().value("Return").toString();
                             }
-                            if( xmlStreamReader.attributes().hasAttribute("AddInfo") )
-                            {
+                            if(xmlStreamReader.attributes().hasAttribute("AddInfo")) {
                                 strAddInfo = xmlStreamReader.attributes().value("AddInfo").toString();
                             }
-                        } // if( xmlStreamReader.isStartElement() )
-                    } // if( strElemName == "Method" )
-                } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-            } // while( !xmlStreamReader.atEnd() )
-
-            if( xmlStreamReader.hasError() )
-            {
+                        }
+                    }
+                }
+            }
+            if (xmlStreamReader.hasError()) {
                 strAddErrInfo  = xmlStreamReader.errorString();
                 strAddErrInfo += " on receiving: " + i_str;
-
                 errResultInfo.setSeverity(EResultSeverityError);
                 errResultInfo.setResult(EResultFileReadContent);
                 errResultInfo.setAddErrInfoDscr(strAddErrInfo);
-
-                if( CErrLog::GetInstance() != nullptr )
-                {
+                if (CErrLog::GetInstance() != nullptr) {
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
-        } // if( xmlStreamTokenType == QXmlStreamReader::StartElement )
-    } // if( trcServerSettings.m_bUseIpcServer )
-
-} // onTraceDataReceived
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onTmrDataRateRefreshTimeout()
@@ -1627,7 +1426,6 @@ void CWdgtTrcMthList::onTmrDataRateRefreshTimeout()
 {
     m_dataRateCalculatorBytes.updateMeasurements();
     m_dataRateCalculatorLines.updateMeasurements();
-
     showAndCheckDataRates();
 }
 
@@ -1643,8 +1441,7 @@ void CWdgtTrcMthList::addEdtItem( const QString& i_strText, const QString& i_str
         // !!!! To slow !!!!
         // GUI becomes unresponsive when removing lines.
         //QTextCursor cursor = m_pEdt->textCursor();
-        //for( int i = 0; i < 10; ++i )
-        //{
+        //for (int i = 0; i < 10; ++i) {
         //    cursor.movePosition(QTextCursor::Start);
         //    cursor.select(QTextCursor::LineUnderCursor);
         //    cursor.removeSelectedText();
@@ -1682,8 +1479,7 @@ void CWdgtTrcMthList::normalize( QString& i_str ) const
 void CWdgtTrcMthList::showAndCheckDataRates()
 //------------------------------------------------------------------------------
 {
-    if( m_iTimeSpanTooMuchData_s > 0 )
-    {
+    if (m_iTimeSpanTooMuchData_s > 0) {
         double fTimeSpanServer_LinesPerSec = 0.0;
         double fTimeSpanServer_KBs = 0.0;
         double fTimeSpanClient_LinesPerSec = 0.0;
@@ -1713,44 +1509,36 @@ void CWdgtTrcMthList::showAndCheckDataRates()
         double fProcTime_s = Time::getProcTimeInSec();
         int iDataRateDiff_LinesPerSec = iDataRateServer_LinesPerSec - iDataRateClient_LinesPerSec;
 
-        if( m_arfDataRateDiffsProcTime_s.isEmpty() )
-        {
+        if (m_arfDataRateDiffsProcTime_s.isEmpty()) {
             m_arfDataRateDiffsProcTime_s << fProcTime_s;
             m_ariDataRateDiffs_linesPerSec << fProcTime_s;
         }
 
-        if( fProcTime_s - m_arfDataRateDiffsProcTime_s.last() >= 1.0 )
-        {
+        if (fProcTime_s - m_arfDataRateDiffsProcTime_s.last() >= 1.0) {
             m_arfDataRateDiffsProcTime_s << fProcTime_s;
             m_ariDataRateDiffs_linesPerSec << iDataRateDiff_LinesPerSec;
 
-            if( m_arfDataRateDiffsProcTime_s.size() > 10 )
-            {
+            if (m_arfDataRateDiffsProcTime_s.size() > 10) {
                 m_arfDataRateDiffsProcTime_s.removeFirst();
                 m_ariDataRateDiffs_linesPerSec.removeFirst();
             }
         }
 
-        if( fTimeSpanClient_LinesPerSec > m_iTimeSpanTooMuchData_s || m_dataRateCalculatorLines.getMeasurePointsCount() >= m_dataRateCalculatorLines.getMaxMeasurePoints() )
+        if (    (fTimeSpanClient_LinesPerSec > m_iTimeSpanTooMuchData_s)
+            ||  (m_dataRateCalculatorLines.getMeasurePointsCount() >= m_dataRateCalculatorLines.getMaxMeasurePoints()))
         {
             bool bClientCanProcessData = false;
-
-            for( int iDataRateDiff : m_ariDataRateDiffs_linesPerSec )
-            {
+            for (int iDataRateDiff : m_ariDataRateDiffs_linesPerSec) {
                 // If for at least one second the client was able to process the data ..
-                if( iDataRateDiff <= 0 )
+                if (iDataRateDiff <= 0)
                 {
                     bClientCanProcessData = true;
                     break;
                 }
             }
-
-            if( !bClientCanProcessData )
-            {
+            if (!bClientCanProcessData) {
                 STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
-
-                if( trcServerSettings.m_bUseIpcServer )
-                {
+                if (trcServerSettings.m_bUseIpcServer) {
                     trcServerSettings.m_bUseIpcServer = false;
                     m_pTrcClient->setTraceSettings(trcServerSettings);
 
@@ -1768,8 +1556,8 @@ void CWdgtTrcMthList::showAndCheckDataRates()
                 }
             }
         }
-    } // if( m_iTimeSpanTooMuchData_s > 0 )
-} // showAndCheckDataRates
+    }
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::showEditMaxDataRateDialog()
@@ -1777,12 +1565,10 @@ void CWdgtTrcMthList::showEditMaxDataRateDialog()
 {
     QString strDlgTitle = QCoreApplication::applicationName() + ": Edit Max Data Rate";
 
-    if( m_pDlgEditTimeSpanTooMuchData == nullptr )
-    {
+    if (m_pDlgEditTimeSpanTooMuchData == nullptr) {
         m_pDlgEditTimeSpanTooMuchData = dynamic_cast<CDlgEditIntValue*>(CDlgEditIntValue::GetInstance("EditMaxDataRate"));
     }
-    if( m_pDlgEditTimeSpanTooMuchData == nullptr )
-    {
+    if (m_pDlgEditTimeSpanTooMuchData == nullptr) {
         m_pDlgEditTimeSpanTooMuchData = CDlgEditIntValue::CreateInstance(strDlgTitle, "EditMaxDataRate");
         m_pDlgEditTimeSpanTooMuchData->setAttribute(Qt::WA_DeleteOnClose, true);
         m_pDlgEditTimeSpanTooMuchData->adjustSize();
@@ -1798,10 +1584,8 @@ void CWdgtTrcMthList::showEditMaxDataRateDialog()
             m_pDlgEditTimeSpanTooMuchData, &CDlgEditIntValue::rejected,
             this, &CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataRejected);
     }
-    else
-    {
-        if( m_pDlgEditTimeSpanTooMuchData->isHidden() )
-        {
+    else {
+        if (m_pDlgEditTimeSpanTooMuchData->isHidden()) {
             m_pDlgEditTimeSpanTooMuchData->show();
         }
         m_pDlgEditTimeSpanTooMuchData->raise();
@@ -1823,5 +1607,4 @@ void CWdgtTrcMthList::showEditMaxDataRateDialog()
         "The client must be able to process and display all incoming data at least "
         "once for one second within the time span.\n"
         "If this is not the case, remote tracing is disabled.");
-
-} // showEditMaxDataRateDialog
+}

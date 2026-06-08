@@ -16,19 +16,21 @@
 #
 # Change working directory to where this CMakeList file is located ("<root of the repository>/Make").
 #
-# Generator: Visual Studio 16 (2019)
+# Visual Studio 2019 (Version 16)
+#
+# Visual Studio 2022 (Version 17)
 #
 # - Release Build
 #
-#   cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
-#   cmake --build ..\Build\msvc2019_x64_Release --config=Release -j8
-#   cmake --install ..\Build\msvc2019_x64_Release --config=Release
+#   cmake -G "Visual Studio 17 2022" -A x64 . -B ..\Build\msvc2022_x64_Release -DCMAKE_CONFIGURATION_TYPES="Release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2022_x64"
+#   cmake --build ..\Build\msvc2022_x64_Release --config=Release -j8
+#   cmake --install ..\Build\msvc2022_x64_Release --config=Release
 #
 # - Debug Build
 #
-#   cmake -G "Visual Studio 16 2019" -A x64 . -B ..\Build\msvc2019_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2019_x64"
-#   cmake --build ..\Build\msvc2019_x64_Debug --config=Debug -j8
-#   cmake --install ..\Build\msvc2019_x64_Debug --config=Debug
+#   cmake -G "Visual Studio 17 2022" -A x64 . -B ..\Build\msvc2022_x64_Debug -DCMAKE_CONFIGURATION_TYPES="Debug" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="..\Bin\msvc2022_x64"
+#   cmake --build ..\Build\msvc2022_x64_Debug --config=Debug -j8
+#   cmake --install ..\Build\msvc2022_x64_Debug --config=Debug
 #
 # Generator: MinGW Makefiles
 #
@@ -183,6 +185,8 @@ elseif(CMAKE_GENERATOR MATCHES "Visual Studio 15 2017")
     set(Compiler "msvc2017")
 elseif(CMAKE_GENERATOR MATCHES "Visual Studio 16 2019")
     set(Compiler "msvc2019")
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio 17 2022")
+    set(Compiler "msvc2022")
 elseif(CMAKE_GENERATOR MATCHES "Unix Makefiles")
     string(TOLOWER ${CMAKE_CXX_COMPILER_ID} Compiler)
     string(REPLACE "." ";" CompilerVersionList ${CMAKE_CXX_COMPILER_VERSION})

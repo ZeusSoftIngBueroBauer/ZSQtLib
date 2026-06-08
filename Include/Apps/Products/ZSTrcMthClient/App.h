@@ -24,14 +24,13 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TrcMthClient_App_h
-#define ZSApps_TrcMthClient_App_h
-
-#include <QtCore/qglobal.h>
+#pragma once
 
 #include "ZSSysGUI/ZSSysGUIApp.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSIpc/ZSIpcSrvCltMsg.h"
+
+#include <QtCore/qglobal.h>
 
 class QSettings;
 
@@ -46,12 +45,9 @@ namespace Trace
 {
 class CIpcTrcClient;
 }
+} // ZS
 
-namespace Apps
-{
-namespace Products
-{
-namespace MethodTraceClient
+namespace ZS::Apps::Products::MethodTraceClient
 {
 class CMainWindow;
 
@@ -61,11 +57,14 @@ class CApplication : public ZS::System::GUI::CGUIApp
 {
     Q_OBJECT
 public: // class methods
+    static QString NameSpace() { return "Apps::Products::MethodTraceClient"; }
+    static QString ClassName() { return "CApplication"; }
+public: // class methods
     static CApplication* GetInstance();
 public: // ctors and dtor
     CApplication(
-        int&           i_argc,
-        char*          i_argv[],
+        int& i_argc,
+        char* i_argv[],
         const QString& i_strOrganizationName,
         const QString& i_strOrganizationDomain,
         const QString& i_strAppName,
@@ -82,23 +81,15 @@ public: // instance methods
 //    void shutdown();
 //    void onLastWindowClosed();
 protected: // instance members
-    QSettings*                    m_pSettingsFile;
-    bool                          m_bReqExecTreeGarbageCollectorEnabled;
-    double                        m_fReqExecTreeGarbageCollectorInterval_s;
-    double                        m_fReqExecTreeGarbageCollectorElapsed_s;
-    ZS::System::CRequestExecTree* m_pReqExecTree;
-    ZS::Ipc::SClientHostSettings  m_trcClientHostSettings;
-    ZS::Trace::CIpcTrcClient*     m_pTrcClient;
-    CMainWindow*                  m_pMainWindow;
+    QSettings* m_pSettingsFile = nullptr;
+    bool m_bReqExecTreeGarbageCollectorEnabled = true;
+    double m_fReqExecTreeGarbageCollectorInterval_s = 5.0;
+    double m_fReqExecTreeGarbageCollectorElapsed_s = 60.0;
+    ZS::System::CRequestExecTree* m_pReqExecTree = nullptr;
+    ZS::Ipc::SClientHostSettings m_trcClientHostSettings = nullptr;
+    ZS::Trace::CIpcTrcClient* m_pTrcClient = nullptr;
+    CMainWindow* m_pMainWindow = nullptr;
 
 }; // class CApplication
 
-} // namespace MethodTraceClient
-
-} // namespace Products
-
-} // namespace Apps
-
-} // namespace ZS
-
-#endif // #ifndef ZSApps_TrcMthClient_App_h
+} // ZS::Apps::Products::MethodTraceClient

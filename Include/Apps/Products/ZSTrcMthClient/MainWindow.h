@@ -24,8 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSApps_TrcMthClient_MainWindow_h
-#define ZSApps_TrcMthClient_MainWindow_h
+#pragma once
 
 #include <QtCore/qglobal.h>
 
@@ -73,12 +72,9 @@ namespace GUI
 class CDlgTrcClient;
 }
 }
+} // ZS
 
-namespace Apps
-{
-namespace Products
-{
-namespace MethodTraceClient
+namespace ZS::Apps::Products::MethodTraceClient
 {
 class CWidgetCentral;
 
@@ -91,14 +87,14 @@ public: // class methods
     static CMainWindow* GetInstance(); // singleton class
 public: // ctors and dtor
     CMainWindow(
-        const QString&            i_strWindowTitle,
+        const QString& i_strWindowTitle,
         ZS::Trace::CIpcTrcClient* i_pTrcClient,
-        QWidget*                  i_pWdgtParent = nullptr,
-        Qt::WindowFlags           i_wflags = Qt::WindowFlags());
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags());
     ~CMainWindow();
 protected: // overridables of base class QWidget
-    virtual void closeEvent( QCloseEvent* i_pEv ) override;
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
+    virtual void closeEvent(QCloseEvent* i_pEv) override;
+    virtual bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 protected slots:
     void onActFileRecallAdminObjsTriggered();
     void onActFileSaveAdminObjsTriggered();
@@ -112,57 +108,48 @@ protected slots:
     void onActDebugErrLogTriggered();
     void onActDebugRequestExecTreeTriggered();
 protected slots:
-    void onErrLogEntryAdded( const ZS::System::SErrResultInfo& i_errResultInfo );
-    void onErrLogEntryChanged( const ZS::System::SErrResultInfo& i_errResultInfo );
-    void onErrLogEntryRemoved( const ZS::System::SErrResultInfo& i_errResultInfo );
+    void onErrLogEntryAdded(const ZS::System::SErrResultInfo& i_errResultInfo);
+    void onErrLogEntryChanged(const ZS::System::SErrResultInfo& i_errResultInfo);
+    void onErrLogEntryRemoved(const ZS::System::SErrResultInfo& i_errResultInfo);
 protected: // instance methods
     void updateErrorsStatus();
 protected: // instance methods
-    void updateReqInProgressStatus( const QString& i_strRequest, int i_iProgress_perCent );
+    void updateReqInProgressStatus(const QString& i_strRequest, int i_iProgress_perCent);
 protected slots:
-    void onTrcClientDestroyed( QObject* i_pTrcClient );
-    void onTrcClientConnected( QObject* i_pTrcClient );
-    void onTrcClientDisconnected( QObject* i_pTrcClient );
-    void onTrcClientStateChanged( QObject* i_pTrcClient, int i_iState );
+    void onTrcClientDestroyed(QObject* i_pTrcClient);
+    void onTrcClientConnected(QObject* i_pTrcClient);
+    void onTrcClientDisconnected(QObject* i_pTrcClient);
+    void onTrcClientStateChanged(QObject* i_pTrcClient, int i_iState);
 protected slots:
     void onWidgetCentralProgressBarConnectDblClicked();
 private: // class members
     static CMainWindow*       s_pThis; // singleton class
 protected: // instance members
-    QSettings*                m_pSettingsFile;
-    ZS::Trace::CIpcTrcClient* m_pTrcClient;
-    QMenu*                    m_pMnuFile;
-    QAction*                  m_pActFileRecallAdminObjs;
-    QAction*                  m_pActFileSaveAdminObjs;
-    QAction*                  m_pActFileReadTrcMthFile;
-    QAction*                  m_pActFileWriteTrcMthFile;
-    QAction*                  m_pActFileQuit;
-    QMenu*                    m_pMnuSettings;
-    QAction*                  m_pActSettingsWdgtTrcMthList;
-    QAction*                  m_pActSettingsTrcClient;
-    QAction*                  m_pActSettingsTrcAdminObjIdxTree;
-    QMenu*                    m_pMnuDebug;
-    QAction*                  m_pActDebugErrLog;
-    QAction*                  m_pActDebugRequestExecTree;
-    QMenu*                    m_pMnuInfo;
-    QAction*                  m_pActInfoVersion;
-    QAction*                  m_pActInfoSettingsFile;
-    QStatusBar*               m_pStatusBar;
-    QLabel*                   m_pLblReqInProgress;
-    QProgressBar*             m_pBarReqInProgress;
-    QLabel*                   m_pLblErrors;
-    QWidget*                  m_pWdgtTrcClientCnctStatus;
-    QLabel*                   m_pLblTrcClientCnctStatusIcon;
-    CWidgetCentral*           m_pWdgtCentral;
+    QSettings* m_pSettingsFile = nullptr;
+    ZS::Trace::CIpcTrcClient* m_pTrcClient = nullptr;
+    QMenu* m_pMnuFile = nullptr;
+    QAction* m_pActFileRecallAdminObjs = nullptr;
+    QAction* m_pActFileSaveAdminObjs = nullptr;
+    QAction* m_pActFileReadTrcMthFile = nullptr;
+    QAction* m_pActFileWriteTrcMthFile = nullptr;
+    QAction* m_pActFileQuit = nullptr;
+    QMenu* m_pMnuSettings = nullptr;
+    QAction* m_pActSettingsWdgtTrcMthList = nullptr;
+    QAction* m_pActSettingsTrcClient = nullptr;
+    QAction* m_pActSettingsTrcAdminObjIdxTree = nullptr;
+    QMenu* m_pMnuDebug = nullptr;
+    QAction* m_pActDebugErrLog = nullptr;
+    QAction* m_pActDebugRequestExecTree = nullptr;
+    QMenu* m_pMnuInfo = nullptr;
+    QAction* m_pActInfoVersion = nullptr;
+    QAction* m_pActInfoSettingsFile = nullptr;
+    QStatusBar* m_pStatusBar = nullptr;
+    QLabel* m_pLblReqInProgress = nullptr;
+    QProgressBar* m_pBarReqInProgress = nullptr;
+    QLabel* m_pLblErrors = nullptr;
+    QWidget* m_pWdgtTrcClientCnctStatus = nullptr;
+    QLabel* m_pLblTrcClientCnctStatusIcon = nullptr;
+    CWidgetCentral* m_pWdgtCentral = nullptr;
+};
 
-}; // class CMainWindow
-
-} // namespace MethodTraceClient
-
-} // namespace Products
-
-} // namespace Apps
-
-} // namespace ZS
-
-#endif // #ifndef ZSApps_TrcMthClient_MainWindow_h
+} // ZS::Apps::Products::MethodTraceClient

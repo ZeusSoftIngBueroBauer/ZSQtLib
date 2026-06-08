@@ -24,8 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSIpcTraceGUI_TrcMthListWdgtSettingsDlg_h
-#define ZSIpcTraceGUI_TrcMthListWdgtSettingsDlg_h
+#pragma once
 
 #include "ZSIpcTraceGUI/ZSIpcTrcGUIDllMain.h"
 #include "ZSSysGUI/ZSSysDialog.h"
@@ -33,14 +32,11 @@ may result in using the software modules.
 class QCheckBox;
 class QLabel;
 class QPushButton;
+class QSpinBox;
 class QHBoxLayout;
 class QVBoxLayout;
 
-namespace ZS
-{
-namespace Trace
-{
-namespace GUI
+namespace ZS::Trace::GUI
 {
 class CWdgtTrcMthList;
 
@@ -54,46 +50,43 @@ public: // class methods
     static QString ClassName() { return "CDlgWdgtTrcMthListSettings"; }
 public: // class methods
     static CDlgWdgtTrcMthListSettings* CreateInstance(
-        const QString&  i_strDlgTitle,
-        const QString&  i_strObjName,
-        QWidget*        i_pWdgtParent = nullptr,
+        const QString& i_strDlgTitle,
+        const QString& i_strObjName,
+        QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgWdgtTrcMthListSettings* GetInstance( const QString& i_strObjName );
 protected: // ctor
     CDlgWdgtTrcMthListSettings(
-        const QString&  i_strDlgTitle,
-        const QString&  i_strObjName,
-        QWidget*        i_pWdgtParent = nullptr,
+        const QString& i_strDlgTitle,
+        const QString& i_strObjName,
+        QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
     virtual ~CDlgWdgtTrcMthListSettings();
 public: // instance methods
-    void setTraceMethodListWidget( CWdgtTrcMthList* i_pWdgtTrcMthList );
+    void setTraceMethodListWidget(CWdgtTrcMthList* i_pWdgtTrcMthList);
 protected slots:
-    void onChkShowTimeInfoToggled( bool i_bChecked );
-    void onBtnApplyClicked( bool i_bChecked );
-    void onBtnOkClicked( bool i_bChecked );
-    void onBtnCancelClicked( bool i_bChecked );
+    void onChkShowTimeInfoToggled(bool i_bChecked);
+    void onEdtMaxEditItemsValueChanged(int i_iVal);
+    void onBtnApplyClicked(bool i_bChecked);
+    void onBtnOkClicked(bool i_bChecked);
+    void onBtnCancelClicked(bool i_bChecked);
 protected: // auxiliary methods
     bool hasChanges() const;
     void applyChanges();
 protected: // instance members
-    CWdgtTrcMthList* m_pWdgtTrcMthList;
-    QVBoxLayout*     m_pLyt;
-    QHBoxLayout*     m_pLytLineShowTimeInfo;
-    QLabel*          m_pLblShowTimeInfo;
-    QCheckBox*       m_pChkShowTimeInfo;
-    QHBoxLayout*     m_pLytBtns;
-    QPushButton*     m_pBtnApply;
-    QPushButton*     m_pBtnOk;
-    QPushButton*     m_pBtnCancel;
+    CWdgtTrcMthList* m_pWdgtTrcMthList = nullptr;
+    QVBoxLayout* m_pLyt = nullptr;
+    QHBoxLayout* m_pLytLineShowTimeInfo = nullptr;
+    QLabel* m_pLblShowTimeInfo = nullptr;
+    QCheckBox* m_pChkShowTimeInfo = nullptr;
+    QHBoxLayout* m_pLytLineMaxEditItems = nullptr;
+    QLabel* m_pLblMaxEditItems = nullptr;
+    QSpinBox* m_pEdtMaxEditItems = nullptr;
+    QHBoxLayout* m_pLytBtns = nullptr;
+    QPushButton* m_pBtnApply = nullptr;
+    QPushButton* m_pBtnOk = nullptr;
+    QPushButton* m_pBtnCancel = nullptr;
+};
 
-}; // class CDlgWdgtTrcMthListSettings
-
-} // namespace GUI
-
-} // namespace Trace
-
-} // namespace ZS
-
-#endif // #ifndef ZSIpcTraceGUI_TrcMthListWdgtSettingsDlg_h
+} // ZS::Trace::GUI

@@ -42,26 +42,32 @@ Param (
 #     used as defined in the environment, the path may be explicitly passed here.
 #
 $AppNames = @($AppName)
-if( $AppName -ieq "all" ) {
+if ($AppName -ieq "all") {
     $AppNames = @( "TrcMthClient", "LogClient" )
 }
 
 $ConfigTypes = @($ConfigType)
-if( $ConfigType -ieq "all" ) {
+if ($ConfigType -ieq "all") {
     $ConfigTypes = @("Debug", "Release")
 }
 
-if($QTDIR -eq $null) {
+if ($QTDIR -eq $null) {
     $QTDIR=$Env:QTDIR
 }
-if($QTDIR -eq $null) {
+if ($QTDIR -eq $null) {
     Write-Host "Error: QTDIR not defined"
     Exit 1
 }
 $QTDIR=$QTDIR.replace("\bin", "")
 
-$QtDlls = @("Qt5Core", "Qt5Network", "Qt5Xml", "Qt5Qml", "Qt5Gui", "Qt5Widgets")
-$ZSQtLibDlls = @("ZSSysQt5", "ZSSysGUIQt5", "ZSIpcQt5", "ZSIpcGUIQt5", "ZSIpcTraceQt5", "ZSIpcTraceGUIQt5")
+if($QTDIR.Contains("Qt5")) {
+    $QtDlls = @("Qt5Core", "Qt5Network", "Qt5Xml", "Qt5Qml", "Qt5Gui", "Qt5Widgets")
+    $ZSQtLibDlls = @("ZSSysQt5", "ZSSysGUIQt5", "ZSIpcQt5", "ZSIpcGUIQt5", "ZSIpcTraceQt5", "ZSIpcTraceGUIQt5")
+}
+if($QTDIR.Contains("Qt6")) {
+    $QtDlls = @("Qt6Core", "Qt6Network", "Qt6Xml", "Qt6Qml", "Qt6Gui", "Qt6Widgets")
+    $ZSQtLibDlls = @("ZSSysQt6", "ZSSysGUIQt6", "ZSIpcQt6", "ZSIpcGUIQt6", "ZSIpcTraceQt6", "ZSIpcTraceGUIQt6")
+}
 
 # Function buildAndInstall
 # ------------------------
@@ -119,22 +125,25 @@ function buildAndInstall {
     Write-Host "BuildDir:       $BuildDir"
     Write-Host ""
 
-    if($Compiler.Contains("msvc")) {
-        if($Compiler -eq "msvc2017") {
+    if ($Compiler.Contains("msvc")) {
+        if( $Compiler -eq "msvc2017") {
             $Generator="Visual Studio 15 2017"
         }
-        if($Compiler -eq "msvc2019") {
+        if ($Compiler -eq "msvc2019") {
             $Generator="Visual Studio 16 2019"
+        }
+        if ($Compiler -eq "msvc2022") {
+            $Generator="Visual Studio 17 2022"
         }
         Write-Host ""
         Write-Host "cmake -G $Generator . -A $Platform -B $BuildDir -DCMAKE_CONFIGURATION_TYPES=$ConfigType -DCMAKE_BUILD_TYPE=$ConfigType -DCMAKE_PREFIX_PATH="$QTDIR" -DCMAKE_INSTALL_PREFIX=$BinDir"
         cmake -G "$Generator" . -A "$Platform" -B "$BuildDir" -DCMAKE_CONFIGURATION_TYPES="$ConfigType" -DCMAKE_BUILD_TYPE="$ConfigType" -DCMAKE_PREFIX_PATH="$QTDIR" -DCMAKE_INSTALL_PREFIX="$BinDir"
     }
 
-    if($Compiler -eq "mingw81") {
+    if ($Compiler -eq "mingw81") {
         $Generator="MinGW Makefiles"
-        if(-Not $env:Path.Contains("C:\Qt\5.15.2\msvc2019_64\bin")) {
-            if($env:Path.Contains("C:\Qt\5.15.2\mingw81_64\bin")) {
+        if (-Not $env:Path.Contains("C:\Qt\5.15.2\msvc2019_64\bin")) {
+            if ($env:Path.Contains("C:\Qt\5.15.2\mingw81_64\bin")) {
                 $env:Path = $env:Path.Replace("C:\Qt\5.15.2\mingw81_64\bin", "C:\Qt\5.15.2\msvc2019_64\bin")
             }
             else {
@@ -150,7 +159,7 @@ function buildAndInstall {
     Write-Host ""
     Write-Host "cmake --build $BuildDir --config $ConfigType -j6"
     cmake --build "$BuildDir" --config $ConfigType -j6
-    if(!$?) {
+    if (!$?) {
         Write-Host "Error: cmake --build failed"
         Exit 1
     }
@@ -158,7 +167,7 @@ function buildAndInstall {
     Write-Host ""
     Write-Host "cmake --install $BuildDir"
     cmake --install "$BuildDir"
-    if(!$?) {
+    if (!$?) {
         Write-Host "Error: cmake --install failed"
         Exit 1
     }
@@ -167,7 +176,7 @@ function buildAndInstall {
     Write-Host "Run automated test..."
     cd $BuildDir
     ### ctest -T test
-    if(!$?) {
+    if (!$?) {
         Write-Host "Error: Automated tests failed"
         cd $PSScriptRoot
         Exit 1
@@ -217,6 +226,13 @@ function createInstaller {
     #clear error variable
     $error.clear()
 
+    if ($Platform.Contains("64")) {
+        $QTBinDIR = "$QTDIR\$Compiler`_64\bin"
+    }
+    else {
+        Write-Host "Error: Platform $Platform not supported";
+        Exit 1;
+    }
     $BinDir="..\Bin\$Compiler`_$Platform"
     $DeployDir="..\Deploy\$Compiler`_$Platform`_$ConfigType\$AppName"
 
@@ -235,6 +251,7 @@ function createInstaller {
     Write-Host "BinDir:         $BinDir"
     Write-Host "DeployDir:      $DeployDir"
     Write-Host "QTDIR:          $QTDIR"
+    Write-Host "QTBinDIR:       $QTBinDIR"
     Write-Host ""
 
     if (Test-Path -path $DeployDir) {
@@ -247,7 +264,7 @@ function createInstaller {
     mkdir -p $DeployDir
 
     Write-Host "Copy apps and libs and resources to $DeployDir"
-    if($ConfigType -eq "Debug") {
+    if ($ConfigType -eq "Debug") {
         Write-Host "cp $BinDir\ZSApp$AppName`d.exe $DeployDir"
         cp $BinDir\ZSApp$AppName`d.exe $DeployDir
     }
@@ -255,9 +272,9 @@ function createInstaller {
         Write-Host "cp $BinDir\ZSApp$AppName.exe $DeployDir"
         cp $BinDir\ZSApp$AppName.exe $DeployDir
     }
-    for( $idxZQQtLibDll=0; $idxZQQtLibDll -lt $ZSQtLibDlls.length; $idxZQQtLibDll++ ) {
+    for ($idxZQQtLibDll=0; $idxZQQtLibDll -lt $ZSQtLibDlls.length; $idxZQQtLibDll++) {
         $ZSQtLibDll = $ZSQtLibDlls[$idxZQQtLibDll]
-        if($ConfigType -eq "Debug") {
+        if ($ConfigType -eq "Debug") {
             Write-Host "cp $BinDir\$ZSQtLibDll`d.dll $DeployDir"
             cp $BinDir\$ZSQtLibDll`d.dll $DeployDir
         }
@@ -266,28 +283,27 @@ function createInstaller {
             cp $BinDir\$ZSQtLibDll.dll $DeployDir
         }
     }
-    for( $idxQtDll=0; $idxQtDll -lt $QtDlls.length; $idxQtDll++ ) {
+    for ($idxQtDll=0; $idxQtDll -lt $QtDlls.length; $idxQtDll++) {
         $QtDll = $QtDlls[$idxQtDll]
-        if($ConfigType -eq "Debug") {
-            Write-Host "cp $QTDIR\bin\$QtDll`d.dll $DeployDir"
-            cp $QTDIR\bin\$QtDll`d.dll $DeployDir
+        if ($ConfigType -eq "Debug") {
+            Write-Host "cp $QTBinDIR\$QtDll`d.dll $DeployDir"
+            cp $QTBinDIR\$QtDll`d.dll $DeployDir
         }
         else {
-            Write-Host "cp $QTDIR\bin\$QtDll.dll $DeployDir"
-            cp $QTDIR\bin\$QtDll.dll $DeployDir
+            Write-Host "cp $QTBinDIR\$QtDll.dll $DeployDir"
+            cp $QTBinDIR\$QtDll.dll $DeployDir
         }
     }
 
     Write-Host ""
     Write-Host "$QTDIR\bin\windeployqt --compiler-runtime --debug $DeployDir"
-    if($ConfigType -eq "Debug") {
-        & "$QTDIR\bin\windeployqt" --compiler-runtime --debug $DeployDir
+    if ($ConfigType -eq "Debug") {
+        & "$QTBinDIR\windeployqt" --compiler-runtime --debug $DeployDir
     }
     else {
-        & "$QTDIR\bin\windeployqt" --compiler-runtime $DeployDir
+        & "$QTBinDIR\windeployqt" --compiler-runtime $DeployDir
     }
-    if($error.Count -ne 0)
-    {
+    if ($error.Count -ne 0) {
         Write-Host "Error: windeployqt failed";
         Exit 1
     }
@@ -304,8 +320,7 @@ function createInstaller {
     cp -r $DeployDir\* Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data
     Write-Host "binarycreator -f -c Apps\Products\ZS$AppName\Installer\config\config.xml -p Apps\Products\ZS$AppName\Installer\packages $DeployDir\$AppName-$ZSQtLibVersion-Installer.exe"
     binarycreator -f -c Apps\Products\ZS$AppName\Installer\config\config.xml -p Apps\Products\ZS$AppName\Installer\packages $DeployDir\$AppName-$ZSQtLibVersion-Installer.exe
-    if($error.Count -ne 0)
-    {
+    if ($error.Count -ne 0) {
         Write-Host "Error: binarycreator failed";
         Exit 1;
     }
@@ -337,20 +352,20 @@ $ZSQtLibVersion=git describe --always --tags --long
 echo "ZSQtLibVersion: $ZSQtLibVersion"
 cd $PSScriptRoot
 
-for( $idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++ ) {
+for ($idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++) {
     $ConfigType = $ConfigTypes[$idxCfgType]
     # "mingw81" not yet supported (TODO: libQt.. missing in installer packages)
-    if($Compiler -ne "mingw81") {
+    if ($Compiler -ne "mingw81") {
         buildAndInstall -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion -QTDIR $QTDIR
     }
 }
 
 for( $idxAppName=0; $idxAppName -lt $AppNames.length; $idxAppName++ ) {
     $AppName = $AppNames[$idxAppName]
-    for( $idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++ ) {
+    for ($idxCfgType=0; $idxCfgType -lt $ConfigTypes.length; $idxCfgType++) {
         $ConfigType = $ConfigTypes[$idxCfgType]
         # "mingw81" not yet supported (TODO: libQt.. missing in installer packages)
-        if($Compiler -ne "mingw81") {
+        if ($Compiler -ne "mingw81") {
             createInstaller -AppName $AppName -Compiler $Compiler -Platform "x64" -ConfigType $ConfigType -ZSQtLibVersion $ZSQtLibVersion -QTDIR $QTDIR
         }
     }

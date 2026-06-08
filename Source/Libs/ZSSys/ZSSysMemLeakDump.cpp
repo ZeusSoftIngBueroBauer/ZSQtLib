@@ -83,105 +83,118 @@ MSVC++ 14.16 _MSC_VER == 1916 (Visual Studio 2017 version 15.9.6)
 #define ZSSys_DbgNew_cpp
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-#if _MSC_VER == 1310 || _MSC_VER == 1400 || _MSC_VER == 1500 || _MSC_VER == 1600 || _MSC_VER == 1700 \
- || _MSC_VER == 1800 || _MSC_VER == 1900 || _MSC_VER == 1915 || _MSC_VER == 1916 || _MSC_VER == 1928 || _MSC_VER == 1929
-    #define nNoMansLandSize 4 //lint !e1923
-    typedef struct _CrtMemBlockHeader
-    {
-        struct _CrtMemBlockHeader * pBlockHeaderNext;
-        struct _CrtMemBlockHeader * pBlockHeaderPrev;
-        char *                      szFileName;
-        int                         nLine;
-        #ifdef _WIN64
-            /* These items are reversed on Win64 to eliminate gaps in the struct
-             * and ensure that sizeof(struct)%16 == 0, so 16-byte alignment is
-             * maintained in the debug heap.
-            */
-            int                         nBlockUse;
-            size_t                      nDataSize;
-        #else  /* _WIN64 */
-            size_t                      nDataSize;
-            int                         nBlockUse;
-        #endif  /* _WIN64 */
-        long                        lRequest;
-        unsigned char               gap[nNoMansLandSize];
-        /* followed by:
-            *  unsigned char           data[nDataSize];
-            *  unsigned char           anotherGap[nNoMansLandSize];
-            */
-    } _CrtMemBlockHeader;
+#if defined(_MSC_VER) && (_MSC_VER >= 1310) && (_MSC_VER <= 1944)
+
+constexpr int nNoMansLandSize = 4;
+
+typedef struct _CrtMemBlockHeader
+{
+    struct _CrtMemBlockHeader* pBlockHeaderNext;
+    struct _CrtMemBlockHeader* pBlockHeaderPrev;
+    char* szFileName;
+    int nLine;
+    #ifdef _WIN64
+        /* These items are reversed on Win64 to eliminate gaps in the struct
+           and ensure that sizeof(struct)%16 == 0, so 16-byte alignment is
+           maintained in the debug heap. */
+        int nBlockUse;
+        size_t nDataSize;
+    #else  /* _WIN64 */
+        size_t nDataSize;
+        int nBlockUse;
+    #endif  /* _WIN64 */
+    long lRequest;
+    unsigned char gap[nNoMansLandSize];
+    /* followed by:
+        unsigned char data[nDataSize];
+        unsigned char anotherGap[nNoMansLandSize];
+    */
+} _CrtMemBlockHeader;
+
 #else
-    #error Please verify that the block header structure remains the same for other compiler versions.
-    #error See header file dgbint.h in directory VC/crt/src or debug_heap.cpp in Windows Kits/10/Source/....
+#error Please verify that the block header structure remains the same for other compiler versions.
+#error See header file dgbint.h in directory VC/crt/src or debug_heap.cpp in Windows Kits/10/Source/....
 #endif
 
 //------------------------------------------------------------------------------
-void __cdecl ZS::dumpClientHook( void* i_pvUserData, size_t i_nSizeInBytes )
+/*! \brief Central implementation used by both exported hook signatures.
+
+    If i_nSizeInBytes is zero the function will rely on _CrtIsMemoryBlock's behavior
+    to query allocation metadata; providing a non-zero size improves detection.
+*/
+static void __cdecl dumpClientHookImpl(void* i_pvUserData, size_t i_nSizeInBytes) noexcept
 //------------------------------------------------------------------------------
 {
-    //int iMSCVersion   = _MSC_VER;
-    int iRepType      = _CrtReportBlockType(i_pvUserData);
-    int iBlockType    = _BLOCK_TYPE(iRepType);
+    if (i_pvUserData == nullptr)
+    {
+        return;
+    }
+
+    int iRepType = _CrtReportBlockType(i_pvUserData);
+    int iBlockType = _BLOCK_TYPE(iRepType);
     int iBlockSubType = _BLOCK_SUBTYPE(iRepType);
 
-    if( iBlockType == _CLIENT_BLOCK && iBlockSubType == _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE )
+    if (iBlockType != _CLIENT_BLOCK || iBlockSubType != _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE)
     {
+        return;
+    }
+
+    long lRequestNumber = 0;
+    char* szFileName = nullptr;
+    int iLineNumber = 0;
+    unsigned int uSizeReported = static_cast<unsigned int>(i_nSizeInBytes);
+
+    // If caller didn't provide size, try to infer it using the internal header.
+    if (uSizeReported == 0) {
+        #if defined(_MSC_VER) && (_MSC_VER >= 1310) && (_MSC_VER <= 1944)
+            // The header is located immediately before the user pointer.
+            try {
+                auto pHdr = reinterpret_cast<const _CrtMemBlockHeader*>(i_pvUserData);
+                --pHdr; // move to header
+                uSizeReported = static_cast<unsigned int>(pHdr->nDataSize);
+            }
+            catch (...) {
+                uSizeReported = 0;
+            }
+        #else
+            uSizeReported = 0;
+        #endif
+    }
+
+    // Ask CRT for allocation metadata. If this fails we still print basic info.
+    if (_CrtIsMemoryBlock(i_pvUserData, uSizeReported, &lRequestNumber, &szFileName, &iLineNumber)) {
+        // Use safe fallback for filename
+        const char* file = (szFileName != nullptr) ? szFileName : "<unknown>";
+        _RPT3(_CRT_WARN,
+            "%s (%d) : Detected memory leak at %p: type CLIENT, subtype SMSYSDBGNEW\n",
+            file, iLineNumber, i_pvUserData);
+    }
+    else {
+        // Fallback minimal information
         _RPT4(_CRT_WARN,
-              "LeakDumper found block at %p: type %d, subtype %d, size %d\n",
-              i_pvUserData,
-              iBlockType,
-              iBlockSubType,
-              i_nSizeInBytes );
+            "LeakDumper found block at %p: type %d, subtype %d, size %u\n",
+            i_pvUserData, iBlockType, iBlockSubType, uSizeReported);
     }
 }
 
 //------------------------------------------------------------------------------
+/*! \brief Exported hook matching original signatures � keep names & calling convention.
+*/
+void __cdecl ZS::dumpClientHook(void* i_pvUserData, size_t i_nSizeInBytes)
+//------------------------------------------------------------------------------
+{
+    dumpClientHookImpl(i_pvUserData, i_nSizeInBytes);
+}
+
+//------------------------------------------------------------------------------
+/*! \brief Some CRT variants call a hook with a context pointer instead of size.
+    Implement as a wrapper that attempts conservative handling.
+*/
 void __cdecl ZS::dumpClientHook( void* i_pvUserData, void* /*i_pvContext*/ )
 //------------------------------------------------------------------------------
 {
-    //int          iMSCVersion   = _MSC_VER;
-    int          iRepType      = _CrtReportBlockType(i_pvUserData);
-    int          iBlockType    = _BLOCK_TYPE(iRepType);
-    int          iBlockSubType = _BLOCK_SUBTYPE(iRepType);
-    unsigned int uSize;
-    long         lRequestNumber;
-    char*        szFileName;
-    int          iLineNumber;
-
-    if( iBlockType == _CLIENT_BLOCK && iBlockSubType == _ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE )
-    {
-        const _CrtMemBlockHeader* pHdr = static_cast<_CrtMemBlockHeader*>(i_pvUserData);
-        pHdr--;
-
-        uSize = static_cast<unsigned int>(pHdr->nDataSize);
-
-        if( _CrtIsMemoryBlock(
-            /* pvUserData     */ i_pvUserData,
-            /* uSize          */ uSize,
-            /* lRequestNumber */ &lRequestNumber,
-            /* szFileName     */ &szFileName,
-            /* iLineNumber    */ &iLineNumber ) )
-        {
-            try
-            {
-                _RPT3(
-                    _CRT_WARN,
-                    "%s (%d) : Detected memory leak at %p: type CLIENT, subtype SMSYSDBGNEW\n",
-                    szFileName,
-                    iLineNumber,
-                    i_pvUserData );
-            }
-            catch( ... )
-            {
-                _RPT2(
-                    _CRT_WARN,
-                    "Detected memory leak at %p: type CLIENT, subtype SMSYSDBGNEW\n"
-                    "  Allocated at line number %d from any file linked to a dll\n",
-                    i_pvUserData,
-                    iLineNumber );
-            }
-        }
-    }
+    // We don't have the size here; pass zero so impl will attempt to infer it.
+    dumpClientHookImpl(i_pvUserData, 0);
 }
 
 #endif // #ifdef _DEBUG

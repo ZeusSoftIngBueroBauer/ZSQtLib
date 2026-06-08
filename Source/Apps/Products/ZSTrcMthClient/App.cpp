@@ -24,6 +24,17 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "App.h"
+#include "MainWindow.h"
+
+#include "ZSIpcTrace/ZSIpcTrcClient.h"
+#include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysRequestExecTree.h"
+#include "ZSSys/ZSSysTime.h"
+
 #include <QtCore/qdir.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
@@ -35,18 +46,9 @@ may result in using the software modules.
 #include <QtGui/qmessagebox.h>
 #else
 #include <QtWidgets/qmessagebox.h>
+#include <QtWidgets/qstyle.h>
+#include <QtWidgets/qstylefactory.h>
 #endif
-
-#include "App.h"
-#include "MainWindow.h"
-
-#include "ZSIpcTrace/ZSIpcTrcClient.h"
-#include "ZSSys/ZSSysApp.h"
-#include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysRequestExecTree.h"
-#include "ZSSys/ZSSysTime.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -94,91 +96,63 @@ public: // ctors and dtor
         Arguments passed to the program.
 */
 CApplication::CApplication(
-    int&           i_argc,
-    char*          i_argv[],
+    int& i_argc,
+    char* i_argv[],
     const QString& i_strOrganizationName,
     const QString& i_strOrganizationDomain,
     const QString& i_strAppName,
     const QString& i_strWindowTitle ) :
 //------------------------------------------------------------------------------
     CGUIApp(i_argc,i_argv),
-    m_pSettingsFile(nullptr),
-    // State Machine
-    m_bReqExecTreeGarbageCollectorEnabled(true),
-    m_fReqExecTreeGarbageCollectorInterval_s(5.0),
-    m_fReqExecTreeGarbageCollectorElapsed_s(60.0),
-    m_pReqExecTree(nullptr),
-    // Trace Client
-    m_trcClientHostSettings(
-        /* strRemoteHost      */ "127.0.0.1",
-        /* uRemotePort        */ 24763,
-        /* iConnectTimeout_ms */ 5000 ),
-    m_pTrcClient(nullptr),
-    // Main Window
-    m_pMainWindow(nullptr)
+    m_trcClientHostSettings("127.0.0.1", 24763, 5000)
 {
     setObjectName("theApp");
-
-    if( thread()->objectName().length() == 0 )
-    {
+    if (thread()->objectName().isEmpty()) {
         thread()->setObjectName("GUIMain");
     }
 
     QIcon iconApp;
-
-    QPixmap pxmApp32x32(":/ZS/App/ZeusSoft_32x32.png");
-    QPixmap pxmApp48x48(":/ZS/App/ZeusSoft_48x48.png");
-    QPixmap pxmApp64x64(":/ZS/App/ZeusSoft_64x64.png");
-
-    iconApp.addPixmap(pxmApp32x32);
-    iconApp.addPixmap(pxmApp48x48);
-    iconApp.addPixmap(pxmApp64x64);
-
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_32x32.png"));
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_48x48.png"));
+    iconApp.addPixmap(QPixmap(":/ZS/App/ZeusSoft_64x64.png"));
     QApplication::setWindowIcon(iconApp);
+
+    CErrLog::CreateInstance();
 
     SClientHostSettings trcClientHostSettingsDefault = m_trcClientHostSettings;
 
     // Parse command arguments (first part, IniFile)
     //----------------------------------------------
 
-    int         idxArg;
-    QString     strArg;
-    QString     strVal;
-    int         iVal;
-    bool        bConverted;
-    QStringList strListArgsPar;
-    QStringList strListArgsVal;
-    QString     strAppName = i_strAppName;
-    QString     strWindowTitle = i_strWindowTitle;
-    QString     strRemoteAppName;
+    QString strAppName = i_strAppName;
+    QString strWindowTitle = i_strWindowTitle;
+    QString strRemoteAppName;
 
     QString strIniFileScope = "User";
 
-    parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
+    QStringList strListArgsPar;
+    QStringList strListArgsVal;
+    parseAppArgs(i_argc, i_argv, strListArgsPar, strListArgsVal);
 
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++)
     #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++)
     #endif
     {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
-
+        QString strArg = strListArgsPar[idxArg];
+        QString strVal = strListArgsVal[idxArg];
         // Here only the command arguments concerning the location of the ini file are parsed.
         // Other arguments (e.g. mode) are parsed further below.
-        if( strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0 )
-        {
+        if (strArg.compare("IniFileScope",Qt::CaseInsensitive) == 0) {
             strIniFileScope = strVal;
         }
-        else if( strArg.compare("RemoteAppName",Qt::CaseInsensitive) == 0 )
-        {
+        else if (strArg.compare("RemoteAppName",Qt::CaseInsensitive) == 0) {
             strRemoteAppName = strVal;
         }
     }
 
-    if( !strRemoteAppName.isEmpty() )
-    {
+    if (!strRemoteAppName.isEmpty()) {
         strAppName += "-" + strRemoteAppName;
         strWindowTitle += " / " + strRemoteAppName;
     }
@@ -215,33 +189,60 @@ CApplication::CApplication(
     // Parse command arguments (second part, overwriting IniFile settings)
     //--------------------------------------------------------------------
 
+    QString strDesiredStyle = "Fusion";
+
     #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
-    for( idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.length() && idxArg < strListArgsVal.length(); idxArg++)
     #else
-    for( idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
+    for (int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++)
     #endif
     {
-        strArg = strListArgsPar[idxArg];
-        strVal = strListArgsVal[idxArg];
+        QString strArg = strListArgsPar[idxArg];
+        QString strVal = strListArgsVal[idxArg];
 
-        if( strArg.compare("RemoteHostName",Qt::CaseInsensitive) == 0 )
-        {
+        if (strArg.compare("RemoteHostName",Qt::CaseInsensitive) == 0) {
             m_trcClientHostSettings.m_strRemoteHostName = strVal;
         }
-        else if( strArg.compare("RemotePort",Qt::CaseInsensitive) == 0 )
-        {
-            iVal = strVal.toInt(&bConverted);
-            if( bConverted && iVal >= 1000 && iVal <= UINT16_MAX )
-            {
+        else if (strArg.compare("RemotePort",Qt::CaseInsensitive) == 0) {
+            bool bConverted = false;
+            int iVal = strVal.toInt(&bConverted);
+            if (bConverted && iVal >= 1000 && iVal <= UINT16_MAX) {
                 m_trcClientHostSettings.m_uRemotePort = static_cast<quint16>(iVal);
             }
         }
+        else if (strArg.compare("Style",Qt::CaseInsensitive) == 0) {
+            strDesiredStyle = strVal;
+        }
     }
 
-    // Create error manager
-    //------------------------
+    // Style
+    //------
 
-    CErrLog::CreateInstance();
+    QStringList strlstStyles = QStyleFactory::keys();
+    QString strCurrentStyle;
+    QStyle* pStyle = style();
+    if (pStyle != nullptr) {
+        strCurrentStyle = pStyle->name();
+    }
+    if (strCurrentStyle != strDesiredStyle) {
+        if (strlstStyles.contains(strDesiredStyle, Qt::CaseInsensitive)) {
+            QApplication::setStyle(QStyleFactory::create(strDesiredStyle));
+        }
+        else {
+            QString strAddErrInfo = "Desired style '" + strDesiredStyle + "' is not available. "
+                "Current style '" + strCurrentStyle + "' is used. "
+                "Available styles are (" + strlstStyles.join(", ") + ")";
+            SErrResultInfo errResultInfo(
+                /* strNameSpace  */ NameSpace(),
+                /* strClassName  */ ClassName(),
+                /* strObjName    */ objectName(),
+                /* strMthName    */ "ctor",
+                /* result        */ EResult::EResultArgOutOfRange,
+                /* severity      */ EResultSeverityError,
+                /* strAddErrInfo */ strAddErrInfo);
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+    }
 
     // Request Execution Tree
     //------------------------
@@ -272,8 +273,7 @@ CApplication::CApplication(
 
     m_pMainWindow = new CMainWindow(strWindowTitle, m_pTrcClient);
     m_pMainWindow->show();
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CApplication::~CApplication()
@@ -281,44 +281,28 @@ CApplication::~CApplication()
 {
     saveSettings();
 
-    try
-    {
+    try {
         delete m_pMainWindow;
     }
-    catch(...)
-    {
+    catch (...) {
     }
 
-    try
-    {
+    try {
         delete m_pTrcClient;
     }
-    catch(...)
-    {
+    catch (...) {
     }
 
-    try
-    {
+    try {
         delete m_pSettingsFile;
     }
-    catch(...)
-    {
+    catch (...) {
     }
 
     CRequestExecTree::DestroyInstance();
 
     CErrLog::ReleaseInstance();
-
-    m_pSettingsFile = nullptr;
-    m_bReqExecTreeGarbageCollectorEnabled = false;
-    m_fReqExecTreeGarbageCollectorInterval_s = 0.0;
-    m_fReqExecTreeGarbageCollectorElapsed_s = 0.0;
-    m_pReqExecTree = nullptr;
-    //m_trcClientHostSettings;
-    m_pTrcClient = nullptr;
-    m_pMainWindow = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -339,47 +323,36 @@ public: // instance methods
 void CApplication::readSettings()
 //------------------------------------------------------------------------------
 {
-    if( m_pSettingsFile != nullptr )
-    {
-        QString strSettingsKey;
-        bool    bSyncSettings;
+    if (m_pSettingsFile != nullptr) {
 
         // Request Execution Tree
         //------------------------
 
-        strSettingsKey = "ReqExecTree";
-        bSyncSettings  = false;
+        QString strSettingsKey = "ReqExecTree";
+        bool bSyncSettings  = false;
 
-        if( m_pSettingsFile->contains(strSettingsKey+"/GarbageCollectorEnabled") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/GarbageCollectorEnabled")) {
             m_bReqExecTreeGarbageCollectorEnabled = str2Bool( m_pSettingsFile->value(strSettingsKey+"/GarbageCollectorEnabled",bool2Str(m_bReqExecTreeGarbageCollectorEnabled)).toString() );
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue( strSettingsKey+"/GarbageCollectorEnabled", m_bReqExecTreeGarbageCollectorEnabled );
             bSyncSettings = true;
         }
-        if( m_pSettingsFile->contains(strSettingsKey+"/GarbageCollectorIntervalInSec") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/GarbageCollectorIntervalInSec")) {
             m_fReqExecTreeGarbageCollectorInterval_s = m_pSettingsFile->value(strSettingsKey+"/GarbageCollectorIntervalInSec",m_fReqExecTreeGarbageCollectorInterval_s).toDouble();
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue(strSettingsKey+"/GarbageCollectorIntervalInSec",m_fReqExecTreeGarbageCollectorInterval_s);
             bSyncSettings = true;
         }
-        if( m_pSettingsFile->contains(strSettingsKey+"/GarbageCollectorElapsedInSec") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/GarbageCollectorElapsedInSec")) {
             m_fReqExecTreeGarbageCollectorElapsed_s = m_pSettingsFile->value(strSettingsKey+"/GarbageCollectorElapsedInSec",m_fReqExecTreeGarbageCollectorElapsed_s).toDouble();
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue(strSettingsKey+"/GarbageCollectorElapsedInSec",m_fReqExecTreeGarbageCollectorElapsed_s);
             bSyncSettings = true;
         }
-
-        if( bSyncSettings )
-        {
+        if (bSyncSettings) {
             m_pSettingsFile->sync();
         }
 
@@ -389,104 +362,74 @@ void CApplication::readSettings()
         strSettingsKey = "TrcClient";
         bSyncSettings  = false;
 
-        if( m_pSettingsFile->contains(strSettingsKey+"/SocketType") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/SocketType")) {
             m_trcClientHostSettings.m_socketType = str2SocketType( m_pSettingsFile->value(strSettingsKey+"/SocketType",socketType2Str(m_trcClientHostSettings.m_socketType)).toString() );
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue( strSettingsKey+"/SocketType", socketType2Str(m_trcClientHostSettings.m_socketType) );
             bSyncSettings = true;
         }
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/RemoteHostName") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/RemoteHostName")) {
             m_trcClientHostSettings.m_strRemoteHostName = m_pSettingsFile->value(strSettingsKey+"/RemoteHostName",m_trcClientHostSettings.m_strRemoteHostName).toString();
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue( strSettingsKey+"/RemoteHostName", m_trcClientHostSettings.m_strRemoteHostName );
             bSyncSettings = true;
         }
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/RemotePort") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/RemotePort")) {
             m_trcClientHostSettings.m_uRemotePort = m_pSettingsFile->value(strSettingsKey+"/RemotePort",m_trcClientHostSettings.m_uRemotePort).toUInt();
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue( strSettingsKey+"/RemotePort", m_trcClientHostSettings.m_uRemotePort );
             bSyncSettings = true;
         }
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/ConnectTimeout_ms") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/ConnectTimeout_ms")) {
             m_trcClientHostSettings.m_iConnectTimeout_ms = m_pSettingsFile->value(strSettingsKey+"/ConnectTimeout_ms",m_trcClientHostSettings.m_iConnectTimeout_ms).toInt();
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue( strSettingsKey+"/ConnectTimeout_ms", m_trcClientHostSettings.m_iConnectTimeout_ms );
             bSyncSettings = true;
         }
-
-        if( m_pSettingsFile->contains(strSettingsKey+"/BufferSize") )
-        {
+        if (m_pSettingsFile->contains(strSettingsKey+"/BufferSize")) {
             m_trcClientHostSettings.m_uBufferSize = m_pSettingsFile->value(strSettingsKey+"/BufferSize",m_trcClientHostSettings.m_uBufferSize).toUInt();
         }
-        else
-        {
+        else {
             m_pSettingsFile->setValue( strSettingsKey+"/BufferSize", m_trcClientHostSettings.m_uBufferSize );
             bSyncSettings = true;
         }
-
-        if( bSyncSettings )
-        {
+        if (bSyncSettings) {
             m_pSettingsFile->sync();
         }
-    } // if( m_pSettingsFile != nullptr )
-
-} // readSettings
+    }
+}
 
 //------------------------------------------------------------------------------
 void CApplication::saveSettings()
 //------------------------------------------------------------------------------
 {
-    if( m_pSettingsFile != nullptr )
-    {
+    if (m_pSettingsFile != nullptr) {
         QString strSettingsKey;
-
-        if( m_pReqExecTree != nullptr )
-        {
+        if (m_pReqExecTree != nullptr) {
             strSettingsKey = "ReqExecTree";
-
             bool   bGarbageCollectorEnabled    = m_pReqExecTree->isGarbageCollectorEnabled();
             double fGarbageCollectorInterval_s = m_pReqExecTree->getGarbageCollectorIntervalInSec();
             double fGarbageCollectorElapsed_s  = m_pReqExecTree->getGarbageCollectorElapsedInSec();
-
             m_pSettingsFile->setValue( strSettingsKey+"/GarbageCollectorEnabled", bGarbageCollectorEnabled );
             m_pSettingsFile->setValue( strSettingsKey+"/GarbageCollectorIntervalInSec", fGarbageCollectorInterval_s );
             m_pSettingsFile->setValue( strSettingsKey+"/GarbageCollectorElapsedInSec", fGarbageCollectorElapsed_s );
         }
-
-        if( m_pTrcClient != nullptr )
-        {
+        if (m_pTrcClient != nullptr) {
             strSettingsKey = "TrcClient";
-
             SClientHostSettings trcClientSettings = m_pTrcClient->getHostSettings();
-
             m_pSettingsFile->setValue( strSettingsKey+"/SocketType", socketType2Str(trcClientSettings.m_socketType) );
             m_pSettingsFile->setValue( strSettingsKey+"/RemoteHostName", trcClientSettings.m_strRemoteHostName );
             m_pSettingsFile->setValue( strSettingsKey+"/RemotePort", trcClientSettings.m_uRemotePort );
             m_pSettingsFile->setValue( strSettingsKey+"/ConnectTimeout_ms", trcClientSettings.m_iConnectTimeout_ms );
             m_pSettingsFile->setValue( strSettingsKey+"/BufferSize", trcClientSettings.m_uBufferSize );
-
-        } // if( m_pTrcClient != nullptr )
-
+        }
         m_pSettingsFile->sync();
-
-    } // if( m_pSettingsFile != nullptr )
-
-} // saveSettings
+    }
+}
 
 ///*==============================================================================
 //public slots: // instance methods of system shutdown
