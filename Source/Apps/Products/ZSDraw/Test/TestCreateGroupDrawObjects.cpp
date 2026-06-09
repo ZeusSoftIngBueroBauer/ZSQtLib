@@ -4970,12 +4970,12 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
     eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
     ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator());
     physValCnctPt1 = QPointF(ptCnctPt1.x(), bYAxisTopDown ? ptCnctPt1.y() : fYAxisMaxVal - ptCnctPt1.y());
     eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
     strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
     ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator());
     physValCnctPt2 = QPointF(ptCnctPt2.x(), bYAxisTopDown ? ptCnctPt2.y() : fYAxisMaxVal - ptCnctPt2.y());

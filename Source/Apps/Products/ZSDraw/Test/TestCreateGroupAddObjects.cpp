@@ -4213,7 +4213,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect1 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4238,7 +4238,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect1 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4291,7 +4291,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect2 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4316,7 +4316,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect2 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4369,7 +4369,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect3 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4394,7 +4394,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect3 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4447,7 +4447,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect4 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4472,7 +4472,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
 
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4);
     eSelPt = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    strGraphObjName = eSelPt.toString() + "-1";
+    strGraphObjName = "CnctPoint-" + eSelPt.toString() + "-1";
     strMethod = c_strGraphObjNameRect4 + "." + "addConnectionPoint";
     strMthArgs = eSelPt.toString();
     pTestStep = new ZS::Test::CTestStep(
@@ -4513,9 +4513,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {QPointF(175.0, bYAxisTopDown ? 275.0 : fYAxisMaxVal - 275.0)},
         {QPointF(175.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)}
     });
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt1", strGraphObjKeyInTreeCnctPt1);
@@ -4593,9 +4593,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {QPointF(200.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0)},
         {QPointF(575.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0)}
     });
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt1", strGraphObjKeyInTreeCnctPt1);
@@ -4673,9 +4673,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {QPointF(600.0, bYAxisTopDown ? 275.0 : fYAxisMaxVal - 275.0)},
         {QPointF(600.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)}
     });
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt1", strGraphObjKeyInTreeCnctPt1);
@@ -4753,9 +4753,9 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchored(
         {QPointF(575.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0)},
         {QPointF(200.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0)}
     });
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTreeCnctPt1", strGraphObjKeyInTreeCnctPt1);
@@ -4936,8 +4936,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect1, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
         {  50.0, -50.0},
         { -50.0,  50.0}
@@ -4951,8 +4951,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
         m_polygonConnectionLineRect1BottomCenterRect2TopCenter, *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
         false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
     m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
         {-137.5, -75.0},
         { 137.5,  75.0}
@@ -4997,8 +4997,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect2, m_ptPosRect2, m_rectRect2, *m_pPhysValRect2, false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
         {  0.0, -75.0},
         {  0.0,  75.0}
@@ -5012,8 +5012,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
         m_polygonConnectionLineRect1BottomCenterRect2TopCenter, *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
         false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
     m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
         { 137.5, -75.0},
         {-137.5,  75.0}
@@ -5058,8 +5058,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect3, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
         { -37.5, -50.0},
         {  37.5,  50.0}
@@ -5073,8 +5073,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
         m_polygonConnectionLineRect3BottomCenterRect4TopCenter, *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter,
         false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
     m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
         { 100.0, -100.0},
         {-100.0,  100.0}
@@ -5119,8 +5119,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect4, m_ptPosRect4, m_rectRect4, *m_pPhysValRect4, false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::RightCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::LeftCenter).toString() + "-1";
     m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
         {-100.0, -100.0},
         { 100.0,  100.0}
@@ -5134,8 +5134,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
         m_polygonConnectionLineRect1RightCenterRect4LeftCenter, *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter,
         false, iResultValuesPrecision));
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
         {  0.0, -75.0},
         {  0.0,  75.0}
@@ -5182,8 +5182,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("point.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
@@ -5223,8 +5223,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("point.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
@@ -5265,8 +5265,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredModification
     pTestStep->setConfigValue("point.unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
         strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,

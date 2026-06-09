@@ -2178,6 +2178,22 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
         // the mouse grabber item, which is the newly appended selection point,
         // should become (or remain) the mouse grabber.
         CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(i_pEv->scenePos());
+        if (pGraphObjCnctPtHit == nullptr) {
+            // If a connection line should be linked to an object, a connection point has
+            // to be created if a selection point has been hit.
+            CGraphObj* pGraphObjHit = m_pDrawingScene->getGraphObj(i_pEv->scenePos());
+            QGraphicsItem* pGraphicsItemHit = dynamic_cast<QGraphicsItem*>(pGraphObjHit);
+            if (pGraphicsItemHit != nullptr) {
+                QPointF ptPos = pGraphicsItemHit->mapFromScene(i_pEv->scenePos());
+                SGraphObjHitInfo hitInfo = pGraphObjHit->getSelectionPointHitInfo(ptPos);
+                if (hitInfo.isSelectionPointHit()) {
+                    if (!pGraphObjHit->isConnectionPointAdded(ESelectionPointType::BoundingRectangle, hitInfo.m_selPtBoundingRect.enumerator())) {
+                        QString strCnctPtName = pGraphObjHit->addConnectionPoint(ESelectionPointType::BoundingRectangle, hitInfo.m_selPtBoundingRect.enumerator());
+                        pGraphObjCnctPtHit = pGraphObjHit->getConnectionPoint(strCnctPtName);
+                    }
+                }
+            }
+        }
         if (pGraphObjCnctPtHit != nullptr) {
             bool bChangeEditMode = false;
             if (m_arpCnctPts.value(ELinePoint::Start, nullptr) != pGraphObjCnctPtHit) {

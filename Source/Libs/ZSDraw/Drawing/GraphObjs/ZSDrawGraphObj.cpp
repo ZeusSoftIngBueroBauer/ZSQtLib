@@ -4490,6 +4490,12 @@ CGraphObjSelectionPoint* CGraphObj::getSelectionPointHit(const QPointF& i_pt) co
 //------------------------------------------------------------------------------
 /*! @brief Returns a hit info struct defining where the object has bin hit at the given point.
 
+    The default implementation returns an invalid hit info indicating that
+    no selection is hit.
+
+    This method has to be overridden by all derived classes instead of class
+    CGraphObjSelectionPoint.
+
     @param i_pt [in] Point to be check in local coordinates.
 
     @return Selection point hit info.
@@ -4497,8 +4503,6 @@ CGraphObjSelectionPoint* CGraphObj::getSelectionPointHit(const QPointF& i_pt) co
 SGraphObjHitInfo CGraphObj::getSelectionPointHitInfo(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
-#pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     SGraphObjHitInfo hitInfo;
     return hitInfo;
 }
@@ -6952,7 +6956,7 @@ QString CGraphObj::generateUniqueConnectionPointName(
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    QString strBaseName = CEnumSelectionPoint(i_selPt1).toString() + "-";
+    QString strBaseName = "CnctPoint-" + CEnumSelectionPoint(i_selPt1).toString() + "-";
     int idxPt = 1;
     QString strName = strBaseName + QString::number(idxPt);
     while (m_hshConnectionPointsDscrs.contains(strName)) {
@@ -6982,7 +6986,13 @@ QString CGraphObj::generateUniqueConnectionPointName(
     if ((i_selPtType != ESelectionPointType::PolygonPoint) && (i_selPtType != ESelectionPointType::LineCenterPoint)) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    QString strBaseName = "P" + QString::number(i_idxPt) + "-";
+    QString strBaseName = "CnctPoint-";
+    if (i_selPtType == ESelectionPointType::PolygonPoint) {
+        strBaseName += "P" + QString::number(i_idxPt) + "-";
+    }
+    else {
+        strBaseName += "L" + QString::number(i_idxPt) + "-";
+    }
     int idxPt = 1;
     QString strName = strBaseName + QString::number(idxPt);
     while (m_hshConnectionPointsDscrs.contains(strName)) {
@@ -7013,8 +7023,9 @@ bool CGraphObj::addConnectionPoint(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumSelectionPointType(i_selPtType).toString() +
-                ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = i_strName +
+            ", " + CEnumSelectionPointType(i_selPtType).toString() +
+            ", " + CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7076,7 +7087,9 @@ bool CGraphObj::addConnectionPoint(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumSelectionPointType(i_selPtType).toString() + ", P" + QString::number(i_idxPt);
+        strMthInArgs = i_strName +
+            ", " + CEnumSelectionPointType(i_selPtType).toString() +
+            ", P" + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7136,8 +7149,7 @@ QString CGraphObj::addConnectionPoint(ESelectionPointType i_selPtType, ESelectio
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumSelectionPointType(i_selPtType).toString() +
-                ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = CEnumSelectionPointType(i_selPtType).toString() + ", " + CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
