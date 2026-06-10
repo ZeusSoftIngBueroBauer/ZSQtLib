@@ -1320,8 +1320,10 @@ QGraphicsItem* CDrawingScene::getGraphicsItem(const QPointF& i_ptScenePos)
 }
 
 //------------------------------------------------------------------------------
-/*! Returns the connection point at the given scene position or nullptr, if there
-    is no connection point at the given position.
+/*! Returns the graph object at the given scene position or nullptr, if there
+    is no graph object at the given position.
+
+    Selection points will be ignored.
 
     @param i_ptScenePos [in] Scene coordinates to be checked.
 
@@ -1348,7 +1350,7 @@ CGraphObj* CDrawingScene::getGraphObj(const QPointF& i_ptScenePos)
     }
     for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
         CGraphObj* pGraphObjTmp = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if (pGraphObjTmp != nullptr) {
+        if ((pGraphObjTmp != nullptr) && !pGraphObjTmp->isSelectionPoint()) {
             pGraphObj = pGraphObjTmp;
             break;
         }
