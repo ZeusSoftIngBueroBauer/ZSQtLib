@@ -4980,8 +4980,8 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::
     ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator());
     physValCnctPt2 = QPointF(ptCnctPt2.x(), bYAxisTopDown ? ptCnctPt2.y() : fYAxisMaxVal - ptCnctPt2.y());
     m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-        { 0.0, -50.0},
-        { 0.0,  50.0}
+        { 0.0, -25.0},
+        { 0.0,  25.0}
     });
     *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
         {ptCnctPt1},
@@ -5066,6 +5066,45 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::
         /* pGrpParent      */ pGrpDrawConnections,
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator());
+    physValCnctPt1 = QPointF(ptCnctPt1.x(), bYAxisTopDown ? ptCnctPt1.y() : fYAxisMaxVal - ptCnctPt1.y());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator());
+    physValCnctPt2 = QPointF(ptCnctPt2.x(), bYAxisTopDown ? ptCnctPt2.y() : fYAxisMaxVal - ptCnctPt2.y());
+    m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
+        { 0.0, -25.0},
+        { 0.0,  25.0}
+    });
+    *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    points = QPolygon({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineRect1RightCenterRect4LeftCenter, *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Line: Rectangle 1 - RightCenter -> Rectangle 4 - LeftCenter: setLineEndStyle(EndPoint, Arrow)
     //---------------------------------------------------------------------------------------------------------
@@ -5124,6 +5163,45 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::
         /* pGrpParent      */ pGrpDrawConnections,
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator());
+    physValCnctPt1 = QPointF(ptCnctPt1.x(), bYAxisTopDown ? ptCnctPt1.y() : fYAxisMaxVal - ptCnctPt1.y());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator());
+    physValCnctPt2 = QPointF(ptCnctPt2.x(), bYAxisTopDown ? ptCnctPt2.y() : fYAxisMaxVal - ptCnctPt2.y());
+    m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
+        { 0.0, -25.0},
+        { 0.0,  25.0}
+    });
+    *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    points = QPolygon({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineRect3BottomCenterRect4TopCenter, *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Line: Rectangle 3 - BottomCenter -> Rectangle 4 - TopCenter: setLineEndStyle(EndPoint, Arrow)
     //---------------------------------------------------------------------------------------------------------
@@ -5182,6 +5260,45 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::
         /* pGrpParent      */ pGrpDrawConnections,
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator());
+    physValCnctPt1 = QPointF(ptCnctPt1.x(), bYAxisTopDown ? ptCnctPt1.y() : fYAxisMaxVal - ptCnctPt1.y());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator());
+    physValCnctPt2 = QPointF(ptCnctPt2.x(), bYAxisTopDown ? ptCnctPt2.y() : fYAxisMaxVal - ptCnctPt2.y());
+    m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
+        { 0.0, -25.0},
+        { 0.0,  25.0}
+    });
+    *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    points = QPolygon({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineRect3LeftCenterRect2RightCenter, *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Line: Rectangle 3 - LeftCenter -> Rectangle 2 - RightCenter: setLineEndStyle(EndPoint, Arrow)
     //---------------------------------------------------------------------------------------------------------
