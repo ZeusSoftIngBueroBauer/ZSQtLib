@@ -79,7 +79,11 @@ class QPainterPath;
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
@@ -101,10 +105,10 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES 0
@@ -155,6 +159,10 @@ class QPainterPath;
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 1
@@ -238,6 +246,10 @@ public: // class methods
 public: // type definition and constants
     // Lines
     //------
+    const QString c_strGraphObjNameLine1 = "Line-1";
+    const QString c_strGraphObjNameLine2 = "Line-2";
+    const QString c_strGraphObjNameLine3 = "Line-3";
+    const QString c_strGraphObjNameLine4 = "Line-4";
     const QString c_strGraphObjNameSmallPlusSignVerticalLine = "SmallPlusSign-VerticalLine";
     const QString c_strGraphObjNameSmallPlusSignHorizontalLine = "SmallPlusSign-HorizontalLine";
     const QString c_strGraphObjNameBigPlusSignVerticalLine = "BigPlusSign-VerticalLine";
@@ -344,8 +356,10 @@ protected: // instance methods
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsNotAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsNotAnchoredModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesConnectionPointsAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesConnectionPointsAnchoredModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToRectsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -385,8 +399,10 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesConnectionPointsNotAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesConnectionPointsNotAnchoredModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesConnectionPointsAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesConnectionPointsAnchoredModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToLinesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -495,6 +511,22 @@ protected: // instance members
 
     // Lines
     //------
+    // Line 1
+    QPointF m_ptPosLine1;
+    QLineF m_lineLine1;
+    ZS::Draw::CPhysValLine* m_pPhysValLine1 = nullptr;
+    // Line 2
+    QPointF m_ptPosLine2;
+    QLineF m_lineLine2;
+    ZS::Draw::CPhysValLine* m_pPhysValLine2 = nullptr;
+    // Line 3
+    QPointF m_ptPosLine3;
+    QLineF m_lineLine3;
+    ZS::Draw::CPhysValLine* m_pPhysValLine3 = nullptr;
+    // Line 4
+    QPointF m_ptPosLine4;
+    QLineF m_lineLine4;
+    ZS::Draw::CPhysValLine* m_pPhysValLine4 = nullptr;
     // SmallPlusSign
     QPointF m_ptPosSmallPlusSignVerticalLine;
     QLineF m_lineSmallPlusSignVerticalLine;

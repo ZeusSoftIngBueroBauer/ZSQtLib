@@ -160,6 +160,15 @@ CTest::~CTest()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjDrawTestSteps);
     m_pTrcAdminObjDrawTestSteps = nullptr;
 
+    delete m_pPhysValLine1;
+    m_pPhysValLine1 = nullptr;
+    delete m_pPhysValLine2;
+    m_pPhysValLine2 = nullptr;
+    delete m_pPhysValLine3;
+    m_pPhysValLine3 = nullptr;
+    delete m_pPhysValLine4;
+    m_pPhysValLine4 = nullptr;
+
     delete m_pPhysValLineSmallPlusSignVerticalLine;
     m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
     delete m_pPhysValLineSmallPlusSignHorizontalLine;
@@ -301,6 +310,11 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Lines
     //------
+
+    m_pPhysValLine1 = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLine2 = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLine3 = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLine4 = new CPhysValLine(*m_pDrawingScene);
 
     m_pPhysValLineSmallPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineSmallPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
@@ -3719,9 +3733,19 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
     else {
         QString strSelectionPointType = i_pTestStep->getConfigValue("SelectionPointType").toString();
         CEnumSelectionPointType selectionPointType(strSelectionPointType);
-        QString strSelectionPoint = i_pTestStep->getConfigValue("SelectionPoint").toString();
-        CEnumSelectionPoint selectionPoint(strSelectionPoint);
-        strGraphObjName = pGraphObjParent->addConnectionPoint(selectionPointType.enumerator(), selectionPoint.enumerator());
+        if (selectionPointType.enumerator() == ESelectionPointType::BoundingRectangle) {
+            QString strSelectionPoint = i_pTestStep->getConfigValue("SelectionPoint").toString();
+            CEnumSelectionPoint selectionPoint(strSelectionPoint);
+            strGraphObjName = pGraphObjParent->addConnectionPoint(selectionPointType.enumerator(), selectionPoint.enumerator());
+        }
+        else if (selectionPointType.enumerator() == ESelectionPointType::PolygonPoint) {
+            int idxPt = i_pTestStep->getConfigValue("Point").toInt();
+            strGraphObjName = pGraphObjParent->addConnectionPoint(selectionPointType.enumerator(), idxPt);
+        }
+        else if (selectionPointType.enumerator() == ESelectionPointType::LineCenterPoint) {
+            int idxLine = i_pTestStep->getConfigValue("Line").toInt();
+            strGraphObjName = pGraphObjParent->addConnectionPoint(selectionPointType.enumerator(), idxLine);
+        }
         strKeyInTree = strKeyInTreeParent + pIdxTree->nodeSeparator() + strGraphObjName;
     }
 

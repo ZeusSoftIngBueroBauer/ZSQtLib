@@ -1334,13 +1334,31 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF lineSelPt = line();
     QLineF lineSelPtSceneCoors;
-    if (i_idxPt == 0) {
-        lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p1()),
-                                     pGraphicsItemThis->mapToScene(lineSelPt.p2()));
+    if (i_selPtType == ESelectionPointType::PolygonPoint) {
+        if (i_idxPt == 0) {
+            lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p1()),
+                                         pGraphicsItemThis->mapToScene(lineSelPt.p2()));
+        }
+        else if (i_idxPt == 1) {
+            lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p2()),
+                                         pGraphicsItemThis->mapToScene(lineSelPt.p1()));
+        }
+        else {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+        }
+    }
+    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
+        if (i_idxPt == 0) {
+            lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p1()),
+                                         pGraphicsItemThis->mapToScene(lineSelPt.p2()));
+            lineSelPtSceneCoors.setP1(lineSelPtSceneCoors.center());
+        }
+        else {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+        }
     }
     else {
-        lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p2()),
-                                     pGraphicsItemThis->mapToScene(lineSelPt.p1()));
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
     }
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
