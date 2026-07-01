@@ -245,6 +245,15 @@ CTest::~CTest()
     delete m_pPhysValPolygonConnectionLineCnctPt3CnctPt2;
     m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = nullptr;
 
+    delete m_pPhysValPolygonConnectionLineLine1P2Line2P2;
+    m_pPhysValPolygonConnectionLineLine1P2Line2P2 = nullptr;
+    delete m_pPhysValPolygonConnectionLineLine2P1Line4P2;
+    m_pPhysValPolygonConnectionLineLine2P1Line4P2 = nullptr;
+    delete m_pPhysValPolygonConnectionLineLine4P1Line3P1;
+    m_pPhysValPolygonConnectionLineLine4P1Line3P1 = nullptr;
+    delete m_pPhysValPolygonConnectionLineLine3P2Line1P1;
+    m_pPhysValPolygonConnectionLineLine3P2Line1P1 = nullptr;
+
     delete m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter;
     m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = nullptr;
     delete m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter;
@@ -370,6 +379,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineLine1P2Line2P2 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineLine2P1Line4P2 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineLine4P1Line3P1 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineLine3P2Line1P1 = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = new CPhysValPolygon(*m_pDrawingScene);
@@ -4756,9 +4769,21 @@ void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues") ?
+        i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        if (!strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            for (const QString& strGraphObjKeyEntry : strlstGraphObjsKeyInTreeGetResultValues) {
+                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->getGraphObj(strGraphObjKeyEntry);
+                if (pGraphObjAddResultValues != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjAddResultValues, false, false, iResultValuesPrecision));
+                }
+            }
+        }
+        else {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        }
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5034,9 +5059,21 @@ void CTest::doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestSt
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues") ?
+        i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        if (!strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            for (const QString& strGraphObjKeyEntry : strlstGraphObjsKeyInTreeGetResultValues) {
+                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->getGraphObj(strGraphObjKeyEntry);
+                if (pGraphObjAddResultValues != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjAddResultValues, false, false, iResultValuesPrecision));
+                }
+            }
+        }
+        else {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        }
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5167,9 +5204,21 @@ void CTest::doTestStepModifyGraphObjTextByDirectMethodCalls(ZS::Test::CTestStep*
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues") ?
+        i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        if (!strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            for (const QString& strGraphObjKeyEntry : strlstGraphObjsKeyInTreeGetResultValues) {
+                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->getGraphObj(strGraphObjKeyEntry);
+                if (pGraphObjAddResultValues != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjAddResultValues, false, false, iResultValuesPrecision));
+                }
+            }
+        }
+        else {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        }
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5277,6 +5326,8 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
 
     int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
         i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues") ?
+        i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList() : QStringList();
     QStringList strlstResultValues;
     if (!physValPointTaken.isNull()) {
         strlstResultValues.append(
@@ -5285,7 +5336,17 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
             physValPointTaken.unit().symbol());
     }
     if (pGraphObj != nullptr) {
-        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        if (!strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+            for (const QString& strGraphObjKeyEntry : strlstGraphObjsKeyInTreeGetResultValues) {
+                CGraphObj* pGraphObjAddResultValues = m_pDrawingScene->getGraphObj(strGraphObjKeyEntry);
+                if (pGraphObjAddResultValues != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObjAddResultValues, false, false, iResultValuesPrecision));
+                }
+            }
+        }
+        else {
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+        }
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }

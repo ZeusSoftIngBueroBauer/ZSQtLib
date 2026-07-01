@@ -297,6 +297,10 @@ public: // type definition and constants
     const QString c_strGraphObjNameConnectionLineCnctPt3CnctPt4 = "CnctLine-CnctPt3-CnctPt4";
     const QString c_strGraphObjNameConnectionLineCnctPt1CnctPt4 = "CnctLine-CnctPt1-CnctPt4";
     const QString c_strGraphObjNameConnectionLineCnctPt3CnctPt2 = "CnctLine-CnctPt3-CnctPt2";
+    const QString c_strGraphObjNameConnectionLineLine1Pt2Line2Pt2 = "CnctLine-Line-1-P2-Line-2-P2";
+    const QString c_strGraphObjNameConnectionLineLine2Pt1Line4Pt2 = "CnctLine-Line-2-P1-Line-4-P2";
+    const QString c_strGraphObjNameConnectionLineLine4Pt1Line3Pt1 = "CnctLine-Line-4-P1-Line-3-P1";
+    const QString c_strGraphObjNameConnectionLineLine3Pt2Line1Pt1 = "CnctLine-Line-3-P2-Line-1-P1";
     const QString c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter = "CnctLine-Rect-1-BottomCenter-1-Rect-2-TopCenter-1";
     const QString c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter = "CnctLine-Rect-3-BottomCenter-1-Rect-4-TopCenter-1";
     const QString c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter = "CnctLine-Rect-1-RightCenter-1-Rect-4-LefCtenter-1";
@@ -675,7 +679,14 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = nullptr;
     QPolygonF m_polygonConnectionLineCnctPt3CnctPt2;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = nullptr;
-
+    QPolygonF m_polygonConnectionLineLine1P2Line2P2;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineLine1P2Line2P2 = nullptr;
+    QPolygonF m_polygonConnectionLineLine2P1Line4P2;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineLine2P1Line4P2 = nullptr;
+    QPolygonF m_polygonConnectionLineLine4P1Line3P1;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineLine4P1Line3P1 = nullptr;
+    QPolygonF m_polygonConnectionLineLine3P2Line1P1;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineLine3P2Line1P1 = nullptr;
     QPolygonF m_polygonConnectionLineRect1BottomCenterRect2TopCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineRect1RightCenterRect4LeftCenter;
