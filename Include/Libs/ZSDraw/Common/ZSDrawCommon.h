@@ -984,8 +984,9 @@ struct ZSDRAWDLL_API SGraphObjHitInfo
 public: // ctor
     SGraphObjHitInfo() = default;
 public: // struct methods
-    bool isBoundingRectSelectionPointHit() const;
     bool isSelectionPointHit() const;
+    bool isBoundingRectSelectionPointHit() const;
+    bool isLineSegmentCenterPointHit() const;
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
     bool isNull() const;
@@ -993,8 +994,14 @@ public: // struct methods
 public: // struct methods
     QString toString() const;
 public: // struct members
-    /*!< If not None specifies a specific selection point at the bounding rectangle. */
-    CEnumSelectionPoint m_selPtBoundingRect = ESelectionPoint::None;
+    /*!< If not None specifies a specific selection point either at the bounding rectangle,
+         a polygon shape pointer or the center point of a line segment.
+         If set to PolygonPoint idxPolygonShapePont defines the polygon point hit.
+         If set to LineCenterPoint in which case idxLineSegment defines the line segment hit.
+         If set to None the object has not been hit or the object has been hit somewhere withing
+         the bounding rectangle or somewhere at a line segment.
+         Check idxPolygonShapePoint and idxLineSegment and ptHit for more info in this case. */
+    CEnumSelectionPoint m_selPt = ESelectionPoint::None;
     /*!< Index of the polygon point hit.
          Range:  < 0, if no polygon point has been hit.
                  >= 0 && < polygon.size(), if a polygon point has been hit. */

@@ -113,6 +113,7 @@ ZSDRAWDLL_API QRectF boundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItem
 ZSDRAWDLL_API QRectF boundingRect(const QVector<CGraphObj*>& i_arpGraphObjs, CGraphObjGroup* i_pGraphObjGroup = nullptr);
 ZSDRAWDLL_API QPolygonF line2Polygon(const QLineF& i_line);
 ZSDRAWDLL_API QPolygonF rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount = -1, const ESelectionPoint* i_pSelPts = nullptr);
+ZSDRAWDLL_API bool isPointHit(const QPointF& i_pt1, const QPointF& i_pt2, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isLineHit(const QLineF& i_line, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isRectHit(const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isEllipseHit(const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);

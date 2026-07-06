@@ -4192,7 +4192,7 @@ public: // overridables
 //                if (o_pHitInfo != nullptr) {
 //                    //o_pHitInfo->m_editMode = EEditMode::Move;
 //                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+//                    o_pHitInfo->m_selPt = ESelectionPoint::None;
 //                    o_pHitInfo->m_idxPolygonShapePoint = -1;
 //                    o_pHitInfo->m_idxLineSegment = -1;
 //                    o_pHitInfo->m_ptHit = i_pt;

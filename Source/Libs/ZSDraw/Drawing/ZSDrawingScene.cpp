@@ -3750,9 +3750,21 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         if (pGraphicsItemHit != nullptr) {
                             QPointF ptPos = pGraphicsItemHit->mapFromScene(i_pEv->scenePos());
                             SGraphObjHitInfo hitInfo = pGraphObjHit->getSelectionPointHitInfo(ptPos);
-                            if (hitInfo.isSelectionPointHit()) {
-                                if (!pGraphObjHit->isConnectionPointAdded(ESelectionPointType::BoundingRectangle, hitInfo.m_selPtBoundingRect.enumerator())) {
-                                    QString strCnctPtName = pGraphObjHit->addConnectionPoint(ESelectionPointType::BoundingRectangle, hitInfo.m_selPtBoundingRect.enumerator());
+                            if (hitInfo.isBoundingRectSelectionPointHit()) {
+                                if (!pGraphObjHit->isConnectionPointAdded(ESelectionPointType::BoundingRectangle, hitInfo.m_selPt.enumerator())) {
+                                    QString strCnctPtName = pGraphObjHit->addConnectionPoint(ESelectionPointType::BoundingRectangle, hitInfo.m_selPt.enumerator());
+                                    pGraphObjCnctPtHit = pGraphObjHit->getConnectionPoint(strCnctPtName);
+                                }
+                            }
+                            else if (hitInfo.isPolygonShapePointHit()) {
+                                if (!pGraphObjHit->isConnectionPointAdded(ESelectionPointType::PolygonPoint, hitInfo.m_idxPolygonShapePoint)) {
+                                    QString strCnctPtName = pGraphObjHit->addConnectionPoint(ESelectionPointType::PolygonPoint, hitInfo.m_idxPolygonShapePoint);
+                                    pGraphObjCnctPtHit = pGraphObjHit->getConnectionPoint(strCnctPtName);
+                                }
+                            }
+                            else if (hitInfo.isLineSegmentCenterPointHit()) {
+                                if (!pGraphObjHit->isConnectionPointAdded(ESelectionPointType::LineCenterPoint, hitInfo.m_idxLineSegment)) {
+                                    QString strCnctPtName = pGraphObjHit->addConnectionPoint(ESelectionPointType::LineCenterPoint, hitInfo.m_idxLineSegment);
                                     pGraphObjCnctPtHit = pGraphObjHit->getConnectionPoint(strCnctPtName);
                                 }
                             }

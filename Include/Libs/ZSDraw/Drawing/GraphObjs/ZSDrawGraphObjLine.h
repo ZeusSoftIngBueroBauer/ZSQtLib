@@ -156,6 +156,7 @@ public: // overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
     virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    SGraphObjHitInfo getSelectionPointHitInfo(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj

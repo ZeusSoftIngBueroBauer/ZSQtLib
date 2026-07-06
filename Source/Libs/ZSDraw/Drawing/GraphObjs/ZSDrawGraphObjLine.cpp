@@ -1100,6 +1100,15 @@ CPhysValRect CGraphObjLine::getPhysValBoundingRect(const CUnit& i_unit) const
     return physValRectBounding;
 }
 
+//------------------------------------------------------------------------------
+SGraphObjHitInfo CGraphObjLine::getSelectionPointHitInfo(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    SGraphObjHitInfo hitInfo;
+    isLineHit(line(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    return hitInfo;
+}
+
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
@@ -1664,6 +1673,20 @@ QPainterPath CGraphObjLine::shape() const
         painterPath.moveTo(0.0, 0.0);
         painterPath.addPolygon(plgArrowHead);
     }
+    QPen pn = pen();
+    if (m_pDrawingScene->getMode() == EMode::Edit) {
+        if (m_bIsHighlighted || isSelected()) {
+            pn.setWidth(3 + m_drawSettings.penWidth());
+            pn.setStyle(Qt::SolidLine);
+        }
+        else {
+            pn.setWidth(m_drawSettings.penWidth());
+            pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
+        }
+    }
+    QPainterPathStroker painterPathStroker(pn);
+    painterPath = painterPathStroker.createStroke(painterPath);
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
@@ -1797,10 +1820,36 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the line start or end point or at the line center point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        double fHitTolerance_px = m_pDrawingScene->getHitToleranceInPx();
+        bool bIsP1Hit = isPointHit(line().p1(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+        bool bIsP2Hit = false;
+        bool bIsLineCenterPointHit = false;
+        if (!bIsP1Hit) {
+            bIsP2Hit = isPointHit(line().p2(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+            if (!bIsP2Hit) {
+                bIsLineCenterPointHit = isPointHit(line().center(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+            }
+        }
+        if (bIsP1Hit || bIsP2Hit || bIsLineCenterPointHit) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -1825,10 +1874,36 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the line start or end point or at the line center point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        double fHitTolerance_px = m_pDrawingScene->getHitToleranceInPx();
+        bool bIsP1Hit = isPointHit(line().p1(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+        bool bIsP2Hit = false;
+        bool bIsLineCenterPointHit = false;
+        if (!bIsP1Hit) {
+            bIsP2Hit = isPointHit(line().p2(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+            if (!bIsP2Hit) {
+                bIsLineCenterPointHit = isPointHit(line().center(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+            }
+        }
+        if (bIsP1Hit || bIsP2Hit || bIsLineCenterPointHit) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
@@ -2179,29 +2254,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 /*==============================================================================
 protected: // overridable slots of base class CGraphObj
 ==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_drawingSize.toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "onDrawingSizeChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if (m_physValLineCurr.unit() != i_drawingSize.unit()) {
-//        m_bForceConversionToSceneCoors = true;
-//        setLine(m_pDrawingScene->convert(m_physValLineCurr, i_drawingSize.unit()));
-//        m_bForceConversionToSceneCoors = false;
-//        emit_geometryValuesUnitChanged();
-//    }
-//}
 
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.

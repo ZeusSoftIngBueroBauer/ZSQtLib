@@ -347,6 +347,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Connections",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED == 1
     ZS::Test::CTestStepGroup* pGrpConnectionPointsNotAnchored = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " NotAnchored ConnectionPoints",
@@ -367,12 +368,15 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestGroupAddStandardShapesConnectionPointsNotAnchoredModifications(pGrpConnectionPointsNotAnchored);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsNotAnchored, 1);
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED
 
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED == 1
     ZS::Test::CTestStepGroup* pGrpConnectionPointsAnchored = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Anchored ConnectionPoints",
         /* pTSGrpParent */ pGrpConnections );
 
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES == 1
     ZS::Test::CTestStepGroup* pGrpConnectionPointsAnchoredToLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ConnectionPoints Anchored to Lines",
@@ -393,7 +397,9 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModifications(pGrpConnectionPointsAnchoredToLines);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToLines, 1);
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES
 
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS == 1
     ZS::Test::CTestStepGroup* pGrpConnectionPointsAnchoredToRects = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ConnectionPoints Anchored to Rectangles",
@@ -415,6 +421,8 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToRects, 1);
 
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED
 #endif // TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS
 
     // Groups
@@ -5371,129 +5379,6 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModif
         m_polygonConnectionLineLine4P1Line3P1, *m_pPhysValPolygonConnectionLineLine4P1Line3P1,
         false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // CnctLineRect1BottomCenterRect2TopCenter.insert(1, )
-    //----------------------------------------------------
-
-    //idxPt = 1;
-    //physValPoint.setX(240.0);
-    //physValPoint.setY(bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0);
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter;
-    //strMethod = "insert";
-    //strMthArgs = QString::number(idxPt) + ", {" + physValPoint.toString() + "}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyCnctPts,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    //m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    { 17.5,  -75.0},
-    //    {-17.5,  -50.0},
-    //    { 17.5,   75.0}
-    //});
-    //m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter->insert(idxPt, physValPoint);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("Method", strMethod);
-    //pTestStep->setConfigValue("idxPt", idxPt);
-    //pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    //pTestStep->setConfigValue("point.unit", strUnit);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1BottomCenterRect2TopCenter, *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // CnctLineRect1BottomCenterRect2TopCenter.insert(2, )
-    //----------------------------------------------------
-
-    //idxPt = 2;
-    //physValPoint.setX(240.0);
-    //physValPoint.setY(bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0);
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter;
-    //strMethod = "insert";
-    //strMthArgs = QString::number(idxPt) + ", {" + physValPoint.toString() + "}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyCnctPts,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    //m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    { 17.5,  -75.0},
-    //    {-17.5,  -50.0},
-    //    {-17.5,   50.0},
-    //    { 17.5,   75.0}
-    //});
-    //m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter->insert(idxPt, physValPoint);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("Method", strMethod);
-    //pTestStep->setConfigValue("idxPt", idxPt);
-    //pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    //pTestStep->setConfigValue("point.unit", strUnit);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1BottomCenterRect2TopCenter, *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
-
-    // CnctLineRect1BottomCenterRect2TopCenter.insert(2, )
-    //----------------------------------------------------
-
-    //idxPt = 2;
-    //physValPoint.setX(290.0);
-    //physValPoint.setY(bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter;
-    //strMethod = "insert";
-    //strMthArgs = QString::number(idxPt) + ", {" + physValPoint.toString() + "}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyCnctPts,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjConnectionLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    //m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    { 10.0,  -75.0},
-    //    {-25.0,  -50.0},
-    //    { 25.0,    0.0},
-    //    {-25.0,   50.0},
-    //    { 10.0,   75.0}
-    //});
-    //m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter->insert(idxPt, physValPoint);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("Method", strMethod);
-    //pTestStep->setConfigValue("idxPt", idxPt);
-    //pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    //pTestStep->setConfigValue("point.unit", strUnit);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1BottomCenterRect2TopCenter, *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------

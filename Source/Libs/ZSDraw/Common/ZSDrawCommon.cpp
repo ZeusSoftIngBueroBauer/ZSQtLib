@@ -1382,24 +1382,35 @@ struct SGraphObjHitInfo
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
-//------------------------------------------------------------------------------
-{
-    return (m_selPtBoundingRect >= ESelectionPointRectMin) && (m_selPtBoundingRect <= ESelectionPointRectMax);
-}
-
-//------------------------------------------------------------------------------
+/*! @brief Returns true if any selection point has been hit.
+*/
 bool SGraphObjHitInfo::isSelectionPointHit() const
 //------------------------------------------------------------------------------
 {
-    return (m_selPtBoundingRect != ESelectionPoint::None);
+    return (m_selPt != ESelectionPoint::None);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true if any selection point at the bounding rectangle has been hit.
+*/
+bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
+//------------------------------------------------------------------------------
+{
+    return (m_selPt >= ESelectionPointRectMin) && (m_selPt <= ESelectionPointRectMax);
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isLineSegmentCenterPointHit() const
+//------------------------------------------------------------------------------
+{
+    return (m_selPt == ESelectionPoint::LineCenterPoint) && (m_idxLineSegment >= 0);
 }
 
 //------------------------------------------------------------------------------
 bool SGraphObjHitInfo::isPolygonShapePointHit() const
 //------------------------------------------------------------------------------
 {
-    return (m_idxPolygonShapePoint >= 0);
+    return (m_selPt == ESelectionPoint::PolygonPoint) && (m_idxPolygonShapePoint >= 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1418,7 +1429,7 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 bool SGraphObjHitInfo::isNull() const
 //------------------------------------------------------------------------------
 {
-    return (m_selPtBoundingRect == ESelectionPoint::None)
+    return (m_selPt == ESelectionPoint::None)
         && (m_idxPolygonShapePoint < 0)
         && (m_idxLineSegment < 0)
         && m_ptHit.isNull();
@@ -1432,7 +1443,7 @@ bool SGraphObjHitInfo::isNull() const
 void SGraphObjHitInfo::reset()
 //------------------------------------------------------------------------------
 {
-    m_selPtBoundingRect = ESelectionPoint::None;
+    m_selPt = ESelectionPoint::None;
     m_idxPolygonShapePoint = -1;
     m_idxLineSegment = -1;
     m_ptHit = QPointF();
@@ -1446,7 +1457,7 @@ QString SGraphObjHitInfo::toString() const
 //------------------------------------------------------------------------------
 {
     return isNull() ? "null" :
-        "SelPt: " + m_selPtBoundingRect.toString() +
+        "SelPt: " + m_selPt.toString() +
         ", PolygonPt: " + QString::number(m_idxPolygonShapePoint) +
         ", LineIdx: " + QString::number(m_idxLineSegment) +
         ", PtHit {" + qPoint2Str(m_ptHit) + "}" +
@@ -1478,7 +1489,7 @@ QString SGraphObjHitInfo::toString() const
 //    //        {
 //    //            case EEditResizeMode::ResizeAll:
 //    //            {
-//    //                switch( m_selPtBoundingRect.enumerator() )
+//    //                switch( m_selPt.enumerator() )
 //    //                {
 //    //                    case ESelectionPoint::TopLeft:
 //    //                    case ESelectionPoint::BottomRight:

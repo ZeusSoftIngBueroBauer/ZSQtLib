@@ -1052,7 +1052,7 @@ void CGraphObjImage::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //
 //            m_editMode                  = hitInfo.m_editMode;
 //            m_editResizeMode            = hitInfo.m_editResizeMode;
-//            m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
+//            m_selPtSelectedBoundingRect = hitInfo.m_selPt;
 //
 //            for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
 //            {

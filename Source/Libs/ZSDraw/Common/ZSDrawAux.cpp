@@ -1247,8 +1247,75 @@ QPolygonF ZS::Draw::rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount, const 
         }
     }
     return plg;
+}
 
-} // rect2Polygon
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given point is hit by the given point taking the
+           given tolerance into account.
+
+    The method checks whether the point to be checked has been hit.
+    For this a rectangle with the given tolerance is created around
+    the given point and then it will be checked whether the line end points are
+    within those rectangles.
+
+    The method creates a perpendicular line to the given line going through the given point.
+    The intersection point of those thow lines is determined and afterwards the distance
+    between the point and the line is calculated.
+    If the distance is less than the passed hit tolerance the line is hit at the intersection point.
+
+               line
+                + P1
+                |
+                | intersection point
+                |/
+         Pt x --+------ perpendicular line
+                |
+                |
+                + P2
+
+    @param [in] i_pt1
+        Point to be checked whether it has been hit.
+    @param [in] i_pt2
+        Point to be checked whether it hits i_pt1 within the given tolerance.
+    @param [in] i_fTolerance_px
+        Tolerance in pixels.
+    @param [out] o_pHitInfo
+        If a valid pointer is passed the hit info is filled with additional info
+        of the hit point including the intersection point.
+
+    @return true, if the given point hits the point within the given tolarance, false otherwise.
+*/
+bool ZS::Draw::isPointHit(
+    const QPointF& i_pt1,
+    const QPointF& i_pt2,
+    double i_fTolerance_px,
+    SGraphObjHitInfo* o_pHitInfo)
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+
+    double fTolerance = i_fTolerance_px;
+    if (fTolerance <= 0.0) {
+        fTolerance = 2.0;
+    }
+    if (o_pHitInfo != nullptr) {
+        o_pHitInfo->reset();
+        o_pHitInfo->m_cursor = Qt::ArrowCursor;
+    }
+
+    QRectF rctBndTmp(QPointF(i_pt1.x() - fTolerance, i_pt1.y() - fTolerance),
+                     QPointF(i_pt1.x() + fTolerance, i_pt1.y() + fTolerance));
+
+    if (rctBndTmp.contains(i_pt2)) {
+        bIsHit = true;
+        if (o_pHitInfo != nullptr) {
+            o_pHitInfo->m_idxPolygonShapePoint = 0;
+            o_pHitInfo->m_ptHit = i_pt2;
+            o_pHitInfo->m_cursor = Qt::CrossCursor;
+        }
+    }
+    return bIsHit;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether the given line is hit by the given point taking the
@@ -1281,7 +1348,7 @@ QPolygonF ZS::Draw::rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount, const 
     @param [in] i_fTolerance_px
         Tolerance in pixels.
     @param [out] o_pHitInfo
-        If a valid point is passed the hit info is filled with additional info
+        If a valid pointer is passed the hit info is filled with additional info
         of the hit point including the intersection point.
 
     @return true, if the given point hits the line within the given tolarance, false otherwise.
@@ -1332,6 +1399,7 @@ bool ZS::Draw::isLineHit(
         if (rctPt.contains(i_line.p1())) {
             bIsHit = true;
             if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_selPt = ESelectionPoint::PolygonPoint;
                 o_pHitInfo->m_idxPolygonShapePoint = 0;
                 o_pHitInfo->m_ptHit = i_pt;
                 o_pHitInfo->m_cursor = Qt::CrossCursor;
@@ -1340,7 +1408,17 @@ bool ZS::Draw::isLineHit(
         else if (rctPt.contains(i_line.p2())) {
             bIsHit = true;
             if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_selPt = ESelectionPoint::PolygonPoint;
                 o_pHitInfo->m_idxPolygonShapePoint = 1;
+                o_pHitInfo->m_ptHit = i_pt;
+                o_pHitInfo->m_cursor = Qt::CrossCursor;
+            }
+        }
+        else if (rctPt.contains(i_line.center())) {
+            bIsHit = true;
+            if (o_pHitInfo != nullptr) {
+                o_pHitInfo->m_selPt = ESelectionPoint::LineCenterPoint;
+                o_pHitInfo->m_idxLineSegment = 0;
                 o_pHitInfo->m_ptHit = i_pt;
                 o_pHitInfo->m_cursor = Qt::CrossCursor;
             }
@@ -1428,7 +1506,7 @@ bool ZS::Draw::isRectHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = selPt;
+                    o_pHitInfo->m_selPt = selPt;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptHit = pt;
@@ -1446,7 +1524,7 @@ bool ZS::Draw::isRectHit(
                 if (rct.contains(i_pt)) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_selPtBoundingRect = selPt;
+                        o_pHitInfo->m_selPt = selPt;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptHit = pt;
@@ -1474,7 +1552,7 @@ bool ZS::Draw::isRectHit(
             if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                    o_pHitInfo->m_selPt = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptHit = i_pt;
@@ -1484,8 +1562,7 @@ bool ZS::Draw::isRectHit(
         }
     }
     return bIsHit;
-
-} // isRectHit
+}
 
 //------------------------------------------------------------------------------
 bool ZS::Draw::isEllipseHit(
@@ -1531,7 +1608,7 @@ bool ZS::Draw::isEllipseHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = selPt;
+                    o_pHitInfo->m_selPt = selPt;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptHit = pt;
@@ -1551,7 +1628,7 @@ bool ZS::Draw::isEllipseHit(
                 if (fabs(fx) <= fTolerance) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::RightCenter;
+                        o_pHitInfo->m_selPt = ESelectionPoint::RightCenter;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptHit = i_pt;
@@ -1564,7 +1641,7 @@ bool ZS::Draw::isEllipseHit(
                 if (fabs(fy) <= fTolerance) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::BottomCenter;
+                        o_pHitInfo->m_selPt = ESelectionPoint::BottomCenter;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptHit = i_pt;
@@ -1585,7 +1662,7 @@ bool ZS::Draw::isEllipseHit(
                     bIsHit = true;
                 }
                 if (bIsHit && o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                    o_pHitInfo->m_selPt = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptHit = i_pt;
@@ -1618,7 +1695,7 @@ bool ZS::Draw::isEllipseHit(
                     }
                 }
                 if (bIsHit && o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                    o_pHitInfo->m_selPt = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptHit = i_pt;
@@ -1630,7 +1707,7 @@ bool ZS::Draw::isEllipseHit(
             if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                    o_pHitInfo->m_selPt = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptHit = i_pt;
@@ -1640,8 +1717,7 @@ bool ZS::Draw::isEllipseHit(
         }
     }
     return bIsHit;
-
-} // isEllipseHit
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether the given polyline is hit by the passed point.
@@ -1716,8 +1792,7 @@ bool ZS::Draw::isPolylineHit(
         }
     }
     return bIsHit;
-
-} // isPolylineHit
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Checks whether the given polygon is hit by the passed point.
@@ -1795,7 +1870,7 @@ bool ZS::Draw::isPolygonHit(
         if (!bIsHit && i_fillStyle == EFillStyle::SolidPattern) {
             bIsHit = true;
             if (o_pHitInfo != nullptr) {
-                o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                o_pHitInfo->m_selPt = ESelectionPoint::None;
                 o_pHitInfo->m_idxPolygonShapePoint = -1;
                 o_pHitInfo->m_idxLineSegment = -1;
                 o_pHitInfo->m_ptHit = i_pt;
@@ -1804,8 +1879,7 @@ bool ZS::Draw::isPolygonHit(
         }
     }
     return bIsHit;
-
-} // isPolygonHit
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the shortest distance from the given point to the given line.
