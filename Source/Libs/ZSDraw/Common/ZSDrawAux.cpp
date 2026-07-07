@@ -1401,7 +1401,7 @@ bool ZS::Draw::isLineHit(
             if (o_pHitInfo != nullptr) {
                 o_pHitInfo->m_selPt = ESelectionPoint::PolygonPoint;
                 o_pHitInfo->m_idxPolygonShapePoint = 0;
-                o_pHitInfo->m_ptHit = i_pt;
+                o_pHitInfo->m_ptHit = i_line.p1();
                 o_pHitInfo->m_cursor = Qt::CrossCursor;
             }
         }
@@ -1410,7 +1410,7 @@ bool ZS::Draw::isLineHit(
             if (o_pHitInfo != nullptr) {
                 o_pHitInfo->m_selPt = ESelectionPoint::PolygonPoint;
                 o_pHitInfo->m_idxPolygonShapePoint = 1;
-                o_pHitInfo->m_ptHit = i_pt;
+                o_pHitInfo->m_ptHit = i_line.p2();
                 o_pHitInfo->m_cursor = Qt::CrossCursor;
             }
         }
@@ -1419,8 +1419,8 @@ bool ZS::Draw::isLineHit(
             if (o_pHitInfo != nullptr) {
                 o_pHitInfo->m_selPt = ESelectionPoint::LineCenterPoint;
                 o_pHitInfo->m_idxLineSegment = 0;
-                o_pHitInfo->m_ptHit = i_pt;
-                o_pHitInfo->m_cursor = Qt::CrossCursor;
+                o_pHitInfo->m_ptHit = i_line.center();
+                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
             }
         }
         else {
@@ -1770,6 +1770,7 @@ bool ZS::Draw::isPolylineHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
+                    o_pHitInfo->m_selPt = ESelectionPoint::PolygonPoint;
                     o_pHitInfo->m_idxPolygonShapePoint = idxPt;
                     o_pHitInfo->m_ptHit = pt;
                     o_pHitInfo->m_cursor = Qt::CrossCursor;
@@ -1784,7 +1785,7 @@ bool ZS::Draw::isPolylineHit(
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_idxLineSegment = idxPt;
-                        o_pHitInfo->m_cursor = Qt::CrossCursor;
+                        o_pHitInfo->m_cursor = Qt::CrossCursor; // inserting points at line segments
                     }
                     break;
                 }

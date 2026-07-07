@@ -913,6 +913,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 0;
     hitInfo.m_ptHit = QPointF(0.0, 0.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -937,6 +938,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 0;
     hitInfo.m_ptHit = QPointF(50.0, 50.0);
     hitInfo.m_cursor = Qt::SizeAllCursor;
@@ -961,6 +963,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 1;
     hitInfo.m_ptHit = QPointF(100.0, 100.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -982,6 +985,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 0;
     hitInfo.m_ptHit = QPointF(50.0, 50.0);
     hitInfo.m_cursor = Qt::SizeAllCursor;
@@ -994,6 +998,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 0;
     hitInfo.m_ptHit = QPointF(50.0, 50.0);
     hitInfo.m_cursor = Qt::SizeAllCursor;
@@ -1001,7 +1006,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
 
     pTestStep->addDataRow({
         {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
-        {"Point", QPointF(53.0, 47.0)},
+        {"Point", QPointF(54.0, 46.0)},
         {"Tolerance", 3.0},
         {"ResultValuesPrecision", iPrecision}
     });
@@ -1010,7 +1015,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
 
     pTestStep->addDataRow({
         {"Line", QLineF(QPointF(0.0, 0.0), QPointF(100.0, 100.0))},
-        {"Point", QPointF(47.0, 53.0)},
+        {"Point", QPointF(46.0, 54.0)},
         {"Tolerance", 3.0},
         {"ResultValuesPrecision", iPrecision}
     });
@@ -1111,6 +1116,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 0;
     hitInfo.m_ptHit = QPointF(300.0, 200.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1123,6 +1129,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 0;
     hitInfo.m_ptHit = QPointF(290.0, 225.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1135,6 +1142,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 1;
     hitInfo.m_ptHit = QPointF(280.0, 250.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1183,8 +1191,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(285.1, 275.6);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1195,8 +1204,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(285.1, 275.4);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1207,8 +1217,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(285.0, 275.2);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1219,6 +1230,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
     hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1231,8 +1243,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(285.0, 274.8);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1243,8 +1256,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(284.9, 274.6);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1255,8 +1269,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(284.9, 274.4);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1267,8 +1282,9 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 1;
-    hitInfo.m_ptHit = QPointF(284.9, 274.4);
+    hitInfo.m_ptHit = QPointF(285.0, 275.0);
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 
@@ -1279,6 +1295,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 2;
     hitInfo.m_ptHit = QPointF(290.0, 300.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1291,6 +1308,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 2;
     hitInfo.m_ptHit = QPointF(285.0, 325.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1303,6 +1321,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 3;
     hitInfo.m_ptHit = QPointF(280.0, 350.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1315,6 +1334,7 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::LineCenterPoint;
     hitInfo.m_idxLineSegment = 3;
     hitInfo.m_ptHit = QPointF(290.0, 375.0);
     hitInfo.m_cursor = Qt::CrossCursor;
@@ -1327,8 +1347,21 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         {"ResultValuesPrecision", iPrecision}
     });
     hitInfo.reset();
+    hitInfo.m_selPt = ESelectionPoint::PolygonPoint;
     hitInfo.m_idxPolygonShapePoint = 4;
     hitInfo.m_ptHit = QPointF(300.0, 400.0);
+    hitInfo.m_cursor = Qt::CrossCursor;
+    strlstExpectedValues.append(hitInfo.toString());
+
+    pTestStep->addDataRow({
+        {"Polygon", polygon},
+        {"Point", QPointF(294.0, 391.0)},
+        {"Tolerance", 3.0},
+        {"ResultValuesPrecision", iPrecision}
+    });
+    hitInfo.reset();
+    hitInfo.m_idxLineSegment = 3;
+    hitInfo.m_ptHit = QPointF(296.1, 390.2); // intersection point at perpendicular line
     hitInfo.m_cursor = Qt::CrossCursor;
     strlstExpectedValues.append(hitInfo.toString());
 

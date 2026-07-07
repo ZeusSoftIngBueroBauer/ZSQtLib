@@ -11165,6 +11165,62 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValPolygon(" + c_strGraphObjNameStar + ")",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+    // create Polyline
+    //----------------
+
+    CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
+    QSizeF size(20.0, 200.0);
+    QPointF ptCenter(290.0, 300.0);
+    QPointF ptTopLeft(280.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    QPointF ptTopRight(300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    QPointF ptBottomRight(300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    QPointF ptBottomLeft(280.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    QPointF ptTopCenter(290.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
+    QPointF ptRightCenter(300.0, 300.0);
+    QPointF ptBottomCenter(290.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0);
+    QPointF ptLeftCenter(280.0, 300.0);
+    QPolygonF polyline({
+        {300.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0},
+        {280.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0},
+        {290.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0},
+        {280.0, bYAxisTopDown ? 350.0 : fYAxisMaxVal - 350.0},
+        {300.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0}
+    });
+
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " create(Polyline)",
+        /* strOperation    */ "create(Polyline)",
+        /* pGrpParent      */ pGrpTransformPolyline,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValPolygon(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    pTestStep->setConfigValue("create.numberOfPoints", polyline.size());
+    for (int idxPt = 0; idxPt < polyline.size(); ++idxPt) {
+        pTestStep->setConfigValue("create.P" + QString::number(idxPt), polyline[idxPt]);
+    }
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("addPhysValShape", QColor(Qt::black).name());
+    pTestStep->setConfigValue("ResultValuesPrecision", iDigits);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenter, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Size {" + qSize2Str(size, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeft, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRight, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRight, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeft, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenter, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenter, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenter, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenter, ", ", 'f', iDigits) + "} " + strUnit);
+    for (int idxPt = 0; idxPt < polyline.size(); ++idxPt) {
+        strlstExpectedValues.append("P" + QString::number(idxPt) + ": {" + qPoint2Str(polyline[idxPt], ", ", 'f', iDigits) + "} " + strUnit);
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // create Star
+    //-------------
+
     QSizeF sizeOrig(200.0, 200.0);
     QPointF ptCenterOrig(300.0, 300.0);
     QPointF ptTopLeftOrig(200.0, bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
@@ -11198,7 +11254,6 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     QPointF ptLeftCenterModified = ptLeftCenterOrig;
     QPolygonF polylineModified = polylineOrig;
 
-    CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
     QPointF ptMove(0.0, 0.0);
     double fXScaleFactor = 1.0;
     double fYScaleFactor = 1.0;
@@ -11207,10 +11262,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
     int iCount;
     QPointF ptModified;
 
-    // create Star
-    //-------------
-
-    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+    pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " create(Star)",
         /* strOperation    */ "create(Star)",
