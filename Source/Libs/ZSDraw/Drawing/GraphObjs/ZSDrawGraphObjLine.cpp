@@ -1752,19 +1752,19 @@ void CGraphObjLine::paint(
     ////i_pPainter->drawLine(lineCenterVer);
     ////#pragma message(__TODO__"To be removed")
 
-    CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.lineEndStyle(ELinePoint::Start);
-    CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.lineEndStyle(ELinePoint::End);
-    if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
-        CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
-        CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
+    CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.lineEndStyle(ELinePoint::Start);
+    CEnumLineEndStyle lineEndStyleLineEnd = m_drawSettings.lineEndStyle(ELinePoint::End);
+    if (lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal) {
+        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.arrowHeadBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeLineEnd = m_drawSettings.arrowHeadBaseLineType(ELinePoint::End);
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         i_pPainter->setPen(pn);
         QBrush brsh(pn.color());
-        if (lineEndStyleP1 != ELineEndStyle::Normal) {
+        if (lineEndStyleLineStart != ELineEndStyle::Normal) {
             brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::Start)));
             i_pPainter->setBrush(brsh);
-            if (baseLineTypeP1 == EArrowHeadBaseLineType::NoLine) {
+            if (baseLineTypeLineStart == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgP1ArrowHead);
             }
             else {
@@ -1777,10 +1777,10 @@ void CGraphObjLine::paint(
                 i_pPainter->drawPolygon(m_plgP1ArrowHead);
             }
         }
-        if (lineEndStyleP2 != ELineEndStyle::Normal) {
+        if (lineEndStyleLineEnd != ELineEndStyle::Normal) {
             brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.arrowHeadFillStyle(ELinePoint::End)));
             i_pPainter->setBrush(brsh);
-            if (baseLineTypeP2 == EArrowHeadBaseLineType::NoLine) {
+            if (baseLineTypeLineEnd == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgP2ArrowHead);
             }
             else {

@@ -1684,24 +1684,26 @@ void CGraphObjEllipse::paint(
     i_pPainter->setRenderHints(s_painterRenderHints);
 
     QPen pn;
-    QBrush brush;
+    QBrush brsh;
     QRectF rctBounding = getBoundingRect();
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        QPainterPath outline;
+        outline.moveTo(rctBounding.topLeft());
+        pn.setStyle(Qt::SolidLine);
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.penWidth());
+            //outline.lineTo(rctBounding.topRight());
+            //outline.lineTo(rctBounding.bottomRight());
+            //outline.lineTo(rctBounding.bottomLeft());
+            //outline.lineTo(rctBounding.topLeft());
+            outline.addRect(rctBounding);
         }
         else {
             pn.setColor(s_highlightColor);
             pn.setWidth(3 + m_drawSettings.penWidth());
+            outline.addEllipse(rctBounding);
         }
-        pn.setStyle(Qt::SolidLine);
-        QPainterPath outline;
-        outline.moveTo(rctBounding.topLeft());
-        outline.lineTo(rctBounding.topRight());
-        outline.lineTo(rctBounding.bottomRight());
-        outline.lineTo(rctBounding.bottomLeft());
-        outline.lineTo(rctBounding.topLeft());
         i_pPainter->strokePath(outline, pn);
     }
 
@@ -1710,9 +1712,9 @@ void CGraphObjEllipse::paint(
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
 
-    brush.setColor(m_drawSettings.fillColor());
-    brush.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle().enumerator()));
-    i_pPainter->setBrush(brush);
+    brsh.setColor(m_drawSettings.fillColor());
+    brsh.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle().enumerator()));
+    i_pPainter->setBrush(brsh);
 
     i_pPainter->drawEllipse(rctBounding);
 

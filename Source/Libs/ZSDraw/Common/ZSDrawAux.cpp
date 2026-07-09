@@ -1848,6 +1848,7 @@ bool ZS::Draw::isPolygonHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
+                    o_pHitInfo->m_selPt = ESelectionPoint::PolygonPoint;
                     o_pHitInfo->m_idxPolygonShapePoint = idxPt;
                     o_pHitInfo->m_ptHit = pt;
                     o_pHitInfo->m_cursor = Qt::CrossCursor;

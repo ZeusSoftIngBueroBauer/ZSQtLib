@@ -14650,9 +14650,9 @@ void CTest::createTestGroupAddStandardShapesGroupConnectionPointsAnchored(ZS::Te
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect2, m_ptPosRect2, m_rectRect2, *m_pPhysValRect2, false, iResultValuesPrecision));
     // ConnectionLine
-    strGraphObjCnctPt1Name = CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::BottomCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    strGraphObjCnctPt2Name = CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(ESelectionPoint::TopCenter).toString() + "-1";
     strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
     strlstExpectedValues.append(resultValuesForConnectionLine(
         c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,

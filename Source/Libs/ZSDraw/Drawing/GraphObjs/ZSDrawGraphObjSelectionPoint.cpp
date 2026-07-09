@@ -577,7 +577,7 @@ void CGraphObjSelectionPoint::paint(
             ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
         QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
         QRectF rct = rect();
-        i_pPainter->drawLine(QPoint(rct.center().x(), rct.top()), ptSelPosParent);
+        i_pPainter->drawLine(rct.center(), ptSelPosParent);
     }
     else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
         pn.setStyle(Qt::DotLine);
@@ -586,7 +586,7 @@ void CGraphObjSelectionPoint::paint(
             ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
         QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
         QRectF rct = rect();
-        i_pPainter->drawLine(QPoint(rct.center().x(), rct.bottom()), ptSelPosParent);
+        i_pPainter->drawLine(rct.center(), ptSelPosParent);
     }
 
     i_pPainter->restore();
