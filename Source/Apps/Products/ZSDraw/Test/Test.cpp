@@ -6408,6 +6408,19 @@ void CTest::initObjectCoors()
     // Lines
     //------
 
+    m_ptPosLine1 = QPointF();
+    m_lineLine1 = QLineF();
+    *m_pPhysValLine1 = CPhysValLine(*m_pDrawingScene);
+    m_ptPosLine2 = QPointF();
+    m_lineLine2 = QLineF();
+    *m_pPhysValLine2 = CPhysValLine(*m_pDrawingScene);
+    m_ptPosLine3 = QPointF();
+    m_lineLine3 = QLineF();
+    *m_pPhysValLine3 = CPhysValLine(*m_pDrawingScene);
+    m_ptPosLine4 = QPointF();
+    m_lineLine4 = QLineF();
+    *m_pPhysValLine4 = CPhysValLine(*m_pDrawingScene);
+
     m_ptPosSmallPlusSignVerticalLine = QPointF();
     m_lineSmallPlusSignVerticalLine = QLineF();
     *m_pPhysValLineSmallPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene);
@@ -6548,25 +6561,29 @@ void CTest::initObjectCoors()
 
     m_polygonConnectionLineCnctPt1CnctPt2 = QPolygonF();
     *m_pPhysValPolygonConnectionLineCnctPt1CnctPt2 = CPhysValPolygon(*m_pDrawingScene);
-
     m_polygonConnectionLineCnctPt3CnctPt4 = QPolygonF();
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt4 = CPhysValPolygon(*m_pDrawingScene);
-
     m_polygonConnectionLineCnctPt1CnctPt4 = QPolygonF();
     *m_pPhysValPolygonConnectionLineCnctPt1CnctPt4 = CPhysValPolygon(*m_pDrawingScene);
-
     m_polygonConnectionLineCnctPt3CnctPt2 = QPolygonF();
     *m_pPhysValPolygonConnectionLineCnctPt3CnctPt2 = CPhysValPolygon(*m_pDrawingScene);
 
+
+    m_polygonConnectionLineLine1P2Line2P2 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineLine1P2Line2P2 = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineLine2P1Line4P2 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineLine2P1Line4P2 = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineLine4P1Line3P1 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineLine4P1Line3P1 = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineLine3P2Line1P1 = QPolygonF();
+    *m_pPhysValPolygonConnectionLineLine3P2Line1P1 = CPhysValPolygon(*m_pDrawingScene);
+
     m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF();
     *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = CPhysValPolygon(*m_pDrawingScene);
-
     m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF();
     *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = CPhysValPolygon(*m_pDrawingScene);
-
     m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF();
     *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = CPhysValPolygon(*m_pDrawingScene);
-
     m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF();
     *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = CPhysValPolygon(*m_pDrawingScene);
 

@@ -4208,7 +4208,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     CEnumSelectionPointType eSelPtTypePolygonPoint(ESelectionPointType::PolygonPoint);
     CEnumSelectionPointType eSelPtTypeLineCenterPoint(ESelectionPointType::LineCenterPoint);
     int idxPt, idxLine;
-    QPointF ptCnctPt;
+    QPointF ptPosCnctPt;
     CPhysValPoint physValCnctPt(*m_pDrawingScene);
     QString strMethod;
     QString strMthArgs;
@@ -4231,15 +4231,15 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    QPointF ptLine1Pt1(175.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0);
-    QPointF ptLine1Pt2(225.0, bYAxisTopDown ? 275.0 : fYAxisMaxVal - 275.0);
+    QPointF ptPosLine1Pt1(175.0, 225.0);
+    QPointF ptPosLine1Pt2(225.0, 275.0);
     m_ptPosLine1 = QPointF(200.0, 250.0);
     m_lineLine1 = QLineF(QPointF(-25.0, -25.0), QPointF(25.0, 25.0));
-    m_pPhysValLine1->setP1(ptLine1Pt1);
-    m_pPhysValLine1->setP2(ptLine1Pt2);
+    m_pPhysValLine1->setP1(QPointF(ptPosLine1Pt1.x(), bYAxisTopDown ? ptPosLine1Pt1.y() : fYAxisMaxVal - ptPosLine1Pt1.y()));
+    m_pPhysValLine1->setP2(QPointF(ptPosLine1Pt2.x(), bYAxisTopDown ? ptPosLine1Pt2.y() : fYAxisMaxVal - ptPosLine1Pt2.y()));
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("P1", ptLine1Pt1);
-    pTestStep->setConfigValue("P2", ptLine1Pt2);
+    pTestStep->setConfigValue("P1", m_pPhysValLine1->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine1->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strGraphObjName, m_ptPosLine1, m_lineLine1, *m_pPhysValLine1, false));
@@ -4264,10 +4264,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine1Pt1;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine1Pt1;
+    physValCnctPt = m_pPhysValLine1->p1();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 1 - Pt2
@@ -4289,10 +4289,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine1Pt2;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine1Pt2;
+    physValCnctPt = m_pPhysValLine1->p2();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 1 - LineCenter
@@ -4314,10 +4314,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Line", idxLine);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = m_ptPosLine1;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = m_ptPosLine1;
+    physValCnctPt = m_pPhysValLine1->center();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line-2
@@ -4333,15 +4333,15 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    QPointF ptLine2Pt1(175.0, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0);
-    QPointF ptLine2Pt2(225.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0);
+    QPointF ptPosLine2Pt1(175.0, 375.0);
+    QPointF ptPosLine2Pt2(225.0, 325.0);
     m_ptPosLine2 = QPointF(200.0, 350.0);
     m_lineLine2 = QLineF(QPointF(-25.0, 25.0), QPointF(25.0, -25.0));
-    m_pPhysValLine2->setP1(ptLine2Pt1);
-    m_pPhysValLine2->setP2(ptLine2Pt2);
+    m_pPhysValLine2->setP1(QPointF(ptPosLine2Pt1.x(), bYAxisTopDown ? ptPosLine2Pt1.y() : fYAxisMaxVal - ptPosLine2Pt1.y()));
+    m_pPhysValLine2->setP2(QPointF(ptPosLine2Pt2.x(), bYAxisTopDown ? ptPosLine2Pt2.y() : fYAxisMaxVal - ptPosLine2Pt2.y()));
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("P1", ptLine2Pt1);
-    pTestStep->setConfigValue("P2", ptLine2Pt2);
+    pTestStep->setConfigValue("P1", m_pPhysValLine2->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine2->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strGraphObjName, m_ptPosLine2, m_lineLine2, *m_pPhysValLine2, false));
@@ -4353,7 +4353,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine2);
     idxPt = 0;
     strGraphObjName = "CnctPoint-P" + QString::number(idxPt) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine2 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypePolygonPoint.toString() + ", " + QString::number(idxPt);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4366,10 +4366,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine2Pt1;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine2Pt1;
+    physValCnctPt = m_pPhysValLine2->p1();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 2 - Pt2
@@ -4378,7 +4378,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine2);
     idxPt = 1;
     strGraphObjName = "CnctPoint-P" + QString::number(idxPt) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine2 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypePolygonPoint.toString() + ", " + QString::number(idxPt);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4391,10 +4391,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine2Pt2;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine2Pt2;
+    physValCnctPt = m_pPhysValLine2->p2();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 2 - LineCenter
@@ -4403,7 +4403,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine2);
     idxLine = 0;
     strGraphObjName = "CnctPoint-L" + QString::number(idxLine) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine2 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypeLineCenterPoint.toString() + ", " + QString::number(idxLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4416,10 +4416,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Line", idxLine);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = m_ptPosLine2;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = m_ptPosLine2;
+    physValCnctPt = m_pPhysValLine2->center();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line-3
@@ -4435,15 +4435,15 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    QPointF ptLine3Pt1(575.0, bYAxisTopDown ? 275.0 : fYAxisMaxVal - 275.0);
-    QPointF ptLine3Pt2(625.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0);
+    QPointF ptPosLine3Pt1(575.0, 275.0);
+    QPointF ptPosLine3Pt2(625.0, 225.0);
     m_ptPosLine3 = QPointF(600.0, 250.0);
     m_lineLine3 = QLineF(QPointF(-25.0, 25.0), QPointF(25.0, -25.0));
-    m_pPhysValLine3->setP1(ptLine3Pt1);
-    m_pPhysValLine3->setP2(ptLine3Pt2);
+    m_pPhysValLine3->setP1(QPointF(ptPosLine3Pt1.x(), bYAxisTopDown ? ptPosLine3Pt1.y() : fYAxisMaxVal - ptPosLine3Pt1.y()));
+    m_pPhysValLine3->setP2(QPointF(ptPosLine3Pt2.x(), bYAxisTopDown ? ptPosLine3Pt2.y() : fYAxisMaxVal - ptPosLine3Pt2.y()));
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("P1", ptLine3Pt1);
-    pTestStep->setConfigValue("P2", ptLine3Pt2);
+    pTestStep->setConfigValue("P1", m_pPhysValLine3->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine3->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strGraphObjName, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
@@ -4455,7 +4455,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine3);
     idxPt = 0;
     strGraphObjName = "CnctPoint-P" + QString::number(idxPt) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine3 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypePolygonPoint.toString() + ", " + QString::number(idxPt);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4468,10 +4468,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine3Pt1;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine3Pt1;
+    physValCnctPt = m_pPhysValLine3->p1();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 3 - Pt2
@@ -4480,7 +4480,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine3);
     idxPt = 1;
     strGraphObjName = "CnctPoint-P" + QString::number(idxPt) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine3 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypePolygonPoint.toString() + ", " + QString::number(idxPt);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4493,10 +4493,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine3Pt2;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine3Pt2;
+    physValCnctPt = m_pPhysValLine3->p2();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 3 - LineCenter
@@ -4505,7 +4505,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine3);
     idxLine = 0;
     strGraphObjName = "CnctPoint-L" + QString::number(idxLine) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine3 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypeLineCenterPoint.toString() + ", " + QString::number(idxLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4518,10 +4518,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Line", idxLine);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = m_ptPosLine3;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = m_ptPosLine3;
+    physValCnctPt = m_pPhysValLine3->center();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line-4
@@ -4537,15 +4537,15 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
         /* pGrpParent      */ pGrpAddCncts,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    QPointF ptLine4Pt1(575.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0);
-    QPointF ptLine4Pt2(625.0, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0);
+    QPointF ptPosLine4Pt1(575.0, 325.0);
+    QPointF ptPosLine4Pt2(625.0, 375.0);
     m_ptPosLine4 = QPointF(600.0, 350.0);
     m_lineLine4 = QLineF(QPointF(-25.0, -25.0), QPointF(25.0, 25.0));
-    m_pPhysValLine4->setP1(ptLine4Pt1);
-    m_pPhysValLine4->setP2(ptLine4Pt2);
+    m_pPhysValLine4->setP1(QPointF(ptPosLine4Pt1.x(), bYAxisTopDown ? ptPosLine4Pt1.y() : fYAxisMaxVal - ptPosLine4Pt1.y()));
+    m_pPhysValLine4->setP2(QPointF(ptPosLine4Pt2.x(), bYAxisTopDown ? ptPosLine4Pt2.y() : fYAxisMaxVal - ptPosLine4Pt2.y()));
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("P1", ptLine4Pt1);
-    pTestStep->setConfigValue("P2", ptLine4Pt2);
+    pTestStep->setConfigValue("P1", m_pPhysValLine4->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine4->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strGraphObjName, m_ptPosLine4, m_lineLine4, *m_pPhysValLine4, false));
@@ -4557,7 +4557,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine4);
     idxPt = 0;
     strGraphObjName = "CnctPoint-P" + QString::number(idxPt) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine4 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypePolygonPoint.toString() + ", " + QString::number(idxPt);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4570,10 +4570,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine4Pt1;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine4Pt1;
+    physValCnctPt = m_pPhysValLine4->p1();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 4 - Pt2
@@ -4582,7 +4582,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine4);
     idxPt = 1;
     strGraphObjName = "CnctPoint-P" + QString::number(idxPt) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine4 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypePolygonPoint.toString() + ", " + QString::number(idxPt);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4595,10 +4595,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Point", idxPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = ptLine4Pt2;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = ptPosLine4Pt2;
+    physValCnctPt = m_pPhysValLine4->p2();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Line 4 - LineCenter
@@ -4607,7 +4607,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     strGraphObjKeyInTreeParent = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine4);
     idxLine = 0;
     strGraphObjName = "CnctPoint-L" + QString::number(idxLine) + "-1";
-    strMethod = c_strGraphObjNameLine1 + "." + "addConnectionPoint";
+    strMethod = c_strGraphObjNameLine4 + "." + "addConnectionPoint";
     strMthArgs = eSelPtTypeLineCenterPoint.toString() + ", " + QString::number(idxLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -4620,10 +4620,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(
     pTestStep->setConfigValue("Line", idxLine);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = m_ptPosLine4;
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = m_ptPosLine4;
+    physValCnctPt = m_pPhysValLine4->center();
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -5156,8 +5156,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModif
     strGraphObjCnctPt1Name = "CnctPoint-P1-1";
     strGraphObjCnctPt2Name = "CnctPoint-P1-1";
     m_polygonConnectionLineLine1P2Line2P2 = QPolygonF({
-        {  38.0, -50.0},
-        { -38.0,  50.0}
+        { bUnitPixel ?  38.0 :  37.5, -50.0},
+        { bUnitPixel ? -38.0 : -37.5,  50.0}
     });
     *m_pPhysValPolygonConnectionLineLine1P2Line2P2 = QPolygonF({
         {QPointF(300.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0)},
@@ -5171,8 +5171,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModif
     strGraphObjCnctPt1Name = "CnctPoint-P1-1";
     strGraphObjCnctPt2Name = "CnctPoint-P0-1";
     m_polygonConnectionLineLine3P2Line1P1 = QPolygonF({
-        { 188.0,  25.0},
-        {-188.0, -25.0}
+        { bUnitPixel ?  188.0 :  187.5,  25.0},
+        { bUnitPixel ? -188.0 : -187.5, -25.0}
     });
     *m_pPhysValPolygonConnectionLineLine3P2Line1P1 = QPolygonF({
         {QPointF(625.0, bYAxisTopDown ? 225.0 : fYAxisMaxVal - 225.0)},
@@ -5236,8 +5236,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModif
     strGraphObjCnctPt1Name = "CnctPoint-P0-1";
     strGraphObjCnctPt2Name = "CnctPoint-P1-1";
     m_polygonConnectionLineLine2P1Line4P2 = QPolygonF({
-        { -188.0,  25.0},
-        {  188.0, -25.0}
+        { bUnitPixel ? -188.0 : -187.5,  25.0},
+        { bUnitPixel ?  188.0 :  187.5, -25.0}
     });
     *m_pPhysValPolygonConnectionLineLine2P1Line4P2 = QPolygonF({
         {QPointF(250.0, bYAxisTopDown ? 425.0 : fYAxisMaxVal - 425.0)},
@@ -5301,8 +5301,8 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModif
     strGraphObjCnctPt1Name = "CnctPoint-P0-1";
     strGraphObjCnctPt2Name = "CnctPoint-P0-1";
     m_polygonConnectionLineLine4P1Line3P1 = QPolygonF({
-        {  38.0,  50.0},
-        { -38.0, -50.0}
+        { bUnitPixel ?  38.0 :  37.5,  50.0},
+        { bUnitPixel ? -38.0 : -37.5, -50.0}
     });
     *m_pPhysValPolygonConnectionLineLine4P1Line3P1 = QPolygonF({
         {QPointF(575.0, bYAxisTopDown ? 325.0 : fYAxisMaxVal - 325.0)},
@@ -5429,7 +5429,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     QString strGraphObjCnctPt2Name;
     CEnumSelectionPointType eSelPtType(ESelectionPointType::BoundingRectangle);
     CEnumSelectionPoint eSelPt;
-    QPointF ptCnctPt;
+    QPointF ptPosCnctPt;
     CPhysValPoint physValCnctPt(*m_pDrawingScene);
     QString strMethod;
     QString strMthArgs;
@@ -5486,10 +5486,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Rectangle 1 - BottomCenter
@@ -5511,10 +5511,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect1, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Rectangle 2
@@ -5564,10 +5564,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect2, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect2, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Rectangle 2 - TopCenter
@@ -5589,10 +5589,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect2, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect2, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Rectangle 3
@@ -5642,10 +5642,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect3, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect3, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Rectangle 3 - BottomCenter
@@ -5667,10 +5667,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect3, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect3, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Rectangle 4
@@ -5720,10 +5720,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect4, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect4, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Point Rectangle 4 - TopCenter
@@ -5745,10 +5745,10 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(
     pTestStep->setConfigValue("SelectionPoint", eSelPt.toString());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
-    ptCnctPt = getSelectionPointCoors(*m_pPhysValRect4, eSelPt.enumerator());
-    physValCnctPt = QPointF(ptCnctPt.x(), bYAxisTopDown ? ptCnctPt.y() : fYAxisMaxVal - ptCnctPt.y());
+    ptPosCnctPt = getSelectionPointCoors(*m_pPhysValRect4, eSelPt.enumerator());
+    physValCnctPt = QPointF(ptPosCnctPt.x(), bYAxisTopDown ? ptPosCnctPt.y() : fYAxisMaxVal - ptPosCnctPt.y());
     strlstExpectedValues.append(resultValuesForConnectionPoint(
-        strGraphObjName, ptCnctPt, physValCnctPt, false, iResultValuesPrecision));
+        strGraphObjName, ptPosCnctPt, physValCnctPt, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Connection Line: Rectangle 1 - BottomCenter -> Rectangle 2 - TopCenter
