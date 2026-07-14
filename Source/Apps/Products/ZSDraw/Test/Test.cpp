@@ -6724,23 +6724,32 @@ QPoint CTest::addMouseMoveEventDataRows(
 
 //------------------------------------------------------------------------------
 QPointF CTest::getSelectionPointCoors(
-    const CPhysValPolygon& i_physValPolygon, const SGraphObjSelectionPoint& i_selPt) const
+    const CPhysValPolygon& i_physValPolygon,
+    const SGraphObjSelectionPoint& i_selPt,
+    EScaleDimensionUnit i_dimensionUnit) const
 //------------------------------------------------------------------------------
 {
     QPointF pt;
     if (i_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt = getSelectionPointCoors(i_physValPolygon.physValBoundingRect(), i_selPt.m_selPt);
+        pt = getSelectionPointCoors(i_physValPolygon.physValBoundingRect(), i_selPt.m_selPt, i_dimensionUnit);
     }
     else if (i_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         CPhysValPoint physValPoint = i_physValPolygon.at(i_selPt.m_idxPt);
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        if (i_dimensionUnit == EScaleDimensionUnit::Pixels) {
+            pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        }
+        else {
+            pt = physValPoint.toQPointF();
+        }
     }
     else if (i_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
         CPhysValPoint physValPointLineStart = i_physValPolygon.at(i_selPt.m_idxPt);
         CPhysValPoint physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygon.count() ?
             i_physValPolygon.at(0) : i_physValPolygon.at(i_selPt.m_idxPt+1);
         CPhysValLine physValLine(physValPointLineStart, physValPointLineEnd);
-        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+        if (i_dimensionUnit == EScaleDimensionUnit::Pixels) {
+            physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+        }
         pt = physValLine.center().toQPointF();
     }
     return pt;
@@ -6748,47 +6757,13 @@ QPointF CTest::getSelectionPointCoors(
 
 //------------------------------------------------------------------------------
 QPointF CTest::getSelectionPointCoors(
-    const CPhysValRect& i_physValRect, ESelectionPoint i_selPt) const
+    const CPhysValRect& i_physValRect,
+    ESelectionPoint i_selPt,
+    EScaleDimensionUnit i_dimensionUnit) const
 //------------------------------------------------------------------------------
 {
     QPointF pt;
-    if (i_selPt == ESelectionPoint::TopLeft) {
-        CPhysValPoint physValPoint = i_physValRect.topLeft();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::TopCenter) {
-        CPhysValPoint physValPoint = i_physValRect.topCenter();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::TopRight) {
-        CPhysValPoint physValPoint = i_physValRect.topRight();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::RightCenter) {
-        CPhysValPoint physValPoint = i_physValRect.rightCenter();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        CPhysValPoint physValPoint = i_physValRect.bottomRight();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::BottomCenter) {
-        CPhysValPoint physValPoint = i_physValRect.bottomCenter();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::BottomLeft) {
-        CPhysValPoint physValPoint = i_physValRect.bottomLeft();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::LeftCenter) {
-        CPhysValPoint physValPoint = i_physValRect.leftCenter();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::Center) {
-        CPhysValPoint physValPoint = i_physValRect.center();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
-    }
-    else if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
+    if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
         // ESelectionPoint::RotateTop: 270° (clockwise counted)
         // ESelectionPoint::RotateBottom: 90° (clockwise counted)
         // Original position
@@ -6800,9 +6775,50 @@ QPointF CTest::getSelectionPointCoors(
         double dySelPt = ZS::Draw::getSelectionPointRotateDistance() * sin(fAngle_rad);
         CPhysValPoint physValPoint = i_selPt == ESelectionPoint::RotateTop ?
             i_physValRect.topCenter() : i_physValRect.bottomCenter();
-        pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        if (i_dimensionUnit == EScaleDimensionUnit::Pixels) {
+            pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        }
+        else {
+            pt = physValPoint.toQPointF();
+        }
         pt.setX(pt.x() + dxSelPt);
         pt.setY(pt.y() - dySelPt);
+    }
+    else {
+        CPhysValPoint physValPoint(i_physValRect.center());
+        if (i_selPt == ESelectionPoint::TopLeft) {
+            physValPoint = i_physValRect.topLeft();
+        }
+        else if (i_selPt == ESelectionPoint::TopCenter) {
+            physValPoint = i_physValRect.topCenter();
+        }
+        else if (i_selPt == ESelectionPoint::TopRight) {
+            physValPoint = i_physValRect.topRight();
+        }
+        else if (i_selPt == ESelectionPoint::RightCenter) {
+            physValPoint = i_physValRect.rightCenter();
+        }
+        else if (i_selPt == ESelectionPoint::BottomRight) {
+            physValPoint = i_physValRect.bottomRight();
+        }
+        else if (i_selPt == ESelectionPoint::BottomCenter) {
+            physValPoint = i_physValRect.bottomCenter();
+        }
+        else if (i_selPt == ESelectionPoint::BottomLeft) {
+            physValPoint = i_physValRect.bottomLeft();
+        }
+        else if (i_selPt == ESelectionPoint::LeftCenter) {
+            physValPoint = i_physValRect.leftCenter();
+        }
+        else if (i_selPt == ESelectionPoint::Center) {
+            physValPoint = i_physValRect.center();
+        }
+        if (i_dimensionUnit == EScaleDimensionUnit::Pixels) {
+            pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
+        }
+        else {
+            pt = physValPoint.toQPointF();
+        }
     }
     return pt;
 }

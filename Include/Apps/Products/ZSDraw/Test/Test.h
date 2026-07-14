@@ -43,11 +43,11 @@ class QPainterPath;
 
 #define TEST_ALL 0
 
-#if TEST_ALL == 0
+#if TEST_ALL == 1
 
 #define TEST_AUX_METHODS 0
 #define TEST_DRAWINGSIZE 0
-#define TEST_PIXELS_DRAWINGS 0
+#define TEST_PIXELS_DRAWINGS 1
 #define TEST_PIXELS_DRAWINGS_100x100 0
 #define TEST_PIXELS_DRAWINGS_101x101 0
 #define TEST_PIXELS_DRAWINGS_800x600 1
@@ -124,7 +124,7 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
@@ -483,8 +483,8 @@ protected: // auxiliary instance methods
     void initInstCounts();
     void initObjectCoors();
     QPoint addMouseMoveEventDataRows(ZS::Test::CTestStep* i_pTestStep, const QPoint& i_ptMousePosStart, const QPoint& i_ptMousePosStop, int i_iMovesCount = 0, Qt::MouseButton mouseBtns = Qt::NoButton, Qt::KeyboardModifiers i_modifiers = Qt::NoModifier);
-    QPointF getSelectionPointCoors(const ZS::Draw::CPhysValPolygon& i_physValPolygon, const ZS::Draw::SGraphObjSelectionPoint& i_selPt) const;
-    QPointF getSelectionPointCoors(const ZS::Draw::CPhysValRect& i_physValRect, ZS::Draw::ESelectionPoint i_selPt) const;
+    QPointF getSelectionPointCoors(const ZS::Draw::CPhysValPolygon& i_physValPolygon, const ZS::Draw::SGraphObjSelectionPoint& i_selPt, ZS::Draw::EScaleDimensionUnit i_dimensionUnit = ZS::Draw::EScaleDimensionUnit::Pixels) const;
+    QPointF getSelectionPointCoors(const ZS::Draw::CPhysValRect& i_physValRect, ZS::Draw::ESelectionPoint i_selPt, ZS::Draw::EScaleDimensionUnit i_dimensionUnit = ZS::Draw::EScaleDimensionUnit::Pixels) const;
     //void getSelectionPointCoors(const ZS::Draw::SGraphObjSelectionPoint& i_selPt, const ZS::Draw::CPhysValPolygon& i_physValPolygonCurr, const ZS::Draw::CPhysValPolygon& i_physValPolygonNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     //void getSelectionPointCoors(ZS::Draw::ESelectionPoint i_selPt, const ZS::Draw::CPhysValRect& i_physValRectCurr, const ZS::Draw::CPhysValRect& i_physValRectNew, QPointF& o_ptSelPtRectCurr, QPointF& o_ptSelPtRectNew);
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
