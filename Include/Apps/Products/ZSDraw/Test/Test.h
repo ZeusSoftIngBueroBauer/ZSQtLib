@@ -43,7 +43,7 @@ class QPainterPath;
 
 #define TEST_ALL 0
 
-#if TEST_ALL == 1
+#if TEST_ALL == 0
 
 #define TEST_AUX_METHODS 0
 #define TEST_DRAWINGSIZE 0
@@ -62,23 +62,23 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_210 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALPOLYGON 0
-#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 0
-#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
+#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
+#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
-#define TEST_ADD_OBJECTS_STANDARDSHAPES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
@@ -91,11 +91,16 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
@@ -108,7 +113,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
@@ -121,11 +126,16 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
@@ -183,6 +193,11 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
@@ -213,6 +228,11 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
@@ -290,10 +310,16 @@ public: // type definition and constants
     const QString c_strGraphObjNameSmallCross2HorizontalBar = "SmallCross2-HorizontalBar";
     // Ellipses
     //-----------
-    const QString c_strGraphObjNameEllipse = "Ellipse";
+    const QString c_strGraphObjNameEllipse1 = "Ellipse-1";
+    const QString c_strGraphObjNameEllipse2 = "Ellipse-2";
+    const QString c_strGraphObjNameEllipse3 = "Ellipse-3";
+    const QString c_strGraphObjNameEllipse4 = "Ellipse-4";
     // Texts
     //-----------
-    const QString c_strGraphObjNameText = "Text";
+    const QString c_strGraphObjNameText1 = "Text-1";
+    const QString c_strGraphObjNameText2 = "Text-2";
+    const QString c_strGraphObjNameText3 = "Text-3";
+    const QString c_strGraphObjNameText4 = "Text-4";
     // Polylines
     //----------
     const QString c_strGraphObjNameOpenArrow = "OpenArrow";
@@ -321,6 +347,10 @@ public: // type definition and constants
     const QString c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter = "CnctLine-Rect-3-BottomCenter-1-Rect-4-TopCenter-1";
     const QString c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter = "CnctLine-Rect-1-RightCenter-1-Rect-4-LefCtenter-1";
     const QString c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter = "CnctLine-Rect-3-LeftCenter-1-Rect-2-RightCenter-1";
+    const QString c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter = "CnctLine-Ellipse-1-BottomCenter-1-Ellipse-2-TopCenter-1";
+    const QString c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter = "CnctLine-Ellipse-3-BottomCenter-1-Ellipse-4-TopCenter-1";
+    const QString c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter = "CnctLine-Ellipse-1-RightCenter-1-Ellipse-4-LefCtenter-1";
+    const QString c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter = "CnctLine-Ellipse-3-LeftCenter-1-Ellipse-2-RightCenter-1";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -380,6 +410,16 @@ protected: // instance methods
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToLinesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToRectsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToEllipses(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToEllipsesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToTexts(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToTextsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToBitmaps(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToBitmapsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesConnectionPointsAnchoredToGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -423,6 +463,16 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesConnectionPointsAnchoredToLinesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipses(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipsesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToPolygons(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToPolygonsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToTexts(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmaps(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmapsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -637,18 +687,46 @@ protected: // instance members
 
     // Ellipses
     //-----------
-    // Ellipse
-    QPointF m_ptPosEllipse;
-    QRectF m_rectEllipse;
-    ZS::Draw::CPhysValRect* m_pPhysValRectEllipse = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleEllipse;
+    // Ellipse 1
+    QPointF m_ptPosEllipse1;
+    QRectF m_rectEllipse1;
+    ZS::Draw::CPhysValRect* m_pPhysValRectEllipse1 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleEllipse1;
+    // Ellipse 2
+    QPointF m_ptPosEllipse2;
+    QRectF m_rectEllipse2;
+    ZS::Draw::CPhysValRect* m_pPhysValRectEllipse2 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleEllipse2;
+    // Ellipse 3
+    QPointF m_ptPosEllipse3;
+    QRectF m_rectEllipse3;
+    ZS::Draw::CPhysValRect* m_pPhysValRectEllipse3 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleEllipse3;
+    // Ellipse 4
+    QPointF m_ptPosEllipse4;
+    QRectF m_rectEllipse4;
+    ZS::Draw::CPhysValRect* m_pPhysValRectEllipse4 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleEllipse4;
 
     // Texts
     //-----------
-    // Text
-    QPointF m_ptPosText;
-    ZS::Draw::CPhysValRect* m_pPhysValRectText = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleText;
+    // Text 1
+    QPointF m_ptPosText1;
+    ZS::Draw::CPhysValRect* m_pPhysValRectText1 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleText1;
+    // Text 1
+    QPointF m_ptPosText2;
+    ZS::Draw::CPhysValRect* m_pPhysValRectText2 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleText2;
+    // Text 1
+    QPointF m_ptPosText3;
+    ZS::Draw::CPhysValRect* m_pPhysValRectText3 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleText3;
+    // Text 1
+    QPointF m_ptPosText4;
+    ZS::Draw::CPhysValRect* m_pPhysValRectText4 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleText4;
+    // Crosses
     QString m_strTextBigCrossVerticalBar;
     QString m_strTextBigCrossHorizontalBar;
     QString m_strTextSmallCross1VerticalBar;
@@ -711,6 +789,14 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineRect3LeftCenterRect2RightCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = nullptr;
+    QPolygonF m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = nullptr;
+    QPolygonF m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = nullptr;
+    QPolygonF m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = nullptr;
+    QPolygonF m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = nullptr;
 
     // Groups
     //-------

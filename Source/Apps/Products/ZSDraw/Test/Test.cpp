@@ -214,11 +214,23 @@ CTest::~CTest()
     delete m_pPhysValRectSmallCross2HorizontalBar;
     m_pPhysValRectSmallCross2HorizontalBar = nullptr;
 
-    delete m_pPhysValRectEllipse;
-    m_pPhysValRectEllipse = nullptr;
+    delete m_pPhysValRectEllipse1;
+    m_pPhysValRectEllipse1 = nullptr;
+    delete m_pPhysValRectEllipse2;
+    m_pPhysValRectEllipse2 = nullptr;
+    delete m_pPhysValRectEllipse3;
+    m_pPhysValRectEllipse3 = nullptr;
+    delete m_pPhysValRectEllipse4;
+    m_pPhysValRectEllipse4 = nullptr;
 
-    delete m_pPhysValRectText;
-    m_pPhysValRectText = nullptr;
+    delete m_pPhysValRectText1;
+    m_pPhysValRectText1 = nullptr;
+    delete m_pPhysValRectText2;
+    m_pPhysValRectText2 = nullptr;
+    delete m_pPhysValRectText3;
+    m_pPhysValRectText3 = nullptr;
+    delete m_pPhysValRectText4;
+    m_pPhysValRectText4 = nullptr;
 
     delete m_pPhysValPolygonOpenArrow;
     m_pPhysValPolygonOpenArrow = nullptr;
@@ -262,6 +274,15 @@ CTest::~CTest()
     m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = nullptr;
     delete m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter;
     m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = nullptr;
+
+    delete m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter;
+    m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter;
+    m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter;
+    m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter;
+    m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = nullptr;
 
     delete m_pPhysValRectSmallPlusSign;
     m_pPhysValRectSmallPlusSign = nullptr;
@@ -354,11 +375,17 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Ellipses
     //----------
-    m_pPhysValRectEllipse = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectEllipse1 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectEllipse2 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectEllipse3 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectEllipse4 = new CPhysValRect(*m_pDrawingScene);
 
     // Texts
     //----------
-    m_pPhysValRectText = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectText1 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectText2 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectText3 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectText4 = new CPhysValRect(*m_pDrawingScene);
 
     // Polygons
     //----------
@@ -387,6 +414,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = new CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
@@ -6511,17 +6542,44 @@ void CTest::initObjectCoors()
     // Ellipses
     //----------
 
-    m_ptPosEllipse = QPointF();
-    m_rectEllipse = QRectF();
-    *m_pPhysValRectEllipse = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleEllipse = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosEllipse1 = QPointF();
+    m_rectEllipse1 = QRectF();
+    *m_pPhysValRectEllipse1 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleEllipse1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosEllipse2 = QPointF();
+    m_rectEllipse2 = QRectF();
+    *m_pPhysValRectEllipse2 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleEllipse2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosEllipse3 = QPointF();
+    m_rectEllipse3 = QRectF();
+    *m_pPhysValRectEllipse3 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleEllipse3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosEllipse4 = QPointF();
+    m_rectEllipse4 = QRectF();
+    *m_pPhysValRectEllipse4 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleEllipse4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Texts
     //----------
 
-    m_ptPosText = QPointF();
-    *m_pPhysValRectText = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleText = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosText1 = QPointF();
+    *m_pPhysValRectText1 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleText1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosText2 = QPointF();
+    *m_pPhysValRectText2 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleText2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosText3 = QPointF();
+    *m_pPhysValRectText3 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleText3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosText4 = QPointF();
+    *m_pPhysValRectText4 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleText4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Polygons
     //----------
@@ -6586,6 +6644,15 @@ void CTest::initObjectCoors()
     *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = CPhysValPolygon(*m_pDrawingScene);
     m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF();
     *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
