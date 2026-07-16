@@ -188,7 +188,6 @@ CGraphObjRect::CGraphObjRect(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameTopLeft) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
@@ -356,7 +355,7 @@ void CGraphObjRect::setRect(const CPhysValRect& i_physValRect)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValRect.toString() + "}";
+        strMthInArgs = "{" + i_physValRect.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -368,21 +367,18 @@ void CGraphObjRect::setRect(const CPhysValRect& i_physValRect)
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-    QPointF ptPosPrev = pos();
-
-    // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
-    // have been passed either relative to the top left or bottom left corner of the
-    // parent item's bounding rectangle.
-    // The coordinates need to be transformed into the local coordinate system of the graphical
-    // object whose origin point is the center of the objects bounding rectangle.
-
-    QRectF rectF;
-    CPhysVal physValAngle;
-    QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
-
     bool bGeometryOnSceneChanged = false;
-
     if (m_physValRectScaledAndRotated != i_physValRect) {
+        // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
+        // have been passed either relative to the top left or bottom left corner of the
+        // parent item's bounding rectangle.
+        // The coordinates need to be transformed into the local coordinate system of the graphical
+        // object whose origin point is the center of the objects bounding rectangle.
+        QPointF ptPosPrev = pos();
+        QRectF rectF;
+        CPhysVal physValAngle;
+        QPointF ptPos = getItemPosAndLocalCoors(i_physValRect, rectF, physValAngle);
+
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
@@ -1130,8 +1126,33 @@ CPhysValPoint CGraphObjRect::getBottomLeft(const CUnit& i_unit) const
 }
 
 /*==============================================================================
-public: // must overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overloaded method to set the position of the ellipse.
+
+    Same as setCenter.
+
+    @param [in] i_physValPos
+        New position of the graphical object.
+*/
+void CGraphObjRect::setPosition(const CPhysValPoint& i_physValPos)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValPos.toString(true) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPosition",
+        /* strAddInfo   */ strMthInArgs );
+
+    setCenter(i_physValPos);
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Overloaded method to set the clockwise rotation angle, in degrees,
@@ -1642,6 +1663,7 @@ void CGraphObjRect::paint(
     QBrush brush;
     QRectF rctBounding = getBoundingRect();
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        pn.setStyle(Qt::SolidLine);
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.penWidth());
@@ -1650,13 +1672,9 @@ void CGraphObjRect::paint(
             pn.setColor(s_highlightColor);
             pn.setWidth(3 + m_drawSettings.penWidth());
         }
-        pn.setStyle(Qt::SolidLine);
         QPainterPath outline;
         outline.moveTo(rctBounding.topLeft());
-        outline.lineTo(rctBounding.topRight());
-        outline.lineTo(rctBounding.bottomRight());
-        outline.lineTo(rctBounding.bottomLeft());
-        outline.lineTo(rctBounding.topLeft());
+            outline.addRect(rctBounding);
         i_pPainter->strokePath(outline, pn);
     }
 

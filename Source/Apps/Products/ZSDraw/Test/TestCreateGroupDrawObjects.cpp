@@ -436,8 +436,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(pGrpConnectionPointsAnchoredToEllipses);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(pGrpConnectionPointsAnchoredToEllipses);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipses(pGrpConnectionPointsAnchoredToEllipses);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipsesModifications(pGrpConnectionPointsAnchoredToEllipses);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToEllipses, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES
@@ -459,8 +459,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(pGrpConnectionPointsAnchoredToPolygons);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(pGrpConnectionPointsAnchoredToPolygons);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToPolygons(pGrpConnectionPointsAnchoredToPolygons);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToPolygonsModifications(pGrpConnectionPointsAnchoredToPolygons);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToPolygons, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS
@@ -482,8 +482,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(pGrpConnectionPointsAnchoredToTexts);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(pGrpConnectionPointsAnchoredToTexts);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToTexts, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS
@@ -505,8 +505,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(pGrpConnectionPointsAnchoredToBitmaps);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(pGrpConnectionPointsAnchoredToBitmaps);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmaps(pGrpConnectionPointsAnchoredToBitmaps);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmapsModifications(pGrpConnectionPointsAnchoredToBitmaps);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToBitmaps, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS
@@ -528,8 +528,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRects(pGrpConnectionPointsAnchoredToGroups);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModifications(pGrpConnectionPointsAnchoredToGroups);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroups(pGrpConnectionPointsAnchoredToGroups);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroupsModifications(pGrpConnectionPointsAnchoredToGroups);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToGroups, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS
@@ -7403,575 +7403,575 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipses(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
-    // Rectangle 1
+    // Ellipse 1
     //------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect1;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("P1", QPoint(175.0, 225.0));
-    //pTestStep->setConfigValue("P2", QPoint(225.0, 275.0));
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //m_ptPosRect1 = QPointF(200.0, 250.0);
-    //QPointF ptCenterRect1(m_ptPosRect1.x(), bYAxisTopDown ? m_ptPosRect1.y() : fYAxisMaxVal - m_ptPosRect1.y());
-    //QSizeF sizeRect1(50.0, 50.0);
-    //m_rectRect1 = QRectF(QPointF(-sizeRect1.width()/2.0, -sizeRect1.height()/2.0), sizeRect1);
-    //m_pPhysValRect1->setSize(sizeRect1);
-    //m_pPhysValRect1->setCenter(ptCenterRect1);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse1;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("P1", QPoint(175.0, 225.0));
+    pTestStep->setConfigValue("P2", QPoint(225.0, 275.0));
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_ptPosEllipse1 = QPointF(200.0, 250.0);
+    QPointF ptCenterEllipse1(m_ptPosEllipse1.x(), bYAxisTopDown ? m_ptPosEllipse1.y() : fYAxisMaxVal - m_ptPosEllipse1.y());
+    QSizeF sizeEllipse1(50.0, 50.0);
+    m_rectEllipse1 = QRectF(QPointF(-sizeEllipse1.width()/2.0, -sizeEllipse1.height()/2.0), sizeEllipse1);
+    m_pPhysValRectEllipse1->setSize(sizeEllipse1);
+    m_pPhysValRectEllipse1->setCenter(ptCenterEllipse1);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosEllipse1, m_rectEllipse1, *m_pPhysValRectEllipse1, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Rectangle 2
-    ////------------
+    // Ellipse 2
+    //------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect2;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("P1", QPoint(175.0, 325.0));
-    //pTestStep->setConfigValue("P2", QPoint(225.0, 375.0));
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //m_ptPosRect2 = QPointF(200.0, 350.0);
-    //QPointF ptCenterRect2(m_ptPosRect2.x(), bYAxisTopDown ? m_ptPosRect2.y() : fYAxisMaxVal - m_ptPosRect2.y());
-    //QSizeF sizeRect2(50.0, 50.0);
-    //m_rectRect2 = QRectF(QPointF(-sizeRect2.width()/2.0, -sizeRect2.height()/2.0), sizeRect2);
-    //m_pPhysValRect2->setSize(sizeRect2);
-    //m_pPhysValRect2->setCenter(ptCenterRect2);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect2, m_rectRect2, *m_pPhysValRect2, false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse2;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("P1", QPoint(175.0, 325.0));
+    pTestStep->setConfigValue("P2", QPoint(225.0, 375.0));
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_ptPosEllipse2 = QPointF(200.0, 350.0);
+    QPointF ptCenterEllipse2(m_ptPosEllipse2.x(), bYAxisTopDown ? m_ptPosEllipse2.y() : fYAxisMaxVal - m_ptPosEllipse2.y());
+    QSizeF sizeEllipse2(50.0, 50.0);
+    m_rectEllipse2 = QRectF(QPointF(-sizeEllipse2.width()/2.0, -sizeEllipse2.height()/2.0), sizeEllipse2);
+    m_pPhysValRectEllipse2->setSize(sizeEllipse2);
+    m_pPhysValRectEllipse2->setCenter(ptCenterEllipse2);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosEllipse2, m_rectEllipse2, *m_pPhysValRectEllipse2, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Rectangle 3
-    ////------------
+    // Ellipse 3
+    //------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect3;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("P1", QPoint(575.0, 225.0));
-    //pTestStep->setConfigValue("P2", QPoint(625.0, 275.0));
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //m_ptPosRect3 = QPointF(600.0, 250.0);
-    //QPointF ptCenterRect3(m_ptPosRect3.x(), bYAxisTopDown ? m_ptPosRect3.y() : fYAxisMaxVal - m_ptPosRect3.y());
-    //QSizeF sizeRect3(50.0, 50.0);
-    //m_rectRect3 = QRectF(QPointF(-sizeRect3.width()/2.0, -sizeRect3.height()/2.0), sizeRect3);
-    //m_pPhysValRect3->setSize(sizeRect3);
-    //m_pPhysValRect3->setCenter(ptCenterRect3);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse3;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("P1", QPoint(575.0, 225.0));
+    pTestStep->setConfigValue("P2", QPoint(625.0, 275.0));
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_ptPosEllipse3 = QPointF(600.0, 250.0);
+    QPointF ptCenterEllipse3(m_ptPosEllipse3.x(), bYAxisTopDown ? m_ptPosEllipse3.y() : fYAxisMaxVal - m_ptPosEllipse3.y());
+    QSizeF sizeEllipse3(50.0, 50.0);
+    m_rectEllipse3 = QRectF(QPointF(-sizeEllipse3.width()/2.0, -sizeEllipse3.height()/2.0), sizeEllipse3);
+    m_pPhysValRectEllipse3->setSize(sizeEllipse3);
+    m_pPhysValRectEllipse3->setCenter(ptCenterEllipse3);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosEllipse3, m_rectEllipse3, *m_pPhysValRectEllipse3, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Rectangle 4
-    ////------------
+    // Ellipse 4
+    //------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect4;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("P1", QPoint(575.0, 325.0));
-    //pTestStep->setConfigValue("P2", QPoint(625.0, 375.0));
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //m_ptPosRect4 = QPointF(600.0, 350.0);
-    //QPointF ptCenterRect4(m_ptPosRect4.x(), bYAxisTopDown ? m_ptPosRect4.y() : fYAxisMaxVal - m_ptPosRect4.y());
-    //QSizeF sizeRect4(50.0, 50.0);
-    //m_rectRect4 = QRectF(QPointF(-sizeRect4.width()/2.0, -sizeRect4.height()/2.0), sizeRect4);
-    //m_pPhysValRect4->setSize(sizeRect4);
-    //m_pPhysValRect4->setCenter(ptCenterRect4);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect4, m_rectRect4, *m_pPhysValRect4, false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse4;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObj(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("P1", QPoint(575.0, 325.0));
+    pTestStep->setConfigValue("P2", QPoint(625.0, 375.0));
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_ptPosEllipse4 = QPointF(600.0, 350.0);
+    QPointF ptCenterEllipse4(m_ptPosEllipse4.x(), bYAxisTopDown ? m_ptPosEllipse4.y() : fYAxisMaxVal - m_ptPosEllipse4.y());
+    QSizeF sizeEllipse4(50.0, 50.0);
+    m_rectEllipse4 = QRectF(QPointF(-sizeEllipse4.width()/2.0, -sizeEllipse4.height()/2.0), sizeEllipse4);
+    m_pPhysValRectEllipse4->setSize(sizeEllipse4);
+    m_pPhysValRectEllipse4->setCenter(ptCenterEllipse4);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForRect(
+        strGraphObjName, m_ptPosEllipse4, m_rectEllipse4, *m_pPhysValRectEllipse4, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Connection Line: Rectangle 1 - BottomCenter -> Rectangle 2 - TopCenter
-    ////-----------------------------------------------------------------------
+    // Connection Line: Ellipse 1 - BottomCenter -> Ellipse 2 - TopCenter
+    //-----------------------------------------------------------------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    { 0.0, -25.0},
-    //    { 0.0,  25.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //// We need a start position, from which we move to the first connection point.
-    //// Then we add the position of the two connection points.
-    //// If more than 3 points are defined, the points from index 2 to the penultimate
-    //// index are additional polygon points.
-    //QPolygon points({
-    //    QPoint(200, 300),
-    //    QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
-    //    QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
-    //           bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
-    //    QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
-    //});
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("Points", points);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1BottomCenterRect2TopCenter, *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
+    strGraphObjName = c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF({
+        { 0.0, -25.0},
+        { 0.0,  25.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    QPolygon points({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter, *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Connection Line: Rectangle 1 - BottomCenter -> Rectangle 2 - TopCenter: setLineEndStyle(EndPoint, Arrow)
-    ////---------------------------------------------------------------------------------------------------------
+    // Connection Line: Ellipse 1 - BottomCenter -> Ellipse 2 - TopCenter: setLineEndStyle(EndPoint, Arrow)
+    //---------------------------------------------------------------------------------------------------------
 
-    //strMethod = "setDrawSettings";
-    //strMthArgs = "{LineEndPoint, Arrow}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("ImmediatelyApplySettings", false);
-    //strlstExpectedValues.clear();
-    //pTestStep->setExpectedValues(strlstExpectedValues);
-    //pTestStep->addDataRow({
-    //    {"Method", "setLineEndStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadBaseLineType"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadFillStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadWidth"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadLength"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
-    //});
+    strMethod = "setDrawSettings";
+    strMthArgs = "{LineEndPoint, Arrow}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ImmediatelyApplySettings", false);
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    pTestStep->addDataRow({
+        {"Method", "setLineEndStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadBaseLineType"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadFillStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadWidth"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadLength"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+    });
 
-    //// Connection Line: Rectangle 1 - RightCenter -> Rectangle 4 - LeftCenter
-    ////-----------------------------------------------------------------------
+    // Connection Line: Ellipse 1 - RightCenter -> Ellipse 4 - LeftCenter
+    //-----------------------------------------------------------------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-    //    { -175.0, -50.0},
-    //    {  175.0,  50.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //// We need a start position, from which we move to the first connection point.
-    //// Then we add the position of the two connection points.
-    //// If more than 3 points are defined, the points from index 2 to the penultimate
-    //// index are additional polygon points.
-    //points = QPolygon({
-    //    QPoint(200, 300),
-    //    QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
-    //    QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
-    //           bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
-    //    QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
-    //});
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("Points", points);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1RightCenterRect4LeftCenter, *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
+    strGraphObjName = c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF({
+        { -175.0, -50.0},
+        {  175.0,  50.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    points = QPolygon({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter, *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Connection Line: Rectangle 1 - RightCenter -> Rectangle 4 - LeftCenter: setLineEndStyle(EndPoint, Arrow)
-    ////---------------------------------------------------------------------------------------------------------
+    // Connection Line: Ellipse 1 - RightCenter -> Ellipse 4 - LeftCenter: setLineEndStyle(EndPoint, Arrow)
+    //---------------------------------------------------------------------------------------------------------
 
-    //strMethod = "setDrawSettings";
-    //strMthArgs = "{LineEndPoint, Arrow}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("ImmediatelyApplySettings", false);
-    //strlstExpectedValues.clear();
-    //pTestStep->setExpectedValues(strlstExpectedValues);
-    //pTestStep->addDataRow({
-    //    {"Method", "setLineEndStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadBaseLineType"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadFillStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadWidth"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadLength"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
-    //});
+    strMethod = "setDrawSettings";
+    strMthArgs = "{LineEndPoint, Arrow}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ImmediatelyApplySettings", false);
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    pTestStep->addDataRow({
+        {"Method", "setLineEndStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadBaseLineType"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadFillStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadWidth"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadLength"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+    });
 
-    //// Connection Line: Rectangle 3 - BottomCenter -> Rectangle 4 - TopCenter
-    ////-----------------------------------------------------------------------
+    // Connection Line: Ellipse 3 - BottomCenter -> Ellipse 4 - TopCenter
+    //-----------------------------------------------------------------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-    //    { 0.0, -25.0},
-    //    { 0.0,  25.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //// We need a start position, from which we move to the first connection point.
-    //// Then we add the position of the two connection points.
-    //// If more than 3 points are defined, the points from index 2 to the penultimate
-    //// index are additional polygon points.
-    //points = QPolygon({
-    //    QPoint(200, 300),
-    //    QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
-    //    QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
-    //           bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
-    //    QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
-    //});
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("Points", points);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect3BottomCenterRect4TopCenter, *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
+    strGraphObjName = c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF({
+        { 0.0, -25.0},
+        { 0.0,  25.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    points = QPolygon({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter, *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Connection Line: Rectangle 3 - BottomCenter -> Rectangle 4 - TopCenter: setLineEndStyle(EndPoint, Arrow)
-    ////---------------------------------------------------------------------------------------------------------
+    // Connection Line: Ellipse 3 - BottomCenter -> Ellipse 4 - TopCenter: setLineEndStyle(EndPoint, Arrow)
+    //---------------------------------------------------------------------------------------------------------
 
-    //strMethod = "setDrawSettings";
-    //strMthArgs = "{LineEndPoint, Arrow}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("ImmediatelyApplySettings", false);
-    //strlstExpectedValues.clear();
-    //pTestStep->setExpectedValues(strlstExpectedValues);
-    //pTestStep->addDataRow({
-    //    {"Method", "setLineEndStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadBaseLineType"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadFillStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadWidth"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadLength"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
-    //});
+    strMethod = "setDrawSettings";
+    strMthArgs = "{LineEndPoint, Arrow}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ImmediatelyApplySettings", false);
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    pTestStep->addDataRow({
+        {"Method", "setLineEndStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadBaseLineType"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadFillStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadWidth"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadLength"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+    });
 
-    //// Connection Line: Rectangle 3 - LeftCenter -> Rectangle 2 - RightCenter
-    ////-----------------------------------------------------------------------
+    // Connection Line: Ellipse 3 - LeftCenter -> Ellipse 2 - RightCenter
+    //-----------------------------------------------------------------------
 
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
-    //strGraphObjName = c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter;
-    //strMethod = "DrawingScene.drawGraphObj";
-    //strMthArgs = strGraphObjName;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
-    //m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-    //    {  175.0, -50.0},
-    //    { -175.0,  50.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //// We need a start position, from which we move to the first connection point.
-    //// Then we add the position of the two connection points.
-    //// If more than 3 points are defined, the points from index 2 to the penultimate
-    //// index are additional polygon points.
-    //points = QPolygon({
-    //    QPoint(200, 300),
-    //    QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
-    //    QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
-    //           bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
-    //    QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
-    //});
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("Points", points);
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect3LeftCenterRect2RightCenter, *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
+    strGraphObjName = c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter;
+    strMethod = "DrawingScene.drawGraphObj";
+    strMthArgs = strGraphObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)) );
+    m_hshGraphObjNameToKeys.insert(strGraphObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF({
+        {  175.0, -50.0},
+        { -175.0,  50.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    // We need a start position, from which we move to the first connection point.
+    // Then we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    points = QPolygon({
+        QPoint(200, 300),
+        QPoint(ptCnctPt1.toPoint().x(), bYAxisTopDown ? ptCnctPt1.toPoint().y() - 1 : fYAxisMaxVal - ptCnctPt1.toPoint().y() - 1),
+        QPoint((ptCnctPt1.x() + ptCnctPt2.x()) / 2,
+               bYAxisTopDown ? (ptCnctPt1.y() + ptCnctPt2.y()) / 2 : fYAxisMaxVal - (ptCnctPt1.y() + ptCnctPt2.y()) / 2),
+        QPoint(ptCnctPt2.toPoint().x(), bYAxisTopDown ? ptCnctPt2.toPoint().y() + 1 : fYAxisMaxVal - ptCnctPt2.toPoint().y() + 1),
+    });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strGraphObjName, strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter, *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// Connection Line: Rectangle 3 - LeftCenter -> Rectangle 2 - RightCenter: setLineEndStyle(EndPoint, Arrow)
-    ////---------------------------------------------------------------------------------------------------------
+    // Connection Line: Ellipse 3 - LeftCenter -> Ellipse 2 - RightCenter: setLineEndStyle(EndPoint, Arrow)
+    //---------------------------------------------------------------------------------------------------------
 
-    //strMethod = "setDrawSettings";
-    //strMthArgs = "{LineEndPoint, Arrow}";
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("ImmediatelyApplySettings", false);
-    //strlstExpectedValues.clear();
-    //pTestStep->setExpectedValues(strlstExpectedValues);
-    //pTestStep->addDataRow({
-    //    {"Method", "setLineEndStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadBaseLineType"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadFillStyle"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadWidth"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
-    //});
-    //pTestStep->addDataRow({
-    //    {"Method", "setArrowHeadLength"},
-    //    {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
-    //    {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
-    //});
+    strMethod = "setDrawSettings";
+    strMthArgs = "{LineEndPoint, Arrow}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("ImmediatelyApplySettings", false);
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    pTestStep->addDataRow({
+        {"Method", "setLineEndStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadBaseLineType"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadFillStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadWidth"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+    });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadLength"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+    });
 
-    //// Show Labels
-    ////------------
+    // Show Labels
+    //------------
 
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Cncts.showLabels(" + CGraphObj::c_strLabelName + ")",
-    //    /* strOperation    */ "Cncts.showLabels(" + CGraphObj::c_strLabelName + ")",
-    //    /* pGrpParent      */ pGrpDrawConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
-    //strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1);
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect1},
-    //    {"GraphObjKeyInTree", strGraphObjKeyInTree},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedText", c_strGraphObjNameRect1},
-    //    {"ExpectedPos", QPointF(183.0, 242.0)}
-    //});
-    //strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2);
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect2},
-    //    {"GraphObjKeyInTree", strGraphObjKeyInTree},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedText", c_strGraphObjNameRect2},
-    //    {"ExpectedPos", QPointF(183.0, 342.0)}
-    //});
-    //strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3);
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect3},
-    //    {"GraphObjKeyInTree", strGraphObjKeyInTree},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedText", c_strGraphObjNameRect3},
-    //    {"ExpectedPos", QPointF(583.0, 242.0)}
-    //});
-    //strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4);
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect4},
-    //    {"GraphObjKeyInTree", strGraphObjKeyInTree},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedText", c_strGraphObjNameRect4},
-    //    {"ExpectedPos", QPointF(583.0, 342.0)}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"setPos", QPointF(100.0, 300.0)},
-    //    {"ExpectedText", c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"setPos", QPointF(300.0, 220.0)},
-    //    {"ExpectedText", c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"setPos", QPointF(500.0, 300.0)},
-    //    {"ExpectedText", c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"setPos", QPointF(300.0, 360.0)},
-    //    {"ExpectedText", c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter}
-    //});
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Cncts.showLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "Cncts.showLabels(" + CGraphObj::c_strLabelName + ")",
+        /* pGrpParent      */ pGrpDrawConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1);
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse1},
+        {"GraphObjKeyInTree", strGraphObjKeyInTree},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedText", c_strGraphObjNameEllipse1},
+        {"ExpectedPos", QPointF(178.0, 242.0)}
+    });
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2);
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse2},
+        {"GraphObjKeyInTree", strGraphObjKeyInTree},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedText", c_strGraphObjNameEllipse2},
+        {"ExpectedPos", QPointF(178.0, 342.0)}
+    });
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse3);
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse3},
+        {"GraphObjKeyInTree", strGraphObjKeyInTree},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedText", c_strGraphObjNameEllipse3},
+        {"ExpectedPos", QPointF(578.0, 242.0)}
+    });
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4);
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse4},
+        {"GraphObjKeyInTree", strGraphObjKeyInTree},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedText", c_strGraphObjNameEllipse4},
+        {"ExpectedPos", QPointF(578.0, 342.0)}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(100.0, 300.0)},
+        {"ExpectedText", c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(300.0, 220.0)},
+        {"ExpectedText", c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(500.0, 300.0)},
+        {"ExpectedText", c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", QPointF(300.0, 360.0)},
+        {"ExpectedText", c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter}
+    });
 }
 
 //------------------------------------------------------------------------------
@@ -8033,444 +8033,444 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipsesM
     // Hide Labels
     //------------
 
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-    //    /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
-    //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* pGrpParent      */ pGrpModifyConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
 
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect1},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameRect1]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameRect1 + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect2},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameRect2]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameRect2 + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect3},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameRect3]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameRect3 + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameRect4},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameRect4]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameRect4 + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
-    //pTestStep->addDataRow({
-    //    {"GraphObjName", c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter},
-    //    {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter]},
-    //    {"LabelName", CGraphObj::c_strLabelName},
-    //    {"ExpectedValue", c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter + "." + CGraphObj::c_strLabelName + " not found"}
-    //});
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse1},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameEllipse1]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameEllipse1 + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse2},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameEllipse2]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameEllipse2 + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse3},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameEllipse3]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameEllipse3 + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameEllipse4},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameEllipse4]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameEllipse4 + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter + "." + CGraphObj::c_strLabelName + " not found"}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter + "." + CGraphObj::c_strLabelName + " not found"}
+    });
 
-    //// move Rectangle1
-    ////----------------
+    // move Ellipse 1
+    //----------------
 
-    //strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect1;
-    //strMethod = "move";
-    //QPointF ptPosRect1New(300.0, 200.0);
-    //strMthArgs = qPoint2Str(ptPosRect1New) + " " + strUnit;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
-    //    {m_hshGraphObjNameToKeys[strGraphObjName]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter]}});
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //pTestStep->addDataRow({
-    //    {"Method", "setCurrentDrawingTool"},
-    //    {"FactoryGroupName", ""},
-    //    {"FactoryGraphObjType", ""}
-    //});
-    //// Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
-    //// while mouse is pressed and release the mouse event.
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 250), m_ptPosRect1.toPoint());
-    //pTestStep->addDataRow({ // Select object by clicking on it
-    //    {"Method", "mousePressEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosRect1.toPoint(), ptPosRect1New.toPoint(), 0, Qt::LeftButton);
-    //pTestStep->addDataRow({
-    //    {"Method", "mouseReleaseEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptPosRect1 = ptPosRect1New;
-    //m_pPhysValRect1->setCenter(QPointF(ptPosRect1New.x(), bYAxisTopDown ? ptPosRect1New.y() : fYAxisMaxVal - ptPosRect1New.y()));
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, true, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    {  50.0, -50.0},
-    //    { -50.0,  50.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    false, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-    //    {-125.0, -75.0},
-    //    { 125.0,  75.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1RightCenterRect4LeftCenter,
-    //    *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse1;
+    strMethod = "move";
+    QPointF ptPosEllipse1New(300.0, 200.0);
+    strMthArgs = qPoint2Str(ptPosEllipse1New) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
+        {m_hshGraphObjNameToKeys[strGraphObjName]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter]}});
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
+    // while mouse is pressed and release the mouse event.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 250), m_ptPosEllipse1.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosEllipse1.toPoint(), ptPosEllipse1New.toPoint(), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptPosEllipse1 = ptPosEllipse1New;
+    m_pPhysValRectEllipse1->setCenter(QPointF(ptPosEllipse1New.x(), bYAxisTopDown ? ptPosEllipse1New.y() : fYAxisMaxVal - ptPosEllipse1New.y()));
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strGraphObjName, m_ptPosEllipse1, m_rectEllipse1, *m_pPhysValRectEllipse1, true, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF({
+        {  50.0, -50.0},
+        { -50.0,  50.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        false, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF({
+        {-125.0, -75.0},
+        { 125.0,  75.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// move Rectangle2
-    ////----------------
+    // move Ellipse 2
+    //----------------
 
-    //strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect2;
-    //strMethod = "move";
-    //QPointF ptPosRect2New(300.0, 400.0);
-    //strMthArgs = qPoint2Str(ptPosRect2New) + " " + strUnit;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
-    //    {m_hshGraphObjNameToKeys[strGraphObjName]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter]}});
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //pTestStep->addDataRow({
-    //    {"Method", "setCurrentDrawingTool"},
-    //    {"FactoryGroupName", ""},
-    //    {"FactoryGraphObjType", ""}
-    //});
-    //// Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
-    //// while mouse is pressed and release the mouse event.
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 350), m_ptPosRect2.toPoint());
-    //pTestStep->addDataRow({ // Select object by clicking on it
-    //    {"Method", "mousePressEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosRect2.toPoint(), ptPosRect2New.toPoint(), 0, Qt::LeftButton);
-    //pTestStep->addDataRow({
-    //    {"Method", "mouseReleaseEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptPosRect2 = ptPosRect2New;
-    //m_pPhysValRect2->setCenter(QPointF(ptPosRect2New.x(), bYAxisTopDown ? ptPosRect2New.y() : fYAxisMaxVal - ptPosRect2New.y()));
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect2, m_rectRect2, *m_pPhysValRect2, true, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    {  0.0, -75.0},
-    //    {  0.0,  75.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1BottomCenterRect2TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    *m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter,
-    //    false, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-    //    { 125.0, -75.0},
-    //    {-125.0,  75.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect3LeftCenterRect2RightCenter,
-    //    *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse2;
+    strMethod = "move";
+    QPointF ptPosEllipse2New(300.0, 400.0);
+    strMthArgs = qPoint2Str(ptPosEllipse2New) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
+        {m_hshGraphObjNameToKeys[strGraphObjName]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter]}});
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
+    // while mouse is pressed and release the mouse event.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 350), m_ptPosEllipse2.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosEllipse2.toPoint(), ptPosEllipse2New.toPoint(), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptPosEllipse2 = ptPosEllipse2New;
+    m_pPhysValRectEllipse2->setCenter(QPointF(ptPosEllipse2New.x(), bYAxisTopDown ? ptPosEllipse2New.y() : fYAxisMaxVal - ptPosEllipse2New.y()));
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strGraphObjName, m_ptPosEllipse2, m_rectEllipse2, *m_pPhysValRectEllipse2, true, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF({
+        {  0.0, -75.0},
+        {  0.0,  75.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        *m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter,
+        false, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF({
+        { 125.0, -75.0},
+        {-125.0,  75.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// move Rectangle3
-    ////----------------
+    // move Ellipse 3
+    //----------------
 
-    //strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect3;
-    //strMethod = "move";
-    //QPointF ptPosRect3New(500.0, 200.0);
-    //strMthArgs = qPoint2Str(ptPosRect3New) + " " + strUnit;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
-    //    {m_hshGraphObjNameToKeys[strGraphObjName]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter]}});
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //pTestStep->addDataRow({
-    //    {"Method", "setCurrentDrawingTool"},
-    //    {"FactoryGroupName", ""},
-    //    {"FactoryGraphObjType", ""}
-    //});
-    //// Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
-    //// while mouse is pressed and release the mouse event.
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 350), m_ptPosRect3.toPoint());
-    //pTestStep->addDataRow({ // Select object by clicking on it
-    //    {"Method", "mousePressEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosRect3.toPoint(), ptPosRect3New.toPoint(), 0, Qt::LeftButton);
-    //pTestStep->addDataRow({
-    //    {"Method", "mouseReleaseEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptPosRect3 = ptPosRect3New;
-    //m_pPhysValRect3->setCenter(QPointF(ptPosRect3New.x(), bYAxisTopDown ? ptPosRect3New.y() : fYAxisMaxVal - ptPosRect3New.y()));
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, true, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-    //    { -50.0, -50.0},
-    //    {  50.0,  50.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect3BottomCenterRect4TopCenter,
-    //    *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter,
-    //    false, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect3, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect2, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-    //    {  75.0, -100.0},
-    //    { -75.0,  100.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect3LeftCenterRect2RightCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect3LeftCenterRect2RightCenter,
-    //    *m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse3;
+    strMethod = "move";
+    QPointF ptPosEllipse3New(500.0, 200.0);
+    strMthArgs = qPoint2Str(ptPosEllipse3New) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
+        {m_hshGraphObjNameToKeys[strGraphObjName]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter]}});
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
+    // while mouse is pressed and release the mouse event.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 350), m_ptPosEllipse3.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosEllipse3.toPoint(), ptPosEllipse3New.toPoint(), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptPosEllipse3 = ptPosEllipse3New;
+    m_pPhysValRectEllipse3->setCenter(QPointF(ptPosEllipse3New.x(), bYAxisTopDown ? ptPosEllipse3New.y() : fYAxisMaxVal - ptPosEllipse3New.y()));
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strGraphObjName, m_ptPosEllipse3, m_rectEllipse3, *m_pPhysValRectEllipse3, true, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF({
+        { -50.0, -50.0},
+        {  50.0,  50.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        false, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse3, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse2, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse2, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF({
+        {  75.0, -100.0},
+        { -75.0,  100.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
-    //// move Rectangle4
-    ////----------------
+    // move Ellipse 4
+    //----------------
 
-    //strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    //strGraphObjType = graphObjType2Str(EGraphObjTypeRect);
-    //strGraphObjName = c_strGraphObjNameRect4;
-    //QPointF ptPosRect4New(500.0, 400.0);
-    //strMthArgs = qPoint2Str(ptPosRect4New) + " " + strUnit;
-    //pTestStep = new ZS::Test::CTestStep(
-    //    /* pTest           */ this,
-    //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
-    //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
-    //pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    //pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    //pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    //pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
-    //pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
-    //    {m_hshGraphObjNameToKeys[strGraphObjName]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter]},
-    //    {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter]}});
-    //pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    //pTestStep->addDataRow({
-    //    {"Method", "setCurrentDrawingTool"},
-    //    {"FactoryGroupName", ""},
-    //    {"FactoryGraphObjType", ""}
-    //});
-    //// Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
-    //// while mouse is pressed and release the mouse event.
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 350), m_ptPosRect4.toPoint());
-    //pTestStep->addDataRow({ // Select object by clicking on it
-    //    {"Method", "mousePressEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosRect4.toPoint(), ptPosRect4New.toPoint(), 0, Qt::LeftButton);
-    //pTestStep->addDataRow({
-    //    {"Method", "mouseReleaseEvent"},
-    //    {"MousePos", m_ptMousePos},
-    //    {"MouseButtons", Qt::LeftButton},
-    //    {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
-    //});
-    //m_ptPosRect4 = ptPosRect4New;
-    //m_pPhysValRect4->setCenter(QPointF(ptPosRect4New.x(), bYAxisTopDown ? ptPosRect4New.y() : fYAxisMaxVal - ptPosRect4New.y()));
-    //strlstExpectedValues.clear();
-    //strlstExpectedValues.append(resultValuesForRect(
-    //    strGraphObjName, m_ptPosRect4, m_rectRect4, *m_pPhysValRect4, true, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-    //    {  0.0, -75.0},
-    //    {  0.0,  75.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect3BottomCenterRect4TopCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect3BottomCenterRect4TopCenter,
-    //    *m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter,
-    //    false, iResultValuesPrecision));
-    //eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
-    //strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect1, strGraphObjCnctPt1Name);
-    //ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRect1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
-    //strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
-    //strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameRect4, strGraphObjCnctPt2Name);
-    //ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRect4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
-    //m_polygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-    //    { -75.0, -100.0},
-    //    {  75.0,  100.0}
-    //});
-    //*m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter = QPolygonF({
-    //    {ptCnctPt1},
-    //    {ptCnctPt2}
-    //});
-    //strlstExpectedValues.append(resultValuesForConnectionLine(
-    //    c_strGraphObjNameConnectionLineRect1RightCenterRect4LeftCenter,
-    //    strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
-    //    m_polygonConnectionLineRect1RightCenterRect4LeftCenter,
-    //    *m_pPhysValPolygonConnectionLineRect1RightCenterRect4LeftCenter,
-    //    false, iResultValuesPrecision));
-    //pTestStep->setExpectedValues(strlstExpectedValues);
+    strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    strGraphObjType = graphObjType2Str(EGraphObjTypeEllipse);
+    strGraphObjName = c_strGraphObjNameEllipse4;
+    QPointF ptPosEllipse4New(500.0, 400.0);
+    strMthArgs = qPoint2Str(ptPosEllipse4New) + " " + strUnit;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strGraphObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyConnections,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjByMouseEvents(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strGraphObjName]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
+        {m_hshGraphObjNameToKeys[strGraphObjName]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter]},
+        {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter]}});
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    pTestStep->addDataRow({
+        {"Method", "setCurrentDrawingTool"},
+        {"FactoryGroupName", ""},
+        {"FactoryGraphObjType", ""}
+    });
+    // Move mouse onto rectangle, press mouse to select rectangle, move the rectangle to the new position
+    // while mouse is pressed and release the mouse event.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, QPoint(160, 350), m_ptPosEllipse4.toPoint());
+    pTestStep->addDataRow({ // Select object by clicking on it
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptPosEllipse4.toPoint(), ptPosEllipse4New.toPoint(), 0, Qt::LeftButton);
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos},
+        {"MouseButtons", Qt::LeftButton},
+        {"KeyboardModifiers", static_cast<int>(Qt::NoModifier)}
+    });
+    m_ptPosEllipse4 = ptPosEllipse4New;
+    m_pPhysValRectEllipse4->setCenter(QPointF(ptPosEllipse4New.x(), bYAxisTopDown ? ptPosEllipse4New.y() : fYAxisMaxVal - ptPosEllipse4New.y()));
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        strGraphObjName, m_ptPosEllipse4, m_rectEllipse4, *m_pPhysValRectEllipse4, true, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::BottomCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse3, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::TopCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF({
+        {  0.0, -75.0},
+        {  0.0,  75.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter,
+        false, iResultValuesPrecision));
+    eSelPt1 = CEnumSelectionPoint(ESelectionPoint::RightCenter);
+    strGraphObjCnctPt1Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt1.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt1 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse1, strGraphObjCnctPt1Name);
+    ptCnctPt1 = getSelectionPointCoors(*m_pPhysValRectEllipse1, eSelPt1.enumerator(), drawingSize.dimensionUnit().enumerator());
+    eSelPt2 = CEnumSelectionPoint(ESelectionPoint::LeftCenter);
+    strGraphObjCnctPt2Name = "CnctPoint-" + CEnumSelectionPoint(eSelPt2.enumerator()).toString() + "-1";
+    strGraphObjKeyInTreeCnctPt2 = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameEllipse4, strGraphObjCnctPt2Name);
+    ptCnctPt2 = getSelectionPointCoors(*m_pPhysValRectEllipse4, eSelPt2.enumerator(), drawingSize.dimensionUnit().enumerator());
+    m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF({
+        { -75.0, -100.0},
+        {  75.0,  100.0}
+    });
+    *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = QPolygonF({
+        {ptCnctPt1},
+        {ptCnctPt2}
+    });
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        strGraphObjCnctPt1Name, strGraphObjCnctPt2Name,
+        m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        *m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 }
 
 //------------------------------------------------------------------------------

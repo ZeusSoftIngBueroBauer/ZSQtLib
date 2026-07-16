@@ -104,7 +104,7 @@ void CGraphObjEllipse::resetPainterRenderHints()
 }
 
 /*==============================================================================
-public: // ctors
+public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -122,8 +122,7 @@ public: // ctors
         If an empty string is passed a unique name is created by adding the current
         number of objects taken from s_iInstCount to the graphical object type.
 */
-CGraphObjEllipse::CGraphObjEllipse(
-    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
+CGraphObjEllipse::CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -221,47 +220,6 @@ CGraphObjEllipse::CGraphObjEllipse(
     setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
 }
-
-/*==============================================================================
-protected: // ctor
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-///*! @brief Constructor used to create a class derived from CGraphObjEllipse.
-//
-//    @param [in] i_pDrawingScene
-//        Pointer to drawing scene from which the object is created.
-//
-//    @param [in] i_strObjName
-//        Name of the graphical object.
-//        Names of graphical objects must be unique below its parent.
-//        If an empty string is passed a unique name is created by adding the current
-//        number of objects taken from s_iInstCount to the graphical object type.
-//*/
-//CGraphObjEllipse::CGraphObjEllipse(
-//    CDrawingScene* i_pDrawingScene,
-//    const QString& i_strFactoryGroupName,
-//    EGraphObjType i_type,
-//    const QString& i_strType,
-//    const QString& i_strObjName) :
-////------------------------------------------------------------------------------
-//    CGraphObj(
-//        /* pDrawingScene       */ i_pDrawingScene,
-//        /* strFactoryGroupName */ i_strFactoryGroupName,
-//        /* type                */ i_type,
-//        /* strType             */ i_strType,
-//        /* strObjName          */ i_strObjName),
-//    QGraphicsEllipseItem(),
-//    m_rectOrig(),
-//    m_physValRectOrig(*m_pDrawingScene),
-//    m_physValRectScaled(*m_pDrawingScene),
-//    m_physValRectScaledAndRotated(*m_pDrawingScene)
-//{
-//}
-
-/*==============================================================================
-public: // dtor
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 CGraphObjEllipse::~CGraphObjEllipse()
@@ -397,7 +355,7 @@ void CGraphObjEllipse::setRect( const CPhysValRect& i_physValRect )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValRect.toString(true);
+        strMthInArgs = "{" + i_physValRect.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1168,7 +1126,7 @@ CPhysValPoint CGraphObjEllipse::getBottomLeft(const CUnit& i_unit) const
 }
 
 /*==============================================================================
-public: // must overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1301,6 +1259,15 @@ CPhysValRect CGraphObjEllipse::getPhysValBoundingRect(const CUnit& i_unit) const
     return physValRectBounding;
 }
 
+//------------------------------------------------------------------------------
+SGraphObjHitInfo CGraphObjEllipse::getSelectionPointHitInfo(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    SGraphObjHitInfo hitInfo;
+    isEllipseHit(rect(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    return hitInfo;
+}
+
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
@@ -1320,11 +1287,12 @@ void CGraphObjEllipse::showSelectionPoints(TSelectionPointTypes i_selPts)
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
-    if( parentItem() == nullptr )
-    {
-        showSelectionPointsOfBoundingRect( rect(), i_selPts );
+    if (parentItem() == nullptr) {
+        if (i_selPts & c_uSelectionPointsBoundingRectAll) {
+            showSelectionPointsOfBoundingRect(getBoundingRect());
+        }
     }
-} // showSelectionPoints
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj (text labels)
@@ -1693,10 +1661,6 @@ void CGraphObjEllipse::paint(
         if (isSelected()) {
             pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.penWidth());
-            //outline.lineTo(rctBounding.topRight());
-            //outline.lineTo(rctBounding.bottomRight());
-            //outline.lineTo(rctBounding.bottomLeft());
-            //outline.lineTo(rctBounding.topLeft());
             outline.addRect(rctBounding);
         }
         else {
@@ -1744,9 +1708,29 @@ void CGraphObjEllipse::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isEllipseHit(rect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1773,9 +1757,29 @@ void CGraphObjEllipse::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
+    }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isEllipseHit(rect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

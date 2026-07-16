@@ -111,7 +111,8 @@ public: // instance methods
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
-public: // must overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
+    void setPosition(const CPhysValPoint& i_physValPos) override;
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // must overridables of base class CGraphObj

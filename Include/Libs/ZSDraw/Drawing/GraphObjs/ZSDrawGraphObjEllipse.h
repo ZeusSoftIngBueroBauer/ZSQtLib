@@ -52,16 +52,8 @@ public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
-public: // ctors
+public: // ctors and dtor
     CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
-protected: // ctor (used by derived classes, e.g. CGraphObjConnectionPoint)
-    //CGraphObjEllipse(
-    //    CDrawingScene* i_pDrawingScene,
-    //    const QString& i_strFactoryGroupName,
-    //    EGraphObjType i_type,
-    //    const QString& i_strType,
-    //    const QString& i_strObjName);
-public: // dtor
     ~CGraphObjEllipse() override;
 public: // overridables of base class QGraphicsItem
     int type() const override;
@@ -119,13 +111,14 @@ public: // instance methods
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
-public: // must overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
     void setPosition(const CPhysValPoint& i_physValPos) override;
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
     CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    SGraphObjHitInfo getSelectionPointHitInfo(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
