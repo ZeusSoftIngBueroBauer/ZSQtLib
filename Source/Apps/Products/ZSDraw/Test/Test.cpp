@@ -236,8 +236,14 @@ CTest::~CTest()
     m_pPhysValPolygonOpenArrow = nullptr;
     delete m_pPhysValPolygonTriangle;
     m_pPhysValPolygonTriangle = nullptr;
-    delete m_pPhysValPolygonStar;
-    m_pPhysValPolygonStar = nullptr;
+    delete m_pPhysValPolygonStar1;
+    m_pPhysValPolygonStar1 = nullptr;
+    delete m_pPhysValPolygonStar2;
+    m_pPhysValPolygonStar2 = nullptr;
+    delete m_pPhysValPolygonStar3;
+    m_pPhysValPolygonStar3 = nullptr;
+    delete m_pPhysValPolygonStar4;
+    m_pPhysValPolygonStar4 = nullptr;
 
     delete m_pPhysValConnectionPoint1;
     m_pPhysValConnectionPoint1 = nullptr;
@@ -391,7 +397,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     //----------
     m_pPhysValPolygonOpenArrow = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonTriangle = new CPhysValPolygon(*m_pDrawingScene);
-    m_pPhysValPolygonStar = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonStar1 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonStar2 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonStar3 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonStar4 = new CPhysValPolygon(*m_pDrawingScene);
 
     // Connection Points
     //------------------
@@ -6594,10 +6603,25 @@ void CTest::initObjectCoors()
     *m_pPhysValPolygonTriangle = CPhysValPolygon(*m_pDrawingScene);
     m_physValAngleTriangle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
-    m_ptPosStar = QPointF();
-    m_polygonStar = QPolygonF();
-    *m_pPhysValPolygonStar = CPhysValPolygon(*m_pDrawingScene);
-    m_physValAngleStar = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosStar1 = QPointF();
+    m_polygonStar1 = QPolygonF();
+    *m_pPhysValPolygonStar1 = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAngleStar1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosStar2 = QPointF();
+    m_polygonStar2 = QPolygonF();
+    *m_pPhysValPolygonStar2 = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAngleStar2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosStar3 = QPointF();
+    m_polygonStar3 = QPolygonF();
+    *m_pPhysValPolygonStar3 = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAngleStar3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
+    m_ptPosStar4 = QPointF();
+    m_polygonStar4 = QPolygonF();
+    *m_pPhysValPolygonStar4 = CPhysValPolygon(*m_pDrawingScene);
+    m_physValAngleStar4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Connection Points
     //------------------

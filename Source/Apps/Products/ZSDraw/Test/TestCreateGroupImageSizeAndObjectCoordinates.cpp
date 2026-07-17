@@ -11162,7 +11162,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValPolygon(
 
     ZS::Test::CTestStepGroup* pGrpTransformPolyline = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValPolygon(" + c_strGraphObjNameStar + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValPolygon(" + c_strGraphObjNameStar1 + ")",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     // create Polyline

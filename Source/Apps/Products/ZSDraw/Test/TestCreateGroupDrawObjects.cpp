@@ -314,7 +314,7 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
 #if TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_STAR == 1
     ZS::Test::CTestStepGroup* pGrpPolygonsStar = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameStar,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + c_strGraphObjNameStar1,
         /* pTSGrpParent */ pGrpPolygons );
     createTestGroupDrawStandardShapesPolygonStar(pGrpPolygonsStar);
 #endif
@@ -3114,13 +3114,13 @@ void CTest::createTestGroupDrawStandardShapesPolygonStar(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameStar + ")",
-        /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameStar + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Draw(" + c_strGraphObjNameStar1 + ")",
+        /* strOperation    */ "DrawingScene.drawGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + c_strGraphObjNameStar1 + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjPolygon(ZS::Test::CTestStep*)) );
-    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameStar, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameStar));
-    m_ptPosStar = QPointF(500.0, 400.0);
-    m_polygonStar = QPolygonF({
+    m_hshGraphObjNameToKeys.insert(c_strGraphObjNameStar1, pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameStar1));
+    m_ptPosStar1 = QPointF(500.0, 400.0);
+    m_polygonStar1 = QPolygonF({
         {   0.0, -100.0},
         {  25.0,  -25.0},
         { 100.0,    0.0},
@@ -3130,7 +3130,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonStar(
         {-100.0,    0.0},
         { -25.0,  -25.0}
     });
-    *m_pPhysValPolygonStar = QPolygonF({
+    *m_pPhysValPolygonStar1 = QPolygonF({
         {500.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0},
         {525.0, bYAxisTopDown ? 375.0 : fYAxisMaxVal - 375.0},
         {600.0, bYAxisTopDown ? 400.0 : fYAxisMaxVal - 400.0},
@@ -3151,12 +3151,12 @@ void CTest::createTestGroupDrawStandardShapesPolygonStar(
         QPoint(475, 375)
     });
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
-    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameStar);
+    pTestStep->setConfigValue("GraphObjName", c_strGraphObjNameStar1);
     pTestStep->setConfigValue("Points", points);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
-        c_strGraphObjNameStar, m_ptPosStar, m_polygonStar, *m_pPhysValPolygonStar, false, iResultValuesPrecision));
+        c_strGraphObjNameStar1, m_ptPosStar1, m_polygonStar1, *m_pPhysValPolygonStar1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Show Labels
@@ -3164,16 +3164,16 @@ void CTest::createTestGroupDrawStandardShapesPolygonStar(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameStar + ".showLabel(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ c_strGraphObjNameStar + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameStar1 + ".showLabel(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ c_strGraphObjNameStar1 + ".showLabel(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepShowLabels(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameStar},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameStar]},
+        {"GraphObjName", c_strGraphObjNameStar1},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameStar1]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"setPos", QPointF(540.0, 320.0)},
-        {"ExpectedText", c_strGraphObjNameStar}
+        {"ExpectedText", c_strGraphObjNameStar1}
     });
 }
 
