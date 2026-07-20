@@ -518,6 +518,49 @@ CMainWindow::~CMainWindow()
         mthTracer.trace(strRuntimeInfo);
     }
 
+    // To avoid a crash when clearing the scene and deleting a graphical object
+    // with labels whose anchor line is visible and has been moved, the
+    // selectionChanged signal must be disconnected before the scene is cleared.
+    // When deleting selected graphical objects the selectionChanged signal is emitted
+    // by the graphics scene. And it looks like the signal is forwared to the main window
+    // which is currently being destroyed and the dynamic type cast does not work.
+    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CMainWindow::onDrawingSceneSizeChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::gridSettingsChanged,
+        this, &CMainWindow::onDrawingSceneGridSettingsChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::changed,
+        this, &CMainWindow::onDrawingSceneChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::focusItemChanged,
+        this, &CMainWindow::onDrawingSceneFocusItemChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::selectionChanged,
+        this, &CMainWindow::onDrawingSceneSelectionChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::mousePosChanged,
+        this, &CMainWindow::onDrawingSceneMousePosChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::modeChanged,
+        this, &CMainWindow::onDrawingSceneModeChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::drawingToolChanged,
+        this, &CMainWindow::onDrawingSceneDrawingToolChanged );
+    QObject::disconnect(
+        pDrawingScene, &CDrawingScene::drawSettingsChanged,
+        this, &CMainWindow::onDrawingSceneDrawSettingsChanged );
+
+    CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
+    QObject::disconnect(
+        pDrawingView, &CDrawingView::mousePosChanged,
+        this, &CMainWindow::onDrawingViewMousePosChanged );
+    QObject::disconnect(
+        pDrawingView, &CDrawingView::contentAreaChanged,
+        this, &CMainWindow::onDrawingViewContentAreaChanged );
+
     destroyDockWidgets();
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {

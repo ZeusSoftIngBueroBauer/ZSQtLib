@@ -266,9 +266,9 @@ CGraphObjLabel::~CGraphObjLabel()
 
     emit_aboutToBeDestroyed();
 
-    // Labels have been "directly" added to the graphics scene and have not by
-    // invoking CDrawingScene::addGraphObj so that they don't appear in the index tree.
-    // For this selection points "directly" remove themselves from the graphics scene.
+    // Labels have been "directly" added to the graphics scene and not by invoking
+    // CDrawingScene::addGraphObj. Therfore labels don't appear in the index tree
+    // and must "directly" remove themselves from the graphics scene.
     if (m_pDrawingScene != nullptr) {
         QGraphicsItem_prepareGeometryChange();
         m_pDrawingScene->removeItem(this);

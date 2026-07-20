@@ -354,6 +354,10 @@ public: // type definition and constants
     const QString c_strGraphObjNameConnectionLineEllipse3BottomCenterEllipse4TopCenter = "CnctLine-Ellipse-3-BottomCenter-1-Ellipse-4-TopCenter-1";
     const QString c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter = "CnctLine-Ellipse-1-RightCenter-1-Ellipse-4-LefCtenter-1";
     const QString c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter = "CnctLine-Ellipse-3-LeftCenter-1-Ellipse-2-RightCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar1BottomCenterStar2TopCenter = "CnctLine-Star-1-BottomCenter-1-Star-2-TopCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar3BottomCenterStar4TopCenter = "CnctLine-Star-3-BottomCenter-1-Star-4-TopCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar1RightCenterStar4LeftCenter = "CnctLine-Star-1-RightCenter-1-Star-4-LefCtenter-1";
+    const QString c_strGraphObjNameConnectionLineStar3LeftCenterStar2RightCenter = "CnctLine-Star-3-LeftCenter-1-Star-2-RightCenter-1";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -812,6 +816,14 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar1BottomCenterStar2TopCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar1RightCenterStar4LeftCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1RightCenterStar4LeftCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar3BottomCenterStar4TopCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar3BottomCenterStar4TopCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar3LeftCenterStar2RightCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar3LeftCenterStar2RightCenter = nullptr;
 
     // Groups
     //-------

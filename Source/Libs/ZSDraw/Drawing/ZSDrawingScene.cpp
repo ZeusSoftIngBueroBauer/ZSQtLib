@@ -34,6 +34,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
@@ -1109,6 +1110,23 @@ void CDrawingScene::clear()
     //m_pGraphicsItemAddingShapePoints = nullptr;
     //m_pGraphObjAddingShapePoints = nullptr;
 
+    //QList<QGraphicsItem*> arpGraphicsItems = items();
+    //for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+    //    if (pGraphicsItem != nullptr) {
+    //        // Trying to avoid a crash when clearing the scene and deleting a grahical object
+    //        // with labels whose anchor line is visible and has been moved.
+    //        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+    //        if (pGraphObj != nullptr) {
+    //            //pGraphObj->hideLabelAnchorLines();
+    //            CGraphObjLabel* pGraphObjLabel = dynamic_cast<CGraphObjLabel*>(pGraphicsItem);
+    //            if (pGraphObjLabel != nullptr) {
+    //                pGraphObjLabel->hideAnchorLines();
+    //            }
+    //        }
+    //        //pGraphicsItem->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    //        //pGraphicsItem->setFlag(QGraphicsItem::ItemIsFocusable, false);
+    //    }
+    //}
     // Clear internal clipboard.
     //CGraphObj* pGraphObj;
     //CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTreeClipboard->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);

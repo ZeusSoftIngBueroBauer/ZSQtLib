@@ -290,6 +290,15 @@ CTest::~CTest()
     delete m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter;
     m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = nullptr;
 
+    delete m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter;
+    m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineStar1RightCenterStar4LeftCenter;
+    m_pPhysValPolygonConnectionLineStar1RightCenterStar4LeftCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineStar3BottomCenterStar4TopCenter;
+    m_pPhysValPolygonConnectionLineStar3BottomCenterStar4TopCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineStar3LeftCenterStar2RightCenter;
+    m_pPhysValPolygonConnectionLineStar3LeftCenterStar2RightCenter = nullptr;
+
     delete m_pPhysValRectSmallPlusSign;
     m_pPhysValRectSmallPlusSign = nullptr;
     delete m_pPhysValRectBigPlusSign;
@@ -427,6 +436,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValPolygonConnectionLineEllipse1RightCenterEllipse4LeftCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineStar1RightCenterStar4LeftCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineStar3BottomCenterStar4TopCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineStar3LeftCenterStar2RightCenter = new CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
@@ -5320,8 +5333,15 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
     CPhysValPoint physValPointTaken(*m_pDrawingScene);
 
+    if (i_pTestStep->hasConfigValue("GraphObjType")) {
+        strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    }
+
     CGraphObjPolygon* pGraphObj = dynamic_cast<CGraphObjPolygon*>(m_pDrawingScene->getGraphObj(strGraphObjKeyInTree));
     if (pGraphObj != nullptr) {
+        if (strGraphObjType.compare(graphObjType2Str(EGraphObjTypePolyline), Qt::CaseInsensitive) == 0) {
+            pGraphObj->setType(EGraphObjTypePolyline);
+        }
         if (strMethod.compare("setPolygon", Qt::CaseInsensitive) == 0) {
             if (i_pTestStep->hasConfigValue("polygon")) {
                 CPhysValPolygon physValPolygon(*m_pDrawingScene);
@@ -6677,6 +6697,15 @@ void CTest::initObjectCoors()
     *m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = CPhysValPolygon(*m_pDrawingScene);
     m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = QPolygonF();
     *m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineStar1BottomCenterStar2TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineStar1RightCenterStar4LeftCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineStar1RightCenterStar4LeftCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineStar3BottomCenterStar4TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineStar3BottomCenterStar4TopCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineStar3LeftCenterStar2RightCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineStar3LeftCenterStar2RightCenter = CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
