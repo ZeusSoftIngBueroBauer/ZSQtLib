@@ -87,9 +87,9 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
@@ -355,9 +355,11 @@ public: // type definition and constants
     const QString c_strGraphObjNameConnectionLineEllipse1RightCenterEllipse4LeftCenter = "CnctLine-Ellipse-1-RightCenter-1-Ellipse-4-LefCtenter-1";
     const QString c_strGraphObjNameConnectionLineEllipse3LeftCenterEllipse2RightCenter = "CnctLine-Ellipse-3-LeftCenter-1-Ellipse-2-RightCenter-1";
     const QString c_strGraphObjNameConnectionLineStar1BottomCenterStar2TopCenter = "CnctLine-Star-1-BottomCenter-1-Star-2-TopCenter-1";
-    const QString c_strGraphObjNameConnectionLineStar3BottomCenterStar4TopCenter = "CnctLine-Star-3-BottomCenter-1-Star-4-TopCenter-1";
-    const QString c_strGraphObjNameConnectionLineStar1RightCenterStar4LeftCenter = "CnctLine-Star-1-RightCenter-1-Star-4-LefCtenter-1";
-    const QString c_strGraphObjNameConnectionLineStar3LeftCenterStar2RightCenter = "CnctLine-Star-3-LeftCenter-1-Star-2-RightCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar2RightCenterStar4LeftCenter = "CnctLine-Star-2-RightCenter-1-Star-4-LeftCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar4TopCenterStar3BottomCenter = "CnctLine-Star-4-TopCenter-1-Star-3-BottomCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar3LeftCenterStar1RightCenter = "CnctLine-Star-3-LeftCenter-1-Star-1-RightCenter-1";
+    const QString c_strGraphObjNameConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0 = "CnctLine-Star-1-LineCenterPt1Pt2-1-Star-3-LineCenterPt8Pt0-1";
+    const QString c_strGraphObjNameConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = "CnctLine-Star-2-LineCenterPt4Pt5-1-Star-4-LineCenterPt5Pt6-1";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -816,14 +818,19 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = nullptr;
+
     QPolygonF m_polygonConnectionLineStar1BottomCenterStar2TopCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter = nullptr;
-    QPolygonF m_polygonConnectionLineStar1RightCenterStar4LeftCenter;
-    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1RightCenterStar4LeftCenter = nullptr;
-    QPolygonF m_polygonConnectionLineStar3BottomCenterStar4TopCenter;
-    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar3BottomCenterStar4TopCenter = nullptr;
-    QPolygonF m_polygonConnectionLineStar3LeftCenterStar2RightCenter;
-    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar3LeftCenterStar2RightCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar2RightCenterStar4LeftCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar2RightCenterStar4LeftCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar4TopCenterStar3BottomCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar4TopCenterStar3BottomCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar3LeftCenterStar1RightCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar3LeftCenterStar1RightCenter = nullptr;
+    QPolygonF m_polygonConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0 = nullptr;
+    QPolygonF m_polygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = nullptr;
 
     // Groups
     //-------
