@@ -1392,11 +1392,22 @@ bool SGraphObjHitInfo::isSelectionPointHit() const
 
 //------------------------------------------------------------------------------
 /*! @brief Returns true if any selection point at the bounding rectangle has been hit.
+    @note The bounding rectangle's center point is not considered as a selection point
+          at the bounding rectangle.
 */
 bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
 //------------------------------------------------------------------------------
 {
     return (m_selPt >= ESelectionPointRectMin) && (m_selPt <= ESelectionPointRectMax);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true if the bounding rectangle's center point has been hit.
+*/
+bool SGraphObjHitInfo::isBoundingRectCenterPointHit() const
+//------------------------------------------------------------------------------
+{
+    return (m_selPt == ESelectionPoint::Center);
 }
 
 //------------------------------------------------------------------------------

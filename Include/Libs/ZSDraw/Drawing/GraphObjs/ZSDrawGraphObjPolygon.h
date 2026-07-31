@@ -140,6 +140,7 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
     CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    SGraphObjHitInfo getSelectionPointHitInfo(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj
     QCursor getProposedCursor(const QPointF& i_pt) const override;
 public: // overridables of base class CGraphObj

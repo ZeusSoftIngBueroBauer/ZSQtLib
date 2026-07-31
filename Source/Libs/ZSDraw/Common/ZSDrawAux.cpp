@@ -1781,7 +1781,18 @@ bool ZS::Draw::isPolylineHit(
         if (!bIsHit && i_plg.size() > 1) {
             for (int idxPt = 0; idxPt < (i_plg.size()-1); idxPt++) {
                 QLineF lin(i_plg[idxPt], i_plg[idxPt+1]);
-                if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
+                if (isPointHit(lin.center(), i_pt, fTolerance, o_pHitInfo)) {
+                    bIsHit = true;
+                    if (o_pHitInfo != nullptr) {
+                        o_pHitInfo->m_selPt = ESelectionPoint::LineCenterPoint;
+                        o_pHitInfo->m_idxPolygonShapePoint = -1;
+                        o_pHitInfo->m_idxLineSegment = idxPt;
+                        o_pHitInfo->m_ptHit = lin.center();
+                        o_pHitInfo->m_cursor = Qt::CrossCursor;
+                    }
+                    break;
+                }
+                else if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_idxLineSegment = idxPt;
@@ -1859,7 +1870,18 @@ bool ZS::Draw::isPolygonHit(
         if (!bIsHit && i_plg.size() > 1) {
             for (int idxPt = 0; idxPt < i_plg.size(); idxPt++) {
                 QLineF lin(i_plg[idxPt], idxPt < (i_plg.size()-1) ? i_plg[idxPt+1] : i_plg[0]);
-                if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
+                if (isPointHit(lin.center(), i_pt, fTolerance, o_pHitInfo)) {
+                    bIsHit = true;
+                    if (o_pHitInfo != nullptr) {
+                        o_pHitInfo->m_selPt = ESelectionPoint::LineCenterPoint;
+                        o_pHitInfo->m_idxPolygonShapePoint = -1;
+                        o_pHitInfo->m_idxLineSegment = idxPt;
+                        o_pHitInfo->m_ptHit = lin.center();
+                        o_pHitInfo->m_cursor = Qt::CrossCursor;
+                    }
+                    break;
+                }
+                else if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_idxLineSegment = idxPt;

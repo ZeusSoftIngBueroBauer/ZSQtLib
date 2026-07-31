@@ -7702,7 +7702,6 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygons(
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
-    //QString strFactoryGroupName = CObjFactory::c_strGroupNameConnections;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypePolygon);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 

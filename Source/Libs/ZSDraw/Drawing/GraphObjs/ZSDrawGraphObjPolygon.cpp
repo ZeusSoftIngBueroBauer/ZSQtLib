@@ -1684,6 +1684,20 @@ CPhysValRect CGraphObjPolygon::getPhysValBoundingRect(const CUnit& i_unit) const
     return physValRectBounding;
 }
 
+//------------------------------------------------------------------------------
+SGraphObjHitInfo CGraphObjPolygon::getSelectionPointHitInfo(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    SGraphObjHitInfo hitInfo;
+    if (isPolygon()) {
+        isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    }
+    else {
+        isPolylineHit(polygon(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    }
+    return hitInfo;
+}
+
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
@@ -2410,7 +2424,7 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QCursor cursor = Qt::SizeAllCursor;
         if (isSelected()) {
@@ -2443,6 +2457,43 @@ void CGraphObjPolygon::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
             }
         }
         QGraphicsItem_setCursor(cursor);
+    }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the line start or end point or at the line center point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        double fHitTolerance_px = m_pDrawingScene->getHitToleranceInPx();
+        if (isPolygon()) {
+            isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+        }
+        else {
+            isPolylineHit(polygon(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+        }
+        if (hitInfo.isPolygonShapePointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else if (hitInfo.isLineSegmentCenterPointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else if (hitInfo.isBoundingRectSelectionPointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else if (hitInfo.isBoundingRectCenterPointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -2473,7 +2524,7 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QCursor cursor = Qt::SizeAllCursor;
         if (isSelected()) {
@@ -2506,6 +2557,43 @@ void CGraphObjPolygon::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
             }
         }
         QGraphicsItem_setCursor(cursor);
+    }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the line start or end point or at the line center point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        double fHitTolerance_px = m_pDrawingScene->getHitToleranceInPx();
+        if (isPolygon()) {
+            isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+        }
+        else {
+            isPolylineHit(polygon(), i_pEv->pos(), fHitTolerance_px, &hitInfo);
+        }
+        if (hitInfo.isPolygonShapePointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else if (hitInfo.isLineSegmentCenterPointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else if (hitInfo.isBoundingRectSelectionPointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else if (hitInfo.isBoundingRectCenterPointHit()) {
+            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+            QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+            QGraphicsItem_setCursor(cursor);
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {

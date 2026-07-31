@@ -986,6 +986,7 @@ public: // ctor
 public: // struct methods
     bool isSelectionPointHit() const;
     bool isBoundingRectSelectionPointHit() const;
+    bool isBoundingRectCenterPointHit() const;
     bool isLineSegmentCenterPointHit() const;
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
