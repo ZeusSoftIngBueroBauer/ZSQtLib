@@ -2180,7 +2180,7 @@ static const ZS::System::SEnumEntry s_arEnumStrQKeyCode[] =
     /* 087: 0x000000b2 (     178) */ SEnumEntry( Qt::Key_twosuperior, "Key_twosuperior", "", "" ),
     /* 088: 0x000000b3 (     179) */ SEnumEntry( Qt::Key_threesuperior, "Key_threesuperior", "", "" ),
     /* 089: 0x000000b4 (     180) */ SEnumEntry( Qt::Key_acute, "Key_acute", "", "" ),
-    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
     /* 090: 0x000000b5 (     181) */ SEnumEntry( Qt::Key_mu, "Key_mu", "", "" ),
     #else
     /* 090: 0x000000b5 (     181) */ SEnumEntry( Qt::Key_micro, "Key_micro", "", "" ),
