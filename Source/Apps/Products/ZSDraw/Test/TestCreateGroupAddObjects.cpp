@@ -8345,7 +8345,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygons(
         false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Connection Line: Connection Line: Star 2 - RightCenter -> Star 4 - LeftCenter: setLineEndStyle(EndPoint, Arrow)
+    // Connection Line: Star 2 - RightCenter -> Star 4 - LeftCenter: setLineEndStyle(EndPoint, Arrow)
     //----------------------------------------------------------------------------------------------------------------
 
     strGraphObjName = c_strGraphObjNameConnectionLineStar2RightCenterStar4LeftCenter;
