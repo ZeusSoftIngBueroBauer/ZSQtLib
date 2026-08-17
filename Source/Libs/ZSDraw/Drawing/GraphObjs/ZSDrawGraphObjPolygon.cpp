@@ -2275,6 +2275,12 @@ QPainterPath CGraphObjPolygon::shape() const
         painterPath.moveTo(0.0, 0.0);
         painterPath.addPolygon(plgArrowHead);
     }
+
+    // Add tolerance padding around the shape for easier mouse picking
+    QPainterPathStroker stroker;
+    stroker.setWidth(10); // add pixel hit tolerance border
+    painterPath = stroker.createStroke(painterPath);
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
