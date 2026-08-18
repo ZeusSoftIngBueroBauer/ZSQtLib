@@ -482,8 +482,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
-    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
+    createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToTexts, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS

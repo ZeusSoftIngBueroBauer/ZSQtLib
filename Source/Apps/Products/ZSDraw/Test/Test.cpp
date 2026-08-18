@@ -303,6 +303,15 @@ CTest::~CTest()
     delete m_pPhysValPolygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6;
     m_pPhysValPolygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = nullptr;
 
+    delete m_pPhysValPolygonConnectionLineText1BottomCenterText2TopCenter;
+    m_pPhysValPolygonConnectionLineText1BottomCenterText2TopCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineText1RightCenterText4LeftCenter;
+    m_pPhysValPolygonConnectionLineText1RightCenterText4LeftCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineText3BottomCenterText4TopCenter;
+    m_pPhysValPolygonConnectionLineText3BottomCenterText4TopCenter = nullptr;
+    delete m_pPhysValPolygonConnectionLineText3LeftCenterText2RightCenter;
+    m_pPhysValPolygonConnectionLineText3LeftCenterText2RightCenter = nullptr;
+
     delete m_pPhysValRectSmallPlusSign;
     m_pPhysValRectSmallPlusSign = nullptr;
     delete m_pPhysValRectBigPlusSign;
@@ -446,6 +455,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValPolygonConnectionLineStar3LeftCenterStar1RightCenter = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0 = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineText1BottomCenterText2TopCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineText1RightCenterText4LeftCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineText3BottomCenterText4TopCenter = new CPhysValPolygon(*m_pDrawingScene);
+    m_pPhysValPolygonConnectionLineText3LeftCenterText2RightCenter = new CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------
@@ -6716,6 +6729,15 @@ void CTest::initObjectCoors()
     *m_pPhysValPolygonConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0 = CPhysValPolygon(*m_pDrawingScene);
     m_polygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = QPolygonF();
     *m_pPhysValPolygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = CPhysValPolygon(*m_pDrawingScene);
+
+    m_polygonConnectionLineText1BottomCenterText2TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineText1BottomCenterText2TopCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineText1RightCenterText4LeftCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineText1RightCenterText4LeftCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineText3BottomCenterText4TopCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineText3BottomCenterText4TopCenter = CPhysValPolygon(*m_pDrawingScene);
+    m_polygonConnectionLineText3LeftCenterText2RightCenter = QPolygonF();
+    *m_pPhysValPolygonConnectionLineText3LeftCenterText2RightCenter = CPhysValPolygon(*m_pDrawingScene);
 
     // Groups
     //-------

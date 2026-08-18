@@ -41,7 +41,7 @@ may result in using the software modules.
 class QGraphicsItem;
 class QPainterPath;
 
-#define TEST_ALL 1
+#define TEST_ALL 0
 
 #if TEST_ALL == 0
 
@@ -62,23 +62,23 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_210 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALPOLYGON 0
-#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 0
+#define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
 #define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
 
-#define TEST_ADD_OBJECTS_STANDARDSHAPES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
@@ -91,14 +91,14 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
@@ -122,18 +122,18 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_RECTANGLES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_TEXTS 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 0
@@ -360,6 +360,10 @@ public: // type definition and constants
     const QString c_strGraphObjNameConnectionLineStar3LeftCenterStar1RightCenter = "CnctLine-Star-3-LeftCenter-1-Star-1-RightCenter-1";
     const QString c_strGraphObjNameConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0 = "CnctLine-Star-1-LineCenterPt1Pt2-1-Star-3-LineCenterPt8Pt0-1";
     const QString c_strGraphObjNameConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = "CnctLine-Star-2-LineCenterPt4Pt5-1-Star-4-LineCenterPt5Pt6-1";
+    const QString c_strGraphObjNameConnectionLineText1BottomCenterText2TopCenter = "CnctLine-Text-1-BottomCenter-1-Text-2-TopCenter-1";
+    const QString c_strGraphObjNameConnectionLineText3BottomCenterText4TopCenter = "CnctLine-Text-3-BottomCenter-1-Text-4-TopCenter-1";
+    const QString c_strGraphObjNameConnectionLineText1RightCenterText4LeftCenter = "CnctLine-Text-1-RightCenter-1-Text-4-LefCtenter-1";
+    const QString c_strGraphObjNameConnectionLineText3LeftCenterText2RightCenter = "CnctLine-Text-3-LeftCenter-1-Text-2-RightCenter-1";
     // Groups
     //-------
     const QString c_strGraphObjNameTopGroup = "Top";
@@ -802,6 +806,7 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineLine4P1Line3P1 = nullptr;
     QPolygonF m_polygonConnectionLineLine3P2Line1P1;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineLine3P2Line1P1 = nullptr;
+
     QPolygonF m_polygonConnectionLineRect1BottomCenterRect2TopCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineRect1BottomCenterRect2TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineRect1RightCenterRect4LeftCenter;
@@ -810,6 +815,7 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineRect3BottomCenterRect4TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineRect3LeftCenterRect2RightCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineRect3LeftCenterRect2RightCenter = nullptr;
+
     QPolygonF m_polygonConnectionLineEllipse1BottomCenterEllipse2TopCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse1BottomCenterEllipse2TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineEllipse1RightCenterEllipse4LeftCenter;
@@ -818,7 +824,6 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3BottomCenterEllipse4TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineEllipse3LeftCenterEllipse2RightCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineEllipse3LeftCenterEllipse2RightCenter = nullptr;
-
     QPolygonF m_polygonConnectionLineStar1BottomCenterStar2TopCenter;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1BottomCenterStar2TopCenter = nullptr;
     QPolygonF m_polygonConnectionLineStar2RightCenterStar4LeftCenter;
@@ -831,6 +836,15 @@ protected: // instance members
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar1LineCenterPt1Pt2Star3LineCenterPt8Pt0 = nullptr;
     QPolygonF m_polygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6;
     ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineStar2LineCenterPt4Pt5Star4LineCenterPt5Pt6 = nullptr;
+
+    QPolygonF m_polygonConnectionLineText1BottomCenterText2TopCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineText1BottomCenterText2TopCenter = nullptr;
+    QPolygonF m_polygonConnectionLineText1RightCenterText4LeftCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineText1RightCenterText4LeftCenter = nullptr;
+    QPolygonF m_polygonConnectionLineText3BottomCenterText4TopCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineText3BottomCenterText4TopCenter = nullptr;
+    QPolygonF m_polygonConnectionLineText3LeftCenterText2RightCenter;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineText3LeftCenterText2RightCenter = nullptr;
 
     // Groups
     //-------
