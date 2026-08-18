@@ -441,13 +441,8 @@ CModelIdxTree::CModelIdxTree(
     const QString& i_strNameOfDerivedClass) :
 //------------------------------------------------------------------------------
     QAbstractItemModel(i_pObjParent),
-    m_pIdxTree(nullptr),
     m_bNamesAreEditable(i_bNamesAreEditable),
     m_supportedDropActions(i_supportedDropActions),
-    m_bExcludeLeaves(false),
-    m_sortOrder(EIdxTreeSortOrder::Config),
-    m_mappModelTreeEntries(),
-    m_pModelRootEntry(nullptr),
     m_ariClmWidths(QVector<int>(EColumnCount))
     #ifdef ZS_TRACE_GUI_MODELS
     ,m_pTrcAdminObj(nullptr),
@@ -500,6 +495,8 @@ CModelIdxTree::~CModelIdxTree()
     #endif
 
     s_iInstCount--;
+
+    m_bIsAboutToBeDestroyed = true;
 
     if (m_pIdxTree != nullptr) {
         QObject::disconnect(
@@ -1914,10 +1911,9 @@ void CModelIdxTree::clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTr
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree());
-        strMthInArgs += ", DestroyEntries: " + bool2Str(i_bDestroyTreeEntries);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree()) +
+            ", DestroyEntries: " + bool2Str(i_bDestroyTreeEntries);
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -1926,29 +1922,81 @@ void CModelIdxTree::clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTr
         /* strMethodInArgs    */ strMthInArgs );
     #endif
 
-    if( i_pModelBranch == nullptr )
-    {
+    if (i_pModelBranch == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModelBranch == nullptr");
     }
 
-    for( int idxEntry = i_pModelBranch->count()-1; idxEntry >= 0; --idxEntry )
-    {
-        CModelIdxTreeEntry* pModelTreeEntry = i_pModelBranch->at(idxEntry);
+    // Do not send model signals upon destruction as views are already invalid
+    // or are also being destroyed.
+    if (m_bIsAboutToBeDestroyed) {
+        // RAPID destruction without model signals. Remove all entries from the map.
+        QVector<CModelIdxTreeEntry*> entriesToDelete;
+        entriesToDelete.reserve(m_mappModelTreeEntries.size());
 
-        if( pModelTreeEntry->isBranch() )
-        {
-            clear(pModelTreeEntry, i_bDestroyTreeEntries);
+        // Collect all entries recursively
+        collectEntriesRecursive(i_pModelBranch, entriesToDelete);
+
+        // Remove all keys from the map
+        for (CModelIdxTreeEntry* pEntry : entriesToDelete) {
+            m_mappModelTreeEntries.remove(pEntry->keyInTree());
         }
 
-        remove(pModelTreeEntry);
+        // Remove parent references (prevents remove() in destructor)
+        for (CModelIdxTreeEntry* pEntry : entriesToDelete) {
+            pEntry->setParentBranch(nullptr);
+        }
 
-        if( i_bDestroyTreeEntries )
-        {
-            delete pModelTreeEntry;
-            pModelTreeEntry = nullptr;
+        // Clear array without individual remove() calls
+        i_pModelBranch->clearWithoutDelete();
+
+        // Now delete all entries
+        if (i_bDestroyTreeEntries) {
+            for (CModelIdxTreeEntry* pModelTreeEntry : entriesToDelete) {
+                delete pModelTreeEntry;
+                pModelTreeEntry = nullptr;
+            }
         }
     }
-} // clear
+    else if (!i_pModelBranch->empty()) {
+        // Normal deletion: Send model signals
+        for (int idxEntry = i_pModelBranch->count()-1; idxEntry >= 0; --idxEntry) {
+            CModelIdxTreeEntry* pModelTreeEntry = i_pModelBranch->at(idxEntry);
+            if (pModelTreeEntry->isBranch()) {
+                clear(pModelTreeEntry, i_bDestroyTreeEntries);
+            }
+            remove(pModelTreeEntry);
+            if (i_bDestroyTreeEntries) {
+                delete pModelTreeEntry;
+                pModelTreeEntry = nullptr;
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelIdxTree::collectEntriesRecursive(
+    CModelIdxTreeEntry* i_pModelBranch, QVector<CModelIdxTreeEntry*>& io_arEntries)
+//------------------------------------------------------------------------------
+{
+    #ifdef ZS_TRACE_GUI_MODELS
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Branch: " + QString(i_pModelBranch == nullptr ? "nullptr" : i_pModelBranch->keyInTree());
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "collectEntriesRecursive",
+        /* strMethodInArgs    */ strMthInArgs );
+    #endif
+    for (int idxEntry = 0; idxEntry < i_pModelBranch->count(); ++idxEntry) {
+        CModelIdxTreeEntry* pEntry = i_pModelBranch->at(idxEntry);
+        io_arEntries.append(pEntry);
+        if (pEntry->isBranch()) {
+            collectEntriesRecursive(pEntry, io_arEntries);
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CModelIdxTree::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
@@ -1956,8 +2004,7 @@ void CModelIdxTree::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "TreeEntry: " + QString(i_pModelTreeEntry == nullptr ? "nullptr" : i_pModelTreeEntry->keyInTree());
     }
     CMethodTracer mthTracer(
@@ -1967,33 +2014,26 @@ void CModelIdxTree::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
         /* strMethodInArgs    */ strMthInArgs );
     #endif
 
-    if( i_pModelTreeEntry == nullptr )
-    {
+    if (i_pModelTreeEntry == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pModelTreeEntry == nullptr");
     }
 
-    if( i_pModelTreeEntry != m_pModelRootEntry )
-    {
+    if (i_pModelTreeEntry != m_pModelRootEntry) {
         CModelIdxTreeEntry* pModelParentBranch = i_pModelTreeEntry->parentBranch();
-
         int idxInParentBranch = i_pModelTreeEntry->indexInParentBranch();
-
-        if( pModelParentBranch != nullptr && idxInParentBranch >= 0 )
-        {
+        if ( pModelParentBranch != nullptr && idxInParentBranch >= 0) {
             QModelIndex modelIdxParent = _createIndex(pModelParentBranch->indexInParentBranch(), 0, pModelParentBranch);
             _beginRemoveRows(modelIdxParent, idxInParentBranch, idxInParentBranch);
             QString strKeyInTree = i_pModelTreeEntry->keyInTree();
-            if( !m_mappModelTreeEntries.contains(strKeyInTree) )
-            {
+            if (!m_mappModelTreeEntries.contains(strKeyInTree)) {
                 throw CException(__FILE__, __LINE__, EResultObjNotInList, strKeyInTree);
             }
             m_mappModelTreeEntries.remove(strKeyInTree);
             pModelParentBranch->remove(i_pModelTreeEntry);
             _endRemoveRows();
         }
-    } // if( i_pModelTreeEntry != m_pModelRootEntry )
-
-} // remove
+    }
+}
 
 /*==============================================================================
 public: // instance methods

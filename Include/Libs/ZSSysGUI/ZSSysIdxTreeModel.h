@@ -218,6 +218,7 @@ protected slots: // overridables
     virtual void onIdxTreeEntryKeyInTreeChanged( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree );
 protected: // instance methods
     void clear( CModelIdxTreeEntry* i_pModelBranch, bool i_bDestroyTreeEntries = true );
+    void collectEntriesRecursive(CModelIdxTreeEntry* i_pModelBranch, QVector<CModelIdxTreeEntry*>& io_arEntries);
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
     //void updateKeyInTree( CModelIdxTreeEntry* i_pModelTreeEntry );
 public: // instance methods
@@ -294,19 +295,19 @@ protected: // class members
 protected: // instance members
     /*!< Pointer to index tree which should be indicated by the tree view
          connected to the model. */
-    CIdxTree* m_pIdxTree;
+    CIdxTree* m_pIdxTree = nullptr;
     /*!< Flag to indicate whether the names of the tree entries may be changed
          by the delegate assigned to the tree view.
          Default: true */
-    bool m_bNamesAreEditable;
+    bool m_bNamesAreEditable = true;
     /*!< Drop actions the model supports.
          Defaults is (Qt::CopyAction | Qt::MoveAction) */
     Qt::DropActions m_supportedDropActions;
     /*!< true if leaves should not be indicated.
          false otherwise. */
-    bool m_bExcludeLeaves;
+    bool m_bExcludeLeaves = false;
     /*!< Sort order in which the entries should be indicated by the tree view. */
-    EIdxTreeSortOrder m_sortOrder;
+    EIdxTreeSortOrder m_sortOrder = EIdxTreeSortOrder::Config;
     /*!< Need a copy of the index tree entries as entries may be added, changed
          or removed from different threads. When removing an entry the signal
          entryRemoved is emitted and may be queued. The model cannot access the
@@ -316,17 +317,20 @@ protected: // instance members
                (e.g. "L:ZS::Data::CDataTable::FDAC::RF1In") */
     QMap<QString, CModelIdxTreeEntry*> m_mappModelTreeEntries;
     /*!< The root model entry. */
-    CModelIdxTreeEntry* m_pModelRootEntry;
+    CModelIdxTreeEntry* m_pModelRootEntry = nullptr;
     /*!< Most recently calculated column widths. */
     QVector<int> m_ariClmWidths;
+    /*!< Flag to indicate that the model is being destroyed to optimize (speed up)
+         clearing the tree by suppressing emitting signals (begin/endRemoveRows). */
+    bool m_bIsAboutToBeDestroyed = false;
     #ifdef ZS_TRACE_GUI_MODELS
     /*!< Trace admin object to control trace outputs of the class.
          The object will not be created if the index tree's belongs to the trace server. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj = nullptr;
     /*!< Trace admin object to control trace outputs of the class.
          This trace admin object is used by very often called methods like "data".
          The object will not be created if the index tree's belongs to the trace server. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods = nullptr;
     #endif
 
 }; // class CModelIdxTree

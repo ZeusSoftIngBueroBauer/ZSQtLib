@@ -87,6 +87,7 @@ public: // operators
     CModelIdxTreeEntry* operator [] ( int i_idx ) { return m_arpTreeEntries[i_idx]; }
     const CModelIdxTreeEntry* operator [] ( int i_idx ) const { return m_arpTreeEntries[i_idx]; }
 public: // instance methods
+    bool empty() const { return m_arpTreeEntries.empty(); }
     int count() const { return m_arpTreeEntries.size(); }
     int length() const { return m_arpTreeEntries.size(); }
     int size() const { return m_arpTreeEntries.size(); }
@@ -106,7 +107,8 @@ public: // instance methods
     int add( CModelIdxTreeEntry* i_pModelTreeEntry );
     void remove( CModelIdxTreeEntry* i_pModelTreeEntry );
     void remove( const QString& i_strKeyInParentBranch );
-protected:
+    void clearWithoutDelete();
+protected: // instance methods
     void onChildRenamed( CModelIdxTreeEntry* i_pModelTreeEntry, const QString& i_strNamePrev );
 public: // instance methods
     void setIsExpanded( bool i_bIsExpanded );

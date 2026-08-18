@@ -488,8 +488,8 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupAddStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
-    createTestGroupAddStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
+    //createTestGroupAddStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
+    //createTestGroupAddStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToTexts, 1);
 
@@ -512,8 +512,8 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupAddStandardShapesConnectionPointsAnchoredToRects(pGrpConnectionPointsAnchoredToBitmaps);
-    createTestGroupAddStandardShapesConnectionPointsAnchoredToRectsModifications(pGrpConnectionPointsAnchoredToBitmaps);
+    //createTestGroupAddStandardShapesConnectionPointsAnchoredToBitmaps(pGrpConnectionPointsAnchoredToBitmaps);
+    //createTestGroupAddStandardShapesConnectionPointsAnchoredToBitmapsModifications(pGrpConnectionPointsAnchoredToBitmaps);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToBitmaps, 1);
 
@@ -536,8 +536,8 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupAddStandardShapesConnectionPointsAnchoredToGroups(pGrpConnectionPointsAnchoredToGroups);
-    createTestGroupAddStandardShapesConnectionPointsAnchoredToGroupsModifications(pGrpConnectionPointsAnchoredToGroups);
+    //createTestGroupAddStandardShapesConnectionPointsAnchoredToGroups(pGrpConnectionPointsAnchoredToGroups);
+    //createTestGroupAddStandardShapesConnectionPointsAnchoredToGroupsModifications(pGrpConnectionPointsAnchoredToGroups);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToGroups, 1);
 

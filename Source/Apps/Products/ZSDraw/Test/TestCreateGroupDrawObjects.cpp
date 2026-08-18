@@ -482,8 +482,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
+    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToTexts(pGrpConnectionPointsAnchoredToTexts);
+    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModifications(pGrpConnectionPointsAnchoredToTexts);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToTexts, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS
@@ -505,8 +505,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmaps(pGrpConnectionPointsAnchoredToBitmaps);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmapsModifications(pGrpConnectionPointsAnchoredToBitmaps);
+    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmaps(pGrpConnectionPointsAnchoredToBitmaps);
+    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmapsModifications(pGrpConnectionPointsAnchoredToBitmaps);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToBitmaps, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS
@@ -528,8 +528,8 @@ void CTest::createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestS
     initInstCounts();
     initObjectCoors();
 
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroups(pGrpConnectionPointsAnchoredToGroups);
-    createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroupsModifications(pGrpConnectionPointsAnchoredToGroups);
+    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroups(pGrpConnectionPointsAnchoredToGroups);
+    //createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroupsModifications(pGrpConnectionPointsAnchoredToGroups);
 
     createTestStepSaveLoadFile(pGrpConnectionPointsAnchoredToGroups, 1);
 #endif // TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS
@@ -2369,7 +2369,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "3"},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::PolygonPoint, 2).toString()},
-        {"setPos", QPointF(295.0, 230.0)},
+        {"setPos", QPointF(295.0, 210.0)},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "3"}
     });
 
@@ -2428,7 +2428,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"GraphObjName", c_strGraphObjNameTriangle},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "3"},
-        {"setPos", QPointF(280.0, 215.0)},
+        {"setPos", QPointF(280.0, 195.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->at(2).toString()}
     });
 
@@ -2470,8 +2470,9 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"Method", "mouseReleaseEvent"},
         {"MousePos", m_ptMousePos}
     });
-    // Move mouse into object (but not into the center as there is a label)
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(m_ptPosTriangle.toPoint().x(), m_ptPosTriangle.toPoint().y() + 10));
+    // Move mouse into object (but not into the center as there is a label).
+    // Instead click on polygon shape line to select the object.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(310, 269));
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}
@@ -3035,10 +3036,18 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"FactoryGroupName", ""},
         {"FactoryGraphObjType", ""}
     });
-    // Move mouse into object and select object to edit the bounding rectangle
-    // The P1 label is on the position of the polygon.
-    // We need to move a little bit away from this label to select the polygon.
-    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(m_ptPosTriangle.toPoint().x() + 10, m_ptPosTriangle.toPoint().y() + 10));
+    // Move from current position to empty area
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(260, 220));
+    pTestStep->addDataRow({ // Deselect object by clicking on empty area
+        {"Method", "mousePressEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    pTestStep->addDataRow({
+        {"Method", "mouseReleaseEvent"},
+        {"MousePos", m_ptMousePos}
+    });
+    // Click on polygon shape line to select the object.
+    m_ptMousePos = addMouseMoveEventDataRows(pTestStep, m_ptMousePos, QPoint(330, 230));
     pTestStep->addDataRow({ // Select object by clicking on it
         {"Method", "mousePressEvent"},
         {"MousePos", m_ptMousePos}

@@ -74,21 +74,13 @@ CModelIdxTreeEntry::CModelIdxTreeEntry( CIdxTreeEntry* i_pTreeEntry ) :
 CModelIdxTreeEntry::~CModelIdxTreeEntry()
 //-----------------------------------------------------------------------------
 {
-    CModelIdxTreeEntry* pModelTreeEntry;
-    int                 idxEntry;
-
-    if( m_arpTreeEntries.size() > 0 )
-    {
-        for( idxEntry = m_arpTreeEntries.size() - 1; idxEntry >= 0; --idxEntry )
-        {
-            pModelTreeEntry = m_arpTreeEntries[idxEntry];
-
-            try
-            {
+    if (!m_arpTreeEntries.empty()) {
+        for (int idxEntry = m_arpTreeEntries.size() - 1; idxEntry >= 0; --idxEntry) {
+            CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+            try {
                 delete pModelTreeEntry; // calls "remove" as reentry
             }
-            catch(...)
-            {
+            catch(...) {
             }
             pModelTreeEntry = nullptr;
         }
@@ -96,10 +88,9 @@ CModelIdxTreeEntry::~CModelIdxTreeEntry()
 
     // As "remove" has been called as reentry for the deleted children
     // the map and vector must already be empty.
-    if( m_mappModelTreeEntries.size() > 0 || m_arpTreeEntries.size() > 0 )
+    if (!m_mappModelTreeEntries.empty() || !m_arpTreeEntries.empty())
     {
-        if( CErrLog::GetInstance() != nullptr )
-        {
+        if (CErrLog::GetInstance() != nullptr) {
             SErrResultInfo errResultInfo(
                 /* errSource */ NameSpace(), ClassName(), keyInTree(), "dtor",
                 /* result    */ EResultListNotEmpty,
@@ -108,8 +99,7 @@ CModelIdxTreeEntry::~CModelIdxTreeEntry()
         }
     }
 
-    if( m_pParentBranch != nullptr )
-    {
+    if (m_pParentBranch != nullptr) {
         m_pParentBranch->remove(this);
     }
 
@@ -124,8 +114,7 @@ CModelIdxTreeEntry::~CModelIdxTreeEntry()
     m_mappModelTreeEntries.clear();
     m_arpTreeEntries.clear();
     m_bIsExpanded = false;
-
-} // dtor
+}
 
 /*=============================================================================
 public: // instance methods
@@ -491,16 +480,12 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
 //-----------------------------------------------------------------------------
 {
     int idxInParentBranch = -1;
-
     QString strKeyInParentBranch = i_pModelTreeEntry->keyInParentBranch();
-
-    if( m_mappModelTreeEntries.contains(strKeyInParentBranch) )
-    {
+    if (m_mappModelTreeEntries.contains(strKeyInParentBranch)) {
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranch);
     }
 
-    if( m_sortOrder == EIdxTreeSortOrder::Ascending )
-    {
+    if (m_sortOrder == EIdxTreeSortOrder::Ascending) {
         QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
             m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
 
@@ -508,20 +493,17 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
         ++itModelEntry;
 
         // If appended at the end ..
-        if( itModelEntry == m_mappModelTreeEntries.end() )
-        {
+        if (itModelEntry == m_mappModelTreeEntries.end()) {
             idxInParentBranch = m_arpTreeEntries.size();
             m_arpTreeEntries.append(i_pModelTreeEntry);
         }
         // If inserted before an existing entry ..
-        else
-        {
+        else {
             idxInParentBranch = itModelEntry.value()->indexInParentBranch();
             m_arpTreeEntries.append(nullptr);
 
             // Move all following entries one index backwards.
-            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
-            {
+            for (int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry) {
                 CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                 m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                 pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
@@ -529,35 +511,29 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
             m_arpTreeEntries[idxInParentBranch] = i_pModelTreeEntry;
         }
     }
-    else if( m_sortOrder == EIdxTreeSortOrder::Descending )
-    {
+    else if (m_sortOrder == EIdxTreeSortOrder::Descending) {
         m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
 
         QMapIterator<QString, CModelIdxTreeEntry*> itModelEntry(m_mappModelTreeEntries);
         itModelEntry.toBack();
-        while(itModelEntry.hasPrevious())
-        {
+        while (itModelEntry.hasPrevious()) {
             itModelEntry.previous();
             ++idxInParentBranch;
-            if( m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry)
-            {
+            if (m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry) {
                 break;
             }
         }
 
         // If appended at the end ..
-        if( idxInParentBranch == m_arpTreeEntries.size() )
-        {
+        if (idxInParentBranch == m_arpTreeEntries.size()) {
             m_arpTreeEntries.append(i_pModelTreeEntry);
         }
         // If inserted before an existing entry ..
-        else
-        {
+        else {
             m_arpTreeEntries.append(nullptr);
 
             // Move all following entries one index backwards.
-            for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
-            {
+            for (int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry) {
                 CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                 m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                 pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
@@ -568,15 +544,11 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
     else
     {
         CIdxTreeLocker idxTreeLocker(m_pIdxTree);
-
         CIdxTreeEntry* pTreeEntry = i_pModelTreeEntry->getIdxTreeEntry();
-
         if (!(m_bExcludeLeaves && i_pModelTreeEntry->isLeave()))
         {
             idxInParentBranch = pTreeEntry->indexInParentBranch();
-
-            if( idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size() )
-            {
+            if (idxInParentBranch < 0 || idxInParentBranch > m_arpTreeEntries.size()) {
                 QString strAddErrInfo;
                 strAddErrInfo  = "IdxInParentBranch (=" + QString::number(idxInParentBranch) + ") is out of range";
                 strAddErrInfo += " [0 .. " + QString::number(m_arpTreeEntries.size()) + "]";
@@ -587,22 +559,17 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
                     /* strAddInfo */ strAddErrInfo );
                 throw CException(__FILE__, __LINE__, errResultInfo);
             }
-
             m_mappModelTreeEntries.insert(strKeyInParentBranch, i_pModelTreeEntry);
 
             // If appended at the end ..
-            if( idxInParentBranch == m_arpTreeEntries.size() )
-            {
+            if (idxInParentBranch == m_arpTreeEntries.size()) {
                 m_arpTreeEntries.append(i_pModelTreeEntry);
             }
             // If inserted before an existing entry ..
-            else // if( idxInParentBranch < m_arpTreeEntries.size() )
-            {
+            else {
                 m_arpTreeEntries.append(nullptr);
-
                 // Move all following entries one index backwards.
-                for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
-                {
+                for (int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry) {
                     CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                     m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                     pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
@@ -611,29 +578,23 @@ int CModelIdxTreeEntry::add( CModelIdxTreeEntry* i_pModelTreeEntry )
             }
         }
     }
-
     i_pModelTreeEntry->setParentBranch(this);
     i_pModelTreeEntry->setIndexInParentBranch(idxInParentBranch);
 
     return idxInParentBranch;
-
-} // add
+}
 
 //-----------------------------------------------------------------------------
 void CModelIdxTreeEntry::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
 //-----------------------------------------------------------------------------
 {
     int idxInParentBranch = i_pModelTreeEntry->indexInParentBranch();
-
-    if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-    {
+    if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
         throw CException(__FILE__, __LINE__, EResultIdxOutOfRange, QString::number(idxInParentBranch));
     }
 
     QString strKeyInParentBranch = i_pModelTreeEntry->keyInParentBranch();
-
-    if( !m_mappModelTreeEntries.contains(strKeyInParentBranch) )
-    {
+    if (!m_mappModelTreeEntries.contains(strKeyInParentBranch)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, strKeyInParentBranch);
     }
 
@@ -643,28 +604,23 @@ void CModelIdxTreeEntry::remove( CModelIdxTreeEntry* i_pModelTreeEntry )
     i_pModelTreeEntry->setParentBranch(nullptr);
     i_pModelTreeEntry->setIndexInParentBranch(-1);
 
-    for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
-    {
+    for (int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry) {
         CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
         pModelTreeEntry->setIndexInParentBranch(idxEntry);
     }
-} // remove
+}
 
 //-----------------------------------------------------------------------------
 void CModelIdxTreeEntry::remove( const QString& i_strKeyInParentBranch )
 //-----------------------------------------------------------------------------
 {
     CModelIdxTreeEntry* pModelTreeEntry = m_mappModelTreeEntries.value(i_strKeyInParentBranch, nullptr);
-
-    if( pModelTreeEntry == nullptr )
-    {
+    if (pModelTreeEntry == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strKeyInParentBranch);
     }
 
     int idxInParentBranch = m_arpTreeEntries.indexOf(pModelTreeEntry);
-
-    if( idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size() )
-    {
+    if (idxInParentBranch < 0 || idxInParentBranch >= m_arpTreeEntries.size()) {
         throw CException(__FILE__, __LINE__, EResultIdxOutOfRange, QString::number(idxInParentBranch));
     }
 
@@ -674,69 +630,73 @@ void CModelIdxTreeEntry::remove( const QString& i_strKeyInParentBranch )
     pModelTreeEntry->setParentBranch(nullptr);
     pModelTreeEntry->setIndexInParentBranch(-1);
 
-    for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry )
-    {
+    for (int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size(); ++idxEntry) {
         pModelTreeEntry = m_arpTreeEntries[idxEntry];
         pModelTreeEntry->setIndexInParentBranch(idxEntry);
     }
-} // remove
+}
+
+//------------------------------------------------------------------------------
+void CModelIdxTreeEntry::clearWithoutDelete()
+//------------------------------------------------------------------------------
+{
+    // Rapid clearing without destructor calls
+    if (!m_arpTreeEntries.empty()) {
+        for (int idxEntry = 0; idxEntry < m_arpTreeEntries.size(); ++idxEntry) {
+            CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
+            pModelTreeEntry->clearWithoutDelete();
+        }
+    }
+    m_mappModelTreeEntries.clear();
+    m_arpTreeEntries.clear();
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
 
 //-----------------------------------------------------------------------------
 void CModelIdxTreeEntry::onChildRenamed(
-    CModelIdxTreeEntry* i_pModelTreeEntry,
-    const QString&      i_strNamePrev )
+    CModelIdxTreeEntry* i_pModelTreeEntry, const QString& i_strNamePrev )
 //-----------------------------------------------------------------------------
 {
     int idxInParentBranchPrev = i_pModelTreeEntry->indexInParentBranch();
-
-    if( idxInParentBranchPrev < 0 || idxInParentBranchPrev >= m_arpTreeEntries.size() )
-    {
+    if (idxInParentBranchPrev < 0 || idxInParentBranchPrev >= m_arpTreeEntries.size()) {
         throw CException(__FILE__, __LINE__, EResultIdxOutOfRange, QString::number(idxInParentBranchPrev));
     }
 
     QString strKeyInParentBranchPrev = i_pModelTreeEntry->entryType2Str(EEnumEntryAliasStrSymbol) + ":" + i_strNamePrev;;
     QString strKeyInParentBranchNew = i_pModelTreeEntry->keyInParentBranch();
 
-    if( strKeyInParentBranchNew != strKeyInParentBranchPrev )
-    {
-        if( !m_mappModelTreeEntries.contains(strKeyInParentBranchPrev) )
-        {
+    if (strKeyInParentBranchNew != strKeyInParentBranchPrev) {
+        if (!m_mappModelTreeEntries.contains(strKeyInParentBranchPrev)) {
             throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranchNew);
         }
-        if( m_mappModelTreeEntries.contains(strKeyInParentBranchNew) )
-        {
+        if (m_mappModelTreeEntries.contains(strKeyInParentBranchNew)) {
             throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKeyInParentBranchNew);
         }
-
         m_mappModelTreeEntries.remove(strKeyInParentBranchPrev);
-
-        if( m_sortOrder == EIdxTreeSortOrder::Ascending )
-        {
+        if (m_sortOrder == EIdxTreeSortOrder::Ascending) {
             m_arpTreeEntries.removeOne(i_pModelTreeEntry);
-
             QMap<QString, CModelIdxTreeEntry*>::iterator itModelEntry =
                 m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
 
             // Inserted before this entry (or appended at the end).
             ++itModelEntry;
-
             int idxInParentBranch = -1;
 
             // If appended at the end ..
-            if( itModelEntry == m_mappModelTreeEntries.end() )
-            {
+            if (itModelEntry == m_mappModelTreeEntries.end()) {
                 idxInParentBranch = m_arpTreeEntries.size();
                 m_arpTreeEntries.append(i_pModelTreeEntry);
             }
             // If inserted before an existing entry ..
-            else // if( itModelEntry != m_mappModelTreeEntries.end() )
-            {
+            else {
                 idxInParentBranch = itModelEntry.value()->indexInParentBranch();
                 m_arpTreeEntries.append(nullptr);
 
                 // Move all following entries one index backwards.
-                for( int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry )
-                {
+                for (int idxEntry = m_arpTreeEntries.size()-2; idxEntry >= idxInParentBranch; --idxEntry) {
                     CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                     m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                     pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
@@ -745,39 +705,31 @@ void CModelIdxTreeEntry::onChildRenamed(
             }
             i_pModelTreeEntry->setIndexInParentBranch(idxInParentBranch);
         }
-        else if( m_sortOrder == EIdxTreeSortOrder::Descending )
-        {
+        else if (m_sortOrder == EIdxTreeSortOrder::Descending) {
             m_arpTreeEntries.removeOne(i_pModelTreeEntry);
-
             m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
 
             int idxInParentBranch = -1;
-
             QMapIterator<QString, CModelIdxTreeEntry*> itModelEntry(m_mappModelTreeEntries);
             itModelEntry.toBack();
-            while(itModelEntry.hasPrevious())
-            {
+            while (itModelEntry.hasPrevious()) {
                 itModelEntry.previous();
                 ++idxInParentBranch;
-                if( m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry)
-                {
+                if (m_mappModelTreeEntries.value(itModelEntry.key()) == i_pModelTreeEntry) {
                     break;
                 }
             }
 
             // If appended at the end ..
-            if( idxInParentBranch == m_arpTreeEntries.size() )
-            {
+            if (idxInParentBranch == m_arpTreeEntries.size()) {
                 m_arpTreeEntries.append(i_pModelTreeEntry);
             }
             // If inserted before an existing entry ..
-            else
-            {
+            else {
                 m_arpTreeEntries.append(nullptr);
 
                 // Move all following entries one index backwards.
-                for( int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size()-1; ++idxEntry )
-                {
+                for (int idxEntry = idxInParentBranch; idxEntry < m_arpTreeEntries.size()-1; ++idxEntry) {
                     CModelIdxTreeEntry* pModelTreeEntry = m_arpTreeEntries[idxEntry];
                     m_arpTreeEntries[idxEntry+1] = pModelTreeEntry;
                     pModelTreeEntry->setIndexInParentBranch(idxEntry+1);
@@ -790,8 +742,8 @@ void CModelIdxTreeEntry::onChildRenamed(
         {
             m_mappModelTreeEntries.insert(strKeyInParentBranchNew, i_pModelTreeEntry);
         }
-    } // if( strKeyInParentBranchNew != strKeyInParentBranchPrev )
-} // onChildRenamed
+    }
+}
 
 /*=============================================================================
 public: // instance methods
