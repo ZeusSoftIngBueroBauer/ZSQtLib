@@ -2144,11 +2144,13 @@ QRectF CGraphObjText::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = m_graphicsTextItem.boundingRect();
+    rctBounding |= getBoundingRect();
     if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
         // Half pen width of the selection rectangle would be enough.
         // But the whole pen width is also not a bad choice.
         rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
     }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -2171,6 +2173,7 @@ QPainterPath CGraphObjText::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = m_graphicsTextItem.shape();
+    painterPath.addRect(getBoundingRect());
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
