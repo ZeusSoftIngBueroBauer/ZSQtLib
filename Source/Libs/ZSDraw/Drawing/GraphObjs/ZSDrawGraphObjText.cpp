@@ -1821,6 +1821,29 @@ CPhysValRect CGraphObjText::getPhysValBoundingRect(const CUnit& i_unit) const
     return physValRectBounding;
 }
 
+//------------------------------------------------------------------------------
+SGraphObjHitInfo CGraphObjText::getSelectionPointHitInfo(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getSelectionPointHitInfo",
+        /* strAddInfo   */ strMthInArgs );
+
+    SGraphObjHitInfo hitInfo;
+    isRectHit(boundingRect(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + hitInfo.toString() + "}");
+    }
+    return hitInfo;
+}
+
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
@@ -2143,8 +2166,7 @@ QRectF CGraphObjText::boundingRect() const
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
-    QRectF rctBounding = m_graphicsTextItem.boundingRect();
-    rctBounding |= getBoundingRect();
+    QRectF rctBounding = getBoundingRect();
     if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
         // Half pen width of the selection rectangle would be enough.
         // But the whole pen width is also not a bad choice.
@@ -2172,7 +2194,7 @@ QPainterPath CGraphObjText::shape() const
         /* strMethod    */ "shape",
         /* strAddInfo   */ "" );
 
-    QPainterPath painterPath = m_graphicsTextItem.shape();
+    QPainterPath painterPath;
     painterPath.addRect(getBoundingRect());
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2282,10 +2304,31 @@ void CGraphObjText::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isRectHit(boundingRect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -2310,10 +2353,31 @@ void CGraphObjText::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isRectHit(boundingRect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }

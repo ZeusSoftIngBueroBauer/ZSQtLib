@@ -163,6 +163,7 @@ public: // overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
     CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
+    SGraphObjHitInfo getSelectionPointHitInfo(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)

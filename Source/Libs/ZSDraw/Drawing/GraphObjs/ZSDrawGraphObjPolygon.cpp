@@ -1688,12 +1688,26 @@ CPhysValRect CGraphObjPolygon::getPhysValBoundingRect(const CUnit& i_unit) const
 SGraphObjHitInfo CGraphObjPolygon::getSelectionPointHitInfo(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getSelectionPointHitInfo",
+        /* strAddInfo   */ strMthInArgs );
+
     SGraphObjHitInfo hitInfo;
     if (isPolygon()) {
         isPolygonHit(polygon(), m_drawSettings.fillStyle(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
     }
     else {
         isPolylineHit(polygon(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + hitInfo.toString() + "}");
     }
     return hitInfo;
 }
