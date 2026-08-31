@@ -181,7 +181,6 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameLength);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameP1) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, 0);

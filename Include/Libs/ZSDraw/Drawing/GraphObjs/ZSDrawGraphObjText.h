@@ -57,7 +57,7 @@ public: // class methods
     static void resetPainterRenderHints();
 public: // ctors and dtor
     CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
-    virtual ~CGraphObjText();
+    ~CGraphObjText() override;
 signals:
     /*!< This signal is emitted when the user clicks on a link on a text item that
          enables Qt::LinksAccessibleByMouse or Qt::LinksAccessibleByKeyboard.
@@ -68,13 +68,13 @@ signals:
          @param [in] i_strLink is the link that was hovered over. */
     void linkHovered(CGraphObj* i_pGraphObj, const QString& i_strLink);
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override;
+    int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone() override;
+    CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
+    void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // overridables of base class CGraphObj
     void setTextColor(const QColor& i_col, bool i_bImmediatelyApplySetting = true) override;
     void setFont(const QFont& i_font, bool i_bImmediatelyApplySetting = true) override;
@@ -167,10 +167,10 @@ public: // must overridables of base class CGraphObj
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
-    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
-    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+    QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    bool labelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
-    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
+    bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -190,12 +190,12 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 public: // must overridables of base class CGraphObj
-    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
-    virtual void updateTransformedCoorsOnParentGeometryChanged() override;
-    virtual void updateTransformedCoorsOnItemPositionChanged() override;
+    void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
+    void updateTransformedCoorsOnParentGeometryChanged() override;
+    void updateTransformedCoorsOnItemPositionChanged() override;
 protected slots:
     void onGraphicsTextItemFocusChanged(QFocusEvent* i_pEv);
 protected: // auxiliary instance methods
@@ -213,11 +213,11 @@ protected: // auxiliary instance methods (method tracing)
     double QGraphicsTextItem_setTextWidth(double i_fWidth_px);
     Qt::TextInteractionFlags QGraphicsTextItem_setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    virtual void traceThisPositionInfo(
+    void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         const QString& i_strFilter = "") const override;
-    virtual void traceTextItemPositionInfo(
+    void traceTextItemPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         const QString& i_strFilter = "") const;

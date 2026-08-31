@@ -245,6 +245,9 @@ CTest::~CTest()
     delete m_pPhysValPolygonStar4;
     m_pPhysValPolygonStar4 = nullptr;
 
+    delete m_pPhysValRectImage1;
+    m_pPhysValRectImage1 = nullptr;
+
     delete m_pPhysValConnectionPoint1;
     m_pPhysValConnectionPoint1 = nullptr;
     delete m_pPhysValConnectionPoint2;
@@ -423,6 +426,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValPolygonStar2 = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonStar3 = new CPhysValPolygon(*m_pDrawingScene);
     m_pPhysValPolygonStar4 = new CPhysValPolygon(*m_pDrawingScene);
+
+    // Images
+    //----------
+    m_pPhysValRectImage1 = new CPhysValRect(*m_pDrawingScene);
 
     // Connection Points
     //------------------
@@ -3798,6 +3805,54 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepAddGraphObjImage",
+        /* strAddInfo   */ strMthInArgs );
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+
+    EGraphObjType graphObjType = EGraphObjTypeImage;
+    QString strGraphObjType = graphObjType2Str(graphObjType);
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    if (pObjFactory != nullptr) {
+        CDrawSettings drawSettings(graphObjType);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
+        m_pDrawingScene->addGraphObj(pGraphObj);
+        CGraphObjImage* pGraphObjImage = dynamic_cast<CGraphObjImage*>(pGraphObjImage);
+        if (pGraphObjImage != nullptr) {
+            //pGraphObjImage->setPicture(polygon, drawingSize.unit());
+        }
+        pGraphObj->rename(strGraphObjName);
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -6662,6 +6717,14 @@ void CTest::initObjectCoors()
     *m_pPhysValPolygonStar4 = CPhysValPolygon(*m_pDrawingScene);
     m_physValAngleStar4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
+    // Images
+    //------------------
+
+    m_ptPosImage1 = QPointF();
+    m_sizeImage1 = QSizeF();
+    *m_pPhysValRectImage1 = CPhysValRect(*m_pDrawingScene);
+    m_physValAngleImage1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+
     // Connection Points
     //------------------
 
@@ -7393,6 +7456,40 @@ QStringList CTest::resultValuesForPolygon(
             strGraphObjName + ".center {" + i_physValPolygon.center().toString(false, ", ", 1) + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".getPolygon {" + i_physValPolygon.toString(false, ", ", i_iPrecision) + "} " + i_physValPolygon.unit().symbol(),
             strGraphObjName + ".rotationAngle: " + i_physValPolygon.angle().toString()
+        });
+    }
+    strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));
+    return strlst;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForImage(
+    const QString& strGraphObjName, const QPointF& i_pos,
+    const CPhysValRect& i_physValRect,
+    bool i_bIsSelected, int i_iPrecision) const
+//------------------------------------------------------------------------------
+{
+    QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
+    QRectF rctBounding(QPointF(-size.width()/2.0, -size.height()/2.0), size);
+    QStringList strlst;
+    if (i_iPrecision < 0) {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
+            strGraphObjName + ".center {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
+        });
+    }
+    else {
+        strlst = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding, ", ", 'f', 1) + "} px",
+            strGraphObjName + ".center {" + i_physValRect.center().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getRect {" + i_physValRect.toString(false, ", ", i_iPrecision) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".getSize {" + i_physValRect.size().toString(false, ", ", 1) + "} " + i_physValRect.unit().symbol(),
+            strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
         });
     }
     strlst.append(strGraphObjName + ".isSelected: " + bool2Str(i_bIsSelected));

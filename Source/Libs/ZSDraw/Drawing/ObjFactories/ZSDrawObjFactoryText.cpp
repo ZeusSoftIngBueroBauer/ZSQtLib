@@ -162,7 +162,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
 //------------------------------------------------------------------------------
 {
     if (i_pGraphObj == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr");
     }
 
     QString strMthInArgs;
@@ -179,7 +179,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
 
     CGraphObjText* pGraphObj = dynamic_cast<CGraphObjText*>(i_pGraphObj);
     if (pGraphObj == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
+        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
     }
 
     const CDrawingScene* pDrawingScene = pGraphObj->drawingScene();
@@ -188,8 +188,6 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
         iDecimals = drawingSize.metricImageCoorsDecimals() + 3; // to avoid rounding errors add three digits
     }
-
-    //i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameText, pGraphObj->toPlainText());
 
     CDrawSettings drawSettings = pGraphObj->drawSettings();
     if (!drawSettings.isDefault()) {
@@ -231,8 +229,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
         mthTracer.setMethodReturn(errResultInfo);
     }
     return errResultInfo;
-
-} // saveGraphObj
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryText::loadGraphObj(
@@ -474,5 +471,4 @@ CGraphObj* CObjFactoryText::loadGraphObj(
         mthTracer.setMethodReturn(strMthRet);
     }
     return pGraphObj;
-
-} // loadGraphObj
+}

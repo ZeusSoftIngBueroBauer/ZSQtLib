@@ -203,7 +203,6 @@ CGraphObjText::CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameTopLeft) {
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
@@ -290,7 +289,7 @@ CGraphObj* CGraphObjText::clone()
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     pGraphObj->setRect(getRect(drawingSize.unit()));
     pGraphObj->setDrawSettings(m_drawSettings);
-    //pGraphObj->setPlainText(toPlainText());
+    pGraphObj->setPlainText(toPlainText());
     return pGraphObj;
 }
 

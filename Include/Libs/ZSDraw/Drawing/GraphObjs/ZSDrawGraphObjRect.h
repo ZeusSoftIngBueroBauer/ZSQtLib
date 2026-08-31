@@ -54,15 +54,15 @@ public: // class methods
     static void resetPainterRenderHints();
 public: // ctors and dtor
     CGraphObjRect(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
-    virtual ~CGraphObjRect();
+    ~CGraphObjRect() override;
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override;
+    int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone() override;
+    CGraphObj* clone() override;
 public: // must overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
+    void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     void setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit);
@@ -142,12 +142,12 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 public: // must overridables of base class CGraphObj
-    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
-    virtual void updateTransformedCoorsOnParentGeometryChanged() override;
-    virtual void updateTransformedCoorsOnItemPositionChanged() override;
+    void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
+    void updateTransformedCoorsOnParentGeometryChanged() override;
+    void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
@@ -161,7 +161,7 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    virtual void traceThisPositionInfo(
+    void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         const QString& i_strFilter = "") const override;
