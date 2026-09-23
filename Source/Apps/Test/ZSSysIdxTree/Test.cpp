@@ -3989,7 +3989,7 @@ void CTest::doTestStepGrpTrcAdmObjTreeStepTreeViewDragAndDrop( ZS::Test::CTestSt
             strExpectedValue = "Formats [1](application/vnd.text.list {" + strKeyInTreeSrc + "})";
             strlstExpectedValues << strExpectedValue;
 
-            strResultValue = qMimeData2Str(s_pMimeData, 1);
+            strResultValue = qMimeData2Str(s_pMimeData);
             strlstResultValues << strResultValue;
 
         } // if( strStepOperation.startsWith("TreeViewIdxTree.dragEnterEvent") )

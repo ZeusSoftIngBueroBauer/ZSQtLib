@@ -48,7 +48,6 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h"
@@ -56,6 +55,7 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPixmap.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
@@ -109,7 +109,7 @@ QHash<QString, int> CTest::s_hshGraphObjsInstCounts = {
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypePolygon), 0},
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypePolyline), 0},
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypeText), 0},
-    { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypeImage), 0},
+    { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypePixmap), 0},
     { CObjFactory::c_strGroupNameStandardShapes + "::" + graphObjType2Str(EGraphObjTypeGroup), 0},
     { CObjFactory::c_strGroupNameConnections + "::" + graphObjType2Str(EGraphObjTypeConnectionLine), 0},
     { CObjFactory::c_strGroupNameConnections + "::" + graphObjType2Str(EGraphObjTypeConnectionPoint), 0}
@@ -2278,7 +2278,7 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
     CGraphObjEllipse::resetPainterRenderHints();
     CGraphObjPolygon::resetPainterRenderHints();
     CGraphObjText::resetPainterRenderHints();
-    //CGraphObjImage::resetPainterRenderHints();
+    //CGraphObjPixmap::resetPainterRenderHints();
     //CGraphObjConnectionPoint::resetPainterRenderHints();
     //CGraphObjConnectionLine::resetPainterRenderHints();
     CGraphObjGroup::resetPainterRenderHints();
@@ -2310,8 +2310,8 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
         else if (graphObjType == EGraphObjTypeText) {
             CGraphObjText::setPainterRenderHints(uPainterRenderHints);
         }
-        else if (graphObjType == EGraphObjTypeImage) {
-            //CGraphObjImage::setPainterRenderHints(uPainterRenderHints);
+        else if (graphObjType == EGraphObjTypePixmap) {
+            //CGraphObjPixmap::setPainterRenderHints(uPainterRenderHints);
         }
         else if (graphObjType == EGraphObjTypeConnectionPoint) {
             //CGraphObjConnectionPoint::setPainterRenderHints(uPainterRenderHints);
@@ -3823,7 +3823,7 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
 
-    EGraphObjType graphObjType = EGraphObjTypeImage;
+    EGraphObjType graphObjType = EGraphObjTypePixmap;
     QString strGraphObjType = graphObjType2Str(graphObjType);
 
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
@@ -3835,7 +3835,7 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
-        CGraphObjImage* pGraphObjImage = dynamic_cast<CGraphObjImage*>(pGraphObjImage);
+        CGraphObjPixmap* pGraphObjImage = dynamic_cast<CGraphObjPixmap*>(pGraphObjImage);
         if (pGraphObjImage != nullptr) {
             //pGraphObjImage->setPicture(polygon, drawingSize.unit());
         }
@@ -6527,7 +6527,7 @@ void CTest::initInstCounts()
     CGraphObjEllipse::s_iInstCount = 0;
     CGraphObjPolygon::s_iInstCount = 0;
     CGraphObjText::s_iInstCount = 0;
-    CGraphObjImage::s_iInstCount = 0;
+    CGraphObjPixmap::s_iInstCount = 0;
     CGraphObjConnectionPoint::s_iInstCount = 0;
     CGraphObjConnectionLine::s_iInstCount = 0;
     CGraphObjGroup::s_iInstCount = 0;

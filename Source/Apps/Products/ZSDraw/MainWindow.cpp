@@ -49,8 +49,8 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryConnectionPoint.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryEllipse.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h"
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryImage.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryLine.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPixmap.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryRect.h"
@@ -1075,7 +1075,7 @@ void CMainWindow::createObjFactories()
     //----------------------
 
     QPixmap pxmDrawGraphicsImage16x16(":/ZS/Draw/GraphObjImage16x16.png");
-    m_pObjFactoryImage = new CObjFactoryImage(pxmDrawGraphicsImage16x16);
+    m_pObjFactoryImage = new CObjFactoryPixmap(pxmDrawGraphicsImage16x16);
     QPixmap pxmDrawConnectionPoint16x16(":/ZS/Draw/GraphObjConnectionPoint16x16.png");
     m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(pxmDrawConnectionPoint16x16);
     QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/GraphObjConnectionLine16x16.png");

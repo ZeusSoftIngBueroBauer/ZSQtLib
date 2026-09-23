@@ -233,7 +233,7 @@ protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< The aggregated text item. The class could not have been derived from QGraphicsTextItem
-         as CGraphObj and QGraphicsTextItem both are derviced from QObject. */
+         as CGraphObj and QGraphicsTextItem both are derived from QObject. */
     CGraphicsTextItem m_graphicsTextItem;
     /*!< The margins to the surrounding rectangle. The margin must be at least one pixel.
          Otherwise mouse press events would be forwarded to the text editor of the text item
@@ -256,8 +256,7 @@ protected: // instance members
          Other graphics items, like Line, provide methods to set and retrieve the
          local coordinates (e.g. "setLine", "line").
          The text item does not have such methods (e.g. "setRect", "rect").
-         The scaled rectangle is returned by the "boundingRect" method of the graphics
-         item to provide the bounding rectangle of the group in local coordinates. */
+         The scaled rectangle is returned by the "boundingRect" method of the graphics item. */
     QRectF m_rectScaled;
     /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates with unit
          in parent coordinates relative to the top left or bottom left corner of the parent.

@@ -2671,7 +2671,36 @@ QString ZS::System::qMargins2Str( const QMargins& i_margins )
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel )
+/*! @brief Returns a human readable string of the mime data.
+
+    @param [in] i_pMimeData
+
+    @param [in] i_strInclude Defines what has to be included in the returned string
+        by passing sub strings separated by "|".
+        If the filter string is empty, everything is included.
+        Possible sub strings are: "Urls", "Text", "Html", "Image", "Color", "Formats".
+
+    @param [in] i_strExclude Defines what has to be excluded in the returned string.
+        If the filter string is empty, nothing is excluded.
+        The exclude filter string is applied after the include filter string.
+
+    @example To just include the Urls in the output string:
+        qMimeData2Str(pMimeData, "Urls");
+
+    @example To include the Urls and the Text in the output string:
+        qMimeData2Str(pMimeData, "Urls|Text");
+
+    @example To include everything instead the Formats in the output string:
+        qMimeData2Str(pMimeData, "", "Formats");
+
+    @example To just include the Formats in the output string:
+        qMimeData2Str(pMimeData, "Formats", "");
+
+    @example For a useless method call:
+        qMimeData2Str(pMimeData, "Formats", "Formats"); // returns an empty string
+        qMimeData2Str(pMimeData, "Urls", "Formats");    // "Formats" is not included and don't need to be excluded
+*/
+QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, const QString& i_strInclude, const QString& i_strExclude )
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -2679,57 +2708,84 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
         str = "nullptr";
     }
     else {
-        QStringList strlstFormats = i_pMimeData->formats();
-        str = "Formats [" + QString::number(strlstFormats.size()) + "]";
-        if (strlstFormats.size() > 0) {
-            str += "(";
-            for (int idx = 0; idx < strlstFormats.size(); idx++) {
-                if (idx > 0) {
-                    str += ", " + strlstFormats[idx];
-                }
-                else {
-                    str += strlstFormats[idx];
-                }
-                if (i_iDetailLevel > 0) {
-                    str += " {";
-                    QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
-                    QDataStream stream(&byteArr, QIODevice::ReadOnly);
-                    QStringList strlstItems;
-                    while (!stream.atEnd()) {
-                        QString strItem;
-                        stream >> strItem;
-                        strlstItems << strItem;
+        if (i_strInclude.isEmpty() || i_strInclude.contains("Urls", Qt::CaseInsensitive)) {
+            if (!i_strExclude.contains("Urls", Qt::CaseInsensitive)) {
+                if (i_pMimeData->hasUrls()) {
+                    str = "Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
+                    if( i_pMimeData->urls().size() > 0 ) {
+                        str += "(";
+                        for( int idx = 0; idx < i_pMimeData->urls().size(); idx++ ) {
+                            if( idx > 0 ) {
+                                str += ", ";
+                            }
+                            str += i_pMimeData->urls()[idx].toString();
+                        }
+                        str += ")";
                     }
-                    str += strlstItems.join(", ");
-                    str += "}";
                 }
             }
-            str += ")";
         }
-        if (i_pMimeData->hasUrls()) {
-            str += ", Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
-            if( i_pMimeData->urls().size() > 0 ) {
-                str += "(";
-                for( int idx = 0; idx < i_pMimeData->urls().size(); idx++ ) {
-                    if( idx > 0 ) {
-                        str += ", ";
-                    }
-                    str += i_pMimeData->urls()[idx].toString();
+        if (i_strInclude.isEmpty() || i_strInclude.contains("Text", Qt::CaseInsensitive)) {
+            if (!i_strExclude.contains("Text", Qt::CaseInsensitive)) {
+                if (i_pMimeData->hasText()) {
+                    if (!str.isEmpty()) str += ", ";
+                    str += "Text: " + i_pMimeData->text();
                 }
-                str += ")";
             }
         }
-        if (i_pMimeData->hasText()) {
-            str += ", Text: " + i_pMimeData->text();
+        if (i_strInclude.isEmpty() || i_strInclude.contains("Html", Qt::CaseInsensitive)) {
+            if (!i_strExclude.contains("Html", Qt::CaseInsensitive)) {
+                if (i_pMimeData->hasHtml()) {
+                    if (!str.isEmpty()) str += ", ";
+                    str += "Html: " + i_pMimeData->html();
+                }
+            }
         }
-        if (i_pMimeData->hasHtml()) {
-            str += ", Html: " + i_pMimeData->html();
+        if (i_strInclude.isEmpty() || i_strInclude.contains("Image", Qt::CaseInsensitive)) {
+            if (!i_strExclude.contains("Image", Qt::CaseInsensitive)) {
+                if (i_pMimeData->hasImage()) {
+                    if (!str.isEmpty()) str += ", ";
+                    str += "Image {}";
+                    //QVariant i_pMimeData->imageData();
+                }
+            }
         }
-        if (i_pMimeData->hasImage()) {
-            //QVariant i_pMimeData->imageData();
+        if (i_strInclude.isEmpty() || i_strInclude.contains("Color", Qt::CaseInsensitive)) {
+            if (!i_strExclude.contains("Color", Qt::CaseInsensitive)) {
+                if (i_pMimeData->hasColor()) {
+                    if (!str.isEmpty()) str += ", ";
+                    str += "Color {}";
+                    //QVariant i_pMimeData->colorData();
+                }
+            }
         }
-        if (i_pMimeData->hasColor()) {
-            //QVariant i_pMimeData->colorData();
+        if (i_strInclude.isEmpty() || i_strInclude.contains("Formats", Qt::CaseInsensitive)) {
+            if (!i_strExclude.contains("Formats", Qt::CaseInsensitive)) {
+                QStringList strlstFormats = i_pMimeData->formats();
+                if (!str.isEmpty()) str += ", ";
+                str += "Formats [" + QString::number(strlstFormats.size()) + "]";
+                if (!strlstFormats.isEmpty()) {
+                    str += "(";
+                    for (int idx = 0; idx < strlstFormats.size(); idx++) {
+                        if (!str.endsWith("(")) str += ", ";
+                        str += strlstFormats[idx];
+                        //if (i_iDetailLevel > 1) {
+                        //    str += " {";
+                        //    QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
+                        //    QDataStream stream(&byteArr, QIODevice::ReadOnly);
+                        //    QStringList strlstItems;
+                        //    while (!stream.atEnd()) {
+                        //        QString strItem;
+                        //        stream >> strItem;
+                        //        strlstItems << strItem;
+                        //    }
+                        //    str += strlstItems.join(", ");
+                        //    str += "}";
+                        //}
+                    }
+                    str += ")";
+                }
+            }
         }
     }
     return str;

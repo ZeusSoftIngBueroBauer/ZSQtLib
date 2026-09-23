@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPixmap.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -62,41 +62,41 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CGraphObjImage : public CGraphObj, public QGraphicsTextitem
+class CGraphObjPixmap : public CGraphObj, public QGraphicsPixmapItem
 *******************************************************************************/
 
 /*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjImage::s_iInstCount = 0;
+qint64 CGraphObjPixmap::s_iInstCount = 0;
 
 /*==============================================================================
 protected: // class members
 ==============================================================================*/
 
-QPainter::RenderHints CGraphObjImage::s_painterRenderHints = QPainter::Antialiasing;
+QPainter::RenderHints CGraphObjPixmap::s_painterRenderHints = QPainter::Antialiasing;
 
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QPainter::RenderHints CGraphObjImage::painterRenderHints()
+QPainter::RenderHints CGraphObjPixmap::painterRenderHints()
 //------------------------------------------------------------------------------
 {
     return s_painterRenderHints;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setPainterRenderHints(QPainter::RenderHints i_renderHints)
+void CGraphObjPixmap::setPainterRenderHints(QPainter::RenderHints i_renderHints)
 //------------------------------------------------------------------------------
 {
     s_painterRenderHints = i_renderHints;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::resetPainterRenderHints()
+void CGraphObjPixmap::resetPainterRenderHints()
 //------------------------------------------------------------------------------
 {
     s_painterRenderHints = QPainter::Antialiasing;
@@ -121,19 +121,15 @@ public: // ctors and dtor
         If an empty string is passed a unique name is created by adding the current
         number of objects taken from s_iInstCount to the graphical object type.
 */
-CGraphObjImage::CGraphObjImage(CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
+CGraphObjPixmap::CGraphObjPixmap(CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
-        /* type                */ EGraphObjTypeImage,
-        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeImage),
+        /* type                */ EGraphObjTypePixmap,
+        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePixmap),
         /* strObjName          */ i_strObjName.isEmpty() ? "Image" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPixmapItem(),
-    m_strImgFilePath(),
-    m_pxmOrig(),
-    m_rectOrig(),
-    m_rectScaled(),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),
     m_physValRectScaledAndRotated(*m_pDrawingScene)
@@ -226,7 +222,7 @@ CGraphObjImage::CGraphObjImage(CDrawingScene* i_pDrawingScene, const QString& i_
 }
 
 //------------------------------------------------------------------------------
-CGraphObjImage::~CGraphObjImage()
+CGraphObjPixmap::~CGraphObjPixmap()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -247,10 +243,10 @@ public: // overridables of base class QGraphicsItem
 //------------------------------------------------------------------------------
 /*! @brief Overrides the type method of QGraphicsItem.
 */
-int CGraphObjImage::type() const
+int CGraphObjPixmap::type() const
 //------------------------------------------------------------------------------
 {
-    return EGraphObjTypeImage;
+    return EGraphObjTypePixmap;
 }
 
 /*==============================================================================
@@ -258,7 +254,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObj* CGraphObjImage::clone()
+CGraphObj* CGraphObjPixmap::clone()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -268,7 +264,7 @@ CGraphObj* CGraphObjImage::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
-    CGraphObjImage* pGraphObj = new CGraphObjImage(m_pDrawingScene, m_strName);
+    CGraphObjPixmap* pGraphObj = new CGraphObjPixmap(m_pDrawingScene, m_strName);
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     pGraphObj->setRect(getRect(drawingSize.unit()));
     pGraphObj->setDrawSettings(m_drawSettings);
@@ -285,7 +281,7 @@ public: // must overridables of base class CGraphObj
 
     Must be overridden to create a user defined dialog.
 */
-void CGraphObjImage::openFormatGraphObjsDialog()
+void CGraphObjPixmap::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -318,7 +314,7 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
+void CGraphObjPixmap::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -338,7 +334,7 @@ public: // replacing methods of QGraphicsRectItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setImageFilePath(const QString& i_strFilePath)
+void CGraphObjPixmap::setImageFilePath(const QString& i_strFilePath)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -362,7 +358,7 @@ public: // replacing methods of QGraphicsRectItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setPixmap(const QPixmap& i_pxm)
+void CGraphObjPixmap::setPixmap(const QPixmap& i_pxm)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -400,7 +396,7 @@ public: // instance methods
         relative to the top left or bottom left corner of parent item's bounding rectangle.
         The passed rectangle may be rotated (the angle may be in range 0 .. 360°).
 */
-void CGraphObjImage::setRect(const CPhysValRect& i_physValRect)
+void CGraphObjPixmap::setRect(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -477,7 +473,7 @@ void CGraphObjImage::setRect(const CPhysValRect& i_physValRect)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit)
+void CGraphObjPixmap::setRect(const QPointF& i_pTL, const QPointF& i_pBR, const ZS::PhysVal::CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -495,7 +491,7 @@ void CGraphObjImage::setRect(const QPointF& i_pTL, const QPointF& i_pBR, const Z
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setRect(const QPointF& i_pTL, const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit)
+void CGraphObjPixmap::setRect(const QPointF& i_pTL, const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -513,7 +509,7 @@ void CGraphObjImage::setRect(const QPointF& i_pTL, const QSizeF& i_size, const Z
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setRect(const CPhysValPoint& i_physValTL, const CPhysValPoint& i_physValBR)
+void CGraphObjPixmap::setRect(const CPhysValPoint& i_physValTL, const CPhysValPoint& i_physValBR)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -531,7 +527,7 @@ void CGraphObjImage::setRect(const CPhysValPoint& i_physValTL, const CPhysValPoi
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setRect(const CPhysValPoint& i_physValTL, const CPhysValSize& i_physValSize)
+void CGraphObjPixmap::setRect(const CPhysValPoint& i_physValTL, const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -554,7 +550,7 @@ void CGraphObjImage::setRect(const CPhysValPoint& i_physValTL, const CPhysValSiz
            corner of the parent's bounding rectangle in the current unit of
            the drawing scene.
 */
-CPhysValRect CGraphObjImage::getRect() const
+CPhysValRect CGraphObjPixmap::getRect() const
 //------------------------------------------------------------------------------
 {
     return getRect(m_pDrawingScene->drawingSize().unit());
@@ -572,7 +568,7 @@ CPhysValRect CGraphObjImage::getRect() const
             bounding rectangle. If the object has no parent object, the rectangle
             is in returned in scene coordinates.
 */
-CPhysValRect CGraphObjImage::getRect(const CUnit& i_unit) const
+CPhysValRect CGraphObjPixmap::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     if (parentGroup() != nullptr) {
@@ -584,7 +580,7 @@ CPhysValRect CGraphObjImage::getRect(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setCenter(const QPointF& i_pt)
+void CGraphObjPixmap::setCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -604,7 +600,7 @@ void CGraphObjImage::setCenter(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setCenter(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -624,21 +620,21 @@ void CGraphObjImage::setCenter(const CPhysValPoint& i_physValPoint)
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getCenter() const
+CPhysValPoint CGraphObjPixmap::getCenter() const
 //------------------------------------------------------------------------------
 {
     return getRect().center();
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getCenter(const CUnit& i_unit) const
+CPhysValPoint CGraphObjPixmap::getCenter(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).center();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setSize(const QSizeF& i_size)
+void CGraphObjPixmap::setSize(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -658,7 +654,7 @@ void CGraphObjImage::setSize(const QSizeF& i_size)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setSize(const CPhysValSize& i_physValSize)
+void CGraphObjPixmap::setSize(const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -678,21 +674,21 @@ void CGraphObjImage::setSize(const CPhysValSize& i_physValSize)
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObjImage::getSize() const
+CPhysValSize CGraphObjPixmap::getSize() const
 //------------------------------------------------------------------------------
 {
     return getRect().size();
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CGraphObjImage::getSize(const CUnit& i_unit) const
+CPhysValSize CGraphObjPixmap::getSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).size();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setWidth(double i_fWidth)
+void CGraphObjPixmap::setWidth(double i_fWidth)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -712,7 +708,7 @@ void CGraphObjImage::setWidth(double i_fWidth)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setWidth(const CPhysVal& i_physValWidth)
+void CGraphObjPixmap::setWidth(const CPhysVal& i_physValWidth)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -732,7 +728,7 @@ void CGraphObjImage::setWidth(const CPhysVal& i_physValWidth)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setWidthByMovingLeftCenter(const QPointF& i_pt)
+void CGraphObjPixmap::setWidthByMovingLeftCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -752,7 +748,7 @@ void CGraphObjImage::setWidthByMovingLeftCenter(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -772,7 +768,7 @@ void CGraphObjImage::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPo
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setWidthByMovingRightCenter(const QPointF& i_pt)
+void CGraphObjPixmap::setWidthByMovingRightCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -792,7 +788,7 @@ void CGraphObjImage::setWidthByMovingRightCenter(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -812,21 +808,21 @@ void CGraphObjImage::setWidthByMovingRightCenter(const CPhysValPoint& i_physValP
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObjImage::getWidth() const
+CPhysVal CGraphObjPixmap::getWidth() const
 //------------------------------------------------------------------------------
 {
     return getRect().width();
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObjImage::getWidth(const CUnit& i_unit) const
+CPhysVal CGraphObjPixmap::getWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).width();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setHeight(double i_fHeight)
+void CGraphObjPixmap::setHeight(double i_fHeight)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -846,7 +842,7 @@ void CGraphObjImage::setHeight(double i_fHeight)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setHeight(const CPhysVal& i_physValHeight)
+void CGraphObjPixmap::setHeight(const CPhysVal& i_physValHeight)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -866,7 +862,7 @@ void CGraphObjImage::setHeight(const CPhysVal& i_physValHeight)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setHeightByMovingTopCenter(const QPointF& i_pt)
+void CGraphObjPixmap::setHeightByMovingTopCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -886,7 +882,7 @@ void CGraphObjImage::setHeightByMovingTopCenter(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -906,7 +902,7 @@ void CGraphObjImage::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPo
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setHeightByMovingBottomCenter(const QPointF& i_pt)
+void CGraphObjPixmap::setHeightByMovingBottomCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -926,7 +922,7 @@ void CGraphObjImage::setHeightByMovingBottomCenter(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -946,21 +942,21 @@ void CGraphObjImage::setHeightByMovingBottomCenter(const CPhysValPoint& i_physVa
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObjImage::getHeight() const
+CPhysVal CGraphObjPixmap::getHeight() const
 //------------------------------------------------------------------------------
 {
     return getRect().height();
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObjImage::getHeight(const CUnit& i_unit) const
+CPhysVal CGraphObjPixmap::getHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).height();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setTopLeft(const QPointF& i_pt)
+void CGraphObjPixmap::setTopLeft(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -980,7 +976,7 @@ void CGraphObjImage::setTopLeft(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setTopLeft(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setTopLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1000,21 +996,21 @@ void CGraphObjImage::setTopLeft(const CPhysValPoint& i_physValPoint)
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getTopLeft() const
+CPhysValPoint CGraphObjPixmap::getTopLeft() const
 //------------------------------------------------------------------------------
 {
     return getRect().topLeft();
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getTopLeft(const CUnit& i_unit) const
+CPhysValPoint CGraphObjPixmap::getTopLeft(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).topLeft();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setTopRight(const QPointF& i_pt)
+void CGraphObjPixmap::setTopRight(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1034,7 +1030,7 @@ void CGraphObjImage::setTopRight(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setTopRight(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setTopRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1054,21 +1050,21 @@ void CGraphObjImage::setTopRight(const CPhysValPoint& i_physValPoint)
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getTopRight() const
+CPhysValPoint CGraphObjPixmap::getTopRight() const
 //------------------------------------------------------------------------------
 {
     return getRect().topRight();
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getTopRight(const CUnit& i_unit) const
+CPhysValPoint CGraphObjPixmap::getTopRight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).topRight();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setBottomRight(const QPointF& i_pt)
+void CGraphObjPixmap::setBottomRight(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1088,7 +1084,7 @@ void CGraphObjImage::setBottomRight(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setBottomRight(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1108,21 +1104,21 @@ void CGraphObjImage::setBottomRight(const CPhysValPoint& i_physValPoint)
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getBottomRight() const
+CPhysValPoint CGraphObjPixmap::getBottomRight() const
 //------------------------------------------------------------------------------
 {
     return getRect().bottomRight();
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getBottomRight(const CUnit& i_unit) const
+CPhysValPoint CGraphObjPixmap::getBottomRight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).bottomRight();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setBottomLeft(const QPointF& i_pt)
+void CGraphObjPixmap::setBottomLeft(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1142,7 +1138,7 @@ void CGraphObjImage::setBottomLeft(const QPointF& i_pt)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setBottomLeft(const CPhysValPoint& i_physValPoint)
+void CGraphObjPixmap::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1162,14 +1158,14 @@ void CGraphObjImage::setBottomLeft(const CPhysValPoint& i_physValPoint)
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getBottomLeft() const
+CPhysValPoint CGraphObjPixmap::getBottomLeft() const
 //------------------------------------------------------------------------------
 {
     return getRect().bottomLeft();
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObjImage::getBottomLeft(const CUnit& i_unit) const
+CPhysValPoint CGraphObjPixmap::getBottomLeft(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return getRect(i_unit).bottomLeft();
@@ -1191,7 +1187,7 @@ public: // must overridables of base class CGraphObj
     @param [in] i_fAngle_degree
         Rotation angle in degree.
 */
-void CGraphObjImage::setRotationAngle(double i_fAngle_degree)
+void CGraphObjPixmap::setRotationAngle(double i_fAngle_degree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1209,7 +1205,7 @@ void CGraphObjImage::setRotationAngle(double i_fAngle_degree)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::setRotationAngle(const CPhysVal& i_physValAngle)
+void CGraphObjPixmap::setRotationAngle(const CPhysVal& i_physValAngle)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1235,7 +1231,7 @@ public: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the virtual method of base class CGraphObj.
 */
-void CGraphObjImage::setEditMode(const CEnumEditMode& i_eMode)
+void CGraphObjPixmap::setEditMode(const CEnumEditMode& i_eMode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1301,7 +1297,7 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the virtual method of base class CGraphObj.
 */
-QRectF CGraphObjImage::getBoundingRect() const
+QRectF CGraphObjPixmap::getBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1319,7 +1315,7 @@ QRectF CGraphObjImage::getBoundingRect() const
 //------------------------------------------------------------------------------
 /*! @brief Returns the rotated, physical bounding rectangle.
 */
-CPhysValRect CGraphObjImage::getPhysValBoundingRect(const CUnit& i_unit) const
+CPhysValRect CGraphObjPixmap::getPhysValBoundingRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1347,7 +1343,7 @@ CPhysValRect CGraphObjImage::getPhysValBoundingRect(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-SGraphObjHitInfo CGraphObjImage::getSelectionPointHitInfo(const QPointF& i_pt) const
+SGraphObjHitInfo CGraphObjPixmap::getSelectionPointHitInfo(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1370,7 +1366,7 @@ SGraphObjHitInfo CGraphObjImage::getSelectionPointHitInfo(const QPointF& i_pt) c
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::showSelectionPoints(TSelectionPointTypes i_selPts)
+void CGraphObjPixmap::showSelectionPoints(TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1411,59 +1407,59 @@ public: // overridables of base class CGraphObj (text labels)
 
     @return List of possbile selection points.
 */
-QList<SGraphObjSelectionPoint> CGraphObjImage::getPossibleLabelAnchorPoints(const QString& i_strName) const
+QList<SGraphObjSelectionPoint> CGraphObjPixmap::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
     if (s_arSelPtsUserDefined.isEmpty()) {
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft));
     }
     static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
     if (s_hshSelPtsPredefined.isEmpty()) {
         QList<SGraphObjSelectionPoint> arSelPts;
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
         s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
         arSelPts.clear();
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopLeft, arSelPts);
         arSelPts.clear();
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopRight, arSelPts);
         arSelPts.clear();
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomRight, arSelPts);
         arSelPts.clear();
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjImage*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft));
+            const_cast<CGraphObjPixmap*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft));
         s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomLeft, arSelPts);
     }
     if (s_hshSelPtsPredefined.contains(i_strName)) {
@@ -1481,7 +1477,7 @@ QList<SGraphObjSelectionPoint> CGraphObjImage::getPossibleLabelAnchorPoints(cons
 
     @return true if the label still has its default values, false otherwise.
 */
-bool CGraphObjImage::labelHasDefaultValues(const QString& i_strName) const
+bool CGraphObjPixmap::labelHasDefaultValues(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     if (!m_hshLabelDscrs.contains(i_strName)) {
@@ -1573,7 +1569,7 @@ public: // overridables of base class CGraphObj (geometry labels)
 
     @return true if the label still has its default values, false otherwise.
 */
-bool CGraphObjImage::geometryLabelHasDefaultValues(const QString& i_strName) const
+bool CGraphObjPixmap::geometryLabelHasDefaultValues(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
@@ -1678,7 +1674,7 @@ public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QRectF CGraphObjImage::boundingRect() const
+QRectF CGraphObjPixmap::boundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1709,7 +1705,7 @@ QRectF CGraphObjImage::boundingRect() const
 //------------------------------------------------------------------------------
 /*! @brief Reimplements QGraphicsItem::shape.
 */
-QPainterPath CGraphObjImage::shape() const
+QPainterPath CGraphObjPixmap::shape() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1731,7 +1727,7 @@ QPainterPath CGraphObjImage::shape() const
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::paint(
+void CGraphObjPixmap::paint(
     QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,
     QWidget* i_pWdgt )
@@ -1754,114 +1750,35 @@ void CGraphObjImage::paint(
 
     QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
 
-    // "QGraphicsPixmapItem::paint" calls "CGraphObjImage::boundingRect" to draw the
-    // highlighted focus rectangle around the text item. "CGraphObjImage::boundingRect"
+    // "QGraphicsPixmapItem::paint" calls "CGraphObjPixmap::boundingRect" to draw the
+    // highlighted focus rectangle around the text item. "CGraphObjPixmap::boundingRect"
     // returns the rectangle including the rotation selection points. So we don't let
     // the base implementation paint the selection rectangle around the item.
     styleOption.state &= ~QStyle::State_Selected;
     styleOption.state &= ~QStyle::State_HasFocus;
 
-    QGraphicsPixmapItem::paint(i_pPainter,&styleOption,i_pWdgt);
-
-    QPen pn;
+    QGraphicsPixmapItem::paint(i_pPainter, &styleOption, i_pWdgt);
 
     i_pPainter->save();
+    i_pPainter->setRenderHints(s_painterRenderHints);
 
-    if( m_pDrawingScene->getMode() == EMode::Edit )
-    {
-        if( /*m_bIsHit ||*/ isSelected() )
-        {
-            pn.setColor(Qt::blue);
-            pn.setStyle(Qt::DotLine);
-
-            i_pPainter->setPen(pn);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            i_pPainter->drawRect(m_rctCurr);
-#endif
-
-            if( isSelected() )
-            {
-                if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr )
-                {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-
-                    QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
-                    QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
-
-                    QPointF ptRctM = mapFromScene(ptRct);
-                    QPointF ptRotM = mapFromScene(ptRot);
-
-                    i_pPainter->drawLine( ptRctM, ptRotM );
-                }
-
-                if( m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr )
-                {
-                    CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-                    CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-
-                    QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
-                    QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
-
-                    QPointF ptRctM = mapFromScene(ptRct);
-                    QPointF ptRotM = mapFromScene(ptRot);
-
-                    i_pPainter->drawLine( ptRctM, ptRotM );
-                }
-
-            }// if( isSelected() )
-
-            //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-            //CGraphObjLabel* pGraphObjLabel;
-
-            //QPointF ptSelPt;
-            //QPointF ptLabelSelPt;
-
-            //while( itLabels.hasNext() )
-            //{
-            //    itLabels.next();
-            //    pGraphObjLabel = itLabels.value();
-
-            //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-            //    {
-            //        ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
-
-            //        ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPointCoors(ESelectionPoint::Center);
-            //        ptLabelSelPt = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt );
-
-            //        i_pPainter->drawLine( ptSelPt, ptLabelSelPt );
-            //    }
-            //}
-        } // if( m_bIsHit || isSelected() )
-
-        else if( m_drawSettings.lineStyle() != ELineStyle::NoLine )
-        {
-            pn.setColor( m_drawSettings.penColor() );
-            pn.setWidth( m_drawSettings.penWidth() );
-            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
-
-            i_pPainter->setPen(pn);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            i_pPainter->drawRect(m_rctCurr);
-#endif
+    QPen pn;
+    QRectF rctBounding = getBoundingRect();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        pn.setStyle(Qt::SolidLine);
+        if (isSelected()) {
+            pn.setColor(s_selectionColor);
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
-    } // if( m_pDrawingScene->getMode() == EMode::Edit )
-
-    else // if( m_pDrawingScene->getMode() == EMode::View )
-    {
-        if( m_drawSettings.lineStyle() != ELineStyle::NoLine )
-        {
-            pn.setColor( m_drawSettings.penColor() );
-            pn.setWidth( m_drawSettings.penWidth() );
-            pn.setStyle( lineStyle2QtPenStyle(m_drawSettings.lineStyle()) );
-
-            i_pPainter->setPen(pn);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            i_pPainter->drawRect(m_rctCurr);
-#endif
+        else {
+            pn.setColor(s_highlightColor);
+            pn.setWidth(3 + m_drawSettings.penWidth());
         }
+        QPainterPath outline;
+        outline.moveTo(rctBounding.topLeft());
+        outline.addRect(rctBounding);
+        i_pPainter->strokePath(outline, pn);
     }
-
     i_pPainter->restore();
 }
 
@@ -1870,12 +1787,12 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
+void CGraphObjPixmap::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
@@ -1888,10 +1805,31 @@ void CGraphObjImage::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter events if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isRectHit(boundingRect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
         traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
@@ -1902,12 +1840,12 @@ void CGraphObjImage::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
+void CGraphObjPixmap::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverMoveEvents,
@@ -1916,22 +1854,43 @@ void CGraphObjImage::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // Ignore hover events if any object should be or is currently being created.
+    // Only accept hover enter and move events if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }
+    // Unless connection lines are to be drawn.
+    // If the connection line should be linked to this object, a connection point has
+    // to be created at the bounding rectangle at the closest selection point.
+    // That the connection line can be started or terminated is indicated by a pin cursor.
+    else if (m_pDrawingScene->getCurrentDrawingTool()->graphObjType() == EGraphObjTypeConnectionLine) {
+        SGraphObjHitInfo hitInfo;
+        if (isRectHit(boundingRect(), m_drawSettings.fillStyle(), i_pEv->pos(), m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+            if (hitInfo.isSelectionPointHit()) {
+                QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                QCursor cursor(pxmCursor, 0, pxmCursor.height()-1);
+                QGraphicsItem_setCursor(cursor);
+            }
+            else {
+                QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+            }
+        }
+        else {
+            QGraphicsItem_setCursor(Qt::ForbiddenCursor);
+        }
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
     }
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
+void CGraphObjPixmap::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjHoverEnterLeaveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneHoverEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEnterLeaveEvents,
@@ -1952,12 +1911,12 @@ protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
+void CGraphObjPixmap::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -1965,89 +1924,45 @@ void CGraphObjImage::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
+    }
 
-//    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-//    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-//
-//    if( modeDrawing == EMode::Edit )
-//    {
-//        if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
-//        {
-//            QGraphicsPixmapItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_rctCurr = QRectF( QPointF(0.0,0.0), pixmap().size() );
-//            m_ptRotOriginCurr = m_rctCurr.center();
-//            acceptCurrentAsOriginalCoors();
-//            m_rctOnMousePressEvent = m_rctCurr;
-//            m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
-//#endif
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
-//
-//        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
-//        {
-//            QGraphicsPixmapItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-//
-//            CGraphObjSelectionPoint* pGraphObjSelPt;
-//            ESelectionPoint          selPt;
-//            int                      idxSelPt;
-//
-//            SGraphObjHitInfo hitInfo;
-//
-//            //bool bIsHit = isHit( ptMouseItemPos, &hitInfo );
-//
-//            m_editMode                  = hitInfo.m_editMode;
-//            m_editResizeMode            = hitInfo.m_editResizeMode;
-//            m_selPtSelectedBoundingRect = hitInfo.m_selPt;
-//
-//            for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-//            {
-//                selPt = static_cast<ESelectionPoint>(idxSelPt);
-//
-//                pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-//
-//                if( pGraphObjSelPt != nullptr )
-//                {
-//                    if( m_selPtSelectedBoundingRect == selPt )
-//                    {
-//                        pGraphObjSelPt->setSelected(true);
-//                    }
-//                    else
-//                    {
-//                        pGraphObjSelPt->setSelected(false);
-//                    }
-//                }
-//            }
-//
-//            m_ptScenePosOnMousePressEvent = pos();
-//            m_ptMouseEvScenePosOnMousePressEvent = i_pEv->scenePos();
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_rctOnMousePressEvent = m_rctCurr;
-//            m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
-//#endif
-//
-//            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
-//
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
-//
-//    } // if( modeDrawing == EMode::Edit )
+    bool bCallBaseMouseEventHandler = true;
+    if (i_pEv->button() == Qt::LeftButton) {
+        if (m_editMode == EEditMode::None) {
+            setEditMode(EEditMode::ModifyingBoundingRect);
+        }
+    }
+    else if (i_pEv->button() == Qt::RightButton) {
+        showContextMenu(i_pEv);
+        bCallBaseMouseEventHandler = false;
+    }
+    if (bCallBaseMouseEventHandler) {
+        // Forward the mouse event to the base implementation.
+        // This will select the item, creating selection points if not yet created.
+        QGraphicsItem::mousePressEvent(i_pEv);
+    }
 
-} // mousePressEvent
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+        traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted())+ "}");
+    }
+}
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
+void CGraphObjPixmap::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -2055,107 +1970,40 @@ void CGraphObjImage::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter, "Common");
+    }
 
-//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-//
-//    if( modeDrawing == EMode::Edit )
-//    {
-//        if( m_editMode == EEditMode::Creating )
-//        {
-//            // The object has been initially created.
-//            //m_pDrawingScene->onGraphObjCreationFinished(this);
-//
-//        } // if( m_editMode == EEditMode::Creating )
-//
-//        else if( m_editMode == EEditMode::Move )
-//        {
-//        } // if( m_editMode == EEditMode::Move )
-//
-//        else if( m_editMode == EEditMode::Resize )
-//        {
-//            // The item will not be resized to the position of the mouse release event.
-//            // A selection point might have been clicked and released immediately (without
-//            // moving the mouse). In this case changing the size of the item according to
-//            // position of the mouse is not expected.
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            QPolygonF plgSceneNew         = mapToScene(m_rctCurr);
-//            QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
-//            QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
-//            double    fAngle_rad          = Math::degree2Rad(m_fRotAngleCurr_deg);
-//            //QPointF   ptLTScenePosOld   = mapToScene( QPointF(0.0,0.0) );
-//            QPointF   ptLTScenePosNew     = mapToScene( m_rctCurr.topLeft() );
-//            QPointF   ptItemScenePosNew   = rotatePoint( ptRotOriginSceneNew, ptLTScenePosNew, -fAngle_rad );
-//
-//            if( m_rctCurr.left() != 0.0 )
-//            {
-//                m_rctCurr.moveLeft(0.0);
-//            }
-//            if( m_rctCurr.top() != 0.0 )
-//            {
-//                m_rctCurr.moveTop(0.0);
-//            }
-//
-//            m_ptRotOriginCurr = m_rctCurr.center();
-//
-//            QGraphicsPixmapItem::setOffset(0.0,0.0);
-//
-//            setPos(ptItemScenePosNew);    // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-//
-//            updateTransform();
-//
-//            updateSelectionPointsOfBoundingRect(m_rctCurr);
-//
-//            updateLabelPositionsAndContents();
-//            acceptCurrentAsOriginalCoors();
-//#endif
-//
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( m_editMode == EEditMode::Resize )
-//
-//        else if( m_editMode == EEditMode::Rotate )
-//        {
-//        } // if( m_editMode == EEditMode::Rotate )
-//
-//        else if( m_editMode == EEditMode::MoveShapePoint )
-//        {
-//        } // if( m_editMode == EEditMode::MoveShapePoint )
-//
-//        m_editMode = EEditMode::None;
-//        m_editResizeMode = EEditResizeMode::None;
-//        m_idxSelPtSelectedPolygon = -1;
-//
-//    } // if( modeDrawing == EMode::Edit )
-//
-//    // The mouse release event would select the object.
-//    // This is not wanted if the selection tool is not active.
-//    bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-//    bool bIsSelectableReset = false;
-//
-//    if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
-//    {
-//        setFlag(QGraphicsItem::ItemIsSelectable,false);
-//        bIsSelectableReset = true;
-//    }
-//
-//    QGraphicsPixmapItem::mouseReleaseEvent(i_pEv);
-//
-//    if( bIsSelectableReset )
-//    {
-//        setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
-//    }
+    if (m_editMode == EEditMode::CreatingByMouseEvents) {
+        // The editMode changed signal will be emitted and received by the drawing scene.
+        // The drawing scene is informed this way that creation of the object is finished
+        // and will unselect the current drawing tool and will select the object under
+        // construction showing the selection points at the bounding rectangle.
+        setEditMode(EEditMode::ModifyingBoundingRect);
+    }
 
-} // mouseReleaseEvent
+    // Forward the mouse event to the items base implementation.
+    QGraphicsItem::mouseReleaseEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave, "Common");
+        traceThisPositionInfo(mthTracer, EMethodDir::Leave, "Common");
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
+void CGraphObjPixmap::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
@@ -2164,20 +2012,33 @@ void CGraphObjImage::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // When doubleclicking an item, the item will first receive a mouse
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+
+    // When double clicking an item, the item will first receive a mouse
     // press event, followed by a release event (i.e., a click), then a
     // doubleclick event, and finally a release event.
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
-    //QGraphicsPixmapItem::mouseDoubleClickEvent(i_pEv);
+    //QGraphicsRectItem::mouseDoubleClickEvent(i_pEv);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
+void CGraphObjPixmap::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
+        strMthInArgs = "Ev {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
@@ -2185,105 +2046,30 @@ void CGraphObjImage::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ path(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Enter);
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
 
-//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-//
-//    if( modeDrawing == EMode::Edit )
-//    {
-//        if( m_editMode == EEditMode::Creating )
-//        {
-//        } // if( m_editMode == EEditMode::Creating )
-//
-//        else if( m_editMode == EEditMode::Move )
-//        {
-//            QGraphicsPixmapItem::mouseMoveEvent(i_pEv);
-//
-//        } // if( m_editMode == EEditMode::Move )
-//
-//        else if( m_editMode == EEditMode::Resize )
-//        {
-//            QPixmap pxm = m_pxmOrig;
-//
-//            QPointF ptMouseItemPos = i_pEv->pos();
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, nullptr );
-//
-//            //m_ptRotOriginCurr = m_rctCurr.center();
-//
-//            // Don't change the position of the object as the position of further
-//            // mouse events should be received relative to the object's position
-//            // on starting the edit process on pressing the mouse.
-//            //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-//
-//            pxm = pxm.scaled( m_rctCurr.size().toSize() /*, Qt::IgnoreAspectRatio, Qt::SmoothTransformation*/ );
-//
-//            QGraphicsPixmapItem::setPixmap(pxm);
-//            QGraphicsPixmapItem::setOffset( m_rctCurr.left(), m_rctCurr.top() );
-//
-//            updateSelectionPointsOfBoundingRect(m_rctCurr);
-//#endif
-//
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( m_editMode == EEditMode::Resize )
-//
-//        else if( m_editMode == EEditMode::Rotate )
-//        {
-//            QPointF ptMouseScenePos = i_pEv->scenePos();
-//
-//            double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            m_fRotAngleCurr_deg = Math::rad2Degree(fRotAngle_rad);
-//
-//            switch( m_selPtSelectedBoundingRect.enumerator() )
-//            {
-//                case ESelectionPoint::RotateTop:
-//                {
-//                    m_fRotAngleCurr_deg -= 90.0;
-//                    break;
-//                }
-//                case ESelectionPoint::RotateBottom:
-//                {
-//                    m_fRotAngleCurr_deg -= 270.0;
-//                    break;
-//                }
-//                default:
-//                {
-//                    break;
-//                }
-//            }
-//
-//            m_fRotAngleCurr_deg = Math::round2Resolution( m_fRotAngleCurr_deg, m_pDrawingScene->getRotationAngleResolutionInDegree() );
-//
-//            while( m_fRotAngleCurr_deg >= 360.0 )
-//            {
-//                m_fRotAngleCurr_deg -= 360.0;
-//            }
-//            while( m_fRotAngleCurr_deg < 0.0 )
-//            {
-//                m_fRotAngleCurr_deg += 360.0;
-//            }
-//#endif
-//
-//            updateTransform();
-//            //updateEditInfo();
-//            //updateToolTip();
-//
-//        } // if( m_editMode == EEditMode::Rotate )
-//
-//    } // if( modeDrawing == EMode::Edit )
+    // Forward the mouse event to the items base implementation.
+    // This will move the item resulting in an itemChange call with PositionHasChanged.
+    QGraphicsItem::mouseMoveEvent(i_pEv);
 
-} // mouseMoveEvent
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave);
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");
+    }
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
+QVariant CGraphObjPixmap::itemChange( GraphicsItemChange i_change, const QVariant& i_value )
 //------------------------------------------------------------------------------
 {
     if (m_bDtorInProgress) {
@@ -2422,7 +2208,7 @@ protected: // overridable slots of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
-void CGraphObjImage::onGraphObjParentGeometryOnSceneChanged(
+void CGraphObjPixmap::onGraphObjParentGeometryOnSceneChanged(
     CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
@@ -2516,7 +2302,7 @@ void CGraphObjImage::onGraphObjParentGeometryOnSceneChanged(
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
-void CGraphObjImage::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
+void CGraphObjPixmap::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2628,7 +2414,7 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
-void CGraphObjImage::updateTransformedCoorsOnParentChanged(
+void CGraphObjPixmap::updateTransformedCoorsOnParentChanged(
     CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
 //------------------------------------------------------------------------------
 {
@@ -2683,7 +2469,7 @@ void CGraphObjImage::updateTransformedCoorsOnParentChanged(
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
-void CGraphObjImage::updateTransformedCoorsOnParentGeometryChanged()
+void CGraphObjPixmap::updateTransformedCoorsOnParentGeometryChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -2716,7 +2502,7 @@ void CGraphObjImage::updateTransformedCoorsOnParentGeometryChanged()
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
-void CGraphObjImage::updateTransformedCoorsOnItemPositionChanged()
+void CGraphObjPixmap::updateTransformedCoorsOnItemPositionChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -2762,7 +2548,7 @@ protected: // auxiliary instance methods
         is the center point of the item.
     @return Scaled rectangle.
 */
-QRectF CGraphObjImage::getRectScaled(const QRectF& i_rectOrig) const
+QRectF CGraphObjPixmap::getRectScaled(const QRectF& i_rectOrig) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2798,7 +2584,7 @@ QRectF CGraphObjImage::getRectScaled(const QRectF& i_rectOrig) const
     @return Physical rectangle whose origin is either the top left or bottom
             left corner of the parent's bounding rectangle.
 */
-CPhysValRect CGraphObjImage::getPhysValRectOrig(const QRectF& i_rectOrig) const
+CPhysValRect CGraphObjPixmap::getPhysValRectOrig(const QRectF& i_rectOrig) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2813,7 +2599,7 @@ CPhysValRect CGraphObjImage::getPhysValRectOrig(const QRectF& i_rectOrig) const
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    CGraphObjImage* pVThis = const_cast<CGraphObjImage*>(this);
+    CGraphObjPixmap* pVThis = const_cast<CGraphObjPixmap*>(this);
     double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
     if (fRotationAngle_degree != 0.0) {
         pVThis->QGraphicsItem_setRotation(0.0);
@@ -2861,7 +2647,7 @@ CPhysValRect CGraphObjImage::getPhysValRectOrig(const QRectF& i_rectOrig) const
         is the top left or bottom right corner of the parent's bounding rectangle.
     @return Scaled rectangle.
 */
-CPhysValRect CGraphObjImage::getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const
+CPhysValRect CGraphObjPixmap::getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2905,7 +2691,7 @@ protected: // auxiliary instance methods (method tracing)
 
     @return Previous original rectangle coordinates.
 */
-QRectF CGraphObjImage::setRectOrig(const QRectF& i_rect)
+QRectF CGraphObjPixmap::setRectOrig(const QRectF& i_rect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2944,7 +2730,7 @@ QRectF CGraphObjImage::setRectOrig(const QRectF& i_rect)
 
     @return Previous rectangle coordinates.
 */
-QRectF CGraphObjImage::setRectScaled(const QRectF& i_rect)
+QRectF CGraphObjPixmap::setRectScaled(const QRectF& i_rect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2977,7 +2763,7 @@ QRectF CGraphObjImage::setRectScaled(const QRectF& i_rect)
 
     @return Previous original rectangle coordinates.
 */
-CPhysValRect CGraphObjImage::setPhysValRectOrig(const CPhysValRect& i_physValRect)
+CPhysValRect CGraphObjPixmap::setPhysValRectOrig(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3009,7 +2795,7 @@ CPhysValRect CGraphObjImage::setPhysValRectOrig(const CPhysValRect& i_physValRec
 
     @return Previous rectangle coordinates.
 */
-CPhysValRect CGraphObjImage::setPhysValRectScaled(const CPhysValRect& i_physValRect)
+CPhysValRect CGraphObjPixmap::setPhysValRectScaled(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3040,7 +2826,7 @@ CPhysValRect CGraphObjImage::setPhysValRectScaled(const CPhysValRect& i_physValR
 
     @return Previous rectangle coordinates.
 */
-CPhysValRect CGraphObjImage::setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect)
+CPhysValRect CGraphObjPixmap::setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3069,7 +2855,7 @@ CPhysValRect CGraphObjImage::setPhysValRectScaledAndRotated(const CPhysValRect& 
     As the prepareGeometryChange method is a protected method of QGraphicsItem
     this method must be reimplemented by the derived classes.
 */
-void CGraphObjImage::QGraphicsItem_prepareGeometryChange()
+void CGraphObjPixmap::QGraphicsItem_prepareGeometryChange()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -3087,7 +2873,7 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjImage::traceThisPositionInfo(
+void CGraphObjPixmap::traceThisPositionInfo(
     CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {

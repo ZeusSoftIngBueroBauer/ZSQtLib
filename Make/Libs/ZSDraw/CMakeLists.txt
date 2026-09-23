@@ -60,7 +60,6 @@ list(APPEND _HeadersDrawingGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjGroup.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjImage.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabel.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h
@@ -68,6 +67,7 @@ list(APPEND _HeadersDrawingGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPixmap.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h
@@ -80,8 +80,8 @@ list(APPEND _HeadersDrawingObjFactories
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryConnectionPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryEllipse.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryImage.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPixmap.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryRect.h
@@ -205,7 +205,6 @@ list(APPEND _SourcesDrawingGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjEllipse.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjGroup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjImage.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.cpp
@@ -213,6 +212,7 @@ list(APPEND _SourcesDrawingGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPixmap.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.cpp
@@ -225,8 +225,8 @@ list(APPEND _SourcesDrawingObjFactories
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryConnectionPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryEllipse.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryGroup.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryImage.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPixmap.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryPolyline.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/ObjFactories/ZSDrawObjFactoryRect.cpp

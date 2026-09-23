@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjImage_h
-#define ZSDraw_GraphObjImage_h
+#ifndef ZSDraw_GraphObjPixmap_h
+#define ZSDraw_GraphObjPixmap_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
@@ -40,21 +40,21 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CGraphObjImage : public CGraphObj, public QGraphicsPixmapItem
+class ZSDRAWDLL_API CGraphObjPixmap : public CGraphObj, public QGraphicsPixmapItem
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjImage"; }
+    static QString ClassName() { return "CGraphObjPixmap"; }
 public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
 public: // ctors and dtor
-    CGraphObjImage(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
-    ~CGraphObjImage() override;
+    CGraphObjPixmap(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
+    ~CGraphObjPixmap() override;
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
@@ -196,9 +196,8 @@ protected: // instance members
          to the origin of the item's bounding rectangle.
          Other graphics items, like Line, provide methods to set and retrieve the
          local coordinates (e.g. "setLine", "line").
-         The text item does not have such methods (e.g. "setRect", "rect").
-         The scaled rectangle is returned by the "boundingRect" method of the graphics
-         item to provide the bounding rectangle of the group in local coordinates. */
+         The pixmap item does not have such methods (e.g. "setRect", "rect").
+         The scaled rectangle is returned by the "boundingRect" method of the graphics item. */
     QRectF m_rectScaled;
     /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates with unit
          in parent coordinates relative to the top left or bottom left corner of the parent.
@@ -219,10 +218,10 @@ protected: // instance members
          (and all other methods retrieving the resulting coordinates in the current unit). */
     CPhysValRect m_physValRectScaledAndRotated;
 
-}; // class CGraphObjImage
+}; // class CGraphObjPixmap
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjImage_h
+#endif // #ifndef ZSDraw_GraphObjPixmap_h

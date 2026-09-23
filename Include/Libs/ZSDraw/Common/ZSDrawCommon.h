@@ -248,7 +248,7 @@ typedef enum {
     EGraphObjTypePolygon         = QGraphicsItem::UserType +  3,
     EGraphObjTypePolyline        = QGraphicsItem::UserType +  4,
     EGraphObjTypeText            = QGraphicsItem::UserType +  5,
-    EGraphObjTypeImage           = QGraphicsItem::UserType +  6,
+    EGraphObjTypePixmap           = QGraphicsItem::UserType +  6,
     EGraphObjTypeConnectionPoint = QGraphicsItem::UserType +  7,  // not a SVG element
     EGraphObjTypeConnectionLine  = QGraphicsItem::UserType +  8,  // not a SVG element
     EGraphObjTypeGroup           = QGraphicsItem::UserType +  9,  // not a SVG element

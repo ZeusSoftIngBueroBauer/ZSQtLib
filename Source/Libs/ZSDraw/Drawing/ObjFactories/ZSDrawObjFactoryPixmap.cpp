@@ -24,11 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryImage.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPixmap.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPixmap.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
@@ -49,7 +49,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CObjFactoryImage : public CObjFactory
+class CObjFactoryPixmap : public CObjFactory
 *******************************************************************************/
 
 /*==============================================================================
@@ -57,13 +57,13 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CObjFactoryImage::CObjFactoryImage(const QPixmap& i_pxmToolIcon) :
+CObjFactoryPixmap::CObjFactoryPixmap(const QPixmap& i_pxmToolIcon) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeImage,
-        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeImage),
+        /* iGraphObjType   */ EGraphObjTypePixmap,
+        /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePixmap),
         /* toolIcon        */ i_pxmToolIcon )
 {
     CMethodTracer mthTracer(
@@ -74,7 +74,7 @@ CObjFactoryImage::CObjFactoryImage(const QPixmap& i_pxmToolIcon) :
 }
 
 //------------------------------------------------------------------------------
-CObjFactoryImage::~CObjFactoryImage()
+CObjFactoryPixmap::~CObjFactoryPixmap()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -89,14 +89,14 @@ public: // interface methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CObjFactoryImage::getNumberOfCreatedGraphObjects() const
+int CObjFactoryPixmap::getNumberOfCreatedGraphObjects() const
 //------------------------------------------------------------------------------
 {
-    return CGraphObjImage::s_iInstCount;
+    return CGraphObjPixmap::s_iInstCount;
 }
 
 //------------------------------------------------------------------------------
-CGraphObj* CObjFactoryImage::createGraphObj(
+CGraphObj* CObjFactoryPixmap::createGraphObj(
     CDrawingScene* i_pDrawingScene,
     const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
@@ -112,8 +112,8 @@ CGraphObj* CObjFactoryImage::createGraphObj(
         /* strAddInfo   */ strMthInArgs );
 
     CDrawSettings drawSettings = i_drawSettings;
-    drawSettings.setGraphObjType(EGraphObjTypeImage);
-    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene);
+    drawSettings.setGraphObjType(EGraphObjTypePixmap);
+    CGraphObjPixmap* pGraphObj = new CGraphObjPixmap(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
     pGraphObj->setImageFilePath(filePath());
 
@@ -124,7 +124,7 @@ CGraphObj* CObjFactoryImage::createGraphObj(
 }
 
 //------------------------------------------------------------------------------
-CGraphObj* CObjFactoryImage::createGraphObj(
+CGraphObj* CObjFactoryPixmap::createGraphObj(
     CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings)
@@ -142,8 +142,8 @@ CGraphObj* CObjFactoryImage::createGraphObj(
         /* strAddInfo   */ strMthInArgs );
 
     CDrawSettings drawSettings = i_drawSettings;
-    drawSettings.setGraphObjType(EGraphObjTypeImage);
-    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene);
+    drawSettings.setGraphObjType(EGraphObjTypePixmap);
+    CGraphObjPixmap* pGraphObj = new CGraphObjPixmap(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
     pGraphObj->setImageFilePath(filePath());
 
@@ -154,7 +154,7 @@ CGraphObj* CObjFactoryImage::createGraphObj(
 }
 
 //------------------------------------------------------------------------------
-SErrResultInfo CObjFactoryImage::saveGraphObj(
+SErrResultInfo CObjFactoryPixmap::saveGraphObj(
     CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
 //------------------------------------------------------------------------------
 {
@@ -174,7 +174,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
 
     SErrResultInfo errResultInfo;
 
-    CGraphObjImage* pGraphObj = dynamic_cast<CGraphObjImage*>(i_pGraphObj);
+    CGraphObjPixmap* pGraphObj = dynamic_cast<CGraphObjPixmap*>(i_pGraphObj);
     if (pGraphObj == nullptr) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
     }
@@ -229,7 +229,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
 }
 
 //------------------------------------------------------------------------------
-CGraphObj* CObjFactoryImage::loadGraphObj(
+CGraphObj* CObjFactoryPixmap::loadGraphObj(
     CDrawingScene* i_pDrawingScene,
     CGraphObjGroup* i_pGraphObjGroupParent,
     const QString& i_strObjName,
@@ -251,10 +251,10 @@ CGraphObj* CObjFactoryImage::loadGraphObj(
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene, i_strObjName);
+    CGraphObjPixmap* pGraphObj = new CGraphObjPixmap(i_pDrawingScene, i_strObjName);
     i_pDrawingScene->addGraphObj(pGraphObj, i_pGraphObjGroupParent);
 
-    CDrawSettings drawSettings(EGraphObjTypeImage);
+    CDrawSettings drawSettings(EGraphObjTypePixmap);
     CPhysValPoint physValPointCenter(*i_pDrawingScene);
     CPhysValSize physValSize(*i_pDrawingScene);
     CPhysVal physValAngle(0.0, Units.Angle.Degree);

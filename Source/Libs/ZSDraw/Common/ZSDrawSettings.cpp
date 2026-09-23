@@ -312,7 +312,7 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /* 20 TextSize                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextSize, ETextSize11, true),
         /* 21 TextEffect                   */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameTextEffect, static_cast<int>(ETextEffect::None), true)
     /*                                 */ },
-    /*  7 EGraphObjTypeImage           */ {
+    /*  7 EGraphObjTypePixmap           */ {
         /*  0 PenColor                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenColor, QColor(Qt::black), true),
         /*  1 PenWidth                     */ SDrawAttribute(XmlStreamParser::c_strXmlElemNamePenWidth, 1, true),
         /*  2 FillColor                    */ SDrawAttribute(XmlStreamParser::c_strXmlElemNameFillColor, QColor(Qt::white), false),

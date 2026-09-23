@@ -181,7 +181,7 @@ ZSSYSDLL_API QString qKeyboardModifiers2Str( Qt::KeyboardModifiers i_modifiers )
 ZSSYSDLL_API Qt::KeyboardModifiers char2QKeyboardModifiers( const QChar& i_ch );
 
 ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins );
-ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );
+ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, const QString& i_strInclude = "", const QString& i_strExclude = "" );
 ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
 ZSSYSDLL_API QString qMouseButton2Str( Qt::MouseButton i_mouseButton );
 ZSSYSDLL_API QString qMouseButtons2Str( Qt::MouseButtons i_mouseButtons );

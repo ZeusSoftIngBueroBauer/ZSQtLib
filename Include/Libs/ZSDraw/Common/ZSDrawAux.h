@@ -76,7 +76,7 @@ ZSDRAWDLL_API QString qGraphicsItemType2Str( int i_type );
 ZSDRAWDLL_API bool isGraphicsSceneEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneEvent2Str( QGraphicsSceneEvent* i_pEv );
 ZSDRAWDLL_API bool isGraphicsSceneDragDropEvent( QEvent* i_pEv );
-ZSDRAWDLL_API QString qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv );
+ZSDRAWDLL_API QString qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv, bool i_bIncludeMimeData = false );
 ZSDRAWDLL_API bool isGraphicsSceneHoverEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv );
 ZSDRAWDLL_API bool isGraphicsSceneMouseEvent( QEvent* i_pEv );

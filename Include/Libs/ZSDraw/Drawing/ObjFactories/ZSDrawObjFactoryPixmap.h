@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_ObjFactoryImage_h
-#define ZSDraw_ObjFactoryImage_h
+#ifndef ZSDraw_ObjFactoryPixmap_h
+#define ZSDraw_ObjFactoryPixmap_h
 
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -35,17 +35,17 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CObjFactoryImage : public CObjFactory
+class ZSDRAWDLL_API CObjFactoryPixmap : public CObjFactory
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CObjFactoryImage"; }
+    static QString ClassName() { return "CObjFactoryPixmap"; }
 public: // ctors and dtor
-    CObjFactoryImage( const QPixmap& i_pxmToolIcon = QPixmap() );
-    ~CObjFactoryImage() override;
+    CObjFactoryPixmap( const QPixmap& i_pxmToolIcon = QPixmap() );
+    ~CObjFactoryPixmap() override;
 public: // interface methods of base class CObjFactory
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
@@ -64,10 +64,10 @@ public: // interface methods of base class CObjFactory
         const QString& i_strObjName,
         QXmlStreamReader& i_xmlStreamReader) override;
 
-}; // class CObjFactoryImage
+}; // class CObjFactoryPixmap
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_ObjFactoryImage_h
+#endif // #ifndef ZSDraw_ObjFactoryPixmap_h

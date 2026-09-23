@@ -114,32 +114,32 @@ Enum EGraphObjType
 const SEnumEntry s_arEnumStrGraphObjType[EGraphObjTypeCount] =
 //------------------------------------------------------------------------------
 {
-    /* 65537 */ SEnumEntry( EGraphObjTypeLine,            "Line",            "Line"             ),
-    /* 65538 */ SEnumEntry( EGraphObjTypeRect,            "Rect",            "Rectangle"        ),
-    /* 65539 */ SEnumEntry( EGraphObjTypeEllipse,         "Ellipse",         "Ellipse"          ),
-    /* 65540 */ SEnumEntry( EGraphObjTypePolygon,         "Polygon",         "Polygon"          ),
-    /* 65541 */ SEnumEntry( EGraphObjTypePolyline,        "Polyline",        "Polyline"         ),
-    /* 65542 */ SEnumEntry( EGraphObjTypeText,            "Text",            "Text"             ),
-    /* 65543 */ SEnumEntry( EGraphObjTypeImage,           "Image",           "Image"            ),
-    /* 65544 */ SEnumEntry( EGraphObjTypeConnectionPoint, "ConnectionPoint", "Connection Point" ),
-    /* 65545 */ SEnumEntry( EGraphObjTypeConnectionLine,  "ConnectionLine",  "Connection Line"  ),
-    /* 65546 */ SEnumEntry( EGraphObjTypeGroup,           "Group",           "Group"            )
+    /* 65537 */ SEnumEntry(EGraphObjTypeLine, "Line", "Line"),
+    /* 65538 */ SEnumEntry(EGraphObjTypeRect, "Rect", "Rectangle"),
+    /* 65539 */ SEnumEntry(EGraphObjTypeEllipse, "Ellipse", "Ellipse"),
+    /* 65540 */ SEnumEntry(EGraphObjTypePolygon, "Polygon", "Polygon"),
+    /* 65541 */ SEnumEntry(EGraphObjTypePolyline, "Polyline", "Polyline"),
+    /* 65542 */ SEnumEntry(EGraphObjTypeText, "Text", "Text"),
+    /* 65543 */ SEnumEntry(EGraphObjTypePixmap, "Pixmap", "Pixmap"),
+    /* 65544 */ SEnumEntry(EGraphObjTypeConnectionPoint, "ConnectionPoint", "Connection Point"),
+    /* 65545 */ SEnumEntry(EGraphObjTypeConnectionLine, "ConnectionLine", "Connection Line"),
+    /* 65546 */ SEnumEntry(EGraphObjTypeGroup, "Group", "Group")
 };
 
 //------------------------------------------------------------------------------
 const SEnumEntry s_arEnumStrGraphObjClassName[EGraphObjTypeCount] =
 //------------------------------------------------------------------------------
 {
-    /*  1 */ SEnumEntry( EGraphObjTypeLine,            "CGraphObjLine"            ),
-    /*  2 */ SEnumEntry( EGraphObjTypeRect,            "CGraphObjRect"            ),
-    /*  3 */ SEnumEntry( EGraphObjTypeEllipse,         "CGraphObjEllipse"         ),
-    /*  4 */ SEnumEntry( EGraphObjTypePolygon,         "CGraphObjPolygon"         ),
-    /*  5 */ SEnumEntry( EGraphObjTypePolyline,        "CGraphObjPolygon"         ),
-    /*  6 */ SEnumEntry( EGraphObjTypeText,            "CGraphObjText"            ),
-    /*  7 */ SEnumEntry( EGraphObjTypeImage,           "CGraphObjImage"           ),
-    /*  8 */ SEnumEntry( EGraphObjTypeConnectionPoint, "CGraphObjConnectionPoint" ),
-    /*  9 */ SEnumEntry( EGraphObjTypeConnectionLine,  "CGraphObjConnectionLine"  ),
-    /* 10 */ SEnumEntry( EGraphObjTypeGroup,           "CGraphObjGroup"           )
+    /*  1 */ SEnumEntry(EGraphObjTypeLine, "CGraphObjLine"),
+    /*  2 */ SEnumEntry(EGraphObjTypeRect, "CGraphObjRect"),
+    /*  3 */ SEnumEntry(EGraphObjTypeEllipse, "CGraphObjEllipse"),
+    /*  4 */ SEnumEntry(EGraphObjTypePolygon, "CGraphObjPolygon"),
+    /*  5 */ SEnumEntry(EGraphObjTypePolyline, "CGraphObjPolygon"),
+    /*  6 */ SEnumEntry(EGraphObjTypeText, "CGraphObjText"),
+    /*  7 */ SEnumEntry(EGraphObjTypePixmap, "CGraphObjPixmap"),
+    /*  8 */ SEnumEntry(EGraphObjTypeConnectionPoint, "CGraphObjConnectionPoint"),
+    /*  9 */ SEnumEntry(EGraphObjTypeConnectionLine, "CGraphObjConnectionLine"),
+    /* 10 */ SEnumEntry(EGraphObjTypeGroup, "CGraphObjGroup")
 };
 
 //------------------------------------------------------------------------------

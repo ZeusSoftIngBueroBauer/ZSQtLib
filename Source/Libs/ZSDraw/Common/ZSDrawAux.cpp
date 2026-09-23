@@ -520,10 +520,10 @@ bool ZS::Draw::isGraphicsSceneDragDropEvent( QEvent* i_pEv )
 }
 
 //------------------------------------------------------------------------------
-QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv )
+QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv, bool i_bIncludeMimeData )
 //------------------------------------------------------------------------------
 {
-    return qGraphicsSceneEvent2Str(i_pEv) +
+    QString str = qGraphicsSceneEvent2Str(i_pEv) +
         ", Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
@@ -531,8 +531,11 @@ QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* 
         ", KeyboardModifiers {" + qKeyboardModifiers2Str(i_pEv->modifiers()) + "}" +
         ", PossibleActions {" + qDropActions2Str(i_pEv->possibleActions()) +
         ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
-        ", ProposedAction: " + qDropAction2Str(i_pEv->proposedAction()) +
-        ", MimeData: " + QString(i_pEv->mimeData() == nullptr ? "null" : i_pEv->mimeData()->text());
+        ", ProposedAction: " + qDropAction2Str(i_pEv->proposedAction());
+    if (i_bIncludeMimeData) {
+        str += ", MimeData {" + qMimeData2Str(i_pEv->mimeData()) + "}";
+    }
+    return str;
 }
 
 //------------------------------------------------------------------------------

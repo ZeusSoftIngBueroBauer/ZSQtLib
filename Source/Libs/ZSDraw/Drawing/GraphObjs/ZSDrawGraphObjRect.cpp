@@ -1675,7 +1675,6 @@ void CGraphObjRect::paint(
     i_pPainter->setRenderHints(s_painterRenderHints);
 
     QPen pn;
-    QBrush brush;
     QRectF rctBounding = getBoundingRect();
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         pn.setStyle(Qt::SolidLine);
@@ -1689,7 +1688,7 @@ void CGraphObjRect::paint(
         }
         QPainterPath outline;
         outline.moveTo(rctBounding.topLeft());
-            outline.addRect(rctBounding);
+        outline.addRect(rctBounding);
         i_pPainter->strokePath(outline, pn);
     }
 
@@ -1698,6 +1697,7 @@ void CGraphObjRect::paint(
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.lineStyle().enumerator()));
     i_pPainter->setPen(pn);
 
+    QBrush brush;
     brush.setColor(m_drawSettings.fillColor());
     brush.setStyle(fillStyle2QtBrushStyle(m_drawSettings.fillStyle().enumerator()));
     i_pPainter->setBrush(brush);
@@ -1730,7 +1730,7 @@ void CGraphObjRect::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         traceGraphObjStates(mthTracer, EMethodDir::Enter, "Common");
     }
 
-    // Only accept hover enter if currently no object is being created.
+    // Only accept hover enter events if currently no object is being created.
     if (m_pDrawingScene->getCurrentDrawingTool() == nullptr) {
         QGraphicsItem_setCursor(Qt::SizeAllCursor);
     }

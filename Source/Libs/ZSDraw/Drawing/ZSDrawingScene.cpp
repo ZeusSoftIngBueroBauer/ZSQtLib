@@ -33,8 +33,8 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPixmap.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
@@ -3492,6 +3492,10 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragEnterEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "MimeData {" + qMimeData2Str(i_pEv->mimeData()) + "}";
+        mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
+    }
 
     const QMimeData* pMimeData = i_pEv->mimeData();
     if (pMimeData != nullptr) {
@@ -3571,6 +3575,10 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "MimeData {" + qMimeData2Str(i_pEv->mimeData()) + "}";
+        mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
+    }
 
     const QMimeData* pMimeData = i_pEv->mimeData();
     if (pMimeData != nullptr) {
@@ -3615,62 +3623,63 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dropEvent",
         /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "MimeData {" + qMimeData2Str(i_pEv->mimeData(), "", "Formats") + "}";
+        mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
+        strMthInArgs = "MimeData {" + qMimeData2Str(i_pEv->mimeData(), "Formats", "") + "}";
+        mthTracer.trace(strMthInArgs, ELogDetailLevel::None, ELogDetailLevel::None);
+    }
 
     bool bAccepted = false;
-
     const QMimeData* pMimeData = i_pEv->mimeData();
     if (pMimeData != nullptr && sceneRect().contains(i_pEv->scenePos())) {
-        if (pMimeData->hasText()) {
-            bAccepted = true;
-            QString strMimeData;
-            if (pMimeData != nullptr) {
-                strMimeData = pMimeData->text();
-            }
-            QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
-            if (strlstMimeData.size() > 0) {
-                QGraphicsScene_clearSelection(m_pTrcAdminObj);
-                for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
-                    QString strObj = strlstMimeData[idxObj];
-                    QStringList strlstObjPath = strObj.split("::");
-                    if (strlstObjPath.size() > 1) { // must contain type and object path
-                        QString strType = strlstObjPath[0];
-                        if (strType.compare("ObjFactory",Qt::CaseInsensitive) == 0) {
-                            strlstObjPath.removeFirst();
-                            QString strObjPath = strlstObjPath.join("::");
-                            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
-                            if (pObjFactory != nullptr) {
-                                CGraphObj* pGraphObj = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
-                                QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-                                if (pGraphicsItem == nullptr) {
-                                    throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
-                                }
-                                addGraphObj(pGraphObj);
-                                //pGraphicsItem->setPos( i_pEv->scenePos() );
-                                pGraphicsItem->setSelected(true);
-                                //onGraphObjCreationFinished(pGraphObj);
-                                //setMode(EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else if (pMimeData->hasImage()) {
-            bAccepted = true;
-        }
-        else if (pMimeData->hasUrls()) {
+        if (pMimeData->hasUrls()) {
             bAccepted = true;
             QList<QUrl> arurls = pMimeData->urls();
             for (const QUrl& url : arurls) {
                 QString strFilePath = url.toLocalFile();
-                CGraphObjImage* pGraphObjImage = new CGraphObjImage(this);
+                CGraphObjPixmap* pGraphObjImage = new CGraphObjPixmap(this);
                 pGraphObjImage->setDrawSettings(m_drawSettings);
                 pGraphObjImage->setImageFilePath(strFilePath);
                 addGraphObj(pGraphObjImage);
                 pGraphObjImage->setPos(i_pEv->scenePos());
-                //onGraphObjCreationFinished(pGraphObjImage);
-                //setMode(EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
             }
+        }
+        else if (pMimeData->hasText()) {
+            bAccepted = true;
+            //QString strMimeData;
+            //if (pMimeData != nullptr) {
+            //    strMimeData = pMimeData->text();
+            //}
+            //QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
+            //if (strlstMimeData.size() > 0) {
+            //    QGraphicsScene_clearSelection(m_pTrcAdminObj);
+            //    for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
+            //        QString strObj = strlstMimeData[idxObj];
+            //        QStringList strlstObjPath = strObj.split("::");
+            //        if (strlstObjPath.size() > 1) { // must contain type and object path
+            //            QString strType = strlstObjPath[0];
+            //            if (strType.compare("ObjFactory",Qt::CaseInsensitive) == 0) {
+            //                strlstObjPath.removeFirst();
+            //                QString strObjPath = strlstObjPath.join("::");
+            //                CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
+            //                if (pObjFactory != nullptr) {
+            //                    CGraphObj* pGraphObj = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
+            //                    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+            //                    if (pGraphicsItem == nullptr) {
+            //                        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+            //                    }
+            //                    addGraphObj(pGraphObj);
+            //                    pGraphicsItem->setPos(i_pEv->scenePos());
+            //                    pGraphicsItem->setSelected(true);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+        }
+        else if (pMimeData->hasImage()) {
+            bAccepted = true;
         }
     }
     if (bAccepted) {
@@ -3679,7 +3688,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
     else {
         i_pEv->ignore();
     }
-    //QGraphicsScene::dropEvent(i_pEv);
+    QGraphicsScene::dropEvent(i_pEv);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs("Ev {Accepted: " + bool2Str(i_pEv->isAccepted()) + "}");

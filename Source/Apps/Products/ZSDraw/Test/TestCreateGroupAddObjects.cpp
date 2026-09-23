@@ -3405,7 +3405,7 @@ void CTest::createTestGroupAddStandardShapesImage(ZS::Test::CTestStepGroup* i_pT
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjType = graphObjType2Str(EGraphObjTypeImage);
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypePixmap);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();

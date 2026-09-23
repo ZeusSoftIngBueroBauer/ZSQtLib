@@ -90,7 +90,7 @@ class CGraphObj;
 class CObjFactoriesModel;
 class CObjFactory;
 class CObjFactoryEllipse;
-class CObjFactoryImage;
+class CObjFactoryPixmap;
 class CObjFactoryLine;
 class CObjFactoryPolygon;
 class CObjFactoryPolyline;
@@ -353,7 +353,7 @@ protected: // instance members
     ZS::Draw::CObjFactoryPolyline* m_pObjFactoryPolyline;
     ZS::Draw::CObjFactoryPolygon* m_pObjFactoryPolygon;
     ZS::Draw::CObjFactoryText* m_pObjFactoryText;
-    ZS::Draw::CObjFactoryImage* m_pObjFactoryImage;
+    ZS::Draw::CObjFactoryPixmap* m_pObjFactoryImage;
     ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;
     ZS::Draw::CObjFactoryConnectionLine* m_pObjFactoryConnectionLine;
     ZS::Draw::CObjFactoryGroup* m_pObjFactoryGroup;
