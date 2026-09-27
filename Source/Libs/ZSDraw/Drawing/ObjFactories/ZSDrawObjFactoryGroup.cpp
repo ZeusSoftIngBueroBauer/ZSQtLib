@@ -100,16 +100,13 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
-        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
-        mthTracer.trace(strMthInArgs);
-    }
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
@@ -131,7 +128,7 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point {" + i_physValPoint.toString() + "}";
+        strMthInArgs = "Point {" + i_physValPoint.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

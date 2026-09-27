@@ -172,7 +172,7 @@ const QString CMainWindow::c_strActionNameDrawStandardShapeEllipse   = c_strMenu
 const QString CMainWindow::c_strActionNameDrawStandardShapePolyline  = c_strMenuNameDrawStandardShapes + ":&Polyline";
 const QString CMainWindow::c_strActionNameDrawStandardShapePolygon   = c_strMenuNameDrawStandardShapes + ":Poly&gon";
 const QString CMainWindow::c_strActionNameDrawStandardShapeText      = c_strMenuNameDrawStandardShapes + ":&Text";
-const QString CMainWindow::c_strActionNameDrawGraphicsImage          = c_strMenuNameDrawGraphics + ":&Image";
+const QString CMainWindow::c_strActionNameDrawGraphicsPixmap         = c_strMenuNameDrawGraphics + ":&Pixmap";
 const QString CMainWindow::c_strActionNameDrawConnectionPoint        = c_strMenuNameDrawConnections + ":Connection &Point";
 const QString CMainWindow::c_strActionNameDrawConnectionLine         = c_strMenuNameDrawConnections + ":Connection &Line";
 const QString CMainWindow::c_strActionNameDrawWdgtCheckBox           = c_strMenuNameDrawWidgets + ":C&heck Box";
@@ -242,7 +242,7 @@ CMainWindow::CMainWindow(
     m_pObjFactoryPolyline(nullptr),
     m_pObjFactoryPolygon(nullptr),
     m_pObjFactoryText(nullptr),
-    m_pObjFactoryImage(nullptr),
+    m_pObjFactoryPixmap(nullptr),
     m_pObjFactoryConnectionPoint(nullptr),
     m_pObjFactoryConnectionLine(nullptr),
     m_pObjFactoryGroup(nullptr),
@@ -302,7 +302,7 @@ CMainWindow::CMainWindow(
     // Menu - Draw - Graphics
     m_pMenuDrawGraphics(nullptr),
     m_pToolBarDrawGraphics(nullptr),
-    m_pActDrawGraphicsImage(nullptr),
+    m_pActDrawGraphicsPixmap(nullptr),
     // Menu - Draw - Connections
     m_pMenuDrawConnections(nullptr),
     m_pToolBarDrawConnections(nullptr),
@@ -623,11 +623,11 @@ CMainWindow::~CMainWindow()
     m_pObjFactoryText = nullptr;
 
     try {
-        delete m_pObjFactoryImage;
+        delete m_pObjFactoryPixmap;
     }
     catch(...) {
     }
-    m_pObjFactoryImage = nullptr;
+    m_pObjFactoryPixmap = nullptr;
 
     try {
         delete m_pObjFactoryConnectionPoint;
@@ -808,7 +808,7 @@ CMainWindow::~CMainWindow()
     m_pObjFactoryPolyline = nullptr;
     m_pObjFactoryPolygon = nullptr;
     m_pObjFactoryText = nullptr;
-    m_pObjFactoryImage = nullptr;
+    m_pObjFactoryPixmap = nullptr;
     m_pObjFactoryConnectionPoint = nullptr;
     m_pObjFactoryConnectionLine = nullptr;
     m_pObjFactoryGroup = nullptr;
@@ -865,7 +865,7 @@ CMainWindow::~CMainWindow()
     // Menu - Draw - Graphics
     m_pMenuDrawGraphics = nullptr;
     m_pToolBarDrawGraphics = nullptr;
-    m_pActDrawGraphicsImage = nullptr;
+    m_pActDrawGraphicsPixmap = nullptr;
     // Menu - Draw - Connections
     m_pMenuDrawConnections = nullptr;
     m_pToolBarDrawConnections = nullptr;
@@ -1074,8 +1074,8 @@ void CMainWindow::createObjFactories()
     // <Menu> Draw::Graphics
     //----------------------
 
-    QPixmap pxmDrawGraphicsImage16x16(":/ZS/Draw/GraphObjImage16x16.png");
-    m_pObjFactoryImage = new CObjFactoryPixmap(pxmDrawGraphicsImage16x16);
+    QPixmap pxmDrawGraphicsPixmap16x16(":/ZS/Draw/GraphObjPixmap16x16.png");
+    m_pObjFactoryPixmap = new CObjFactoryPixmap(pxmDrawGraphicsPixmap16x16);
     QPixmap pxmDrawConnectionPoint16x16(":/ZS/Draw/GraphObjConnectionPoint16x16.png");
     m_pObjFactoryConnectionPoint = new CObjFactoryConnectionPoint(pxmDrawConnectionPoint16x16);
     QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/GraphObjConnectionLine16x16.png");
@@ -1422,20 +1422,20 @@ void CMainWindow::createActions()
     // <Menu> Draw::Graphics
     //----------------------
 
-    // <MenuItem> Draw::Graphics::Image
+    // <MenuItem> Draw::Graphics::Pixmap
     //---------------------------------
 
-    QIcon iconDrawImage;
-    QPixmap pxmDrawImage(":/ZS/Draw/GraphObjImage16x16.png");
-    iconDrawImage.addPixmap(pxmDrawImage);
+    QIcon iconDrawPixmap;
+    QPixmap pxmDrawPixmap(":/ZS/Draw/GraphObjPixmap16x16.png");
+    iconDrawPixmap.addPixmap(pxmDrawPixmap);
 
-    m_pActDrawGraphicsImage = new QAction(iconDrawImage, c_strActionNameDrawGraphicsImage.section(":",-1,-1), this);
-    m_pActDrawGraphicsImage->setStatusTip(tr("Insert Images"));
-    m_pActDrawGraphicsImage->setCheckable(false);
+    m_pActDrawGraphicsPixmap = new QAction(iconDrawPixmap, c_strActionNameDrawGraphicsPixmap.section(":",-1,-1), this);
+    m_pActDrawGraphicsPixmap->setStatusTip(tr("Insert Pixmaps"));
+    m_pActDrawGraphicsPixmap->setCheckable(false);
 
     QObject::connect(
-        m_pActDrawGraphicsImage, &QAction::triggered,
-        this, &CMainWindow::onActionDrawGraphicsImageTriggered );
+        m_pActDrawGraphicsPixmap, &QAction::triggered,
+        this, &CMainWindow::onActionDrawGraphicsPixmapTriggered );
 
     // <Menu> Draw::Connections
     //-------------------------
@@ -1800,8 +1800,8 @@ void CMainWindow::createMenus()
 
     m_pMenuDrawGraphics = m_pMenuDraw->addMenu(c_strMenuNameDrawGraphics.section(":",-1,-1));
 
-    if( m_pActDrawGraphicsImage != nullptr ) {
-        m_pMenuDrawGraphics->addAction(m_pActDrawGraphicsImage);
+    if( m_pActDrawGraphicsPixmap != nullptr ) {
+        m_pMenuDrawGraphics->addAction(m_pActDrawGraphicsPixmap);
     }
 
     m_pMenuDrawConnections = m_pMenuDraw->addMenu(c_strMenuNameDrawConnections.section(":",-1,-1));
@@ -2093,8 +2093,8 @@ void CMainWindow::createToolBars()
     //m_pToolBarDrawGraphics->setMaximumHeight(24);
     m_pToolBarDrawGraphics->setIconSize( QSize(16,16) );
 
-    if( m_pActDrawGraphicsImage != nullptr ) {
-        m_pToolBarDrawGraphics->addAction(m_pActDrawGraphicsImage);
+    if( m_pActDrawGraphicsPixmap != nullptr ) {
+        m_pToolBarDrawGraphics->addAction(m_pActDrawGraphicsPixmap);
     }
 
     m_pToolBarDrawConnections = addToolBar("Draw Connections");
@@ -2580,17 +2580,17 @@ public: // instance methods
 //}
 
 ////------------------------------------------------------------------------------
-//void CMainWindow::triggerActionDrawGraphicsImage()
+//void CMainWindow::triggerActionDrawGraphicsPixmap()
 ////------------------------------------------------------------------------------
 //{
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObj,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "triggerActionDrawGraphicsImage",
+//        /* strMethod    */ "triggerActionDrawGraphicsPixmap",
 //        /* strAddInfo   */ "" );
 //
-//    if (m_pActDrawGraphicsImage != nullptr) {
-//        m_pActDrawGraphicsImage->trigger();
+//    if (m_pActDrawGraphicsPixmap != nullptr) {
+//        m_pActDrawGraphicsPixmap->trigger();
 //    }
 //}
 
@@ -3339,7 +3339,7 @@ public slots: // Menu - Draw - Graphics
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CMainWindow::onActionDrawGraphicsImageTriggered(bool i_bChecked)
+void CMainWindow::onActionDrawGraphicsPixmapTriggered(bool i_bChecked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3350,15 +3350,15 @@ void CMainWindow::onActionDrawGraphicsImageTriggered(bool i_bChecked)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionDrawGraphicsImageTriggered",
+        /* strMethod    */ "onActionDrawGraphicsPixmapTriggered",
         /* strAddInfo   */ strMthInArgs );
 
     // Please note that the graphics image button is not a checkable button
     // and i_bChecked is always false.
-    if( m_pActDrawChecked != nullptr && m_pActDrawChecked != m_pActDrawGraphicsImage ) {
+    if( m_pActDrawChecked != nullptr && m_pActDrawChecked != m_pActDrawGraphicsPixmap ) {
         m_pActDrawChecked->setChecked(false);
     }
-    m_pActDrawChecked = m_pActDrawGraphicsImage;
+    m_pActDrawChecked = m_pActDrawGraphicsPixmap;
 
     QString strFileName = QFileDialog::getOpenFileName(
         /* pWdgtParent */ this,
@@ -3368,8 +3368,8 @@ void CMainWindow::onActionDrawGraphicsImageTriggered(bool i_bChecked)
 
     if( !strFileName.isEmpty() ) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        m_pObjFactoryImage->setFileName(strFileName);
-        pDrawingScene->setCurrentDrawingTool(m_pObjFactoryImage);
+        //m_pObjFactoryPixmap->setFileName(strFileName);
+        pDrawingScene->setCurrentDrawingTool(m_pObjFactoryPixmap);
     }
 }
 
@@ -4730,12 +4730,12 @@ void CMainWindow::updateActions()
         // Menu - Draw - Graphics
         //-----------------------
 
-        if (m_pActDrawGraphicsImage != nullptr) {
+        if (m_pActDrawGraphicsPixmap != nullptr) {
             if (mode == EMode::View) {
-                m_pActDrawGraphicsImage->setEnabled(false);
+                m_pActDrawGraphicsPixmap->setEnabled(false);
             }
             else {
-                m_pActDrawGraphicsImage->setEnabled(false);
+                m_pActDrawGraphicsPixmap->setEnabled(false);
             }
         }
 

@@ -180,7 +180,7 @@ public: // class members
     static const QString c_strActionNameDrawStandardShapePolyline;
     static const QString c_strActionNameDrawStandardShapePolygon;
     static const QString c_strActionNameDrawStandardShapeText;
-    static const QString c_strActionNameDrawGraphicsImage;
+    static const QString c_strActionNameDrawGraphicsPixmap;
     static const QString c_strActionNameDrawConnectionPoint;
     static const QString c_strActionNameDrawConnectionLine;
     static const QString c_strActionNameDrawWdgtCheckBox;
@@ -246,7 +246,7 @@ public: // instance methods
 //    void setCheckedActionDrawStandardShapePolyline(bool i_bChecked);
 //    void setCheckedActionDrawStandardShapePolygon(bool i_bChecked);
 //    void setCheckedActionDrawStandardShapeText(bool i_bChecked);
-//    void triggerActionDrawGraphicsImage();
+//    void triggerActionDrawGraphicsPixmap();
 //    void setCheckedActionDrawConnectionPoint(bool i_bChecked);
 //    void setCheckedActionDrawConnectionLine(bool i_bChecked);
 //public: // instance methods
@@ -280,7 +280,7 @@ public slots: // Menu - Draw - Standard Shapes
     void onActionDrawStandardShapePolygonToggled(bool i_bChecked = false);
     void onActionDrawStandardShapeTextToggled(bool i_bChecked = false);
 public slots: // Menu - Draw - Graphics
-    void onActionDrawGraphicsImageTriggered(bool i_bChecked = false);
+    void onActionDrawGraphicsPixmapTriggered(bool i_bChecked = false);
 public slots: // Menu - Edit - Select/RotateFree
     void onActionEditSelectToggled(bool i_bChecked = false);
 public slots: // Menu - Edit - Group
@@ -353,7 +353,7 @@ protected: // instance members
     ZS::Draw::CObjFactoryPolyline* m_pObjFactoryPolyline;
     ZS::Draw::CObjFactoryPolygon* m_pObjFactoryPolygon;
     ZS::Draw::CObjFactoryText* m_pObjFactoryText;
-    ZS::Draw::CObjFactoryPixmap* m_pObjFactoryImage;
+    ZS::Draw::CObjFactoryPixmap* m_pObjFactoryPixmap;
     ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;
     ZS::Draw::CObjFactoryConnectionLine* m_pObjFactoryConnectionLine;
     ZS::Draw::CObjFactoryGroup* m_pObjFactoryGroup;
@@ -416,7 +416,7 @@ protected: // instance members
     // Menu - Draw - Graphics
     QMenu*    m_pMenuDrawGraphics;
     QToolBar* m_pToolBarDrawGraphics;
-    QAction*  m_pActDrawGraphicsImage;
+    QAction*  m_pActDrawGraphicsPixmap;
     // Menu - Draw - Connections
     QMenu*    m_pMenuDrawConnections;
     QToolBar* m_pToolBarDrawConnections;

@@ -19,10 +19,9 @@
         <file alias="GraphObjConnectionLine16x16.png">Images/GraphObjConnectionLine16x16.png</file>
         <file alias="GraphObjConnectionPoint16x16.png">Images/GraphObjConnectionPoint16x16.png</file>
         <file alias="GraphObjEllipse16x16.png">Images/GraphObjEllipse16x16.png</file>
-        <file alias="GraphObjImage16x16.png">Images/GraphObjImage16x16.png</file>
         <file alias="GraphObjLabel16x16.png">Images/GraphObjLabel16x16.png</file>
         <file alias="GraphObjLine16x16.png">Images/GraphObjLine16x16.png</file>
-        <file alias="Pen16x16.png">Images/Pen16x16.png</file>
+        <file alias="GraphObjPixmap16x16.png">Images/GraphObjPixmap16x16.png</file>
         <file alias="GraphObjPolygon16x16.png">Images/GraphObjPolygon16x16.png</file>
         <file alias="GraphObjPolyline16x16.png">Images/GraphObjPolyline16x16.png</file>
         <file alias="GraphObjRect16x16.png">Images/GraphObjRect16x16.png</file>
@@ -31,6 +30,7 @@
         <file alias="EditGroup16x16.png">Images/EditGroup16x16.png</file>
         <file alias="EditUngroup16x16.png">Images/EditUngroup16x16.png</file>
         <file alias="PageSetup16x16.png">Images/PageSetup16x16.png</file>
+        <file alias="Pen16x16.png">Images/Pen16x16.png</file>
         <file alias="Key16x16.png">Images/Key16x16.png</file>
         <file alias="Refresh16x16.png">Images/Refresh16x16.png</file>
         <file alias="Refresh24x24.png">Images/Refresh24x24.png</file>

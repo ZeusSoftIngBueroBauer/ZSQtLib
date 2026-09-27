@@ -102,6 +102,7 @@ CGraphObj* CObjFactoryPolyline::createGraphObj(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -136,6 +137,10 @@ CGraphObj* CObjFactoryPolyline::createGraphObj(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createGraphObj",
         /* strAddInfo   */ strMthInArgs );
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
+        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
+        mthTracer.trace(strMthInArgs);
+    }
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypePolyline);

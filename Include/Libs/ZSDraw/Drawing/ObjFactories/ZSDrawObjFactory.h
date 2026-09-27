@@ -90,7 +90,7 @@ public: // class methods
     static int GetObjFactoriesCount();
     static CObjFactory* GetObjFactory( int i_idx );
     static CObjFactory* FindObjFactory( const QString& i_strGraphObjPath );
-    //static CObjFactory* FindObjFactory( const QString& i_strGroupName, int i_iGraphObjType );
+    static CObjFactory* FindObjFactory( const QString& i_strGroupName, int i_iGraphObjType );
     static CObjFactory* FindObjFactory( const QString& i_strGroupName, const QString& i_strGraphObjType );
 public: // class methods
     static ZS::System::CIdxTree* IdxTree() { return s_pIdxTree; }
@@ -128,12 +128,12 @@ public: // instance methods
     void setToolIconPixmap( const QPixmap& i_pxm );
     QPixmap toolIconPixmap() const { return m_pxmToolIcon; }
 public: // instance methods
-    void setFileDir( const QString& i_strFileDir );   // The file's path (which may be absolute or relative). This doesn't include the file name.
-    QString fileDir() const { return m_strFileDir; }
-    void setFileName( const QString& i_strFileName ); // Name of the file, excluding the path. If file name includes a path, the path will be extracted and stored as file path.
-    QString fileName() const { return m_strFileName; }
-    void setFilePath( const QString& i_strFilePath ); // File name, including the path (which may be absolute or relative).
-    QString filePath() const;
+    //void setFileDir( const QString& i_strFileDir );
+    //QString fileDir() const { return m_strFileDir; }
+    //void setFileName( const QString& i_strFileName );
+    //QString fileName() const { return m_strFileName; }
+    //void setFilePath( const QString& i_strFilePath );
+    //QString filePath() const;
 public: // overridables
     virtual bool hasInitialSize() const { return false; }
     virtual QSizeF initialSize() const { return QSizeF(); }

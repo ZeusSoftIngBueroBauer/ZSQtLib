@@ -164,6 +164,8 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectOrig(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
+    void QGraphicsPixmapItem_setOffset(const QPointF& i_ptOffset);
+    void QGraphicsPixmapItem_setOffset(double i_fXOffs, double i_fYOffs);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(

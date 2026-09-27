@@ -356,9 +356,9 @@ list(APPEND _Images
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionLine16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionPoint16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjEllipse16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjImage16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjLabel16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjLine16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjPixmap16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjPolygon16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjPolyline16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjRect16x16.png

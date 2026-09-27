@@ -29,7 +29,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-//#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjImagePropertiesDlg.h"
+//#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPixmapPropertiesDlg.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
@@ -128,7 +128,7 @@ CGraphObjPixmap::CGraphObjPixmap(CDrawingScene* i_pDrawingScene, const QString& 
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePixmap,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePixmap),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Image" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Pixmap" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPixmapItem(),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),
@@ -292,9 +292,9 @@ void CGraphObjPixmap::openFormatGraphObjsDialog()
         /* strAddInfo   */ "" );
 
     //QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Text";
-    //CDlgGraphObjImageProperties* pDlg = CDlgGraphObjImageProperties::GetInstance(this);
+    //CDlgGraphObjPixmapProperties* pDlg = CDlgGraphObjPixmapProperties::GetInstance(this);
     //if( pDlg == nullptr ) {
-    //    pDlg = CDlgGraphObjImageProperties::CreateInstance(strDlgTitle, this);
+    //    pDlg = CDlgGraphObjPixmapProperties::CreateInstance(strDlgTitle, this);
     //    pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
     //    pDlg->adjustSize();
     //    pDlg->setModal(false);
@@ -372,13 +372,12 @@ void CGraphObjPixmap::setPixmap(const QPixmap& i_pxm)
         /* strMethod    */ "setPixmap",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsPixmapItem::setPixmap(i_pxm);
     m_pxmOrig = i_pxm;
+    QSizeF pxmSize = i_pxm.size();
+    QGraphicsPixmapItem::setPixmap(i_pxm);
+    QGraphicsPixmapItem_setOffset(-pxmSize.width()/2.0, -pxmSize.height()/2.0);
+    setSize(m_pxmOrig.size());
 }
-
-/*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
 
 /*==============================================================================
 public: // instance methods
@@ -2846,6 +2845,48 @@ CPhysValRect CGraphObjPixmap::setPhysValRectScaledAndRotated(const CPhysValRect&
         mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
     }
     return physValRectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+*/
+void CGraphObjPixmap::QGraphicsPixmapItem_setOffset(const QPointF& i_ptOffset)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Offset {" + qPoint2Str(i_ptOffset) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsPixmapItem_setOffset",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsPixmapItem::setOffset(i_ptOffset);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+*/
+void CGraphObjPixmap::QGraphicsPixmapItem_setOffset(double i_fXOffs, double i_fYOffs)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Offset {X: " + QString::number(i_fXOffs) + ", Y: " + QString::number(i_fYOffs) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsPixmapItem_setOffset",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsPixmapItem::setOffset(i_fXOffs, i_fYOffs);
 }
 
 //------------------------------------------------------------------------------

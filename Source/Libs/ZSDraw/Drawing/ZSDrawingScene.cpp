@@ -3635,14 +3635,29 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
     if (pMimeData != nullptr && sceneRect().contains(i_pEv->scenePos())) {
         if (pMimeData->hasUrls()) {
             bAccepted = true;
+            // Unselect all currently selected objects.
+            QGraphicsScene_clearSelection(m_pTrcAdminObj);
             QList<QUrl> arurls = pMimeData->urls();
             for (const QUrl& url : arurls) {
                 QString strFilePath = url.toLocalFile();
-                CGraphObjPixmap* pGraphObjImage = new CGraphObjPixmap(this);
-                pGraphObjImage->setDrawSettings(m_drawSettings);
-                pGraphObjImage->setImageFilePath(strFilePath);
-                addGraphObj(pGraphObjImage);
-                pGraphObjImage->setPos(i_pEv->scenePos());
+                CObjFactory* pObjFactory = CObjFactory::FindObjFactory(
+                    CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypePixmap);
+                if (pObjFactory == nullptr) {
+                    throw CException(__FILE__, __LINE__, EResultObjFactoryNotFound, "Pixmap");
+                }
+                else {
+                    CGraphObj* pGraphObjUnderConstruction = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
+                    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObjUnderConstruction);
+                    if (pGraphicsItem == nullptr) {
+                        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                    }
+                    CGraphObjPixmap* pGraphObjPixmap = dynamic_cast<CGraphObjPixmap*>(pGraphObjUnderConstruction);
+                    if (pGraphObjPixmap == nullptr) {
+                        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjPixmap == nullptr" );
+                    }
+                    addGraphObj(pGraphObjPixmap);
+                    pGraphObjPixmap->setImageFilePath(strFilePath);
+                }
             }
         }
         else if (pMimeData->hasText()) {
@@ -3653,6 +3668,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
             //}
             //QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
             //if (strlstMimeData.size() > 0) {
+            //    // Unselect all currently selected objects.
             //    QGraphicsScene_clearSelection(m_pTrcAdminObj);
             //    for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
             //        QString strObj = strlstMimeData[idxObj];
@@ -3813,7 +3829,6 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                     // Graphical objects must always be created at their transformation origin points.
                     // Otherwise mapping coordinates to group coordinates does not work correctly.
-                    // This is especially true for connection points and circles.
                     m_pGraphObjUnderConstruction = m_pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
                     if (m_pGraphObjUnderConstruction != nullptr) {
                         QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(m_pGraphObjUnderConstruction);

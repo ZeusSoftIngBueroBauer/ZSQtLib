@@ -103,21 +103,21 @@ CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
     return dynamic_cast<CObjFactory*>(s_pIdxTree->findLeave(i_strGraphObjPath));
 }
 
-////------------------------------------------------------------------------------
-//CObjFactory* CObjFactory::FindObjFactory(
-//    const QString& i_strFactoryGroupName,
-//    int            i_iGraphObjType )
-////------------------------------------------------------------------------------
-//{
-//    CObjFactory* pObjFactory = nullptr;
-//    if( s_pIdxTree != nullptr )
-//    {
-//        QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, graphObjType2Str(i_iGraphObjType));
-//        CIdxTreeEntry* pTreeEntry = s_pIdxTree->findLeave(strPath);
-//        pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
-//    }
-//    return pObjFactory;
-//}
+//------------------------------------------------------------------------------
+CObjFactory* CObjFactory::FindObjFactory(
+    const QString& i_strFactoryGroupName,
+    int            i_iGraphObjType )
+//------------------------------------------------------------------------------
+{
+    CObjFactory* pObjFactory = nullptr;
+    if( s_pIdxTree != nullptr )
+    {
+        QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, graphObjType2Str(i_iGraphObjType));
+        CIdxTreeEntry* pTreeEntry = s_pIdxTree->findLeave(strPath);
+        pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
+    }
+    return pObjFactory;
+}
 
 //------------------------------------------------------------------------------
 CObjFactory* CObjFactory::FindObjFactory(
@@ -268,79 +268,82 @@ void CObjFactory::setToolIconPixmap( const QPixmap& i_pxm )
 public: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CObjFactory::setFileDir( const QString& i_strFileDir )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strFileDir;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setFileDir",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_strFileDir = i_strFileDir;
-}
-
-//------------------------------------------------------------------------------
-void CObjFactory::setFileName( const QString& i_strFileName )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strFileName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setFileName",
-        /* strAddInfo   */ strMthInArgs );
-
-    QFileInfo fileInfo(i_strFileName);
-    if (fileInfo.fileName() == i_strFileName) {
-        m_strFileName = i_strFileName;
-    }
-    else {
-        m_strFileDir = fileInfo.path();
-        m_strFileName = fileInfo.fileName();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CObjFactory::setFilePath( const QString& i_strFilePath )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "FilePath:" + i_strFilePath;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setFilePath",
-        /* strAddInfo   */ strMthInArgs );
-
-    QFileInfo fileInfo(i_strFilePath);
-    if (fileInfo.fileName() == i_strFilePath) {
-        m_strFileDir = fileInfo.path();
-        m_strFileName = fileInfo.fileName();
-    }
-}
-
-//------------------------------------------------------------------------------
-QString CObjFactory::filePath() const
-//------------------------------------------------------------------------------
-{
-    QString strFileDir = m_strFileDir;
-    if (strFileDir.isEmpty()) {
-        strFileDir = QCoreApplication::applicationDirPath();
-    }
-    QFileInfo fileInfo(strFileDir + QDir::separator() + m_strFileName);
-    return fileInfo.filePath();
-}
+////------------------------------------------------------------------------------
+// The file's path (which may be absolute or relative). This doesn't include the file name.
+//void CObjFactory::setFileDir( const QString& i_strFileDir )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_strFileDir;
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setFileDir",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    m_strFileDir = i_strFileDir;
+//}
+//
+////------------------------------------------------------------------------------
+// Name of the file, excluding the path. If file name includes a path, the path will be extracted and stored as file path.
+//void CObjFactory::setFileName( const QString& i_strFileName )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_strFileName;
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setFileName",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QFileInfo fileInfo(i_strFileName);
+//    if (fileInfo.fileName() == i_strFileName) {
+//        m_strFileName = i_strFileName;
+//    }
+//    else {
+//        m_strFileDir = fileInfo.path();
+//        m_strFileName = fileInfo.fileName();
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+// File name, including the path (which may be absolute or relative).
+//void CObjFactory::setFilePath( const QString& i_strFilePath )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "FilePath:" + i_strFilePath;
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "setFilePath",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QFileInfo fileInfo(i_strFilePath);
+//    if (fileInfo.fileName() == i_strFilePath) {
+//        m_strFileDir = fileInfo.path();
+//        m_strFileName = fileInfo.fileName();
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+//QString CObjFactory::filePath() const
+////------------------------------------------------------------------------------
+//{
+//    QString strFileDir = m_strFileDir;
+//    if (strFileDir.isEmpty()) {
+//        strFileDir = QCoreApplication::applicationDirPath();
+//    }
+//    QFileInfo fileInfo(strFileDir + QDir::separator() + m_strFileName);
+//    return fileInfo.filePath();
+//}
 
 /*==============================================================================
 protected: // class methods
