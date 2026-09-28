@@ -82,7 +82,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     COMPILE_DEFINITIONS _AFXDLL,_UNICODE,UNICODE,_BIND_TO_CURRENT_CRT_VERSION,_BIND_TO_CURRENT_MFC_VERSION
     LINK_FLAGS "/ENTRY:\"wWinMainCRTStartup\""
     OUTPUT_NAME ${TargetOutputName})
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Apps/Tests)
 
 source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})

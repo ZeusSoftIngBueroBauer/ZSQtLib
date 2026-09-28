@@ -253,15 +253,12 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 void CApplication::createAndShowMainWindow(
-    const QString&     i_strMainWindowTitle,
-    const QString&     i_strFileName,
-    const QStringList& i_strlstObjFactories)
+    const QString& i_strMainWindowTitle, const QString& i_strFileName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "MainWindowTitle: " + i_strMainWindowTitle +
-            ", FileName: " + i_strFileName + ", ObjFactories: " + i_strlstObjFactories.join(", ");
+        strMthInArgs = "MainWindowTitle: " + i_strMainWindowTitle + ", FileName: " + i_strFileName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -275,10 +272,7 @@ void CApplication::createAndShowMainWindow(
         this, &CApplication::lastWindowClosed,
         this, &CApplication::onLastWindowClosed);
 
-    m_pMainWindow = new CMainWindow(
-        /* strWindowTitleAppName */ i_strMainWindowTitle,
-        /* pTest                 */ m_pTest,
-        /* strlstObjFactories    */ i_strlstObjFactories );
+    m_pMainWindow = new CMainWindow(i_strMainWindowTitle, m_pTest);
     m_pMainWindow->show();
 
     if (m_pTest == nullptr) {

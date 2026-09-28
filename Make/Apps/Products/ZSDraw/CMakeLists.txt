@@ -38,47 +38,6 @@ list(APPEND _HeadersMain
     ${_HeadersPath}/ZSDraw/WidgetCentral.h
 )
 
-list(APPEND _HeadersElectricity
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricity.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityCapacitor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityDiode.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityInductor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityResistor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricitySwitch.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityTransistor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityVoltageSource.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityCapacitor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityDiode.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityInductor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityResistor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricitySwitch.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityTransistor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityVoltageSource.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityCapacitor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityDiode.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityInductor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityResistor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricitySwitch.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityTransistor.h
-    ${_HeadersPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.h
-)
-
-list(APPEND _HeadersQtWidgets
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgt.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtCheckBox.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtComboBox.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtGroupBox.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtLabel.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtLineEdit.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtPushButton.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtCheckBox.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtComboBox.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtGroupBox.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtLabel.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtLineEdit.h
-    ${_HeadersPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtPushButton.h
-)
-
 list(APPEND _HeadersTest
     ${_HeadersPath}/ZSDraw/Test/Test.h
 )
@@ -90,8 +49,6 @@ set(_HeadersTest ${_HeadersTest} ${_HeadersPath}/ZSDraw/Test/TestConfig.h)
 
 list(APPEND _Headers
     ${_HeadersMain}
-    ${_HeadersElectricity}
-    ${_HeadersQtWidgets}
     ${_HeadersTest}
 )
 
@@ -100,47 +57,6 @@ list(APPEND _SourcesMain
     ${_SourcesPath}/ZSDraw/App.cpp
     ${_SourcesPath}/ZSDraw/MainWindow.cpp
     ${_SourcesPath}/ZSDraw/WidgetCentral.cpp
-)
-
-list(APPEND _SourcesElectricity
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricity.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityCapacitor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityDiode.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityInductor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityResistor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricitySwitch.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityTransistor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawGraphObjElectricityVoltageSource.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityCapacitor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityDiode.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityInductor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityResistor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricitySwitch.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityTransistor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawObjFactoryElectricityVoltageSource.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityCapacitor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityDiode.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityInductor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityResistor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricitySwitch.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityTransistor.cpp
-    ${_SourcesPath}/ZSDraw/Electricity/ZSDrawWdgtFormatGraphObjsElectricityVoltageSource.cpp
-)
-
-list(APPEND _SourcesQtWidgets
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgt.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtCheckBox.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtComboBox.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtGroupBox.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtLabel.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtLineEdit.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawGraphObjWdgtPushButton.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtCheckBox.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtComboBox.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtGroupBox.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtLabel.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtLineEdit.cpp
-    ${_SourcesPath}/ZSDraw/QtWidgets/ZSDrawObjFactoryWdgtPushButton.cpp
 )
 
 list(APPEND _SourcesTest
@@ -152,38 +68,11 @@ list(APPEND _SourcesTest
 
 list(APPEND _Sources
     ${_SourcesMain}
-    ${_SourcesElectricity}
-    ${_SourcesQtWidgets}
     ${_SourcesTest}
 )
 
 list(APPEND _Resources
     ${_ResourcesPath}/ZSDraw/ZSDraw.qrc
-)
-
-list(APPEND _ElectricityImages
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Capacitor16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Diode16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Inductor16x10.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Inductor16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Resistor16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Switch16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/Transistor16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/Electricity/VoltageSource16x16.bmp
-)
-
-list(APPEND _QtWidgetsImages
-    ${_ResourcesPath}/ZSDraw/Images/QtWidgets/CheckBox16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/QtWidgets/ComboBox16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/QtWidgets/GroupBox16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/QtWidgets/Label16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/QtWidgets/LineEdit16x16.bmp
-    ${_ResourcesPath}/ZSDraw/Images/QtWidgets/PushButton16x16.bmp
-)
-
-list(APPEND _Images
-    ${_ElectricityImages}
-    ${_QtWidgetsImages}
 )
 
 if(WIN32)
@@ -214,21 +103,16 @@ else()
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Products)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Apps/Products)
 
 source_group("Header Files/Main" FILES ${_HeadersMain})
-source_group("Header Files/Electricity" FILES ${_HeadersElectricity})
-source_group("Header Files/QtWidgets" FILES ${_HeadersQtWidgets})
 source_group("Header Files/Test" FILES ${_HeadersTest})
 source_group("Source Files/Main" FILES ${_SourcesMain})
-source_group("Source Files/Electricity" FILES ${_SourcesElectricity})
-source_group("Source Files/QtWidgets" FILES ${_SourcesQtWidgets})
 source_group("Source Files/Test" FILES ${_SourcesTest})
 source_group("Resource Files" FILES ${_Resources})
-source_group("Image Files/Electricity" FILES ${_ElectricityImages})
-source_group("Image Files/QtWidgets" FILES ${_QtWidgetsImages})
 
 target_include_directories(${PROJECT_NAME}
+    PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Plugins/ZSDraw
     PRIVATE ${CMAKE_SOURCE_DIR}/../Include/Apps/Products/ZSDraw)
 
 set(_Libs ZSIpcTraceGUI ZSPhysValGUI ZSTestGUI ZSDraw)

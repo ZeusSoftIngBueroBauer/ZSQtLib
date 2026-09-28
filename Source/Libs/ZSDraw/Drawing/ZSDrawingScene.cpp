@@ -3662,37 +3662,37 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         }
         else if (pMimeData->hasText()) {
             bAccepted = true;
-            //QString strMimeData;
-            //if (pMimeData != nullptr) {
-            //    strMimeData = pMimeData->text();
-            //}
-            //QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
-            //if (strlstMimeData.size() > 0) {
-            //    // Unselect all currently selected objects.
-            //    QGraphicsScene_clearSelection(m_pTrcAdminObj);
-            //    for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
-            //        QString strObj = strlstMimeData[idxObj];
-            //        QStringList strlstObjPath = strObj.split("::");
-            //        if (strlstObjPath.size() > 1) { // must contain type and object path
-            //            QString strType = strlstObjPath[0];
-            //            if (strType.compare("ObjFactory",Qt::CaseInsensitive) == 0) {
-            //                strlstObjPath.removeFirst();
-            //                QString strObjPath = strlstObjPath.join("::");
-            //                CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
-            //                if (pObjFactory != nullptr) {
-            //                    CGraphObj* pGraphObj = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
-            //                    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            //                    if (pGraphicsItem == nullptr) {
-            //                        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
-            //                    }
-            //                    addGraphObj(pGraphObj);
-            //                    pGraphicsItem->setPos(i_pEv->scenePos());
-            //                    pGraphicsItem->setSelected(true);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+            QString strMimeData;
+            if (pMimeData != nullptr) {
+                strMimeData = pMimeData->text();
+            }
+            QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
+            if (!strlstMimeData.empty()) {
+                // Unselect all currently selected objects.
+                QGraphicsScene_clearSelection(m_pTrcAdminObj);
+                for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
+                    QString strObj = strlstMimeData[idxObj];
+                    QStringList strlstObjPath = strObj.split("::");
+                    if (strlstObjPath.size() > 1) { // must contain type and object path
+                        QString strType = strlstObjPath[0];
+                        if (strType.compare("ObjFactory",Qt::CaseInsensitive) == 0) {
+                            strlstObjPath.removeFirst();
+                            QString strObjPath = strlstObjPath.join("::");
+                            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
+                            if (pObjFactory != nullptr) {
+                                CGraphObj* pGraphObj = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
+                                QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                                if (pGraphicsItem == nullptr) {
+                                    throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                                }
+                                addGraphObj(pGraphObj);
+                                pGraphicsItem->setPos(i_pEv->scenePos());
+                                pGraphicsItem->setSelected(true);
+                            }
+                        }
+                    }
+                }
+            }
         }
         else if (pMimeData->hasImage()) {
             bAccepted = true;

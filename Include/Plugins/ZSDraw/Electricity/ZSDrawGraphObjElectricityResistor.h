@@ -29,9 +29,7 @@ may result in using the software modules.
 
 #include "ZSDrawGraphObjElectricity.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CGraphObjLine;
 class CGraphObjRect;
@@ -92,8 +90,6 @@ protected: // instance members
 
 } // namespace Electricity
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjElectricityResistor_h

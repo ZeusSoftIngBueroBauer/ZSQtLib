@@ -409,6 +409,9 @@ add_subdirectory(Apps/Test/ZSSysIdxTree)
 add_subdirectory(Apps/Test/ZSSysLogFile)
 add_subdirectory(Apps/Test/ZSTestTemplate)
 
+add_subdirectory(Plugins/ZSDraw/Electricity)
+add_subdirectory(Plugins/ZSDraw/QtWidgets)
+
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 

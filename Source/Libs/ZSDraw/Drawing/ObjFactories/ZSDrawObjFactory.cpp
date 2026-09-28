@@ -105,13 +105,11 @@ CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
 
 //------------------------------------------------------------------------------
 CObjFactory* CObjFactory::FindObjFactory(
-    const QString& i_strFactoryGroupName,
-    int            i_iGraphObjType )
+    const QString& i_strFactoryGroupName, int i_iGraphObjType )
 //------------------------------------------------------------------------------
 {
     CObjFactory* pObjFactory = nullptr;
-    if( s_pIdxTree != nullptr )
-    {
+    if (s_pIdxTree != nullptr) {
         QString strPath = s_pIdxTree->buildPathStr(i_strFactoryGroupName, graphObjType2Str(i_iGraphObjType));
         CIdxTreeEntry* pTreeEntry = s_pIdxTree->findLeave(strPath);
         pObjFactory = dynamic_cast<CObjFactory*>(pTreeEntry);
@@ -205,8 +203,7 @@ CObjFactory::CObjFactory(
         throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyRegistered);
     }
     s_pIdxTree->add(this, m_strGroupName);
-
-} // ctor
+}
 
 /*==============================================================================
 public: // dtor
@@ -244,8 +241,7 @@ CObjFactory::~CObjFactory()
     //m_strFileDir;
     //m_strFileName;
     m_pTrcAdminObj = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -285,7 +281,7 @@ public: // instance methods
 //
 //    m_strFileDir = i_strFileDir;
 //}
-//
+
 ////------------------------------------------------------------------------------
 // Name of the file, excluding the path. If file name includes a path, the path will be extracted and stored as file path.
 //void CObjFactory::setFileName( const QString& i_strFileName )
@@ -310,7 +306,7 @@ public: // instance methods
 //        m_strFileName = fileInfo.fileName();
 //    }
 //}
-//
+
 ////------------------------------------------------------------------------------
 // File name, including the path (which may be absolute or relative).
 //void CObjFactory::setFilePath( const QString& i_strFilePath )
@@ -332,7 +328,7 @@ public: // instance methods
 //        m_strFileName = fileInfo.fileName();
 //    }
 //}
-//
+
 ////------------------------------------------------------------------------------
 //QString CObjFactory::filePath() const
 ////------------------------------------------------------------------------------

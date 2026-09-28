@@ -42,6 +42,7 @@ class QDoubleSpinBox;
 class QGraphicsItem;
 class QLabel;
 class QModelIndex;
+class QPluginLoader;
 class QPushButton;
 class QSpinBox;
 class QTreeView;
@@ -143,9 +144,6 @@ public: // class methods
 public: // class methods
     static CMainWindow* GetInstance(); // singleton class
 public: // class members
-    static const QString c_strObjFactoryQtWidgets;
-    static const QString c_strObjFactoryElectricity;
-public: // class members
     static const QString c_strMenuNameFile;
     static const QString c_strMenuNameFileOpenLastUsed;
     //static const QString c_strMenuNameMode;
@@ -154,8 +152,6 @@ public: // class members
     static const QString c_strMenuNameDrawStandardShapes;
     static const QString c_strMenuNameDrawGraphics;
     static const QString c_strMenuNameDrawConnections;
-    static const QString c_strMenuNameDrawWidgets;
-    static const QString c_strMenuNameDrawElectricity;
     static const QString c_strMenuNameEdit;
     static const QString c_strMenuNameEditRotate;
     static const QString c_strMenuNameEditMirror;
@@ -183,17 +179,6 @@ public: // class members
     static const QString c_strActionNameDrawGraphicsPixmap;
     static const QString c_strActionNameDrawConnectionPoint;
     static const QString c_strActionNameDrawConnectionLine;
-    static const QString c_strActionNameDrawWdgtCheckBox;
-    static const QString c_strActionNameDrawWdgtComboBox;
-    static const QString c_strActionNameDrawWdgtGroupBox;
-    static const QString c_strActionNameDrawWdgtLabel;
-    static const QString c_strActionNameDrawWdgtLineEdit;
-    static const QString c_strActionNameDrawWdgtPushButton;
-    static const QString c_strActionNameDrawElectricityResistor;
-    static const QString c_strActionNameDrawElectricityCapacitor;
-    static const QString c_strActionNameDrawElectricityInductor;
-    static const QString c_strActionNameDrawElectricitySwitch;
-    static const QString c_strActionNameDrawElectricityTransistor;
     static const QString c_strActionNameEditSelect;
     static const QString c_strActionNameEditRotateLeft;
     static const QString c_strActionNameEditRotateRight;
@@ -211,16 +196,13 @@ public: // class members
     static const QString c_strActionNameInfoVersion;
 public: // ctors and dtor
     CMainWindow(
-        const QString&     i_strWindowTitleAppName,
-        ZS::Test::CTest*   i_pTest,
-        const QStringList& i_strlstObjFactories,
-        QWidget*           i_pWdgtParent = nullptr,
-        Qt::WindowFlags    i_wflags = Qt::WindowFlags());
+        const QString& i_strWindowTitleAppName,
+        ZS::Test::CTest* i_pTest,
+        QWidget* i_pWdgtParent = nullptr,
+        Qt::WindowFlags i_wflags = Qt::WindowFlags());
     virtual ~CMainWindow();
 protected: // overridables of base class QWidget
     virtual void closeEvent( QCloseEvent* i_pEv );
-public: // instance methods
-    QStringList getAddedObjFactories() const { return m_strlstObjFactories; }
 protected: // instance methods
     void updateWindowTitle();
 protected: // instance methods (for ctor)
@@ -344,7 +326,6 @@ protected: // class members
     static CMainWindow* s_pThis; // singleton class
 protected: // instance members
     QString m_strWindowTitleAppName;
-    QStringList m_strlstObjFactories;
     ZS::Test::CTest* m_pTest;
     // Object Factories (Standard Shapes)
     ZS::Draw::CObjFactoryLine* m_pObjFactoryLine;
@@ -357,38 +338,25 @@ protected: // instance members
     ZS::Draw::CObjFactoryConnectionPoint* m_pObjFactoryConnectionPoint;
     ZS::Draw::CObjFactoryConnectionLine* m_pObjFactoryConnectionLine;
     ZS::Draw::CObjFactoryGroup* m_pObjFactoryGroup;
-    // Object Factories (User Defined)
-    ZS::Draw::QtWidgets::CObjFactoryWdgtCheckBox* m_pObjFactoryWdgtCheckBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtComboBox* m_pObjFactoryWdgtComboBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtGroupBox* m_pObjFactoryWdgtGroupBox;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtLabel* m_pObjFactoryWdgtLabel;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtLineEdit* m_pObjFactoryWdgtLineEdit;
-    ZS::Draw::QtWidgets::CObjFactoryWdgtPushButton* m_pObjFactoryWdgtPushButton;
-    ZS::Draw::Electricity::CObjFactoryCapacitor* m_pObjFactoryElectricityCapacitor;
-    ZS::Draw::Electricity::CObjFactoryDiode* m_pObjFactoryElectricityDiode;
-    ZS::Draw::Electricity::CObjFactoryInductor* m_pObjFactoryElectricityInductor;
-    ZS::Draw::Electricity::CObjFactoryResistor* m_pObjFactoryElectricityResistor;
-    ZS::Draw::Electricity::CObjFactorySwitch* m_pObjFactoryElectricitySwitch;
-    ZS::Draw::Electricity::CObjFactoryTransistor* m_pObjFactoryElectricityTransistor;
-    ZS::Draw::Electricity::CObjFactoryVoltageSource* m_pObjFactoryElectricityVoltageSource;
+    QList<QPluginLoader*> m_arpPluginLoaders;
     // Menus and Actions
     QMenuBar* m_pMenuBar;
     // Menu - File
     QMenu* m_pMenuFile;
     QMenu* m_pMenuLastUsedFiles;
     QToolBar* m_pToolBarFile;
-    QAction*  m_pActFileNew;
-    QAction*  m_pActFileOpen;
-    QAction*  m_pActFileSave;
-    QAction*  m_pActFileSaveAs;
-    QAction*  m_pActFilePageSetup;
+    QAction* m_pActFileNew;
+    QAction* m_pActFileOpen;
+    QAction* m_pActFileSave;
+    QAction* m_pActFileSaveAs;
+    QAction* m_pActFilePageSetup;
     //QAction*  m_pActLastUsedFiles;
     QList<ZS::System::SLastUsedFile> m_arLastUsedFiles;
     QList<QAction*> m_arpActsLastUsedFiles;
-    bool      m_bDrawingChangedSinceLastSave;
-    QString   m_strCurrentFileAbsFilePath;
+    bool m_bDrawingChangedSinceLastSave;
+    QString m_strCurrentFileAbsFilePath;
     QDateTime m_dtCurrentFileLastUsed;
-    QAction*  m_pActFileQuit;
+    QAction* m_pActFileQuit;
     // Menu - Mode
     //QMenu* m_pMenuMode;
     //QToolBar* m_pToolBarMode;

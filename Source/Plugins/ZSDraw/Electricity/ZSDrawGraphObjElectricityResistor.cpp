@@ -24,18 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/QBitmap>
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
-
 #include "Electricity/ZSDrawGraphObjElectricityResistor.h"
 #include "Electricity/ZSDrawWdgtFormatGraphObjsElectricityResistor.h"
 
@@ -55,6 +43,18 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/QBitmap>
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -103,18 +103,18 @@ CGraphObjResistor::CGraphObjResistor(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    QString strAddTrcInfo;
-
     createTraceAdminObjs("Electricity::" + ClassName());
 
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "DrawingScene: " + pointer2Str(i_pDrawingScene) + ", ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
 
@@ -141,12 +141,14 @@ CGraphObjResistor::CGraphObjResistor(
     // takes effect on the result. Usually the size should be adjusted before
     // the positions to get relative adjustments working as expected.
 
-    QRectF rctBounding( QPointF(0.0,0.0), c_sizInitial );
+    QRectF rctBounding(QPointF(0.0,0.0), c_sizInitial);
     double fCnctPtWidth = 5.0;
     double fBodyWidth = rctBounding.width()/3.0;
-    QRectF rctBody( rctBounding.center().x()-fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height() );
-    QRectF rctCnctPt1( rctBounding.left(), rctBounding.center().y()-fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth );
-    QRectF rctCnctPt2( rctBounding.right()-fCnctPtWidth, rctBounding.center().y()-fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth );
+    QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
+    QRectF rctCnctPt1(rctBounding.left(), rctBounding.center().y() - fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth);
+    QRectF rctCnctPt2(rctBounding.right() - fCnctPtWidth, rctBounding.center().y() - fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth);
+    CPhysValSize physValSizeCnctPts(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    physValSizeCnctPts = i_pDrawingScene->convert(physValSizeCnctPts);
 
     SGraphObjAlignment alignment;
 
@@ -177,112 +179,78 @@ CGraphObjResistor::CGraphObjResistor(
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     // Connection Line
     //----------------
 
-    m_pLinCnct = new CGraphObjLine(
-        m_pDrawingScene, drawSettingsLine, "CnctLine",
-        QPointF(0.0,0.0), QPointF(0.0,0.0));
-
-    m_pLinCnct->setLine( QLineF( QPointF(0.0,0.0), QPointF(rctBounding.right(),0.0) ) );
+    m_pLinCnct = new CGraphObjLine(m_pDrawingScene, "CnctLine");
+    m_pLinCnct->setDrawSettings(drawSettingsLine);
+    m_pLinCnct->setLine(CPhysValLine(*m_pDrawingScene, QPointF(0.0, 0.0), QPointF(rctBounding.right(), 0.0)));
     m_pDrawingScene->addGraphObj(m_pLinCnct);
-    m_pDrawingScene->onGraphObjCreationFinished(m_pLinCnct);
-    m_pLinCnct->setPos( QPointF(0.0,rctCnctPt1.center().y()) );
-    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-    //addGraphObj(m_pLinCnct);
+    m_pLinCnct->setPos(QPointF(0.0, rctCnctPt1.center().y()));
+    addToGroup(m_pLinCnct);
 
-    //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0 );
+    //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0);
     //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
+    //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
     //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
     //m_pLinCnct->addAlignment(alignment);
 
     // Body
-    //----------------
+    //-----
 
-    m_pRctBody = new CGraphObjRect(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsBody,
-        /* strObjName    */ "Body" );
-
-    m_pRctBody->setRect( 0.0, 0.0, rctBody.width(), rctBody.height() );
+    m_pRctBody = new CGraphObjRect(m_pDrawingScene, "Body");
+    m_pRctBody->setDrawSettings(drawSettingsBody);
+    m_pRctBody->setRect(CPhysValRect(*m_pDrawingScene, QPointF(0.0, 0.0), rctBody.size()));
     m_pDrawingScene->addGraphObj(m_pRctBody);
-    m_pDrawingScene->onGraphObjCreationFinished(m_pRctBody);
-    m_pRctBody->setPos( rctBody.topLeft() );
-    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-    //addGraphObj(m_pRctBody);
+    m_pRctBody->setPos(rctBody.topLeft());
+    addToGroup(m_pRctBody);
 
-    //alignment = SGraphObjAlignment( EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width() );
+    //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width());
     //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRefHeight, EAlignmentRefHeight, false, rctBody.height()/rctBounding.height() );
+    //alignment = SGraphObjAlignment(EAlignmentRefHeight, EAlignmentRefHeight, false, rctBody.height()/rctBounding.height());
     //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRef::HCenter, EAlignmentRef::HCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment(EAlignmentRef::HCenter, EAlignmentRef::HCenter, true, 0.0);
     //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
+    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
     //m_pRctBody->addAlignment(alignment);
 
     // Connection Point 1
     //-------------------
 
-    m_pCnctPt1 = new CGraphObjConnectionPoint(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt1" );
-
-    m_pCnctPt1->setWidth(fCnctPtWidth);
-    m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
-    m_pCnctPt1->setRect( 0.0, 0.0, rctCnctPt1.width(), rctCnctPt1.height() );
-    m_pCnctPt1->setFixedSize( QSize(fCnctPtWidth,fCnctPtWidth) );
+    m_pCnctPt1 = new CGraphObjConnectionPoint(m_pDrawingScene, "CnctPt1");
+    m_pCnctPt1->setDrawSettings(drawSettingsCnctPt);
+    //m_pCnctPt1->setWidth(fCnctPtWidth);
+    //m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
+    //m_pCnctPt1->setRect(0.0, 0.0, rctCnctPt1.width(), rctCnctPt1.height());
+    m_pCnctPt1->setFixedSize(physValSizeCnctPts);
     m_pDrawingScene->addGraphObj(m_pCnctPt1);
-    m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt1);
-    m_pCnctPt1->setPos( rctCnctPt1.topLeft() );
-    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-    //addGraphObj(m_pCnctPt1);
+    m_pCnctPt1->setPos(rctCnctPt1.topLeft());
+    addToGroup(m_pCnctPt1);
 
-    alignment = SGraphObjAlignment( EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0 );
-    m_pCnctPt1->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
-    m_pCnctPt1->addAlignment(alignment);
+    //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
+    //m_pCnctPt1->addAlignment(alignment);
+    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
+    //m_pCnctPt1->addAlignment(alignment);
 
     // Connection Point 2
     //-------------------
 
-    m_pCnctPt2 = new CGraphObjConnectionPoint(
-        /* pDrawingScene */ m_pDrawingScene,
-        /* drawSettings  */ drawSettingsCnctPt,
-        /* strObjName    */ "CnctPt2" );
-
-    m_pCnctPt2->setWidth(fCnctPtWidth);
-    m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
-    m_pCnctPt2->setRect( 0.0, 0.0, rctCnctPt2.width(), rctCnctPt2.height() );
-    m_pCnctPt2->setFixedSize( QSize(fCnctPtWidth,fCnctPtWidth) );
+    m_pCnctPt2 = new CGraphObjConnectionPoint(m_pDrawingScene, "CnctPt2");
+    m_pCnctPt1->setDrawSettings(drawSettingsCnctPt);
+    //m_pCnctPt2->setWidth(fCnctPtWidth);
+    //m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
+    //m_pCnctPt2->setRect( 0.0, 0.0, rctCnctPt2.width(), rctCnctPt2.height() );
+    m_pCnctPt2->setFixedSize(physValSizeCnctPts);
     m_pDrawingScene->addGraphObj(m_pCnctPt2);
-    m_pDrawingScene->onGraphObjCreationFinished(m_pCnctPt2);
-    throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-    //addGraphObj(m_pCnctPt2);
+    m_pCnctPt2->setPos(rctCnctPt2.topLeft());
+    addToGroup(m_pCnctPt2);
 
-    m_pCnctPt2->setPos( rctCnctPt2.topLeft() );
-    alignment = SGraphObjAlignment( EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0 );
-    m_pCnctPt2->addAlignment(alignment);
-    alignment = SGraphObjAlignment( EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0 );
-    m_pCnctPt2->addAlignment(alignment);
-
-    // Update group coordinates
-    //-------------------------
-
-    m_rctCurr = rctBounding;
-
-    m_ptRotOriginCurr = m_rctCurr.center();
-
-    #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
-    acceptCurrentAsOriginalCoors();
-#endif
-
-    //updateToolTip();
-
-} // ctor
+    //alignment = SGraphObjAlignment(EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0);
+    //m_pCnctPt2->addAlignment(alignment);
+    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
+    //m_pCnctPt2->addAlignment(alignment);
+}
 
 //------------------------------------------------------------------------------
 CGraphObjResistor::~CGraphObjResistor()
@@ -303,8 +271,7 @@ CGraphObjResistor::~CGraphObjResistor()
     m_pRctBody = nullptr;
     m_pCnctPt1 = nullptr;
     m_pCnctPt2 = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -315,26 +282,20 @@ void CGraphObjResistor::setResistance( double i_fResistance_Ohm )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strAddTrcInfo = "Resistance:" + QString::number(i_fResistance_Ohm) + " Ohm";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "setResistance",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_fResistance_Ohm != i_fResistance_Ohm )
-    {
+    if (m_fResistance_Ohm != i_fResistance_Ohm) {
         m_fResistance_Ohm = i_fResistance_Ohm;
-
-        //setDescription( QString::number(m_fResistance_Ohm) + " Ohm" );
+        //setDescription(QString::number(m_fResistance_Ohm) + " Ohm");
     }
-} // setResistance
+}
 
 /*==============================================================================
 public: // instance methods
@@ -369,24 +330,16 @@ public: // must overridables of base class CGraphObj
 CGraphObj* CGraphObjResistor::clone()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
     CGraphObjResistor* pGraphObj = nullptr;
-
     return pGraphObj;
-
-} // clone
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -396,22 +349,17 @@ public: // overridables of base class CGraphObj
 void CGraphObjResistor::openFormatGraphObjsDialog()
 //------------------------------------------------------------------------------
 {
-    CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
+    CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene, this);
 
-    QIcon   icon;
+    QIcon icon;
     QPixmap pxm(":/ZS/Draw/Electricity/Resistor16x16.bmp");
-
     pxm.setMask(pxm.createHeuristicMask());
     icon.addPixmap(pxm);
 
-    CWdgtFormatGraphObjsResistor* pWdgt = new CWdgtFormatGraphObjsResistor(m_pDrawingScene,this);
-
+    CWdgtFormatGraphObjsResistor* pWdgt = new CWdgtFormatGraphObjsResistor(m_pDrawingScene, this);
     pDlgFormatGraphObjs->addWidget( icon, "Resistor", pWdgt );
-
     pDlgFormatGraphObjs->setCurrentWidget("Resistor");
-
     pDlgFormatGraphObjs->exec();
-
     delete pDlgFormatGraphObjs;
     pDlgFormatGraphObjs = nullptr;
 }

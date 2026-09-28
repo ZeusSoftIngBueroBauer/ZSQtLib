@@ -50,32 +50,14 @@ int main( int i_argc, char* i_argv[] )
 
     QStringList strlstArgsPar;
     QStringList strlstArgsVal;
-
     ZS::System::parseAppArgs(i_argc, i_argv, strlstArgsPar, strlstArgsVal);
 
     bool bTest = false;
-    QStringList strlstObjFactories;
-
-    #if QT_VERSION >= 0x040501
-    for( int idxArg = 0; idxArg < strlstArgsPar.length() && idxArg < strlstArgsVal.length(); idxArg++ )
-    #else
-    for( int idxArg = 0; idxArg < strListArgsPar.size() && idxArg < strListArgsVal.size(); idxArg++ )
-    #endif
-    {
+    for (int idxArg = 0; idxArg < strlstArgsPar.size() && idxArg < strlstArgsPar.size(); idxArg++) {
         QString strArg = strlstArgsPar[idxArg];
         QString strVal = strlstArgsVal[idxArg];
-
-        if( strArg.compare("Test",Qt::CaseInsensitive) == 0 )
-        {
+        if (strArg.compare("Test",Qt::CaseInsensitive) == 0) {
             bTest = true;
-        }
-        else if( strArg.compare("DemoQtWidgets",Qt::CaseInsensitive) == 0 )
-        {
-            strlstObjFactories << ZS::Apps::Products::Draw::CMainWindow::c_strObjFactoryQtWidgets;
-        }
-        else if( strArg.compare("DemoElectricity",Qt::CaseInsensitive) == 0 )
-        {
-            strlstObjFactories << ZS::Apps::Products::Draw::CMainWindow::c_strObjFactoryElectricity;
         }
     }
 
@@ -84,8 +66,7 @@ int main( int i_argc, char* i_argv[] )
 
     ZS::Apps::Products::Draw::CApplication* pApp;
 
-    try
-    {
+    try {
         pApp = new ZS::Apps::Products::Draw::CApplication(
             /* argc                  */ i_argc,
             /* argv                  */ i_argv,
@@ -93,8 +74,7 @@ int main( int i_argc, char* i_argv[] )
             /* strOrganizationDomain */ "ZeusSoft.de",
             /* strAppName            */ "ZSAppDraw" );
     }
-    catch(...)
-    {
+    catch (...) {
         return -1;
     }
 
@@ -106,8 +86,7 @@ int main( int i_argc, char* i_argv[] )
     ZS::System::SLastUsedFile lastUsedFile;
     int iDlgOpenLastUsedFileResult = QDialog::Rejected;
 
-    if (!bTest)
-    {
+    if (!bTest) {
         ZS::System::GUI::CDlgOpenLastUsedFile* pDlg =
             ZS::System::GUI::CDlgOpenLastUsedFile::CreateInstance(strMainWindowTitle);
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -115,16 +94,12 @@ int main( int i_argc, char* i_argv[] )
         iDlgOpenLastUsedFileResult = pDlg->exec();
         pDlg = nullptr; // When leaving the exec function the dialog has already been destroyed by the Qt framework.
 
-        if (iDlgOpenLastUsedFileResult == QDialog::Accepted)
-        {
+        if (iDlgOpenLastUsedFileResult == QDialog::Accepted) {
             lastUsedFile = ZS::System::GUI::CDlgOpenLastUsedFile::getSelectedFile();
         }
     }
-
-    pApp->createAndShowMainWindow(strMainWindowTitle, lastUsedFile.m_strAbsFilePath, strlstObjFactories);
-
+    pApp->createAndShowMainWindow(strMainWindowTitle, lastUsedFile.m_strAbsFilePath);
     iAppResult = pApp->exec();
-
     delete pApp;
     pApp = nullptr;
 
@@ -135,5 +110,4 @@ int main( int i_argc, char* i_argv[] )
     #endif
 
     return iAppResult;
-
-} // main
+}

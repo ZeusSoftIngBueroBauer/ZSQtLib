@@ -1,0 +1,13 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="ZS/Draw/Plugins/Electricity">
+        <file alias="Capacitor16x16.bmp">Images/Capacitor16x16.bmp</file>
+        <file alias="Diode16x16.bmp">Images/Diode16x16.bmp</file>
+        <file alias="Inductor16x16.bmp">Images/Inductor16x16.bmp</file>
+        <file alias="Inductor16x10.bmp">Images/Inductor16x10.bmp</file>
+        <file alias="Resistor16x16.bmp">Images/Resistor16x16.bmp</file>
+        <file alias="Switch16x16.bmp">Images/Switch16x16.bmp</file>
+        <file alias="Transistor16x16.bmp">Images/Transistor16x16.bmp</file>
+        <file alias="VoltageSource16x16.bmp">Images/VoltageSource16x16.bmp</file>
+    </qresource>
+</RCC>

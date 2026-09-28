@@ -27,20 +27,7 @@ may result in using the software modules.
 #include "MainWindow.h"
 #include "WidgetCentral.h"
 #include "App.h"
-
-#include "Electricity/ZSDrawObjFactoryElectricityCapacitor.h"
-#include "Electricity/ZSDrawObjFactoryElectricityDiode.h"
-#include "Electricity/ZSDrawObjFactoryElectricityInductor.h"
-#include "Electricity/ZSDrawObjFactoryElectricitySwitch.h"
-#include "Electricity/ZSDrawObjFactoryElectricityResistor.h"
-#include "Electricity/ZSDrawObjFactoryElectricityTransistor.h"
-#include "Electricity/ZSDrawObjFactoryElectricityVoltageSource.h"
-#include "QtWidgets/ZSDrawObjFactoryWdgtCheckBox.h"
-#include "QtWidgets/ZSDrawObjFactoryWdgtComboBox.h"
-#include "QtWidgets/ZSDrawObjFactoryWdgtGroupBox.h"
-#include "QtWidgets/ZSDrawObjFactoryWdgtLabel.h"
-#include "QtWidgets/ZSDrawObjFactoryWdgtLineEdit.h"
-#include "QtWidgets/ZSDrawObjFactoryWdgtPushButton.h"
+#include "ZSDrawPluginInterface.h"
 
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -82,6 +69,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysVersion.h"
 
 #include <QtCore/qfileinfo.h>
+#include <QtCore/qpluginloader.h>
 #include <QtCore/qsettings.h>
 #include <QtCore/qstandardpaths.h>
 #include <QtCore/qtimer.h>
@@ -134,9 +122,6 @@ class CMainWindow : public QMainWindow
 public: // class members
 ==============================================================================*/
 
-const QString CMainWindow::c_strObjFactoryQtWidgets = "QtWidgets";
-const QString CMainWindow::c_strObjFactoryElectricity = "Electricity";
-
 const QString CMainWindow::c_strMenuNameFile               = "&File";
 const QString CMainWindow::c_strMenuNameFileOpenLastUsed   = "Last Used Files ...";
 //const QString CMainWindow::c_strMenuNameMode               = "&Mode";
@@ -145,8 +130,6 @@ const QString CMainWindow::c_strMenuNameDrawSettings       = "Draw:S&ettings";
 const QString CMainWindow::c_strMenuNameDrawStandardShapes = "Draw:&Standard Shapes";
 const QString CMainWindow::c_strMenuNameDrawGraphics       = "Draw:&Graphics";
 const QString CMainWindow::c_strMenuNameDrawConnections    = "Draw:&Connections";
-const QString CMainWindow::c_strMenuNameDrawWidgets        = "Draw:&Widgets";
-const QString CMainWindow::c_strMenuNameDrawElectricity    = "Draw:&Electricity";
 const QString CMainWindow::c_strMenuNameEdit               = "&Edit";
 const QString CMainWindow::c_strMenuNameEditRotate         = "Edit:&Rotate";
 const QString CMainWindow::c_strMenuNameEditMirror         = "Edit:&Mirror";
@@ -175,17 +158,6 @@ const QString CMainWindow::c_strActionNameDrawStandardShapeText      = c_strMenu
 const QString CMainWindow::c_strActionNameDrawGraphicsPixmap         = c_strMenuNameDrawGraphics + ":&Pixmap";
 const QString CMainWindow::c_strActionNameDrawConnectionPoint        = c_strMenuNameDrawConnections + ":Connection &Point";
 const QString CMainWindow::c_strActionNameDrawConnectionLine         = c_strMenuNameDrawConnections + ":Connection &Line";
-const QString CMainWindow::c_strActionNameDrawWdgtCheckBox           = c_strMenuNameDrawWidgets + ":C&heck Box";
-const QString CMainWindow::c_strActionNameDrawWdgtComboBox           = c_strMenuNameDrawWidgets + ":&Combo Box";
-const QString CMainWindow::c_strActionNameDrawWdgtGroupBox           = c_strMenuNameDrawWidgets + ":&Group Box";
-const QString CMainWindow::c_strActionNameDrawWdgtLabel              = c_strMenuNameDrawWidgets + ":&Label";
-const QString CMainWindow::c_strActionNameDrawWdgtLineEdit           = c_strMenuNameDrawWidgets + ":Line &Edit";
-const QString CMainWindow::c_strActionNameDrawWdgtPushButton         = c_strMenuNameDrawWidgets + ":&Push Button";
-const QString CMainWindow::c_strActionNameDrawElectricityResistor    = c_strMenuNameDrawElectricity + ":&Resistor";
-const QString CMainWindow::c_strActionNameDrawElectricityCapacitor   = c_strMenuNameDrawElectricity + ":&Capacitor";
-const QString CMainWindow::c_strActionNameDrawElectricityInductor    = c_strMenuNameDrawElectricity + ":&Inductor";
-const QString CMainWindow::c_strActionNameDrawElectricitySwitch      = c_strMenuNameDrawElectricity + ":&Switch";
-const QString CMainWindow::c_strActionNameDrawElectricityTransistor  = c_strMenuNameDrawElectricity + ":&Transistor";
 const QString CMainWindow::c_strActionNameEditSelect                 = c_strMenuNameDraw + ":&Select";
 const QString CMainWindow::c_strActionNameEditRotateLeft             = c_strMenuNameEdit + ":Rotate &Left by ";
 const QString CMainWindow::c_strActionNameEditRotateRight            = c_strMenuNameEdit + ":Rotate &Right by ";
@@ -225,15 +197,13 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CMainWindow::CMainWindow(
-    const QString&     i_strWindowTitleAppName,
-    ZS::Test::CTest*   i_pTest,
-    const QStringList& i_strlstObjFactories,
-    QWidget*           i_pWdgtParent,
-    Qt::WindowFlags    i_wflags ) :
+    const QString& i_strWindowTitleAppName,
+    ZS::Test::CTest* i_pTest,
+    QWidget* i_pWdgtParent,
+    Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
     QMainWindow(i_pWdgtParent, i_wflags),
     m_strWindowTitleAppName(i_strWindowTitleAppName),
-    m_strlstObjFactories(i_strlstObjFactories),
     m_pTest(i_pTest),
     // Object Factories
     m_pObjFactoryLine(nullptr),
@@ -246,19 +216,6 @@ CMainWindow::CMainWindow(
     m_pObjFactoryConnectionPoint(nullptr),
     m_pObjFactoryConnectionLine(nullptr),
     m_pObjFactoryGroup(nullptr),
-    m_pObjFactoryWdgtCheckBox(nullptr),
-    m_pObjFactoryWdgtComboBox(nullptr),
-    m_pObjFactoryWdgtGroupBox(nullptr),
-    m_pObjFactoryWdgtLabel(nullptr),
-    m_pObjFactoryWdgtLineEdit(nullptr),
-    m_pObjFactoryWdgtPushButton(nullptr),
-    m_pObjFactoryElectricityCapacitor(nullptr),
-    m_pObjFactoryElectricityDiode(nullptr),
-    m_pObjFactoryElectricityInductor(nullptr),
-    m_pObjFactoryElectricityResistor(nullptr),
-    m_pObjFactoryElectricitySwitch(nullptr),
-    m_pObjFactoryElectricityTransistor(nullptr),
-    m_pObjFactoryElectricityVoltageSource(nullptr),
     // Menus and Actions
     m_pMenuBar(nullptr),
     // Menu - File
@@ -387,8 +344,7 @@ CMainWindow::CMainWindow(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "WindowTitle: " + i_strWindowTitleAppName +
-            ", Test: " + QString(i_pTest == nullptr ? "-" : i_pTest->objectName()) +
-            ", ObjFactories [" + i_strlstObjFactories.join(", ") + "]";
+            ", Test: " + QString(i_pTest == nullptr ? "-" : i_pTest->objectName());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -509,7 +465,7 @@ CMainWindow::~CMainWindow()
     try {
         delete m_pDlgTest;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pDlgTest = nullptr;
 
@@ -571,175 +527,90 @@ CMainWindow::~CMainWindow()
     try {
         delete m_pModelObjFactories;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pModelObjFactories = nullptr;
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
-        mthTracer.trace(strRuntimeInfo);
+    for (QPluginLoader* pPluginLoader : m_arpPluginLoaders) {
+        pPluginLoader->unload();
+        try {
+            delete pPluginLoader;
+        }
+        catch (...) {
+        }
+        pPluginLoader = nullptr;
     }
+    m_arpPluginLoaders.clear();
 
     try {
         delete m_pObjFactoryLine;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryLine = nullptr;
 
     try {
         delete m_pObjFactoryRect;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryRect = nullptr;
 
     try {
         delete m_pObjFactoryEllipse;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryEllipse = nullptr;
 
     try {
         delete m_pObjFactoryPolyline;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryPolyline = nullptr;
 
     try {
         delete m_pObjFactoryPolygon;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryPolygon = nullptr;
 
     try {
         delete m_pObjFactoryText;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryText = nullptr;
 
     try {
         delete m_pObjFactoryPixmap;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryPixmap = nullptr;
 
     try {
         delete m_pObjFactoryConnectionPoint;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryConnectionPoint = nullptr;
 
     try {
         delete m_pObjFactoryConnectionLine;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryConnectionLine = nullptr;
 
     try {
         delete m_pObjFactoryGroup;
     }
-    catch(...) {
+    catch (...) {
     }
     m_pObjFactoryGroup = nullptr;
-
-    try {
-        delete m_pObjFactoryWdgtCheckBox;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryWdgtCheckBox = nullptr;
-
-    try {
-        delete m_pObjFactoryWdgtComboBox;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryWdgtComboBox = nullptr;
-
-    try {
-        delete m_pObjFactoryWdgtGroupBox;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryWdgtGroupBox = nullptr;
-
-    try {
-        delete m_pObjFactoryWdgtLabel;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryWdgtLabel = nullptr;
-
-    try {
-        delete m_pObjFactoryWdgtLineEdit;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryWdgtLineEdit = nullptr;
-
-    try {
-        delete m_pObjFactoryWdgtPushButton;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryWdgtPushButton = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricityCapacitor;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricityCapacitor = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricityDiode;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricityDiode = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricityInductor;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricityInductor = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricityResistor;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricityResistor = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricitySwitch;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricitySwitch = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricityTransistor;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricityTransistor = nullptr;
-
-    try {
-        delete m_pObjFactoryElectricityVoltageSource;
-    }
-    catch(...) {
-    }
-    m_pObjFactoryElectricityVoltageSource = nullptr;
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
@@ -812,19 +683,6 @@ CMainWindow::~CMainWindow()
     m_pObjFactoryConnectionPoint = nullptr;
     m_pObjFactoryConnectionLine = nullptr;
     m_pObjFactoryGroup = nullptr;
-    m_pObjFactoryWdgtCheckBox = nullptr;
-    m_pObjFactoryWdgtComboBox = nullptr;
-    m_pObjFactoryWdgtGroupBox = nullptr;
-    m_pObjFactoryWdgtLabel = nullptr;
-    m_pObjFactoryWdgtLineEdit = nullptr;
-    m_pObjFactoryWdgtPushButton = nullptr;
-    m_pObjFactoryElectricityCapacitor = nullptr;
-    m_pObjFactoryElectricityDiode = nullptr;
-    m_pObjFactoryElectricityInductor = nullptr;
-    m_pObjFactoryElectricityResistor = nullptr;
-    m_pObjFactoryElectricitySwitch = nullptr;
-    m_pObjFactoryElectricityTransistor = nullptr;
-    m_pObjFactoryElectricityVoltageSource = nullptr;
     // Menus and Actions
     m_pMenuBar = nullptr;
     // Menu - File
@@ -1081,57 +939,56 @@ void CMainWindow::createObjFactories()
     QPixmap pxmDrawConnectionLine16x16(":/ZS/Draw/GraphObjConnectionLine16x16.png");
     m_pObjFactoryConnectionLine = new CObjFactoryConnectionLine(pxmDrawConnectionLine16x16);
 
-    // <Menu> Draw::Widgets
-    //----------------------
+    // Plugins
+    //--------
 
-    if( m_strlstObjFactories.contains(c_strObjFactoryQtWidgets) )
-    {
-        QPixmap pxmDrawWdgtCheckBox16x16(":/ZS/Draw/QtWidgets/CheckBox16x16.bmp");
-        pxmDrawWdgtCheckBox16x16.setMask(pxmDrawWdgtCheckBox16x16.createHeuristicMask());
-        m_pObjFactoryWdgtCheckBox = new CObjFactoryWdgtCheckBox(pxmDrawWdgtCheckBox16x16);
-        QPixmap pxmDrawWdgtComboBox16x16(":/ZS/Draw/QtWidgets/ComboBox16x16.bmp");
-        pxmDrawWdgtComboBox16x16.setMask(pxmDrawWdgtComboBox16x16.createHeuristicMask());
-        m_pObjFactoryWdgtComboBox = new CObjFactoryWdgtComboBox(pxmDrawWdgtComboBox16x16);
-        QPixmap pxmDrawWdgtGroupBox16x16(":/ZS/Draw/QtWidgets/GroupBox16x16.bmp");
-        pxmDrawWdgtGroupBox16x16.setMask(pxmDrawWdgtGroupBox16x16.createHeuristicMask());
-        m_pObjFactoryWdgtGroupBox = new CObjFactoryWdgtGroupBox(pxmDrawWdgtGroupBox16x16);
-        QPixmap pxmDrawWdgtLabel16x16(":/ZS/Draw/QtWidgets/Label16x16.bmp");
-        pxmDrawWdgtLabel16x16.setMask(pxmDrawWdgtLabel16x16.createHeuristicMask());
-        m_pObjFactoryWdgtLabel = new CObjFactoryWdgtLabel(pxmDrawWdgtLabel16x16);
-        QPixmap pxmDrawWdgtLineEdit16x16(":/ZS/Draw/QtWidgets/LineEdit16x16.bmp");
-        pxmDrawWdgtLineEdit16x16.setMask(pxmDrawWdgtLineEdit16x16.createHeuristicMask());
-        m_pObjFactoryWdgtLineEdit = new CObjFactoryWdgtLineEdit(pxmDrawWdgtLineEdit16x16);
-        QPixmap pxmDrawWdgtPushButton16x16(":/ZS/Draw/QtWidgets/PushButton16x16.bmp");
-        pxmDrawWdgtPushButton16x16.setMask(pxmDrawWdgtPushButton16x16.createHeuristicMask());
-        m_pObjFactoryWdgtPushButton = new CObjFactoryWdgtPushButton(pxmDrawWdgtPushButton16x16);
-    }
+    QDir dirPlugins(qApp->applicationDirPath() + "/plugins/zsdraw");
+    QStringList strlstPlugins = dirPlugins.entryList(QDir::Files);
 
-    // <Menu> Draw::Electricity
-    //-------------------------
-
-    if( m_strlstObjFactories.contains(c_strObjFactoryElectricity) )
-    {
-        QPixmap pxmDrawVoltageSource(":/ZS/Draw/Electricity/VoltageSource16x16.bmp");
-        pxmDrawVoltageSource.setMask(pxmDrawVoltageSource.createHeuristicMask());
-        m_pObjFactoryElectricityVoltageSource = new CObjFactoryVoltageSource(pxmDrawVoltageSource);
-        QPixmap pxmDrawResistor(":/ZS/Draw/Electricity/Resistor16x16.bmp");
-        pxmDrawResistor.setMask(pxmDrawResistor.createHeuristicMask());
-        m_pObjFactoryElectricityResistor = new CObjFactoryResistor(pxmDrawResistor);
-        QPixmap pxmDrawInductor(":/ZS/Draw/Electricity/Inductor16x16.bmp");
-        pxmDrawInductor.setMask(pxmDrawInductor.createHeuristicMask());
-        m_pObjFactoryElectricityInductor = new CObjFactoryInductor(pxmDrawInductor);
-        QPixmap pxmDrawCapacitor(":/ZS/Draw/Electricity/Capacitor16x16.bmp");
-        pxmDrawCapacitor.setMask(pxmDrawCapacitor.createHeuristicMask());
-        m_pObjFactoryElectricityCapacitor = new CObjFactoryCapacitor(pxmDrawCapacitor);
-        QPixmap pxmDrawSwitch(":/ZS/Draw/Electricity/Switch16x16.bmp");
-        pxmDrawSwitch.setMask(pxmDrawSwitch.createHeuristicMask());
-        m_pObjFactoryElectricitySwitch = new CObjFactorySwitch(pxmDrawSwitch);
-        QPixmap pxmDrawDiode(":/ZS/Draw/Electricity/Diode16x16.bmp");
-        pxmDrawDiode.setMask(pxmDrawDiode.createHeuristicMask());
-        m_pObjFactoryElectricityDiode = new CObjFactoryDiode(pxmDrawDiode);
-        QPixmap pxmDrawTransistor(":/ZS/Draw/Electricity/Transistor16x16.bmp");
-        pxmDrawTransistor.setMask(pxmDrawTransistor.createHeuristicMask());
-        m_pObjFactoryElectricityTransistor = new CObjFactoryTransistor(pxmDrawTransistor);
+    for (const QString &strPluginFileName : strlstPlugins) {
+        QString strAbsFilePath = dirPlugins.absoluteFilePath(strPluginFileName);
+        QPluginLoader* pPluginLoader = new QPluginLoader(strAbsFilePath);
+        QObject* pObjPluginLoader = pPluginLoader->instance();
+        if (pObjPluginLoader == nullptr)
+        {
+            QString strAddErrInfo = "Plugin '" + strPluginFileName + "'could not be loaded. "
+                + pPluginLoader->errorString();
+            SErrResultInfo errResultInfo(
+                /* strNameSpace  */ NameSpace(),
+                /* strClassName  */ ClassName(),
+                /* strObjName    */ objectName(),
+                /* strMthName    */ "createObjFactories",
+                /* result        */ EResult::EResultFileReadContent,
+                /* severity      */ EResultSeverityWarning,
+                /* strAddErrInfo */ strAddErrInfo);
+            CErrLog::GetInstance()->addEntry(errResultInfo);
+        }
+        else
+        {
+            IDrawPluginInterface* pDrawPluingInterface = qobject_cast<IDrawPluginInterface*>(pObjPluginLoader);
+            if (pDrawPluingInterface == nullptr)
+            {
+                QString strAddErrInfo = "Invalid plugin '" + strPluginFileName + "'. "
+                    + "DrawPluginInterface not implemented.";
+                SErrResultInfo errResultInfo(
+                    /* strNameSpace  */ NameSpace(),
+                    /* strClassName  */ ClassName(),
+                    /* strObjName    */ objectName(),
+                    /* strMthName    */ "createObjFactories",
+                    /* result        */ EResult::EResultFileReadContent,
+                    /* severity      */ EResultSeverityWarning,
+                    /* strAddErrInfo */ strAddErrInfo);
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+                pPluginLoader->unload();
+                delete pPluginLoader;
+                pPluginLoader = nullptr;
+            }
+            else
+            {
+                pDrawPluingInterface->createObjFactories();
+                m_arpPluginLoaders.append(pPluginLoader);
+            }
+        }
     }
 
     // <Menu> Edit
@@ -2200,13 +2057,13 @@ void CMainWindow::createDockWidgets()
     // <DockWidget> Tree View Object Factories
     //----------------------------------------
 
-    if( !m_strlstObjFactories.isEmpty() )
+    if (!m_arpPluginLoaders.isEmpty())
     {
         m_pDockWdgtObjFactories = new QDockWidget("Tool Box");
         m_pDockWdgtObjFactories->setObjectName("Object Factories");
         m_pDockWdgtObjFactories->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
 
-        m_pModelObjFactories = new CObjFactoriesModel( CObjFactory::IdxTree() );
+        m_pModelObjFactories = new CObjFactoriesModel(CObjFactory::IdxTree());
         m_pTreeViewObjFactories = new QTreeView(this);
 
         m_pTreeViewObjFactories->setModel(m_pModelObjFactories);
@@ -2230,8 +2087,8 @@ void CMainWindow::createDockWidgets()
             m_pTreeViewObjFactories->selectionModel(), &QItemSelectionModel::currentChanged,
             this, &CMainWindow::onTreeViewObjFactoriesCurrentChanged );
 
-        if( m_pMenuView != nullptr ) {
-            if( !m_pMenuView->isEmpty() ) {
+        if (m_pMenuView != nullptr) {
+            if (!m_pMenuView->isEmpty()) {
                 m_pMenuView->addSeparator();
             }
             m_pMenuView->addAction(m_pDockWdgtObjFactories->toggleViewAction());

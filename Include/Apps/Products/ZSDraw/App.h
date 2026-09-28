@@ -71,9 +71,8 @@ public: // ctors and dtor
     ~CApplication();
 public: // instance methods
     void createAndShowMainWindow(
-        const QString&     i_strMainWindowTitle,
-        const QString&     i_strFileName,
-        const QStringList& i_strlstObjFactories);
+        const QString& i_strMainWindowTitle,
+        const QString& i_strFileName);
 protected slots: // instance methods of system shutdown
     void onLastWindowClosed();
 protected: // instance members

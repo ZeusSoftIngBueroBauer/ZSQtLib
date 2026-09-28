@@ -1,0 +1,65 @@
+/*******************************************************************************
+
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
+                         Gewerbepark 28
+                         D-83670 Bad Heilbrunn
+                         Tel: 0049 8046 9488
+                         www.zeussoft.de
+                         E-Mail: mailbox@zeussoft.de
+
+--------------------------------------------------------------------------------
+
+Content: This file is part of the ZSQtLib.
+
+This file may be used with no license restrictions for your needs. But it is not
+allowed to resell any modules of the ZSQtLib veiling the original developer of
+the modules. Therefore the copyright link to ZeusSoft, Ing. Buero Bauer must not
+be removed from the header of the source code modules.
+
+ZeusSoft, Ing. Buero Bauer provides the source code as is without any guarantee
+that the code is written without faults.
+
+ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
+may result in using the software modules.
+
+*******************************************************************************/
+
+#pragma once
+
+#include <QObject>
+#include "ZSDrawPluginInterface.h"
+
+namespace ZS::Draw::Electricity
+{
+class CObjFactoryCapacitor;
+class CObjFactoryDiode;
+class CObjFactoryInductor;
+class CObjFactoryResistor;
+class CObjFactorySwitch;
+class CObjFactoryTransistor;
+class CObjFactoryVoltageSource;
+
+class CDrawPluginElectricity : public QObject, public IDrawPluginInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(ZS::Draw::IDrawPluginInterface)
+    Q_PLUGIN_METADATA(IID ZSDrawPluginInterface_iid)
+public: // class methods
+    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString ClassName() { return "CDrawPluginElectricity"; }
+public: // ctors and dtor
+    CDrawPluginElectricity();
+    ~CDrawPluginElectricity() override;
+public: // interface methods of IDrawPluginInterface
+    void createObjFactories() override;
+private: // instance members
+    CObjFactoryCapacitor* m_pObjFactoryElectricityCapacitor = nullptr;
+    CObjFactoryDiode* m_pObjFactoryElectricityDiode = nullptr;
+    CObjFactoryInductor* m_pObjFactoryElectricityInductor = nullptr;
+    CObjFactoryResistor* m_pObjFactoryElectricityResistor = nullptr;
+    CObjFactorySwitch* m_pObjFactoryElectricitySwitch = nullptr;
+    CObjFactoryTransistor* m_pObjFactoryElectricityTransistor = nullptr;
+    CObjFactoryVoltageSource* m_pObjFactoryElectricityVoltageSource = nullptr;
+};
+
+} // namespace ZS::Draw::Electricity

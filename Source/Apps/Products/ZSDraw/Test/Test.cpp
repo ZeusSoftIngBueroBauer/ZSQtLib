@@ -28,18 +28,6 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include "MainWindow.h"
 #include "WidgetCentral.h"
 
-#include "Electricity/ZSDrawGraphObjElectricityResistor.h"
-#include "Electricity/ZSDrawGraphObjElectricityCapacitor.h"
-#include "Electricity/ZSDrawGraphObjElectricityInductor.h"
-#include "Electricity/ZSDrawGraphObjElectricitySwitch.h"
-#include "Electricity/ZSDrawGraphObjElectricityTransistor.h"
-#include "QtWidgets/ZSDrawGraphObjWdgtCheckBox.h"
-#include "QtWidgets/ZSDrawGraphObjWdgtComboBox.h"
-#include "QtWidgets/ZSDrawGraphObjWdgtGroupBox.h"
-#include "QtWidgets/ZSDrawGraphObjWdgtLabel.h"
-#include "QtWidgets/ZSDrawGraphObjWdgtLineEdit.h"
-#include "QtWidgets/ZSDrawGraphObjWdgtPushButton.h"
-
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"

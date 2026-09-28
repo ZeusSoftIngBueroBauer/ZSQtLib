@@ -1,0 +1,11 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="ZS/Draw/Plugins/QtWidgets">
+        <file alias="CheckBox16x16.bmp">Images/CheckBox16x16.bmp</file>
+        <file alias="ComboBox16x16.bmp">Images/ComboBox16x16.bmp</file>
+        <file alias="GroupBox16x16.bmp">Images/GroupBox16x16.bmp</file>
+        <file alias="Label16x16.bmp">Images/Label16x16.bmp</file>
+        <file alias="LineEdit16x16.bmp">Images/LineEdit16x16.bmp</file>
+        <file alias="PushButton16x16.bmp">Images/PushButton16x16.bmp</file>
+    </qresource>
+</RCC>

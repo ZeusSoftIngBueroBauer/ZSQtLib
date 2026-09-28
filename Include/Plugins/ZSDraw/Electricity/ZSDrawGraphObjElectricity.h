@@ -27,21 +27,9 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjElectricity_h
 #define ZSDraw_GraphObjElectricity_h
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION >= 0x040000 && QT_VERSION < 0x050000
-#include <QtGui/QGraphicsRectItem>
-#elif QT_VERSION >= 0x050000 && QT_VERSION < 0x060000
-#include <QtWidgets/QGraphicsRectItem>
-#endif
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 
-namespace ZS
-{
-namespace Draw
-{
-namespace Electricity
+namespace ZS::Draw::Electricity
 {
 //******************************************************************************
 class CGraphObjElectricity : public CGraphObjGroup
@@ -72,10 +60,6 @@ public: // overridables of base class CGraphObj
 
 }; // class CGraphObjElectricity
 
-} // namespace Electricity
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Electricity
 
 #endif // #ifndef ZSDraw_GraphObjElectricity_h

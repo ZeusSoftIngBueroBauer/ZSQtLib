@@ -96,7 +96,7 @@ else()
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${TargetOutputName})
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Tests)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER Apps/Tests)
 
 source_group("Header Files" FILES ${_Headers})
 source_group("Source Files" FILES ${_Sources})
