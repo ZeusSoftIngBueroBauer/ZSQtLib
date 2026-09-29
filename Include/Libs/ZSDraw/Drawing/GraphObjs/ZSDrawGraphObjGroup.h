@@ -123,6 +123,7 @@ public: // instance methods
     const CDrawGridSettings& gridSettings() const;
 public: // instance methods
     void addToGroup(CGraphObj* i_pGraphObj, bool i_bGraphObjCoordinatesRelativeToThisGroup = false);
+    void addToGroup(QList<CGraphObj*> i_arpGraphObjs, bool i_bGraphObjCoordinatesRelativeToThisGroup = false);
     void removeFromGroup(CGraphObj* i_pGraphObj);
     void resizeToContent();
     CGraphObj* getGraphObj(const QString& i_strObjName);

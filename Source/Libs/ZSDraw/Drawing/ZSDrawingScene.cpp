@@ -3657,6 +3657,8 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                     }
                     addGraphObj(pGraphObjPixmap);
                     pGraphObjPixmap->setImageFilePath(strFilePath);
+                    pGraphicsItem->setPos(i_pEv->scenePos());
+                    pGraphicsItem->setSelected(true);
                 }
             }
         }

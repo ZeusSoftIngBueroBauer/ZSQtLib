@@ -92,12 +92,7 @@ CGraphObjResistor::CGraphObjResistor(
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Resistor",
-        /* strObjName    */ i_strObjName.isEmpty() ? "R" + QString::number(s_iInstCount) : i_strObjName),
-    m_pLinCnct(nullptr),
-    m_pRctBody(nullptr),
-    m_pCnctPt1(nullptr),
-    m_pCnctPt2(nullptr),
-    m_fResistance_Ohm(1000.0)
+        /* strObjName    */ i_strObjName.isEmpty() ? "R" + QString::number(s_iInstCount) : i_strObjName)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -116,7 +111,7 @@ CGraphObjResistor::CGraphObjResistor(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
     /*
     CnctPt1    Body    CnctPt2
@@ -142,15 +137,12 @@ CGraphObjResistor::CGraphObjResistor(
     // the positions to get relative adjustments working as expected.
 
     QRectF rctBounding(QPointF(0.0,0.0), c_sizInitial);
-    double fCnctPtWidth = 5.0;
-    double fBodyWidth = rctBounding.width()/3.0;
+    double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
-    QRectF rctCnctPt1(rctBounding.left(), rctBounding.center().y() - fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth);
-    QRectF rctCnctPt2(rctBounding.right() - fCnctPtWidth, rctBounding.center().y() - fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth);
-    CPhysValSize physValSizeCnctPts(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
-    physValSizeCnctPts = i_pDrawingScene->convert(physValSizeCnctPts);
 
     SGraphObjAlignment alignment;
+
+    QList<CGraphObj*> arpGraphObjs;
 
     // Draw settings for group item
     //-----------------------------
@@ -159,35 +151,53 @@ CGraphObjResistor::CGraphObjResistor(
     ////m_drawSettings.setAttributesAreUsed( true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount );
     //m_drawSettings.setAttributesAreUsed( true, EDrawAttributeFillMin, EDrawAttributeFillCount );
 
-    m_drawSettings.setPenColor(Qt::black);
-    m_drawSettings.setPenWidth(1);
-    m_drawSettings.setLineStyle(ELineStyle::SolidLine);
-    m_drawSettings.setFillColor(Qt::white);
-    m_drawSettings.setFillStyle(EFillStyle::SolidPattern);
+    //m_drawSettings.setPenColor(Qt::darkYellow);
+    //m_drawSettings.setPenWidth(1);
+    //m_drawSettings.setLineStyle(ELineStyle::DotLine);
+    //m_drawSettings.setFillColor(Qt::white);
+    //m_drawSettings.setFillStyle(EFillStyle::SolidPattern);
 
     // Draw settings for elements
     //---------------------------
 
-    CDrawSettings drawSettingsLine(EGraphObjTypeLine);
-
+    //CDrawSettings drawSettingsLine(EGraphObjTypeLine);
     //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
     //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
 
-    CDrawSettings drawSettingsBody(EGraphObjTypeRect);
-
-    drawSettingsBody.setFillStyle(EFillStyle::SolidPattern);
+    //CDrawSettings drawSettingsBody(EGraphObjTypeRect);
+    //drawSettingsBody.setFillStyle(EFillStyle::SolidPattern);
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
-    // Connection Line
-    //----------------
+    // Connection Line with ConnectionPoints
+    //--------------------------------------
 
-    m_pLinCnct = new CGraphObjLine(m_pDrawingScene, "CnctLine");
-    m_pLinCnct->setDrawSettings(drawSettingsLine);
-    m_pLinCnct->setLine(CPhysValLine(*m_pDrawingScene, QPointF(0.0, 0.0), QPointF(rctBounding.right(), 0.0)));
-    m_pDrawingScene->addGraphObj(m_pLinCnct);
-    m_pLinCnct->setPos(QPointF(0.0, rctCnctPt1.center().y()));
-    addToGroup(m_pLinCnct);
+    m_pGraphObjLine = new CGraphObjLine(m_pDrawingScene, "CnctLine");
+    //m_pGraphObjLine->setDrawSettings(drawSettingsLine);
+    m_pGraphObjLine->setLine(CPhysValLine(*m_pDrawingScene,
+        QPointF(rctBounding.left(), rctBounding.center().y()),
+        QPointF(rctBounding.right(), rctBounding.center().y())));
+    m_pDrawingScene->addGraphObj(m_pGraphObjLine);
+    //m_pGraphObjLine->setPos(QPointF(0.0, rctBounding.center().y()));
+    arpGraphObjs.append(m_pGraphObjLine);
+    //m_pGraphObjLine->addConnectionPoint("CnctPt1", ESelectionPointType::PolygonPoint, 0);
+    //m_pGraphObjLine->addConnectionPoint("CnctPt2", ESelectionPointType::PolygonPoint, 1);
+
+    // Body
+    //-----
+
+    m_pGraphObjRectBody = new CGraphObjRect(m_pDrawingScene, "Body");
+    //m_pGraphObjRectBody->setDrawSettings(drawSettingsBody);
+    m_pGraphObjRectBody->setRect(CPhysValRect(*m_pDrawingScene,
+        QPointF(rctBody.left(), rctBody.center().y()), rctBody.size()));
+    m_pDrawingScene->addGraphObj(m_pGraphObjRectBody);
+    //m_pGraphObjRectBody->setPos(rctBody.topLeft());
+    arpGraphObjs.append(m_pGraphObjRectBody);
+
+    // Create resistor as object group
+    //--------------------------------
+
+    //addToGroup(arpGraphObjs);
 
     //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0);
     //m_pLinCnct->addAlignment(alignment);
@@ -195,16 +205,6 @@ CGraphObjResistor::CGraphObjResistor(
     //m_pLinCnct->addAlignment(alignment);
     //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
     //m_pLinCnct->addAlignment(alignment);
-
-    // Body
-    //-----
-
-    m_pRctBody = new CGraphObjRect(m_pDrawingScene, "Body");
-    m_pRctBody->setDrawSettings(drawSettingsBody);
-    m_pRctBody->setRect(CPhysValRect(*m_pDrawingScene, QPointF(0.0, 0.0), rctBody.size()));
-    m_pDrawingScene->addGraphObj(m_pRctBody);
-    m_pRctBody->setPos(rctBody.topLeft());
-    addToGroup(m_pRctBody);
 
     //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width());
     //m_pRctBody->addAlignment(alignment);
@@ -215,36 +215,10 @@ CGraphObjResistor::CGraphObjResistor(
     //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
     //m_pRctBody->addAlignment(alignment);
 
-    // Connection Point 1
-    //-------------------
-
-    m_pCnctPt1 = new CGraphObjConnectionPoint(m_pDrawingScene, "CnctPt1");
-    m_pCnctPt1->setDrawSettings(drawSettingsCnctPt);
-    //m_pCnctPt1->setWidth(fCnctPtWidth);
-    //m_pCnctPt1->setInnerCircleWidthInPx(fCnctPtWidth);
-    //m_pCnctPt1->setRect(0.0, 0.0, rctCnctPt1.width(), rctCnctPt1.height());
-    m_pCnctPt1->setFixedSize(physValSizeCnctPts);
-    m_pDrawingScene->addGraphObj(m_pCnctPt1);
-    m_pCnctPt1->setPos(rctCnctPt1.topLeft());
-    addToGroup(m_pCnctPt1);
-
     //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
     //m_pCnctPt1->addAlignment(alignment);
     //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
     //m_pCnctPt1->addAlignment(alignment);
-
-    // Connection Point 2
-    //-------------------
-
-    m_pCnctPt2 = new CGraphObjConnectionPoint(m_pDrawingScene, "CnctPt2");
-    m_pCnctPt1->setDrawSettings(drawSettingsCnctPt);
-    //m_pCnctPt2->setWidth(fCnctPtWidth);
-    //m_pCnctPt2->setInnerCircleWidthInPx(fCnctPtWidth);
-    //m_pCnctPt2->setRect( 0.0, 0.0, rctCnctPt2.width(), rctCnctPt2.height() );
-    m_pCnctPt2->setFixedSize(physValSizeCnctPts);
-    m_pDrawingScene->addGraphObj(m_pCnctPt2);
-    m_pCnctPt2->setPos(rctCnctPt2.topLeft());
-    addToGroup(m_pCnctPt2);
 
     //alignment = SGraphObjAlignment(EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0);
     //m_pCnctPt2->addAlignment(alignment);
@@ -266,11 +240,6 @@ CGraphObjResistor::~CGraphObjResistor()
         /* strAddInfo   */ "" );
 
     emit_aboutToBeDestroyed();
-
-    m_pLinCnct = nullptr;
-    m_pRctBody = nullptr;
-    m_pCnctPt1 = nullptr;
-    m_pCnctPt2 = nullptr;
 }
 
 /*==============================================================================
@@ -383,23 +352,23 @@ void CGraphObjResistor::onDrawSettingsChanged(const CDrawSettings& i_drawSetting
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    CDrawSettings drawSettingsLine = m_pLinCnct->drawSettings();
+    //CDrawSettings drawSettingsLine = m_pGraphObjLine->drawSettings();
 
-    drawSettingsLine.setPenColor(m_drawSettings.penColor());
-    drawSettingsLine.setPenWidth(m_drawSettings.penWidth());
-    drawSettingsLine.setLineStyle(m_drawSettings.lineStyle());
+    //drawSettingsLine.setPenColor(m_drawSettings.penColor());
+    //drawSettingsLine.setPenWidth(m_drawSettings.penWidth());
+    //drawSettingsLine.setLineStyle(m_drawSettings.lineStyle());
 
-    m_pLinCnct->setDrawSettings(drawSettingsLine);
+    //m_pGraphObjLine->setDrawSettings(drawSettingsLine);
 
-    CDrawSettings drawSettingsBody = m_pRctBody->drawSettings();
+    //CDrawSettings drawSettingsBody = m_pGraphObjRectBody->drawSettings();
 
-    drawSettingsBody.setPenColor(m_drawSettings.penColor());
-    drawSettingsBody.setPenWidth(m_drawSettings.penWidth());
-    drawSettingsBody.setLineStyle(m_drawSettings.lineStyle());
-    drawSettingsBody.setFillColor(m_drawSettings.fillColor());
-    //drawSettingsBody.setFillStyle(m_drawSettings.fillStyle()); keep SolidPattern
+    //drawSettingsBody.setPenColor(m_drawSettings.penColor());
+    //drawSettingsBody.setPenWidth(m_drawSettings.penWidth());
+    //drawSettingsBody.setLineStyle(m_drawSettings.lineStyle());
+    //drawSettingsBody.setFillColor(m_drawSettings.fillColor());
+    ////drawSettingsBody.setFillStyle(m_drawSettings.fillStyle()); keep SolidPattern
 
-    m_pRctBody->setDrawSettings(drawSettingsBody);
+    //m_pGraphObjRectBody->setDrawSettings(drawSettingsBody);
 
     //CDrawSettings drawSettingsCnctPt = m_pCnctPt1->drawSettings();
 

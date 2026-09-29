@@ -80,11 +80,9 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
-    CGraphObjLine*            m_pLinCnct;
-    CGraphObjRect*            m_pRctBody;
-    CGraphObjConnectionPoint* m_pCnctPt1;
-    CGraphObjConnectionPoint* m_pCnctPt2;
-    double                    m_fResistance_Ohm;
+    CGraphObjLine* m_pGraphObjLine = nullptr;
+    CGraphObjRect* m_pGraphObjRectBody = nullptr;
+    double m_fResistance_Ohm = 1000.0;
 
 }; // class CGraphObjResistor
 
