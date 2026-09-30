@@ -107,11 +107,11 @@ public: // interface methods
     virtual int getNumberOfCreatedGraphObjects() const = 0;
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings) = 0;
+        const CDrawSettings& i_drawSettings = CDrawSettings(EGraphObjTypeUndefined)) = 0;
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
-        const CDrawSettings& i_drawSettings) = 0;
+        const CDrawSettings& i_drawSettings = CDrawSettings(EGraphObjTypeUndefined)) = 0;
     virtual ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
         QXmlStreamWriter& i_xmlStreamWriter) const = 0;

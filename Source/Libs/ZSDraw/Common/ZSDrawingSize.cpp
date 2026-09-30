@@ -740,6 +740,12 @@ int CDrawingSize::scaleFactorDivisor() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the y scale axis orientation to the given value.
+
+    @note If the dimension unit is pixels, the method has no effect.
+          The passed value will be stored. But for pixel dimension the resulting
+          scale axis orientation will allways be TopDown.
+*/
 void CDrawingSize::setYScaleAxisOrientation( const CEnumYScaleAxisOrientation& i_orientation )
 //------------------------------------------------------------------------------
 {
@@ -759,10 +765,15 @@ void CDrawingSize::setYScaleAxisOrientation( const CEnumYScaleAxisOrientation& i
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the effective y scale axis orientation.
+
+    @note If the dimension unit is pixels, the returned scale axis orientation
+          will allways be TopDown. Even if the stored scale orientation is BottomUp.
+*/
 CEnumYScaleAxisOrientation CDrawingSize::yScaleAxisOrientation() const
 //------------------------------------------------------------------------------
 {
-    return m_eYScaleAxisOrientation;
+    return (m_eDimensionUnit == EScaleDimensionUnit::Pixels ? EYScaleAxisOrientation::TopDown : m_eYScaleAxisOrientation);
 }
 
 //------------------------------------------------------------------------------

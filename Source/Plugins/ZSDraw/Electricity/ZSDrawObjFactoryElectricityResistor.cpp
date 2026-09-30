@@ -144,7 +144,7 @@ CGraphObj* CObjFactoryResistor::createGraphObj(
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObj* pGraphObj = new CGraphObjResistor(i_pDrawingScene);
     //pGraphObj->setDrawSettings(drawSettings);
-    //pGraphObj->setPosition(i_physValPoint);
+    pGraphObj->setPosition(i_physValPoint);
     return pGraphObj;
 }
 

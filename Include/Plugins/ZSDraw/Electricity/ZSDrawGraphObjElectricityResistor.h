@@ -31,8 +31,8 @@ may result in using the software modules.
 
 namespace ZS::Draw
 {
-class CGraphObjLine;
 class CGraphObjRect;
+class CGraphObjConnectionLine;
 class CGraphObjConnectionPoint;
 
 namespace Electricity
@@ -40,12 +40,12 @@ namespace Electricity
 //******************************************************************************
 class CGraphObjResistor : public CGraphObjElectricity
 /*
-CnctPt1    Body    CnctPt2
-        +--------+
-+--+    |        |    +--+
-|  |----|  -  -  |----|  |  <-- Line (hidden below Body)
-+--+    |        |    +--+
-        +--------+
+                          Body
+                       +--------+
+             CnctLine1 |        | CnctLine2
+    CnctPt1 X----------X        X----------X CnctPt2
+                       |        |
+                       +--------+
 *******************************************************************************/
 {
 public: // class methods
@@ -80,8 +80,13 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
-    CGraphObjLine* m_pGraphObjLine = nullptr;
     CGraphObjRect* m_pGraphObjRectBody = nullptr;
+    CGraphObjConnectionPoint* m_pGraphObjCnctPtRectBodyLeftCenter = nullptr;
+    CGraphObjConnectionPoint* m_pGraphObjCnctPtRectBodyRightCenter = nullptr;
+    CGraphObjConnectionPoint* m_pGraphObjCnctPt1 = nullptr;
+    CGraphObjConnectionPoint* m_pGraphObjCnctPt2 = nullptr;
+    CGraphObjConnectionLine* m_pGraphObjCnctLine1 = nullptr;
+    CGraphObjConnectionLine* m_pGraphObjCnctLine2 = nullptr;
     double m_fResistance_Ohm = 1000.0;
 
 }; // class CGraphObjResistor

@@ -1219,10 +1219,14 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
     //    pGraphicsItem->setParentItem(pGraphicsItemParent);
     //}
     //else {
-        QGraphicsScene::addItem(pGraphicsItem);
+        if (!QGraphicsScene::items().contains(pGraphicsItem)) {
+            QGraphicsScene::addItem(pGraphicsItem);
+        }
     //}
     //m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
-    m_pGraphObjsIdxTree->add(i_pGraphObj);
+    if (i_pGraphObj->tree() == nullptr) {
+        m_pGraphObjsIdxTree->add(i_pGraphObj);
+    }
 
     if (i_pGraphObjParent != nullptr && i_pGraphObjParent->isGroup() && i_pGraphObj->parent() != i_pGraphObjParent) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);

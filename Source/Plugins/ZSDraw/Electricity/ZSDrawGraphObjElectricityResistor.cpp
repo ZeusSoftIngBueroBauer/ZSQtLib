@@ -28,11 +28,12 @@ may result in using the software modules.
 #include "Electricity/ZSDrawWdgtFormatGraphObjsElectricityResistor.h"
 
 #include "ZSDraw/Common/ZSDrawAux.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -73,7 +74,7 @@ class CGraphObjCapacitor : public CGraphObjElectricity
 public: // type definitions and constants
 ==============================================================================*/
 
-const QSize CGraphObjResistor::c_sizInitial(42.0, 8.0);
+const QSize CGraphObjResistor::c_sizInitial(90.0, 20.0);
 
 /*==============================================================================
 protected: // class members
@@ -113,13 +114,15 @@ CGraphObjResistor::CGraphObjResistor(
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
+    m_pDrawingScene->addGraphObj(this);
+
     /*
-    CnctPt1    Body    CnctPt2
-            +--------+
-    +--+    |        |    +--+
-    |  |----|  -  -  |----|  |  <-- CnctLine (hidden below Body)
-    +--+    |        |    +--+
-            +--------+
+                          Body
+                       +--------+
+             CnctLine1 |        | CnctLine2
+    CnctPt1 X----------X        X----------X CnctPt2
+                       |        |
+                       +--------+
     */
 
     // Please note that before adding graphic items to groups they must have
@@ -136,16 +139,23 @@ CGraphObjResistor::CGraphObjResistor(
     // takes effect on the result. Usually the size should be adjusted before
     // the positions to get relative adjustments working as expected.
 
-    QRectF rctBounding(QPointF(0.0,0.0), c_sizInitial);
+    QRectF rctBounding(QPointF(0.0, 0.0), c_sizInitial);
     double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
+    CPhysValRect physValRectBody(*m_pDrawingScene, rctBody.topLeft(), rctBody.size());
+    CPhysValPoint physValPointCnctPt1(*m_pDrawingScene, QPointF(rctBounding.left(), rctBounding.center().y()));
+    CPhysValPoint physValPointCnctPt2(*m_pDrawingScene, QPointF(rctBounding.right(), rctBounding.center().y()));
 
-    SGraphObjAlignment alignment;
+    //SGraphObjAlignment alignment;
 
     QList<CGraphObj*> arpGraphObjs;
 
-    // Draw settings for group item
-    //-----------------------------
+    CObjFactory* pObjFactoryRect =
+        CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeRect);
+    CObjFactory* pObjFactoryCnctPt =
+        CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameConnections, EGraphObjTypeConnectionPoint);
+    CObjFactory* pObjFactoryCnctLine =
+        CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameConnections, EGraphObjTypeConnectionLine);
 
     //m_drawSettings.setAttributesAreUsed( true, EDrawAttributePenMin, EDrawAttributePenCount );
     ////m_drawSettings.setAttributesAreUsed( true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount );
@@ -157,9 +167,6 @@ CGraphObjResistor::CGraphObjResistor(
     //m_drawSettings.setFillColor(Qt::white);
     //m_drawSettings.setFillStyle(EFillStyle::SolidPattern);
 
-    // Draw settings for elements
-    //---------------------------
-
     //CDrawSettings drawSettingsLine(EGraphObjTypeLine);
     //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
     //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
@@ -167,37 +174,50 @@ CGraphObjResistor::CGraphObjResistor(
     //CDrawSettings drawSettingsBody(EGraphObjTypeRect);
     //drawSettingsBody.setFillStyle(EFillStyle::SolidPattern);
 
-    CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
+    //CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
 
-    // Connection Line with ConnectionPoints
-    //--------------------------------------
-
-    m_pGraphObjLine = new CGraphObjLine(m_pDrawingScene, "CnctLine");
-    //m_pGraphObjLine->setDrawSettings(drawSettingsLine);
-    m_pGraphObjLine->setLine(CPhysValLine(*m_pDrawingScene,
-        QPointF(rctBounding.left(), rctBounding.center().y()),
-        QPointF(rctBounding.right(), rctBounding.center().y())));
-    m_pDrawingScene->addGraphObj(m_pGraphObjLine);
-    //m_pGraphObjLine->setPos(QPointF(0.0, rctBounding.center().y()));
-    arpGraphObjs.append(m_pGraphObjLine);
-    //m_pGraphObjLine->addConnectionPoint("CnctPt1", ESelectionPointType::PolygonPoint, 0);
-    //m_pGraphObjLine->addConnectionPoint("CnctPt2", ESelectionPointType::PolygonPoint, 1);
-
-    // Body
-    //-----
-
-    m_pGraphObjRectBody = new CGraphObjRect(m_pDrawingScene, "Body");
-    //m_pGraphObjRectBody->setDrawSettings(drawSettingsBody);
-    m_pGraphObjRectBody->setRect(CPhysValRect(*m_pDrawingScene,
-        QPointF(rctBody.left(), rctBody.center().y()), rctBody.size()));
+    m_pGraphObjRectBody = dynamic_cast<CGraphObjRect*>(
+        pObjFactoryRect->createGraphObj(m_pDrawingScene, physValRectBody.topLeft()));
+    ////m_pGraphObjRectBody->setDrawSettings(drawSettingsBody);
     m_pDrawingScene->addGraphObj(m_pGraphObjRectBody);
-    //m_pGraphObjRectBody->setPos(rctBody.topLeft());
+    m_pGraphObjRectBody->rename("Body");
+    m_pGraphObjRectBody->setRect(physValRectBody);
+    //QString strCnctPtNameRectBodyLeftCenter =
+    //    m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
+    //m_pGraphObjCnctPtRectBodyLeftCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyLeftCenter);
+    //QString strCnctPtNameRectBodyRightCenter =
+    //    m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
+    //m_pGraphObjCnctPtRectBodyRightCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyRightCenter);
     arpGraphObjs.append(m_pGraphObjRectBody);
+
+    m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
+        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
+    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
+    m_pGraphObjCnctPt1->rename("CnctPt1");
+    m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
+    arpGraphObjs.append(m_pGraphObjCnctPt1);
+
+    m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
+        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
+    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
+    m_pGraphObjCnctPt2->rename("CnctPt2");
+    m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
+    arpGraphObjs.append(m_pGraphObjCnctPt2);
+
+    //m_pGraphObjCnctLine1 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine1");
+    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine1);
+    //m_pGraphObjCnctLine1->setConnectionPoint(ELinePoint::Start, m_pGraphObjCnctPt1);
+    //m_pGraphObjCnctLine1->setConnectionPoint(ELinePoint::End, m_pGraphObjCnctPtRectBodyLeftCenter);
+
+    //m_pGraphObjCnctLine2 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine2");
+    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine2);
+    //m_pGraphObjCnctLine2->setConnectionPoint(ELinePoint::Start, m_pGraphObjCnctPtRectBodyRightCenter);
+    //m_pGraphObjCnctLine2->setConnectionPoint(ELinePoint::End, m_pGraphObjCnctPt2);
 
     // Create resistor as object group
     //--------------------------------
 
-    //addToGroup(arpGraphObjs);
+    addToGroup(arpGraphObjs);
 
     //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0);
     //m_pLinCnct->addAlignment(alignment);

@@ -57,11 +57,11 @@ public: // interface methods of base class CObjFactory
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings) override;
+        const CDrawSettings& i_drawSettings = CDrawSettings(EGraphObjTypePolygon)) override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
-        const CDrawSettings& i_drawSettings) override;
+        const CDrawSettings& i_drawSettings = CDrawSettings(EGraphObjTypePolygon)) override;
     ZS::System::SErrResultInfo saveGraphObj(
         CGraphObj* i_pGraphObj,
         QXmlStreamWriter& i_xmlStreamWriter) const override;
