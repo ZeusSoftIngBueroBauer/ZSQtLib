@@ -125,9 +125,6 @@ CGraphObjResistor::CGraphObjResistor(
                        +--------+
     */
 
-    // Please note that before adding graphic items to groups they must have
-    // been added to the drawing scene. Otherwise their coordinates will not
-    // be mapped correctly to the new parent.
 
     // Before adding the items to the drawing scene they will be created in their
     // own coordinate system starting at (0.0/0.0). After adding the items to the
@@ -135,18 +132,12 @@ CGraphObjResistor::CGraphObjResistor(
     // The group itself will be positioned by the caller of the ctor relative to
     // the caller's coordinate system.
 
-    // The alignments will be adjusted in the order they are added. The order
-    // takes effect on the result. Usually the size should be adjusted before
-    // the positions to get relative adjustments working as expected.
-
-    QRectF rctBounding(QPointF(0.0, 0.0), c_sizInitial);
+    QRectF rctBounding(QPointF(50.0, 50.0), c_sizInitial);
     double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
     CPhysValRect physValRectBody(*m_pDrawingScene, rctBody.topLeft(), rctBody.size());
     CPhysValPoint physValPointCnctPt1(*m_pDrawingScene, QPointF(rctBounding.left(), rctBounding.center().y()));
     CPhysValPoint physValPointCnctPt2(*m_pDrawingScene, QPointF(rctBounding.right(), rctBounding.center().y()));
-
-    //SGraphObjAlignment alignment;
 
     QList<CGraphObj*> arpGraphObjs;
 
@@ -157,52 +148,36 @@ CGraphObjResistor::CGraphObjResistor(
     CObjFactory* pObjFactoryCnctLine =
         CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameConnections, EGraphObjTypeConnectionLine);
 
-    //m_drawSettings.setAttributesAreUsed( true, EDrawAttributePenMin, EDrawAttributePenCount );
-    ////m_drawSettings.setAttributesAreUsed( true, EDrawAttributeLineStyleMin, EDrawAttributeLineStyleCount );
-    //m_drawSettings.setAttributesAreUsed( true, EDrawAttributeFillMin, EDrawAttributeFillCount );
-
-    //m_drawSettings.setPenColor(Qt::darkYellow);
-    //m_drawSettings.setPenWidth(1);
-    //m_drawSettings.setLineStyle(ELineStyle::DotLine);
-    //m_drawSettings.setFillColor(Qt::white);
-    //m_drawSettings.setFillStyle(EFillStyle::SolidPattern);
-
-    //CDrawSettings drawSettingsLine(EGraphObjTypeLine);
-    //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineRecordTypeMin, EDrawAttributeLineRecordTypeCount );
-    //drawSettingsLine.setAttributesAreUsed( false, EDrawAttributeLineEndStyleMin, EDrawAttributeLineEndStyleCount );
-
-    //CDrawSettings drawSettingsBody(EGraphObjTypeRect);
-    //drawSettingsBody.setFillStyle(EFillStyle::SolidPattern);
-
-    //CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
+    m_drawSettings.setLineStyle(ELineStyle::NoLine);
 
     m_pGraphObjRectBody = dynamic_cast<CGraphObjRect*>(
         pObjFactoryRect->createGraphObj(m_pDrawingScene, physValRectBody.topLeft()));
-    ////m_pGraphObjRectBody->setDrawSettings(drawSettingsBody);
     m_pDrawingScene->addGraphObj(m_pGraphObjRectBody);
     m_pGraphObjRectBody->rename("Body");
     m_pGraphObjRectBody->setRect(physValRectBody);
-    //QString strCnctPtNameRectBodyLeftCenter =
-    //    m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
-    //m_pGraphObjCnctPtRectBodyLeftCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyLeftCenter);
+    QString strCnctPtNameRectBodyLeftCenter =
+        m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
+    m_pGraphObjCnctPtRectBodyLeftCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyLeftCenter);
+    m_pGraphObjCnctPtRectBodyLeftCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
     //QString strCnctPtNameRectBodyRightCenter =
     //    m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
     //m_pGraphObjCnctPtRectBodyRightCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyRightCenter);
+    //m_pGraphObjCnctPtRectBodyRightCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
     arpGraphObjs.append(m_pGraphObjRectBody);
 
-    m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
-        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
-    m_pGraphObjCnctPt1->rename("CnctPt1");
-    m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
-    arpGraphObjs.append(m_pGraphObjCnctPt1);
+    //m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
+    //    pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
+    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
+    //m_pGraphObjCnctPt1->rename("CnctPt1");
+    //m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
+    //arpGraphObjs.append(m_pGraphObjCnctPt1);
 
-    m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
-        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
-    m_pGraphObjCnctPt2->rename("CnctPt2");
-    m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
-    arpGraphObjs.append(m_pGraphObjCnctPt2);
+    //m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
+    //    pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
+    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
+    //m_pGraphObjCnctPt2->rename("CnctPt2");
+    //m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
+    //arpGraphObjs.append(m_pGraphObjCnctPt2);
 
     //m_pGraphObjCnctLine1 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine1");
     //m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine1);
@@ -217,7 +192,11 @@ CGraphObjResistor::CGraphObjResistor(
     // Create resistor as object group
     //--------------------------------
 
-    addToGroup(arpGraphObjs);
+    //addToGroup(arpGraphObjs);
+
+    // The alignments will be adjusted in the order they are added. The order
+    // takes effect on the result. Usually the size should be adjusted before
+    // the positions to get relative adjustments working as expected.
 
     //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0);
     //m_pLinCnct->addAlignment(alignment);
@@ -371,84 +350,4 @@ void CGraphObjResistor::onDrawSettingsChanged(const CDrawSettings& i_drawSetting
         /* strObjName   */ m_strName,
         /* strMethod    */ "onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
-
-    //CDrawSettings drawSettingsLine = m_pGraphObjLine->drawSettings();
-
-    //drawSettingsLine.setPenColor(m_drawSettings.penColor());
-    //drawSettingsLine.setPenWidth(m_drawSettings.penWidth());
-    //drawSettingsLine.setLineStyle(m_drawSettings.lineStyle());
-
-    //m_pGraphObjLine->setDrawSettings(drawSettingsLine);
-
-    //CDrawSettings drawSettingsBody = m_pGraphObjRectBody->drawSettings();
-
-    //drawSettingsBody.setPenColor(m_drawSettings.penColor());
-    //drawSettingsBody.setPenWidth(m_drawSettings.penWidth());
-    //drawSettingsBody.setLineStyle(m_drawSettings.lineStyle());
-    //drawSettingsBody.setFillColor(m_drawSettings.fillColor());
-    ////drawSettingsBody.setFillStyle(m_drawSettings.fillStyle()); keep SolidPattern
-
-    //m_pGraphObjRectBody->setDrawSettings(drawSettingsBody);
-
-    //CDrawSettings drawSettingsCnctPt = m_pCnctPt1->drawSettings();
-
-    //drawSettingsCnctPt.setPenColor(m_drawSettings.penColor());
-    //drawSettingsCnctPt.setPenWidth(m_drawSettings.penWidth());
-    //drawSettingsCnctPt.setLineStyle(m_drawSettings.lineStyle());
-    //drawSettingsCnctPt.setFillColor(m_drawSettings.fillColor()); keep black
-    //drawSettingsCnctPt.setFillStyle(m_drawSettings.fillStyle()); keep SolidPattern
-
-    //m_pCnctPt1->setDrawSettings(drawSettingsCnctPt);
-    //m_pCnctPt2->setDrawSettings(drawSettingsCnctPt);
-
-} // onDrawSettingsChanged
-
-/*==============================================================================
-protected: // overridables of base class CGraphObj
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CGraphObjResistor::updateToolTip()
-////------------------------------------------------------------------------------
-//{
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-//
-//    if( pGraphicsItem != nullptr )
-//    {
-//        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
-//        QPointF ptPos;
-//
-//        m_strToolTip  = "ObjName:\t" + name();
-//        m_strToolTip += "\nObjId:\t\t" + keyInTree();
-//
-//        m_strToolTip += "Resistance:\t" + QString::number(m_fResistance_Ohm) + " Ohm";
-//
-//        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
-//        // position of the item's top left corner before applying the rotation
-//        // transformation matrix but includes the transformation. What we want
-//        // (or what I want) is the position of the item before rotating the item
-//        // around the rotation origin point. In contrary it looks like "pos"
-//        // always returns the top left corner before rotating the object.
-//
-//        if( pGraphicsItem->parentItem() != nullptr )
-//        {
-//            ptPos = pGraphicsItem->pos();
-//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-//        }
-//        else
-//        {
-//            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
-//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-//        }
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-//        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::System::Math::c_chSymbolDegree;
-//#endif
-//        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
-//
-//        pGraphicsItem->setToolTip(m_strToolTip);
-//
-//    } // if( pGraphicsItem != nullptr )
-//
-//} // updateToolTip
+}

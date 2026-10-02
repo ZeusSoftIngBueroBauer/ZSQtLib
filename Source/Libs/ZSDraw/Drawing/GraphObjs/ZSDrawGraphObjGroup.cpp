@@ -4174,6 +4174,10 @@ CPhysValRect CGraphObjGroup::setPhysValRectScaledAndRotated(const CPhysValRect& 
     The item and child items will be reparented to this group, but its position
     and transformation relative to the scene will stay intact.
 
+    @note Before adding graphic items to groups they must have been added to the
+          drawing scene. Otherwise their coordinates will not be mapped correctly
+          to the new parent.
+
     @param [in] i_pGraphicsItemChild
 */
 void CGraphObjGroup::QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsItemChild)
