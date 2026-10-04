@@ -62,7 +62,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Draw::Electricity;
+using namespace ZS::Draw::Plugins::Electricity;
 using namespace ZS::PhysVal;
 
 
@@ -99,7 +99,7 @@ CGraphObjResistor::CGraphObjResistor(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("Electricity::" + ClassName());
+    createTraceAdminObjs("ZS::Draw::Plugins::Electricity::Drawing", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

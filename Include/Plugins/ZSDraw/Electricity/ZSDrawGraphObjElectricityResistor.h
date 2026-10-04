@@ -35,7 +35,7 @@ class CGraphObjRect;
 class CGraphObjConnectionLine;
 class CGraphObjConnectionPoint;
 
-namespace Electricity
+namespace Plugins::Electricity
 {
 //******************************************************************************
 class CGraphObjResistor : public CGraphObjElectricity
@@ -50,7 +50,7 @@ class CGraphObjResistor : public CGraphObjElectricity
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjResistor"; }
 public: // type definitions and constants
@@ -91,7 +91,7 @@ protected: // instance members
 
 }; // class CGraphObjResistor
 
-} // namespace Electricity
+} // namespace Plugins::Electricity
 
 } // namespace ZS::Draw
 

@@ -40,7 +40,7 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-using namespace ZS::Draw::Electricity;
+using namespace ZS::Draw::Plugins::Electricity;
 using namespace ZS::System;
 
 /*******************************************************************************

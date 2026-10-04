@@ -60,7 +60,7 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Draw;
-using namespace ZS::Draw::Electricity;
+using namespace ZS::Draw::Plugins::Electricity;
 
 
 /*******************************************************************************

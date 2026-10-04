@@ -34,6 +34,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 
 #include <QtGui/QBitmap>
 #include <QtGui/QPainter>
@@ -52,7 +53,7 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::PhysVal;
 using namespace ZS::Draw;
-using namespace ZS::Draw::QtWidgets;
+using namespace ZS::Draw::Plugins::QtWidgets;
 
 
 /*******************************************************************************
@@ -83,7 +84,7 @@ CGraphObjWdgt::CGraphObjWdgt(
         /* strObjName          */ i_strObjName),
     QGraphicsProxyWidget()
 {
-} // ctor
+}
 
 /*==============================================================================
 public: // dtor
@@ -93,11 +94,17 @@ public: // dtor
 CGraphObjWdgt::~CGraphObjWdgt()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObjElectricity::dtor",
+        /* strAddInfo   */ "" );
+
     m_bDtorInProgress = true;
 
     emit_aboutToBeDestroyed();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj

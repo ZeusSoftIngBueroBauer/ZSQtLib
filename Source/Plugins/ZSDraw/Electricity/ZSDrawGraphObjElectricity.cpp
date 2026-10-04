@@ -27,13 +27,14 @@ may result in using the software modules.
 #include "Electricity/ZSDrawGraphObjElectricity.h"
 
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Draw::Electricity;
+using namespace ZS::Draw::Plugins::Electricity;
 
 
 /*******************************************************************************
@@ -63,7 +64,7 @@ CGraphObjElectricity::CGraphObjElectricity(
         /* strType             */ i_strType,
         /* strObjName          */ i_strObjName)
 {
-} // ctor
+}
 
 /*==============================================================================
 public: // dtor
@@ -73,11 +74,17 @@ public: // dtor
 CGraphObjElectricity::~CGraphObjElectricity()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObjElectricity::dtor",
+        /* strAddInfo   */ "" );
+
     m_bDtorInProgress = true;
 
     emit_aboutToBeDestroyed();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj

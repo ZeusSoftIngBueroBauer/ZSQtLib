@@ -31,14 +31,7 @@ may result in using the software modules.
 
 class QGroupBox;
 
-namespace ZS
-{
-namespace Draw
-{
-class CDrawSettings;
-class CGraphObjSelectionPoint;
-
-namespace QtWidgets
+namespace ZS::Draw::Plugins::QtWidgets
 {
 //******************************************************************************
 class CGraphObjWdgtGroupBox : public CGraphObjWdgt
@@ -46,7 +39,7 @@ class CGraphObjWdgtGroupBox : public CGraphObjWdgt
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::QtWidgets"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtGroupBox"; }
 public: // ctors and dtor
@@ -65,10 +58,6 @@ protected: // instance members
 
 }; // class CGraphObjWdgtGroupBox
 
-} // namespace QtWidgets
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Plugins::QtWidgets
 
 #endif // #ifndef ZSDraw_GraphObjWdgtGroupBox_h

@@ -52,7 +52,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Draw::QtWidgets;
+using namespace ZS::Draw::Plugins::QtWidgets;
 
 
 /*******************************************************************************

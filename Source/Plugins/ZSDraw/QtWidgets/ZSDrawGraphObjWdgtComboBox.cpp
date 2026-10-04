@@ -57,7 +57,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Draw::QtWidgets;
+using namespace ZS::Draw::Plugins::QtWidgets;
 using namespace ZS::PhysVal;
 
 
@@ -91,7 +91,7 @@ CGraphObjWdgtComboBox::CGraphObjWdgtComboBox(
 
     QString strAddTrcInfo;
 
-    createTraceAdminObjs("QtWidgets::" + ClassName());
+    createTraceAdminObjs("ZS::Draw::Plugins::QtWidgets::Drawing", ClassName());
 
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
     }

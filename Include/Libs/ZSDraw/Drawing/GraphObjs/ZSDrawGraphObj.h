@@ -506,7 +506,7 @@ signals:
     /*!< This signal is emitted if the option to paint the shape path has been changed. */
     void optionPaintShapePathChanged(CGraphObj* i_pGraphObj, bool i_bOptionSet);
 protected: // instance methods (trace admin objects for method tracing)
-    void createTraceAdminObjs(const QString& i_strClassName);
+    void createTraceAdminObjs(const QString& i_strNameSpace, const QString& i_strClassName);
     void releaseTraceAdminObjs();
 public: // must overridables
     virtual CGraphObj* clone() = 0;

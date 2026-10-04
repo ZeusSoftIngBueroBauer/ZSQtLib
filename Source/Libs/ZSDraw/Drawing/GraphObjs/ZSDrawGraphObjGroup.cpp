@@ -131,7 +131,7 @@ CGraphObjGroup::CGraphObjGroup(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("StandardShapes::" + ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::StandardShapes", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -175,20 +175,6 @@ CGraphObjGroup::CGraphObjGroup(
     m_physValRectScaled(*m_pDrawingScene),
     m_physValRectScaledAndRotated(*m_pDrawingScene)
 {
-    createTraceAdminObjs("StandardShapes::" + ClassName());
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ObjName: " + i_strObjName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObjGroup::ctor",
-        /* strAddInfo   */ strMthInArgs );
-
-    initInstance();
 }
 
 //------------------------------------------------------------------------------

@@ -176,7 +176,7 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
     // mouse double click is used to add the last polygon point which finishes creation of the object.
     //m_bMouseReleaseEventFinishesObjectCreation = false;
 
-    createTraceAdminObjs("StandardShapes::" + ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::StandardShapes", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

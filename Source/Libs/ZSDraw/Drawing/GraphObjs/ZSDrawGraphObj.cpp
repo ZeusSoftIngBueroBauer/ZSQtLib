@@ -367,39 +367,39 @@ protected: // instance methods (trace admin objects have to be created in ctor o
     destructor of the base class CGraphObj. !! Don't call "releaseTraceAdminObjs"
     in the destructor of the derived class. !!
 
+    @param [in] i_strNameSpace
+        Name space the derived class belongs to.
     @param [in] i_strClassName
-        Class name of the derived class. The class name may be preceded with
-        a group name like "StandardShapes", "Electricity" or "QtWidget" followed
-        by a double colon like "createTraceAdminObjs("StandardShapes::" + ClassName)".
+        Class name of the derived class.
 */
-void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
+void CGraphObj::createTraceAdminObjs(const QString& i_strNameSpace, const QString& i_strClassName)
 //------------------------------------------------------------------------------
 {
     if (m_pTrcAdminObjCtorsAndDtor == nullptr) {
         m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::CtorsAndDtor");
+            i_strNameSpace, i_strClassName + "::CtorsAndDtor");
         m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::ItemChange");
+            i_strNameSpace, i_strClassName + "::ItemChange");
         m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::BoundingRect");
+            i_strNameSpace, i_strClassName + "::BoundingRect");
         m_pTrcAdminObjCoordinateConversions = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::CoordinateConversions");
+            i_strNameSpace, i_strClassName + "::CoordinateConversions");
         m_pTrcAdminObjCursor = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Cursor");
+            i_strNameSpace, i_strClassName + "::Cursor");
         m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Paint");
+            i_strNameSpace, i_strClassName + "::Paint");
         m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEventFilter");
+            i_strNameSpace, i_strClassName + "::SceneEventFilter");
         m_pTrcAdminObjHoverEnterLeaveEvents = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverEnterLeaveEvents");
+            i_strNameSpace, i_strClassName + "::HoverEnterLeaveEvents");
         m_pTrcAdminObjHoverMoveEvents = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverMoveEvents");
+            i_strNameSpace, i_strClassName + "::HoverMoveEvents");
         m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseClickEvents");
+            i_strNameSpace, i_strClassName + "::MouseClickEvents");
         m_pTrcAdminObjMouseMoveEvents = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseMoveEvents");
+            i_strNameSpace, i_strClassName + "::MouseMoveEvents");
         m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::KeyEvents");
+            i_strNameSpace, i_strClassName + "::KeyEvents");
     }
 }
 

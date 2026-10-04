@@ -29,15 +29,13 @@ may result in using the software modules.
 
 #include "ZSDrawGraphObjElectricity.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CGraphObjEllipse;
 class CGraphObjLine;
 class CGraphObjConnectionPoint;
 
-namespace Electricity
+namespace Plugins::Electricity
 {
 //******************************************************************************
 class CGraphObjVoltageSource : public CGraphObjElectricity
@@ -53,7 +51,7 @@ CnctPt1  Body   CnctPt2
 public: // class methods
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjVoltageSource"; }
 public: // type definitions and constants
@@ -94,10 +92,8 @@ protected: // instance members
 
 }; // class CGraphObjVoltageSource
 
-} // namespace Electricity
+} // namespace Plugins::Electricity
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjElectricityVoltageSource_h

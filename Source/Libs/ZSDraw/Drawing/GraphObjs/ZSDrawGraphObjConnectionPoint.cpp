@@ -148,7 +148,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("Connections::" + ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::Connections", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

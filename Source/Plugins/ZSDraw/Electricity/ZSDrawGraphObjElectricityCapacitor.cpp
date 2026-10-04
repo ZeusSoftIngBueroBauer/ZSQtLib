@@ -61,7 +61,7 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Draw::Electricity;
+using namespace ZS::Draw::Plugins::Electricity;
 using namespace ZS::PhysVal;
 
 
@@ -107,7 +107,7 @@ CGraphObjCapacitor::CGraphObjCapacitor(
 
     QString strAddTrcInfo;
 
-    createTraceAdminObjs("Electricity::" + ClassName());
+    createTraceAdminObjs("ZS::Draw::Plugins::Electricity::Drawing", ClassName());
 
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
     }

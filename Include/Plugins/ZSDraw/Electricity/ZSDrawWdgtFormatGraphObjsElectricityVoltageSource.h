@@ -35,22 +35,17 @@ may result in using the software modules.
 class QCheckBox;
 class QDoubleSpinBox;
 class QLabel;
-
 class QLayout;
 class QBoxLayout;
 class QHBoxLayout;
 class QVBoxLayout;
 
-namespace ZS
-{
-namespace System
+namespace ZS::System
 {
 class CTrcAdminObj;
 }
 
-namespace Draw
-{
-namespace Electricity
+namespace ZS::Draw::Plugins::Electricity
 {
 //******************************************************************************
 class CWdgtFormatGraphObjsVoltageSource : public CWdgtFormatGraphObjs
@@ -58,7 +53,7 @@ class CWdgtFormatGraphObjsVoltageSource : public CWdgtFormatGraphObjs
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtFormatGraphObjsVoltageSource"; }
 public: // ctors and dtor
@@ -85,10 +80,6 @@ private: // instance members
 
 }; // class CWdgtFormatGraphObjsVoltageSource
 
-} // Electricity
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Plugins::Electricity
 
 #endif // #ifndef ZSDraw_WdgtFormatGraphObjsElectricityVoltageSource_h

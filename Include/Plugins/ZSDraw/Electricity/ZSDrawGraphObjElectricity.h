@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 
-namespace ZS::Draw::Electricity
+namespace ZS::Draw::Plugins::Electricity
 {
 //******************************************************************************
 class CGraphObjElectricity : public CGraphObjGroup
@@ -37,7 +37,7 @@ class CGraphObjElectricity : public CGraphObjGroup
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjElectricity"; }
 public: // class members
@@ -60,6 +60,6 @@ public: // overridables of base class CGraphObj
 
 }; // class CGraphObjElectricity
 
-} // namespace ZS::Draw::Electricity
+} // namespace ZS::Draw::Plugins::Electricity
 
 #endif // #ifndef ZSDraw_GraphObjElectricity_h

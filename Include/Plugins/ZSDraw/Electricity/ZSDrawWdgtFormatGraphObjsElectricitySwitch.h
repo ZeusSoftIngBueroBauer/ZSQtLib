@@ -41,16 +41,12 @@ class QBoxLayout;
 class QHBoxLayout;
 class QVBoxLayout;
 
-namespace ZS
-{
-namespace System
+namespace ZS::System
 {
 class CTrcAdminObj;
 }
 
-namespace Draw
-{
-namespace Electricity
+namespace ZS::Draw::Plugins::Electricity
 {
 //******************************************************************************
 class CWdgtFormatGraphObjsSwitch : public CWdgtFormatGraphObjs
@@ -58,7 +54,7 @@ class CWdgtFormatGraphObjsSwitch : public CWdgtFormatGraphObjs
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtFormatGraphObjsSwitch"; }
 public: // ctors and dtor
@@ -85,10 +81,6 @@ private: // instance members
 
 }; // class CWdgtFormatGraphObjsSwitch
 
-} // Electricity
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Plugins::Electricity
 
 #endif // #ifndef ZSDraw_WdgtFormatGraphObjsElectricitySwitch_h

@@ -29,7 +29,7 @@ may result in using the software modules.
 #include <QObject>
 #include "ZSDrawPluginInterface.h"
 
-namespace ZS::Draw::QtWidgets
+namespace ZS::Draw::Plugins::QtWidgets
 {
 class CObjFactoryWdgtCheckBox;
 class CObjFactoryWdgtComboBox;
@@ -41,12 +41,12 @@ class CObjFactoryWdgtPushButton;
 class CDrawPluginQtWidgets : public QObject, public IDrawPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(ZS::Draw::IDrawPluginInterface)
+    Q_INTERFACES(ZS::Draw::Plugins::IDrawPluginInterface)
     Q_PLUGIN_METADATA(IID ZSDrawPluginInterface_iid)
 
 public: // class methods
-    static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CDrawPluginElectricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::QtWidgets"; }
+    static QString ClassName() { return "CDrawPluginQtWidgets"; }
 public: // ctors and dtor
     CDrawPluginQtWidgets();
     ~CDrawPluginQtWidgets() override;
@@ -61,4 +61,4 @@ private: // instance members
     CObjFactoryWdgtPushButton* m_pObjFactoryWdgtPushButton = nullptr;
 };
 
-} // namespace ZS::Draw::QtWidgets
+} // namespace ZS::Draw::Plugins::QtWidgets

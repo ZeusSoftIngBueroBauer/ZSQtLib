@@ -30,18 +30,14 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 
-namespace ZS
-{
-namespace Draw
-{
-namespace QtWidgets
+namespace ZS::Draw::Plugins::QtWidgets
 {
 //******************************************************************************
 class CObjFactoryWdgtGroupBox : public CObjFactory
 //******************************************************************************
 {
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::QtWidgets"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryWdgtGroupBox"; }
 public: // ctors and dtor
@@ -67,10 +63,6 @@ public: // interface methods of base class CObjFactory
 
 }; // class CObjFactoryWdgtGroupBox
 
-} // namespace QtWidgets
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Plugins::QtWidgets
 
 #endif // #ifndef ZSDraw_ObjFactoryWdgtGroupBox_h

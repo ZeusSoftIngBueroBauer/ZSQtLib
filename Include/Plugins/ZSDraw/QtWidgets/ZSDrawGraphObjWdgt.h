@@ -39,23 +39,20 @@ may result in using the software modules.
 
 class QCheckBox;
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CDrawSettings;
 class CGraphObjSelectionPoint;
 
-namespace QtWidgets
+namespace Plugins::QtWidgets
 {
 //******************************************************************************
 class CGraphObjWdgt : public CGraphObj, public QGraphicsProxyWidget
 //******************************************************************************
 {
 public: // class methods
-public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::QtWidgets"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgt"; }
 public: // class members
@@ -101,10 +98,8 @@ protected: // overridables of base class QGraphicsItem, overriding implementatio
 
 }; // class CGraphObjWdgt
 
-} // namespace QtWidgets
+} // namespace Plugins::QtWidgets
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjWdgt_h

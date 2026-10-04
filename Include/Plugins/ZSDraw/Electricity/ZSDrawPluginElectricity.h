@@ -29,7 +29,7 @@ may result in using the software modules.
 #include <QObject>
 #include "ZSDrawPluginInterface.h"
 
-namespace ZS::Draw::Electricity
+namespace ZS::Draw::Plugins::Electricity
 {
 class CObjFactoryCapacitor;
 class CObjFactoryDiode;
@@ -42,10 +42,10 @@ class CObjFactoryVoltageSource;
 class CDrawPluginElectricity : public QObject, public IDrawPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(ZS::Draw::IDrawPluginInterface)
+    Q_INTERFACES(ZS::Draw::Plugins::IDrawPluginInterface)
     Q_PLUGIN_METADATA(IID ZSDrawPluginInterface_iid)
 public: // class methods
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     static QString ClassName() { return "CDrawPluginElectricity"; }
 public: // ctors and dtor
     CDrawPluginElectricity();
@@ -62,4 +62,4 @@ private: // instance members
     CObjFactoryVoltageSource* m_pObjFactoryElectricityVoltageSource = nullptr;
 };
 
-} // namespace ZS::Draw::Electricity
+} // namespace ZS::Draw::Plugins::Electricity

@@ -3831,7 +3831,7 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
-        CGraphObjPixmap* pGraphObjImage = dynamic_cast<CGraphObjPixmap*>(pGraphObjImage);
+        CGraphObjPixmap* pGraphObjImage = dynamic_cast<CGraphObjPixmap*>(pGraphObj);
         if (pGraphObjImage != nullptr) {
             //pGraphObjImage->setPicture(polygon, drawingSize.unit());
         }

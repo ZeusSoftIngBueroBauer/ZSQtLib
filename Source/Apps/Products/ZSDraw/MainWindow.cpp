@@ -965,7 +965,7 @@ void CMainWindow::createObjFactories()
         }
         else
         {
-            IDrawPluginInterface* pDrawPluingInterface = qobject_cast<IDrawPluginInterface*>(pObjPluginLoader);
+            Plugins::IDrawPluginInterface* pDrawPluingInterface = qobject_cast<Plugins::IDrawPluginInterface*>(pObjPluginLoader);
             if (pDrawPluingInterface == nullptr)
             {
                 QString strAddErrInfo = "Invalid plugin '" + strPluginFileName + "'. "

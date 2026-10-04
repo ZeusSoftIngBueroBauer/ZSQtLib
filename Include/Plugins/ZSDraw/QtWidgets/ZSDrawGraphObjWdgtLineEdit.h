@@ -31,26 +31,14 @@ may result in using the software modules.
 
 class QLineEdit;
 
-namespace ZS
-{
-namespace System
-{
-class CTrcAdminObj;
-}
-
-namespace Draw
-{
-class CDrawSettings;
-class CGraphObjSelectionPoint;
-
-namespace QtWidgets
+namespace ZS::Draw::Plugins::QtWidgets
 {
 //******************************************************************************
 class CGraphObjWdgtLineEdit : public CGraphObjWdgt
 //******************************************************************************
 {
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::QtWidgets"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtLineEdit"; }
 public: // ctors and dtor
@@ -69,10 +57,6 @@ protected: // instance members
 
 }; // class CGraphObjWdgtLineEdit
 
-} // namespace QtWidgets
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Plugins::QtWidgets
 
 #endif // #ifndef ZSDraw_GraphObjWdgtLineEdit_h

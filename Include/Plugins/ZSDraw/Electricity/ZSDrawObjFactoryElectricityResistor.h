@@ -30,11 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 
-namespace ZS
-{
-namespace Draw
-{
-namespace Electricity
+namespace ZS::Draw::Plugins::Electricity
 {
 //******************************************************************************
 class CObjFactoryResistor : public CObjFactory
@@ -42,7 +38,7 @@ class CObjFactoryResistor : public CObjFactory
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Electricity"; }
+    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryResistor"; }
 public: // ctors and dtor
@@ -68,10 +64,6 @@ public: // interface methods of base class CObjFactory
 
 }; // class CObjFactoryResistor
 
-} // namespace Electricity
-
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw::Plugins::Electricity
 
 #endif // #ifndef ZSDraw_ObjFactoryElectricityResistor_h

@@ -34,7 +34,7 @@ namespace ZS::System
 class CTrcAdminObj;
 }
 
-namespace ZS::Draw
+namespace ZS::Draw::Plugins
 {
 class IDrawPluginInterface
 {
@@ -48,8 +48,8 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj = nullptr;
 };
 
-} // namespace ZS::Draw
+} // namespace ZS::Draw::Plugins
 
 #define ZSDrawPluginInterface_iid "de.zeussoft.ZSDrawPluginInterface/1.0"
 
-Q_DECLARE_INTERFACE(ZS::Draw::IDrawPluginInterface, ZSDrawPluginInterface_iid)
+Q_DECLARE_INTERFACE(ZS::Draw::Plugins::IDrawPluginInterface, ZSDrawPluginInterface_iid)
