@@ -756,6 +756,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     drawingSize.setScreenResolutionInPxPerMM(1.0);
     drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
     m_pDrawingScene->setDrawingSize(drawingSize);
+    m_pDrawingScene->setGridSettings(gridSettings);
 }
 
 /*==============================================================================

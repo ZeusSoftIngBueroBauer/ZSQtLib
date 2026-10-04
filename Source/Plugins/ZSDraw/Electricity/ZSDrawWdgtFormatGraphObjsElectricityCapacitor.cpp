@@ -89,7 +89,7 @@ CWdgtFormatGraphObjsCapacitor::CWdgtFormatGraphObjsCapacitor(
 {
     setObjectName("WdgtFormatGraphObjsCapacitor");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CWdgtFormatGraphObjsCapacitor", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw::Widgets::GraphObjs::Plugins::Electricity", "CWdgtFormatGraphObjsCapacitor");
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

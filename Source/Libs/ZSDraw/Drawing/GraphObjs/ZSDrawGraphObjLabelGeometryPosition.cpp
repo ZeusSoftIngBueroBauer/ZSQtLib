@@ -109,7 +109,7 @@ CGraphObjLabelGeometryPosition::CGraphObjLabelGeometryPosition(
         /* type          */ EGraphObjTypeLabelGeometryPosition,
         /* selPt         */ i_selPt)
 {
-    createTraceAdminObjs("ZS::Draw::Drawing::Labels", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Labels", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

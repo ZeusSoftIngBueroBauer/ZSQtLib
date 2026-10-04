@@ -92,7 +92,7 @@ CGraphObjWdgtLineEdit::CGraphObjWdgtLineEdit(
 
     QString strAddTrcInfo;
 
-    createTraceAdminObjs("ZS::Draw::Plugins::QtWidgets::Drawing", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Plugins::QtWidgets", ClassName());
 
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
     }

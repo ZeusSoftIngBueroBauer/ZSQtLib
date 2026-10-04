@@ -89,7 +89,7 @@ CWdgtFormatGraphObjsDiode::CWdgtFormatGraphObjsDiode(
 {
     setObjectName("WdgtFormatGraphObjsDiode");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CWdgtFormatGraphObjsDiode", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw::Widgets::GraphObjs::Plugins::Electricity", "CWdgtFormatGraphObjsDiode");
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

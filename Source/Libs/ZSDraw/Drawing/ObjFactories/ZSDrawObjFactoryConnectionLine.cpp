@@ -62,6 +62,7 @@ CObjFactoryConnectionLine::CObjFactoryConnectionLine( const QPixmap& i_pxmToolIc
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameConnections,
+        /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Connections",
         /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeConnectionLine,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),

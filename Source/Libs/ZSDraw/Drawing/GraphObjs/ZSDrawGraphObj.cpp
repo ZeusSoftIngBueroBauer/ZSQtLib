@@ -368,7 +368,11 @@ protected: // instance methods (trace admin objects have to be created in ctor o
     in the destructor of the derived class. !!
 
     @param [in] i_strNameSpace
-        Name space the derived class belongs to.
+        Name space of the class to classify the class within the trace admin object tree.
+        This name space is not necessary the same as the C++ name space the class belongs to.
+        E.g. the class may belong to the C++ name space "ZS::Draw", but the path to the trace admin
+        object in the index tree may be "ZS::Draw::Drawing::GraphObjs::StandardShapes" or
+        "ZS::Draw::Drawing::GraphObjs::Plugins::Electricity" to logically group the classes.
     @param [in] i_strClassName
         Class name of the derived class.
 */
@@ -2865,7 +2869,7 @@ CPhysValRect CGraphObj::getPhysValBoundingRect() const
 
     To get the effective bounding rectangle the left most, the right most
     as well as the top most and bottom most shape points of the transformed
-    (rotated and scaled) object are are taken into account.
+    (rotated and scaled) object are taken into account.
 
     If the object is rotated the effective bounding rectangle is not the
     bounding rectangle (in item coordinates) mapped to the scene.

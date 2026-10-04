@@ -69,6 +69,7 @@ CObjFactoryTransistor::CObjFactoryTransistor( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
+        /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "Transistor",

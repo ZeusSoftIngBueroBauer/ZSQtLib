@@ -89,7 +89,7 @@ CWdgtFormatGraphObjsInductor::CWdgtFormatGraphObjsInductor(
 {
     setObjectName("WdgtFormatGraphObjsInductor");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CWdgtFormatGraphObjsInductor", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw::Widgets::GraphObjs::Plugins::Electricity", "CWdgtFormatGraphObjsInductor");
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

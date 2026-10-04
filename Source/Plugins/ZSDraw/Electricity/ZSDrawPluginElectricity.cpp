@@ -66,7 +66,7 @@ CDrawPluginElectricity::CDrawPluginElectricity()
 {
     setObjectName("theInst");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

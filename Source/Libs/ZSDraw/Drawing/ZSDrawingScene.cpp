@@ -3692,7 +3692,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                                     throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                                 }
                                 addGraphObj(pGraphObj);
-                                pGraphicsItem->setPos(i_pEv->scenePos());
+                                //pGraphicsItem->setPos(i_pEv->scenePos());
                                 pGraphicsItem->setSelected(true);
                             }
                         }

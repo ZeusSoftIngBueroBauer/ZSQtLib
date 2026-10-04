@@ -114,7 +114,7 @@ CGraphObjLabelGeometryDY::CGraphObjLabelGeometryDY(
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
-    createTraceAdminObjs("ZS::Draw::Drawing::Labels", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Labels", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

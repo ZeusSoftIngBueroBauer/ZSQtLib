@@ -91,7 +91,7 @@ CWdgtFormatGraphObjsSwitch::CWdgtFormatGraphObjsSwitch(
 {
     setObjectName("WdgtFormatGraphObjsSwitch");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CWdgtFormatGraphObjsSwitch", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw::Widgets::GraphObjs::Plugins::Electricity", "CWdgtFormatGraphObjsSwitch");
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

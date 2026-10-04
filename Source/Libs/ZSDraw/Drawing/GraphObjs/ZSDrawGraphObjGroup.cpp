@@ -131,7 +131,7 @@ CGraphObjGroup::CGraphObjGroup(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("ZS::Draw::Drawing::StandardShapes", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::StandardShapes", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

@@ -100,7 +100,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     QGraphicsEllipseItem(QRectF(-s_fDefaultWidth_px/2.0, -s_fDefaultWidth_px/2.0, s_fDefaultWidth_px, s_fDefaultWidth_px)),
     m_fWidth_px(s_fDefaultWidth_px)
 {
-    createTraceAdminObjs("ZS::Draw::Drawing::SelectionPoints", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::SelectionPoints", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {

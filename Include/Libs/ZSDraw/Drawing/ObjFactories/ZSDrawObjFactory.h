@@ -97,6 +97,7 @@ public: // class methods
 protected: // ctor
     CObjFactory(
         const QString& i_strGroupName,
+        const QString& i_strNameSpace,
         const QString& i_strClassName,
         EGraphObjType i_eGraphObjType,
         const QString& i_strGraphObjType,

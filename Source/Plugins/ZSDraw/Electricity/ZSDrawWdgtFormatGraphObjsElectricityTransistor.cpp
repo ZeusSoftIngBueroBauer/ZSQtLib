@@ -91,7 +91,7 @@ CWdgtFormatGraphObjsTransistor::CWdgtFormatGraphObjsTransistor(
 {
     setObjectName("WdgtFormatGraphObjsTransistor");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CWdgtFormatGraphObjsTransistor", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw::Widgets::GraphObjs::Plugins::Electricity", "CWdgtFormatGraphObjsTransistor");
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

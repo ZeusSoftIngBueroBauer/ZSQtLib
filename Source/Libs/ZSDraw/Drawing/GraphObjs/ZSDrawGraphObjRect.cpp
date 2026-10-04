@@ -140,7 +140,7 @@ CGraphObjRect::CGraphObjRect(CDrawingScene* i_pDrawingScene, const QString& i_st
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("ZS::Draw::Drawing::StandardShapes", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::StandardShapes", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2153,7 +2153,8 @@ void CGraphObjRect::onGraphObjParentGeometryOnSceneChanged(
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-    bool bGeometryOnSceneChanged = false;
+    //QPointF ptScenePosPrev = scenePos();
+    //CPhysValRect physValRectScaledAndRotatedPrev = m_physValRectScaledAndRotated;
 
     {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
@@ -2182,7 +2183,7 @@ void CGraphObjRect::onGraphObjParentGeometryOnSceneChanged(
 
             QRectF rectF;
             CPhysVal physValAngle;
-            QPointF ptPos = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
+            QPointF ptPosNew = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
 
             // Prepare the item for a geometry change. This function must be called before
             // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
@@ -2207,23 +2208,23 @@ void CGraphObjRect::onGraphObjParentGeometryOnSceneChanged(
                 // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
                 // If the position is not changed, itemChange is not called with PositionHasChanged and
                 // the position of the arrow heads will not be updated. We got to do this here "manually".
-                if (ptPos != ptPosPrev) {
-                    QGraphicsItem_setPos(ptPos);
+                if (ptPosNew != ptPosPrev) {
+                    QGraphicsItem_setPos(ptPosNew);
                 }
             }
-            // If the geometry of the parent on the scene of this item changes, also the geometry
-            // on the scene of this item is changed.
-            bGeometryOnSceneChanged = true;
         }
     }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Leave);
     }
 
     // Emit signal after updated position info has been traced.
-    if (bGeometryOnSceneChanged) {
+    //QPointF ptScenePosNew = scenePos();
+    //bool bGeometryOnSceneChanged = (ptScenePosNew != ptScenePosPrev) || (m_physValRectScaledAndRotated != physValRectScaledAndRotatedPrev);
+    //if (bGeometryOnSceneChanged) {
         emit_geometryOnSceneChanged();
-    }
+    //}
 }
 
 //------------------------------------------------------------------------------

@@ -62,6 +62,7 @@ CObjFactoryPolygon::CObjFactoryPolygon( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::StandardShapes",
         /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypePolygon,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
@@ -91,14 +92,14 @@ protected: // ctor (used by derived classes, e.g. CObjFactoryPolyline)
 
 //------------------------------------------------------------------------------
 CObjFactoryPolygon::CObjFactoryPolygon(
-    const QString& i_strGroupName,
     const QString& i_strClassName,
     EGraphObjType i_eGraphObjType,
     const QString& i_strGraphObjType,
     const QPixmap& i_pxmToolIcon) :
 //------------------------------------------------------------------------------
     CObjFactory(
-        /* strGroupName    */ i_strGroupName,
+        /* strGroupName    */ c_strGroupNameStandardShapes,
+        /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::StandardShapes",
         /* strClassName    */ i_strClassName,
         /* iGraphObjType   */ i_eGraphObjType,
         /* strGraphObjType */ i_strGraphObjType,

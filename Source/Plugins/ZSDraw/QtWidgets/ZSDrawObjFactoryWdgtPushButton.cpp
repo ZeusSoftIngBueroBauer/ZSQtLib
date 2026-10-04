@@ -68,6 +68,7 @@ CObjFactoryWdgtPushButton::CObjFactoryWdgtPushButton( const QPixmap& i_pxmToolIc
 //------------------------------------------------------------------------------
     CObjFactory(
         /* strGroupName    */ CGraphObjWdgt::c_strFactoryGroupName,
+        /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::QtWidgets",
         /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypeUserDefined,
         /* strGraphObjType */ "PushButton",

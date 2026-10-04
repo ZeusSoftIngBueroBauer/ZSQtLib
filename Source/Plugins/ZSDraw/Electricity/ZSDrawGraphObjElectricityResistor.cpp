@@ -99,7 +99,7 @@ CGraphObjResistor::CGraphObjResistor(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("ZS::Draw::Plugins::Electricity::Drawing", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Plugins::Electricity", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -113,8 +113,6 @@ CGraphObjResistor::CGraphObjResistor(
         /* strAddInfo   */ strMthInArgs );
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
-
-    m_pDrawingScene->addGraphObj(this);
 
     /*
                           Body
@@ -132,12 +130,21 @@ CGraphObjResistor::CGraphObjResistor(
     // The group itself will be positioned by the caller of the ctor relative to
     // the caller's coordinate system.
 
-    QRectF rctBounding(QPointF(50.0, 50.0), c_sizInitial);
+    QRectF rctBounding(QPointF(0.0, 0.0), c_sizInitial);
+    CPhysValRect physValRect(*m_pDrawingScene, rctBounding.topLeft(), rctBounding.size());
     double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
     CPhysValRect physValRectBody(*m_pDrawingScene, rctBody.topLeft(), rctBody.size());
     CPhysValPoint physValPointCnctPt1(*m_pDrawingScene, QPointF(rctBounding.left(), rctBounding.center().y()));
     CPhysValPoint physValPointCnctPt2(*m_pDrawingScene, QPointF(rctBounding.right(), rctBounding.center().y()));
+
+    // The group will be added to the drawing scene at position (0, 0) right after creating the group.
+    // By adding child objects to the group the group will map the shape point coordinates of the child
+    // to the group coordinates and will try to resize the group so that the newly added object fits into
+    // the group. In order for the group to map the coordinates of the new child object, the group must
+    // already have gotten its final size.
+    setRect(physValRect);
+    m_pDrawingScene->addGraphObj(this);
 
     QList<CGraphObj*> arpGraphObjs;
 
@@ -192,7 +199,7 @@ CGraphObjResistor::CGraphObjResistor(
     // Create resistor as object group
     //--------------------------------
 
-    //addToGroup(arpGraphObjs);
+    addToGroup(arpGraphObjs, true);
 
     // The alignments will be adjusted in the order they are added. The order
     // takes effect on the result. Usually the size should be adjusted before

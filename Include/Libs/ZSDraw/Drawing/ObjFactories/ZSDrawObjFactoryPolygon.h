@@ -48,7 +48,6 @@ public: // ctors and dtor
     ~CObjFactoryPolygon() override;
 protected: // ctor (used by derived classes, e.g. CObjFactoryPolyline)
     CObjFactoryPolygon(
-        const QString& i_strGroupName,
         const QString& i_strClassName,
         EGraphObjType i_eGraphObjType,
         const QString& i_strGraphObjType,

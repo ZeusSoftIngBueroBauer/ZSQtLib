@@ -89,7 +89,7 @@ CWdgtFormatGraphObjsVoltageSource::CWdgtFormatGraphObjsVoltageSource(
 {
     setObjectName("WdgtFormatGraphObjsVoltageSource");
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Apps::Products::Draw", "CWdgtFormatGraphObjsVoltageSource", objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj("ZS::Draw::Widgets::GraphObjs::Plugins::Electricity", "CWdgtFormatGraphObjsVoltageSource");
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

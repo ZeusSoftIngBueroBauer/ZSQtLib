@@ -141,26 +141,29 @@ protected: // ctor
 
     @param i_strGroupName [in]
         To group the factory in index tree
-        (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity").
+        (e.g. "Standard Shapes", "Connections", "Widgets", "Electricity").
         Use "c_strGroupSeparator" ("::") to separate groups.
-    @param i_strGraphObjNameSpace [in]
-        C++ name space of the class
-        (e.g. "ZS::Draw", "ZS::Draw::Widgets", "ZS::Draw::Electricity").
-        Used for tracing.
-    @param i_strGraphObjClassName [in]
+    @param i_strNameSpace [in]
+        Name space of the class to classify the class within the trace admin object tree.
+        This name space is not necessary the same as the C++ name space the class belongs to.
+        E.g. the class may belong to the C++ name space "ZS::Draw", but the path to the trace admin
+        object in the index tree may be "ZS::Draw::Drawing::ObjFactories::StandardShapes" or
+        "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity" to logically group the classes.
+    @param i_strClassName [in]
         C++ class name (e.g. "CGraphObjRect", "CGraphObjWdgtCheckBox", "CGraphObjCapacitor").
-        Used for tracing.
-    @param i_iGraphObjType [in]
+        Used to create the trace admin object.
+    @param i_eGraphObjType [in]
         Type as int of the graphic items created by this factory.
     @param i_strGraphObjType [in]
         Type as string of the graphic items created by this factory
         (e.g. "Line", "Rect", "CheckBox", "Resistor").
         The type as string becomes the name of the index tree leave entry.
-    @param i_toolIcon [in]
+    @param i_pxmToolIcon [in]
         Icon to indicate the graphic items created by this factory in the index tree.
 */
 CObjFactory::CObjFactory(
     const QString& i_strGroupName,
+    const QString& i_strNameSpace,
     const QString& i_strClassName,
     EGraphObjType  i_eGraphObjType,
     const QString& i_strGraphObjType,
@@ -185,8 +188,7 @@ CObjFactory::CObjFactory(
             /* strNodeSeparator */ "::" );
     }
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::ObjFactories::" + i_strGroupName, i_strClassName);
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_strNameSpace, i_strClassName);
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {

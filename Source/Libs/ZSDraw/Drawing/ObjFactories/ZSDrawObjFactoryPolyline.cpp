@@ -60,7 +60,6 @@ public: // ctors and dtor
 CObjFactoryPolyline::CObjFactoryPolyline(const QPixmap& i_pxmToolIcon) :
 //------------------------------------------------------------------------------
     CObjFactoryPolygon(
-        /* strGroupName    */ c_strGroupNameStandardShapes,
         /* strClassName    */ ClassName(),
         /* iGraphObjType   */ EGraphObjTypePolyline,
         /* strGraphObjType */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),

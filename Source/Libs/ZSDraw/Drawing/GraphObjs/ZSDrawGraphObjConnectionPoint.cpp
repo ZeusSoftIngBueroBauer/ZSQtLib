@@ -148,7 +148,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    createTraceAdminObjs("ZS::Draw::Drawing::Connections", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Connections", ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2550,9 +2550,12 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
 
     bool bGeometryOnSceneChanged = false;
 
+    // Connection points may be directly added to the drawing scene and may not be linked to other objects.
     if (linkedObject() == nullptr) {
         CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
+        // If not linked to other objects but directly added to the drawing scene, it must have been
+        // a group emitting the geometryOnSceneChanged signal.
         if (i_pGraphObjParent->isGroup()) {
             CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
             if (i_bParentOfParentChanged) {
@@ -2613,9 +2616,9 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
         }
     }
     else {
-        // If the position is updated because the parent's geometry is changed,
-        // the relative distance in polar coordinates (length and angle) to the
-        // linked selection point must not be changed.
+        // If the position is updated because the geometry of the linked object has been changed,
+        // the relative distance in polar coordinates (length and angle) to the linked selection
+        // point must not be changed.
         m_bPositionUpdateOnParentGeometryChanged = true;
         updatePosition();
         bGeometryOnSceneChanged = true;

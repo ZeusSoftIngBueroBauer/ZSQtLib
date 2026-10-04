@@ -92,7 +92,7 @@ public: // must overridables of base class CPhysValShape
     bool isValid() const override;
     bool isNull() const override;
     void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const override;
+    QString toString(bool i_bAddUnit = true, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const override;
 public: // instance methods
     CPhysValPoint center() const;
     CPhysValSize size() const;

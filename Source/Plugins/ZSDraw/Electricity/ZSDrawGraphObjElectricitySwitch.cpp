@@ -140,7 +140,7 @@ CGraphObjSwitch::CGraphObjSwitch(
 
     QString strAddTrcInfo;
 
-    createTraceAdminObjs("ZS::Draw::Plugins::Electricity::Drawing", ClassName());
+    createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Plugins::Electricity", ClassName());
 
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
     }
