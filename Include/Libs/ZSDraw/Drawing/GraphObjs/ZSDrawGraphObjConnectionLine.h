@@ -136,8 +136,8 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected slots:
-    void onGraphObjConnectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjCnctPt, bool );
-    //void onGraphObjConnectionPointZValueChanged(CGraphObj* i_pGraphObjCnctPt);
+    void onConnectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjCnctPt);
+    //void onConnectionPointZValueChanged(CGraphObj* i_pGraphObjCnctPt);
 protected: // overridable slots of base class CGraphObj
     void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 protected slots:

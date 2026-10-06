@@ -53,8 +53,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjResistor"; }
-public: // type definitions and constants
-    static const QSize c_sizInitial;
 public: // ctors and dtor
     CGraphObjResistor(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjResistor();

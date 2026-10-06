@@ -465,8 +465,8 @@ signals:
          change their geometry on the scene. The signal is emitted for the changed group and
          also by its children to inform all connected labels and selection points that their
          parents scene coordinates may have been changed.
-        @param [in] i_pGraphObjParent
-            Pointer to parent item whose geometry on the scene has been changed.
+        @param [in] i_pGraphObj
+            Pointer to parent or linked item whose geometry on the scene has been changed.
         @param [in] i_bParentOfParentChanged
             false (default), if the geometry of the parent has been changed directly.
             true if the geometry has been changed because the parent got a new parent. */
@@ -533,7 +533,6 @@ public: // instance methods
 public: // overridables
     virtual CGraphObj* linkedObject() const;
     virtual QString pathNameOfLinkedObject() const;
-    //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename(const QString& i_strNameNew);
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName(const QString& i_strName) override;
@@ -779,8 +778,8 @@ public: // instance methods (simulation methods)
     //void removeKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false);
-    virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
+    virtual void onParentGroupGeometryOnSceneChanged(CGraphObj* i_pGraphObjGroupParent, bool i_bParentOfParentChanged = false);
+    virtual void onParentGroupZValueChanged(CGraphObj* i_pGraphObjGroupParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjSelectionPoint);
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);

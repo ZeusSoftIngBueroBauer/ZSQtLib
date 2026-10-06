@@ -176,7 +176,7 @@ protected: // overridables of base class QGraphicsItem
     QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable slots of base class CGraphObj
     //void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
+    void onParentGroupGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 protected slots:
     void onActionModifyPointsTriggered();

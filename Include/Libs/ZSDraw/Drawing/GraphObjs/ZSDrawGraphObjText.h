@@ -36,9 +36,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsTextItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsItem
@@ -190,8 +188,8 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
-    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+    void onParentGroupGeometryOnSceneChanged(CGraphObj* i_pGraphObjGroupParent, bool i_bParentOfParentChanged = false) override;
+    void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjSelectionPoint) override;
 public: // must overridables of base class CGraphObj
     void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     void updateTransformedCoorsOnParentGeometryChanged() override;
@@ -279,8 +277,6 @@ protected: // instance members
 
 }; // class CGraphObjText
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjText_h

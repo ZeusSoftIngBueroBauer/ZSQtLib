@@ -2133,7 +2133,7 @@ protected: // overridable slots of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
 */
-void CGraphObjEllipse::onGraphObjParentGeometryOnSceneChanged(
+void CGraphObjEllipse::onParentGroupGeometryOnSceneChanged(
     CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
@@ -2148,7 +2148,7 @@ void CGraphObjEllipse::onGraphObjParentGeometryOnSceneChanged(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strMethod    */ "onParentGroupGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Enter);

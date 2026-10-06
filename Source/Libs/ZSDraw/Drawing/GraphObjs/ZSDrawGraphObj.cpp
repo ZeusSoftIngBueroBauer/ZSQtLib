@@ -638,7 +638,7 @@ CGraphObjGroup* CGraphObj::parentGroup() const
 /*! @brief Informs the object that the parent item of the item has been changed
            to another parent item.
 
-    The method connects the slot onGraphObjParentGeometryOnSceneChanged to the
+    The method connects the slot onParentGroupGeometryOnSceneChanged to the
     geometryOnSceneChanged signal of the parent item. If the item already had
     a parent the signal/slot connection to the previous parent is removed.
 
@@ -653,7 +653,7 @@ CGraphObjGroup* CGraphObj::parentGroup() const
     If the item belongs to a group and the group changes its geometry on the scene,
     also the child items geometry on the scene is changed and all labels linked to
     the items must update their geometry information and their position on the scene.
-    The default implementation of the onGraphObjParentGeometryOnSceneChanged slot
+    The default implementation of the onParentGroupGeometryOnSceneChanged slot
     emits the geometryOnSceneChanged signal to update the labels.
 
     When resizing a group all children of the group should be resized and positioned so
@@ -662,7 +662,7 @@ CGraphObjGroup* CGraphObj::parentGroup() const
     the original group rectangle.
     If the item is removed from a group (but not added to a new group) the original
     parent group rectangle is invalidated.
-    This allows the default implementation of onGraphObjParentGeometryOnSceneChanged
+    This allows the default implementation of onParentGroupGeometryOnSceneChanged
     to calculate the current scale factor of the parent group.
 
     @param [in] i_pGraphObjGroupPrev
@@ -695,12 +695,12 @@ void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGrap
         if (i_pGraphObjGroupPrev != nullptr) {
             QObject::disconnect(
                 i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
+                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
         }
         if (i_pGraphObjGroupNew != nullptr) {
             QObject::connect(
                 i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
+                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
         }
         m_pGraphObjGroupParent = i_pGraphObjGroupNew;
         initParentTransform();
@@ -770,7 +770,7 @@ QString CGraphObj::pathNameOfLinkedObject() const
 //        if (m_pGraphObjParent != nullptr) {
 //            QObject::disconnect(
 //                m_pGraphObjParent, &CGraphObj::geometryOnSceneChanged,
-//                this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
+//                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
 //            QObject::disconnect(
 //                m_pGraphObjParent, &CGraphObj::zValueChanged,
 //                this, &CGraphObj::onGraphObjParentZValueChanged);
@@ -779,7 +779,7 @@ QString CGraphObj::pathNameOfLinkedObject() const
 //        if (m_pGraphObjParent != nullptr) {
 //            QObject::connect(
 //                m_pGraphObjParent, &CGraphObj::geometryOnSceneChanged,
-//                this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
+//                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
 //            QObject::connect(
 //                m_pGraphObjParent, &CGraphObj::zValueChanged,
 //                this, &CGraphObj::onGraphObjParentZValueChanged);
@@ -5304,7 +5304,8 @@ void CGraphObj::showSelectionPointsOfPolygon(const QPolygonF& i_plg)
         for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
             if (pGraphObjSelPt != nullptr) {
-                pGraphObjSelPt->setLinkedSelectionPoint(SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
+                pGraphObjSelPt->setLinkedObjectSelectionPoint(
+                    SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
             }
             else {
                 pGraphObjSelPt = new CGraphObjSelectionPoint(
@@ -5894,7 +5895,7 @@ void CGraphObj::setLabelAnchorPoint(
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setSelectionPoint1(linkedChildDscr.m_selPt1);
+            pGraphObjLabel->setLinkedObjectSelectionPoint1(linkedChildDscr.m_selPt1);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -5954,7 +5955,7 @@ void CGraphObj::setLabelAnchorPoint(
         linkedChildDscr.m_selPt1.m_idxPt = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setSelectionPoint1(linkedChildDscr.m_selPt1);
+            pGraphObjLabel->setLinkedObjectSelectionPoint1(linkedChildDscr.m_selPt1);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7364,7 +7365,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         linkedChildDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setSelectionPoint(linkedChildDscr.m_selPt1);
+            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint(linkedChildDscr.m_selPt1);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7412,7 +7413,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         linkedChildDscr.m_selPt1.m_idxPt = i_idxPt;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setSelectionPoint(linkedChildDscr.m_selPt1);
+            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint(linkedChildDscr.m_selPt1);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7995,8 +7996,8 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
         false (default), if the geometry of the parent has been changed directly.
         true if the geometry has been changed because the parent got a new parent.
 */
-void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+void CGraphObj::onParentGroupGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjGroupParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
     if (m_iIgnoreParentGeometryChange > 0) {
@@ -8004,13 +8005,13 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
     }
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+        strMthInArgs = i_pGraphObjGroupParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onGraphObjParentGeometryOnSceneChanged",
+        /* strMethod    */ "CGraphObj::onParentGroupGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Enter);
@@ -8018,24 +8019,26 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
 
 #pragma message(__TODO__"Pure virtual")
 
+    CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjGroupParent);
+    if (pGraphObjGroupParent == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroupParent == nullptr");
+    }
+
     bool bGeometryOnSceneChanged = false;
 
     {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
-        if (i_pGraphObjParent->isGroup()) {
-            CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
-            if (i_bParentOfParentChanged) {
-                initParentTransform();
-                updateTransformedCoorsOnParentGeometryChanged();
+        if (i_bParentOfParentChanged) {
+            initParentTransform();
+            updateTransformedCoorsOnParentGeometryChanged();
+        }
+        CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
+        if (m_physValRectParentGroupOrig != physValRectGroupParentCurr) {
+            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+                setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
             }
-            CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-            if (m_physValRectParentGroupOrig != physValRectGroupParentCurr) {
-                if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-                    setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
-                }
-                if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-                    setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
-                }
+            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+                setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
             }
         }
     }
@@ -8050,19 +8053,24 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObj::onParentGroupZValueChanged(CGraphObj* i_pGraphObjGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjGroupParent->keyInTree();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onGraphObjParentZValueChanged",
+        /* strMethod    */ "CGraphObj::onParentGroupZValueChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjGroupParent);
+    if (pGraphObjGroupParent == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroupParent == nullptr");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -8079,6 +8087,11 @@ void CGraphObj::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjSel
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onSelectionPointGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjSelectionPoint* pGraphObjSelectionPoint = dynamic_cast<CGraphObjSelectionPoint*>(i_pGraphObjSelectionPoint);
+    if (pGraphObjSelectionPoint == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelectionPoint == nullptr");
+    }
 }
 
 //------------------------------------------------------------------------------

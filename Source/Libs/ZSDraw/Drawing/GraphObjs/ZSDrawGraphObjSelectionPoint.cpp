@@ -122,7 +122,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
 
-    setLinkedSelectionPoint(i_selPt);
+    setLinkedObjectSelectionPoint(i_selPt);
 }
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setLinkedSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObjSelectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -196,17 +196,17 @@ void CGraphObjSelectionPoint::setLinkedSelectionPoint(const SGraphObjSelectionPo
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setLinkedSelectionPoint",
+        /* strMethod    */ "setLinkedObjectSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_selPt != i_selPt) {
         if (m_selPt.m_pGraphObj != nullptr) {
             QObject::disconnect(
                 m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged);
+                this, &CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged);
             QObject::disconnect(
                 m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
-                this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
+                this, &CGraphObjSelectionPoint::onLinkedObjectZValueChanged);
         }
 
         if (i_selPt.m_pGraphObj == nullptr) {
@@ -220,10 +220,10 @@ void CGraphObjSelectionPoint::setLinkedSelectionPoint(const SGraphObjSelectionPo
 
         QObject::connect(
             m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged);
+            this, &CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged);
         QObject::connect(
             m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
+            this, &CGraphObjSelectionPoint::onLinkedObjectZValueChanged);
 
         update();
     }
@@ -953,26 +953,7 @@ protected slots: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    updatePosition();
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -983,7 +964,25 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strMethod    */ "onLinkedObjectGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    updatePosition();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onLinkedObjectZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
     // The selection point should be drawn after the parent object is drawn.

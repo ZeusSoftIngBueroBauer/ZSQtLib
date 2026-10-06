@@ -133,11 +133,11 @@ public: // must overridables of base class CGraphObj
 public: // instance methods
     void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
     CGraphObj* linkedObject() const override;
-    QString pathNameOfLinkedObject() const override;
+    QString pathNameOfLinkedObject() const;
     QString path() const override;
 public: // instance methods
-    void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint selectionPoint() const;
+    void setLinkedObjectSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
+    SGraphObjSelectionPoint linkedObjectSelectionPoint() const;
 public: // instance methods
     void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
     SPolarCoors polarCoorsToLinkedSelectionPoint() const;
@@ -174,8 +174,11 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
-    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent) override;
+    void onParentGroupGeometryOnSceneChanged(CGraphObj* i_pGraphObjGroupParent, bool i_bParentOfParentChanged = false) override;
+    void onParentGroupZValueChanged(CGraphObj* i_pGraphObjGroupParent) override;
+protected: // instance methods
+    void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked);
+    void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
 public: // must overridables of base class CGraphObj
     void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     void updateTransformedCoorsOnParentGeometryChanged() override;
@@ -184,10 +187,10 @@ protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
-protected: // overridable auxiliary instance methods
-    virtual void updatePosition();
-    virtual void updatePolarCoorsToLinkedSelPt();
-    virtual void updateAnchorLine();
+protected: // auxiliary instance methods
+    void updatePosition();
+    void updatePolarCoorsToLinkedSelPt();
+    void updateAnchorLine();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
     QRectF QGraphicsEllipseItem_setRect(const QRectF& i_rect);

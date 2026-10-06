@@ -520,20 +520,20 @@ void CGraphObjConnectionLine::setConnectionPoint(ELinePoint i_linePoint, CGraphO
             m_arpCnctPts.remove(i_linePoint);
             QObject::disconnect(
                 i_pGraphObjCnctPt, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged);
+                this, &CGraphObjConnectionLine::onConnectionPointGeometryOnSceneChanged);
             //QObject::disconnect(
             //    i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
-            //    this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
+            //    this, &CGraphObjConnectionLine::onConnectionPointZValueChanged);
         }
         if (m_arpCnctPts.value(i_linePoint, nullptr) != i_pGraphObjCnctPt) {
             m_arpCnctPts[i_linePoint] = i_pGraphObjCnctPt;
             i_pGraphObjCnctPt->appendConnectionLine(this);
             QObject::connect(
                 i_pGraphObjCnctPt, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged);
+                this, &CGraphObjConnectionLine::onConnectionPointGeometryOnSceneChanged);
             //QObject::connect(
             //    i_pGraphObjCnctPt, &CGraphObj::zValueChanged,
-            //    this, &CGraphObjConnectionLine::onGraphObjConnectionPointZValueChanged);
+            //    this, &CGraphObjConnectionLine::onConnectionPointZValueChanged);
         }
         if (i_linePoint == ELinePoint::Start) {
             if (count() == 0) {
@@ -1479,7 +1479,8 @@ void CGraphObjConnectionLine::showSelectionPointsOfPolygon(const QPolygonF& i_pl
         for (int idxSelPt = idxSelPtFirst; idxSelPt <= idxSelPtLast; idxSelPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
             if (pGraphObjSelPt != nullptr) {
-                pGraphObjSelPt->setLinkedSelectionPoint(SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
+                pGraphObjSelPt->setLinkedObjectSelectionPoint(
+                    SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, idxSelPt));
             }
             else {
                 pGraphObjSelPt = new CGraphObjSelectionPoint(
@@ -2525,15 +2526,11 @@ protected slots: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Called by the parent graphic item to inform the child about geometry changes.
 
-    Connection lines don't belong to groups. But their connection points do.
+    Connection lines don't belong to groups. But their connection points may belong to groups.
     If a group is moved also the connection points are moved by Qt's graphics scene.
-    But not the connection lines which are linked to the connection points. The
-    connection points can be considered as parents of connection lines and
-    "onGraphObjParentGeometryOnSceneChanged" is called by the connection points if their
-    position changes.
+    But not the connection lines which are linked to the connection points.
 */
-void CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjCnctPt, bool )
+void CGraphObjConnectionLine::onConnectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjCnctPt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2552,19 +2549,21 @@ void CGraphObjConnectionLine::onGraphObjConnectionPointGeometryOnSceneChanged(
     CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjCnctPt);
-    if (pGraphObjCnctPt != nullptr) {
-        CPhysValPoint physValPoint = pGraphObjCnctPt->getCenter();
-        physValPoint = static_cast<CGraphObj*>(pGraphObjCnctPt)->mapToScene(physValPoint);
-        ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
-        if (linePoint == ELinePoint::Start) {
-            replace(0, physValPoint);
-        }
-        else if (linePoint == ELinePoint::End) {
-            replace(count()-1, physValPoint);
-        }
-        normalize();
-        updateLineEndArrowHeadPolygons();
+    if (pGraphObjCnctPt == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjCnctPt == nullptr");
     }
+
+    CPhysValPoint physValPoint = pGraphObjCnctPt->getCenter();
+    physValPoint = static_cast<CGraphObj*>(pGraphObjCnctPt)->mapToScene(physValPoint);
+    ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
+    if (linePoint == ELinePoint::Start) {
+        replace(0, physValPoint);
+    }
+    else if (linePoint == ELinePoint::End) {
+        replace(count()-1, physValPoint);
+    }
+    normalize();
+    updateLineEndArrowHeadPolygons();
 
     refCountGuardTrace.decrementAndReleaseCounter();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -3104,8 +3103,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                 m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setSelectionPoint1(labelDscrNew.m_selPt1);
-                pGraphObjLabel->setSelectionPoint2(labelDscrNew.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscrNew.m_selPt1);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscrNew.m_selPt2);
             }
             labelDscrOld.m_bIsVisible = false;
             labelDscrOld.m_bShowAnchorLine = false;
@@ -3126,7 +3125,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
                     }
                     if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
                         || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
@@ -3136,7 +3135,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
                     }
                 }
             }
@@ -3166,8 +3165,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                 m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setSelectionPoint1(labelDscrNew.m_selPt1);
-                pGraphObjLabel->setSelectionPoint2(labelDscrNew.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscrNew.m_selPt1);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscrNew.m_selPt2);
             }
             labelDscrOld.m_bIsVisible = false;
             labelDscrOld.m_bShowAnchorLine = false;
@@ -3222,8 +3221,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                 m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
-                pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
             }
         }
         // Update the position of the indicated name and user defined labels.
@@ -3241,7 +3240,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
                     }
                     if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
                         || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
@@ -3251,7 +3250,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
                     }
                 }
             }
@@ -3284,8 +3283,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                 m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setSelectionPoint1(labelDscr.m_selPt1);
-                pGraphObjLabel->setSelectionPoint2(labelDscr.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
             }
         }
     }

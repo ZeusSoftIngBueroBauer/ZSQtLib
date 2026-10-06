@@ -143,10 +143,10 @@ CGraphObjLabel::CGraphObjLabel(
     //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjLabel::onGraphObjParentGeometryOnSceneChanged);
+        this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onLinkedObjectZValueChanged);
 
 } // ctor
 
@@ -189,10 +189,10 @@ CGraphObjLabel::CGraphObjLabel(
     //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjLabel::onGraphObjParentGeometryOnSceneChanged);
+        this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onLinkedObjectZValueChanged);
 }
 
 //------------------------------------------------------------------------------
@@ -231,20 +231,20 @@ CGraphObjLabel::CGraphObjLabel(
     //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjLabel::onGraphObjParentGeometryOnSceneChanged);
+        this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onLinkedObjectZValueChanged);
 
     //QObject::connect(
     //    m_anchorLayoutDscr.m_selPt2.m_pGraphObj, &CGraphObj::scenePosChanged,
     //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt2.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjLabel::onGraphObjParentGeometryOnSceneChanged);
+        this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
     QObject::connect(
         m_anchorLayoutDscr.m_selPt2.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onLinkedObjectZValueChanged);
 }
 
 /*==============================================================================
@@ -336,52 +336,6 @@ void CGraphObjLabel::setName(const QString& i_strName)
 }
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CGraphObj* CGraphObjLabel::linkedObject() const
-//------------------------------------------------------------------------------
-{
-    CGraphObj* pGraphObjLinked = nullptr;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        pGraphObjLinked = m_anchorLayoutDscr.m_selPt2.m_pGraphObj;
-    }
-    return pGraphObjLinked;
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjLabel::pathNameOfLinkedObject() const
-//------------------------------------------------------------------------------
-{
-    QString strPath;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->path();
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->path();
-    }
-    return strPath;
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjLabel::path() const
-//------------------------------------------------------------------------------
-{
-    QString strPath = pathNameOfLinkedObject();
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
-    }
-    return strPath;
-}
-
-/*==============================================================================
 public: // replacing methods of QGraphicsSimpleTextItem
 ==============================================================================*/
 
@@ -421,7 +375,64 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::setSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObjLabel::setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr)
+//------------------------------------------------------------------------------
+{
+    m_anchorLayoutDscr = i_anchorLayoutDscr;
+    updatePosition();
+    if (m_pTree != nullptr) {
+        m_pTree->onTreeEntryChanged(this);
+    }
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CGraphObjLabel::linkedObject() const
+//------------------------------------------------------------------------------
+{
+    CGraphObj* pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
+    }
+    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
+        pGraphObjLinked = m_anchorLayoutDscr.m_selPt2.m_pGraphObj;
+    }
+    return pGraphObjLinked;
+}
+
+//------------------------------------------------------------------------------
+QString CGraphObjLabel::pathNameOfLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    QString strPath;
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->path();
+    }
+    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->path();
+    }
+    return strPath;
+}
+
+//------------------------------------------------------------------------------
+QString CGraphObjLabel::path() const
+//------------------------------------------------------------------------------
+{
+    QString strPath = pathNameOfLinkedObject();
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    }
+    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    }
+    return strPath;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -432,7 +443,7 @@ void CGraphObjLabel::setSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setSelectionPoint1",
+        /* strMethod    */ "setLinkedObjectSelectionPoint1",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_anchorLayoutDscr.m_selPt1 != i_selPt)
@@ -451,14 +462,14 @@ void CGraphObjLabel::setSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-SGraphObjSelectionPoint CGraphObjLabel::selectionPoint1() const
+SGraphObjSelectionPoint CGraphObjLabel::linkedObjectSelectionPoint1() const
 //------------------------------------------------------------------------------
 {
     return m_anchorLayoutDscr.m_selPt1;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::setSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObjLabel::setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -469,7 +480,7 @@ void CGraphObjLabel::setSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setSelectionPoint2",
+        /* strMethod    */ "setLinkedObjectSelectionPoint2",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_anchorLayoutDscr.m_selPt2 != i_selPt)
@@ -488,7 +499,7 @@ void CGraphObjLabel::setSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-SGraphObjSelectionPoint CGraphObjLabel::selectionPoint2() const
+SGraphObjSelectionPoint CGraphObjLabel::linkedObjectSelectionPoint2() const
 //------------------------------------------------------------------------------
 {
     return m_anchorLayoutDscr.m_selPt2;
@@ -1176,19 +1187,18 @@ protected slots:
 //}
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+void CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+        strMthInArgs = i_pGraphObjLinked->keyInTree();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strMethod    */ "onLinkedObjectGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
     // If the position is updated because the parent's geometry is changed,
@@ -1200,18 +1210,18 @@ void CGraphObjLabel::onGraphObjParentGeometryOnSceneChanged(
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjLabel::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjLinked->keyInTree();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strMethod    */ "onLinkedObjectZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
     // The labels anchor line should be drawn above the parent object.

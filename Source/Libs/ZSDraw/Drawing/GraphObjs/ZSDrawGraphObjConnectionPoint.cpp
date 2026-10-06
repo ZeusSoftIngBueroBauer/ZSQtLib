@@ -1349,10 +1349,10 @@ void CGraphObjConnectionPoint::setLinkedObject(const SAnchorLayoutDscr& i_anchor
     if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
         QObject::disconnect(
             m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
+            this, &CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged);
         QObject::disconnect(
             m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+            this, &CGraphObjConnectionPoint::onLinkedObjectZValueChanged);
     }
     m_anchorLayoutDscr = i_anchorLayoutDscr;
     m_anchorLayoutDscr.m_graphObjType = EGraphObjTypeConnectionPoint;
@@ -1361,10 +1361,10 @@ void CGraphObjConnectionPoint::setLinkedObject(const SAnchorLayoutDscr& i_anchor
     if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
         QObject::connect(
             m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
+            this, &CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged);
         QObject::connect(
             m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+            this, &CGraphObjConnectionPoint::onLinkedObjectZValueChanged);
     }
     updatePosition();
 
@@ -1377,7 +1377,7 @@ void CGraphObjConnectionPoint::setLinkedObject(const SAnchorLayoutDscr& i_anchor
 CGraphObj* CGraphObjConnectionPoint::linkedObject() const
 //------------------------------------------------------------------------------
 {
-    CGraphObj* pGraphObjLinked = nullptr;
+    CGraphObj* pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
     if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
         pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
     }
@@ -1391,21 +1391,26 @@ CGraphObj* CGraphObjConnectionPoint::linkedObject() const
 QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
 //------------------------------------------------------------------------------
 {
-    CGraphObj* pGraphObjLinked = linkedObject();
-    return pGraphObjLinked == nullptr ? "" : pGraphObjLinked->path();
+    QString strPath;
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->path();
+    }
+    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->path();
+    }
+    return strPath;
 }
 
 //------------------------------------------------------------------------------
 QString CGraphObjConnectionPoint::path() const
 //------------------------------------------------------------------------------
 {
-    CGraphObj* pGraphObjLinked = linkedObject();
-    QString strPath;
-    if (pGraphObjLinked == nullptr) {
-        strPath = CIdxTreeEntry::path();
+    QString strPath = pathNameOfLinkedObject();
+    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
     }
-    else {
-        strPath = pGraphObjLinked->tree()->buildPathStr(pGraphObjLinked->path(), m_strName);
+    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
+        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
     }
     return strPath;
 }
@@ -1415,7 +1420,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObjConnectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1426,27 +1431,21 @@ void CGraphObjConnectionPoint::setSelectionPoint(const SGraphObjSelectionPoint& 
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setSelectionPoint",
+        /* strMethod    */ "setLinkedObjectSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
     if (m_anchorLayoutDscr.m_selPt1 != i_selPt) {
         if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
             QObject::disconnect(
                 m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
-            QObject::disconnect(
-                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-                this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+                this, &CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged);
         }
         m_anchorLayoutDscr.m_selPt1 = i_selPt;
 
         if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
             QObject::connect(
                 m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged);
-            QObject::connect(
-                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-                this, &CGraphObjConnectionPoint::onGraphObjParentZValueChanged);
+                this, &CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged);
         }
         updatePosition();
         if (m_pTree != nullptr) {
@@ -1461,7 +1460,7 @@ void CGraphObjConnectionPoint::setSelectionPoint(const SGraphObjSelectionPoint& 
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-SGraphObjSelectionPoint CGraphObjConnectionPoint::selectionPoint() const
+SGraphObjSelectionPoint CGraphObjConnectionPoint::linkedObjectSelectionPoint() const
 //------------------------------------------------------------------------------
 {
     return m_anchorLayoutDscr.m_selPt1;
@@ -2526,9 +2525,12 @@ protected: // overridable slots of base class CGraphObj
 
 //------------------------------------------------------------------------------
 /*! @brief Reimplements the method of base class CGraphObj.
+
+    @note Connection points may be directly added to the drawing scene and may
+          not necessary linked to other objects in addition to connection lines.
 */
-void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
-    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
+void CGraphObjConnectionPoint::onParentGroupGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjGroupParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
     if (m_iIgnoreParentGeometryChange > 0) {
@@ -2536,94 +2538,85 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
     }
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
+        strMthInArgs = i_pGraphObjGroupParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
+        /* strMethod    */ "onParentGroupGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
+    CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjGroupParent);
+    if (pGraphObjGroupParent == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroupParent == nullptr");
+    }
+
     bool bGeometryOnSceneChanged = false;
 
-    // Connection points may be directly added to the drawing scene and may not be linked to other objects.
-    if (linkedObject() == nullptr) {
-        CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
+    CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
-        // If not linked to other objects but directly added to the drawing scene, it must have been
-        // a group emitting the geometryOnSceneChanged signal.
-        if (i_pGraphObjParent->isGroup()) {
-            CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
-            if (i_bParentOfParentChanged) {
-                initParentTransform();
-                updateTransformedCoorsOnParentGeometryChanged();
-            }
-            CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-                setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
-            }
-            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-                setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
-            }
+    // If not linked to other objects but directly added to the drawing scene, it must have been
+    // a group emitting the geometryOnSceneChanged signal.
+    if (i_bParentOfParentChanged) {
+        initParentTransform();
+        updateTransformedCoorsOnParentGeometryChanged();
+    }
+    CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
+    if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+        setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
+    }
+    if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+        setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
+    }
 
-            // The relative distance of the center point to the top left or bottom left corner
-            // of the parent's bounding rectangle should remain the same.
-            CPhysValRect physValRect = getPhysValRectScaled(m_physValRectOrig);
-            setPhysValRectScaled(physValRect);
-            physValRect.setAngle(m_physValRotationAngle);
-            setPhysValRectScaledAndRotated(physValRect);
+    // The relative distance of the center point to the top left or bottom left corner
+    // of the parent's bounding rectangle should remain the same.
+    CPhysValRect physValRect = getPhysValRectScaled(m_physValRectOrig);
+    setPhysValRectScaled(physValRect);
+    physValRect.setAngle(m_physValRotationAngle);
+    setPhysValRectScaledAndRotated(physValRect);
 
-            QPointF ptPosPrev = pos();
+    QPointF ptPosPrev = pos();
 
-            QRectF rectF;
-            CPhysVal physValAngle;
-            QPointF ptPos = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
+    QRectF rectF;
+    CPhysVal physValAngle;
+    QPointF ptPos = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
 
-            // Prepare the item for a geometry change. This function must be called before
-            // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
-            QGraphicsItem_prepareGeometryChange();
+    // Prepare the item for a geometry change. This function must be called before
+    // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
+    QGraphicsItem_prepareGeometryChange();
 
-            {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
-                CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+    {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+        CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-                // Set the rectangle in local coordinate system.
-                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
-                QGraphicsEllipseItem_setRect(rectF);
+        // Set the rectangle in local coordinate system.
+        // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
+        QGraphicsEllipseItem_setRect(rectF);
 
-                // Please note that QGraphicsRectItem::setRect did not update the position of the
-                // item in the parent. This has to be done "manually" afterwards.
+        // Please note that QGraphicsRectItem::setRect did not update the position of the
+        // item in the parent. This has to be done "manually" afterwards.
 
-                // Move the object to the parent position.
-                // This has to be done after resizing the item which updates the local coordinates
-                // of the item with origin (0/0) at the center point.
-                // "setPos" will trigger an itemChange call which will update the position of the
-                // selection points and labels. To position the selection points and labels correctly
-                // the local coordinate system must be up-to-date.
-                // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
-                // If the position is not changed, itemChange is not called with PositionHasChanged and
-                // the position of the arrow heads will not be updated. We got to do this here "manually".
-                if (ptPos != ptPosPrev) {
-                    QGraphicsItem_setPos(ptPos);
-                }
-            }
-            // If the geometry of the parent on the scene of this item changes, also the geometry
-            // on the scene of this item is changed.
-            bGeometryOnSceneChanged = true;
+        // Move the object to the parent position.
+        // This has to be done after resizing the item which updates the local coordinates
+        // of the item with origin (0/0) at the center point.
+        // "setPos" will trigger an itemChange call which will update the position of the
+        // selection points and labels. To position the selection points and labels correctly
+        // the local coordinate system must be up-to-date.
+        // Also note that itemChange must not overwrite the current coordinates (refCountGuard).
+        // If the position is not changed, itemChange is not called with PositionHasChanged and
+        // the position of the arrow heads will not be updated. We got to do this here "manually".
+        if (ptPos != ptPosPrev) {
+            QGraphicsItem_setPos(ptPos);
         }
     }
-    else {
-        // If the position is updated because the geometry of the linked object has been changed,
-        // the relative distance in polar coordinates (length and angle) to the linked selection
-        // point must not be changed.
-        m_bPositionUpdateOnParentGeometryChanged = true;
-        updatePosition();
-        bGeometryOnSceneChanged = true;
-        m_bPositionUpdateOnParentGeometryChanged = false;
-    }
+    // If the geometry of the parent on the scene of this item changes, also the geometry
+    // on the scene of this item is changed.
+    bGeometryOnSceneChanged = true;
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Leave);
     }
@@ -2635,18 +2628,92 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjConnectionPoint::onParentGroupZValueChanged(CGraphObj* i_pGraphObjGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjGroupParent->keyInTree();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strMethod    */ "onParentGroupZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjGroupParent);
+    if (pGraphObjGroupParent == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroupParent == nullptr");
+    }
+
+    // The labels anchor line should be drawn above the parent object.
+    // Otherwise the anchor lines may be covered by the painting of the parent object.
+    double fZValueParent = pGraphObjGroupParent->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetConnectionPoints);
+}
+
+/*==============================================================================
+protected: // overridable slots of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Reimplements the method of base class CGraphObj.
+*/
+void CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked)
+//------------------------------------------------------------------------------
+{
+    if (m_iIgnoreParentGeometryChange > 0) {
+        return;
+    }
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjLinked->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onLinkedObjectGeometryOnSceneChanged",
+        /* strAddInfo   */ strMthInArgs );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
+
+    bool bGeometryOnSceneChanged = false;
+
+    // Connection points may be directly added to the drawing scene and may not be linked to other objects.
+    // If the position is updated because the geometry of the linked object has been changed,
+    // the relative distance in polar coordinates (length and angle) to the linked selection
+    // point must not be changed.
+    m_bPositionUpdateOnParentGeometryChanged = true;
+    updatePosition();
+    bGeometryOnSceneChanged = true;
+    m_bPositionUpdateOnParentGeometryChanged = false;
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
+
+    // Emit signal after updated position info has been traced.
+    if (bGeometryOnSceneChanged) {
+        emit_geometryOnSceneChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjConnectionPoint::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjLinked->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "onLinkedObjectZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
     // The labels anchor line should be drawn above the parent object.
@@ -2954,7 +3021,7 @@ void CGraphObjConnectionPoint::updatePosition()
         /* strAddInfo   */ "" );
 
     QLineF anchorLine;
-    CGraphObj* pGraphObjLinked = linkedObject();
+    CGraphObj* pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
     if (pGraphObjLinked != nullptr) {
         m_bUpdatePositionInProgress = true;
         // Get anchor line in scene coordinates.

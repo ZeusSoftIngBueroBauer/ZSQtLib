@@ -116,18 +116,19 @@ public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // overridables of base class CGraphObj
     void setName(const QString& i_strName) override;
-public: // instance methods
-    CGraphObj* linkedObject() const override;
-    QString pathNameOfLinkedObject() const override;
-    QString path() const override;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);
     QString text() const;
 public: // instance methods
-    void setSelectionPoint1( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint selectionPoint1() const;
-    void setSelectionPoint2( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint selectionPoint2() const;
+    void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
+    CGraphObj* linkedObject() const override;
+    QString pathNameOfLinkedObject() const override;
+    QString path() const override;
+public: // instance methods
+    void setLinkedObjectSelectionPoint1( const SGraphObjSelectionPoint& i_selPt );
+    SGraphObjSelectionPoint linkedObjectSelectionPoint1() const;
+    void setLinkedObjectSelectionPoint2( const SGraphObjSelectionPoint& i_selPt );
+    SGraphObjSelectionPoint linkedObjectSelectionPoint2() const;
 public: // instance methods
     void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
     SPolarCoors polarCoorsToLinkedSelectionPoint() const;
@@ -155,8 +156,8 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 public slots: // overridables of base class CGraphObj
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent) override;
+    virtual void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked);
+    virtual void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable auxiliary instance methods

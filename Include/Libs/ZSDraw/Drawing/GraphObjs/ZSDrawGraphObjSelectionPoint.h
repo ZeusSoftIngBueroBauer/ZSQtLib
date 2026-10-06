@@ -68,7 +68,7 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // instance methods
-    void setLinkedSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
+    void setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
     SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
     CGraphObj* linkedObject() const;
     QString pathNameOfLinkedObject() const;
@@ -102,8 +102,8 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected slots: // overridables of base class CGraphObj
-    void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
-    void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent) override;
+    void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked);
+    void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
 protected: // auxiliary instance methods
     void updatePosition();
 protected: // class members
