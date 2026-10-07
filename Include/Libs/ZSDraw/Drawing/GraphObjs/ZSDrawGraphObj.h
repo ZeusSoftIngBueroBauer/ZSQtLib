@@ -531,8 +531,6 @@ public: // instance methods
     CGraphObjGroup* parentGroup() const;
     void onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
-    virtual CGraphObj* linkedObject() const;
-    virtual QString pathNameOfLinkedObject() const;
     virtual void rename(const QString& i_strNameNew);
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName(const QString& i_strName) override;
@@ -620,12 +618,12 @@ public: // overridables
     virtual void setFixedSize( const CPhysValSize& i_physValSize );
     virtual CPhysValSize fixedSize(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
-    virtual int addAlignment(const SGraphObjAlignment& i_alignment);
-    virtual int getAlignmentCount() const;
-    virtual SGraphObjAlignment getAlignment(int i_idx) const;
-    virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
-    virtual void removeAlignment(int i_idx);
-    virtual void clearAlignments();
+    //virtual int addAlignment(const SGraphObjAlignment& i_alignment);
+    //virtual int getAlignmentCount() const;
+    //virtual SGraphObjAlignment getAlignment(int i_idx) const;
+    //virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
+    //virtual void removeAlignment(int i_idx);
+    //virtual void clearAlignments();
 public: // must overridables
     virtual QRectF getBoundingRect() const;
     virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const;
@@ -700,7 +698,7 @@ public: // overridables (text labels)
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
     CGraphObjLabel* getLabel(const QString& i_strName) const;
-    SAnchorLayoutDscr getLabelDescriptor(const QString& i_strName) const;
+    SObjectLinkageDscr getLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool labelHasDefaultValues(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
@@ -725,7 +723,7 @@ public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
     virtual bool isValidGeometryLabelName(const QString& i_strName) const;
     CGraphObjLabel* getGeometryLabel(const QString& i_strName) const;
-    SAnchorLayoutDscr getGeometryLabelDescriptor(const QString& i_strName) const;
+    SObjectLinkageDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
@@ -742,7 +740,7 @@ protected: // overridables (geometry labels)
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;
     CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    SObjectLinkageDscr getConnectionPointDescriptor(const QString& i_strName) const;
     //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
@@ -763,6 +761,20 @@ public: // overridables (connection points)
     virtual void showConnectionPointAnchorLine(const QString& i_strName);
     virtual void hideConnectionPointAnchorLine(const QString& i_strName);
     virtual bool isConnectionPointAnchorLineVisible(const QString& i_strName) const;
+public: // overridables (linked objects)
+    virtual void setLinkedObject(const SObjectLinkageDscr& i_objectLinkageDscr);
+    virtual CGraphObj* linkedObject() const;
+    virtual QString pathNameOfLinkedObject() const;
+    virtual QString path() const;
+    virtual void setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_selPt);
+    virtual SGraphObjSelectionPoint linkedObjectSelectionPoint1() const;
+    virtual void setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_selPt);
+    virtual SGraphObjSelectionPoint linkedObjectSelectionPoint2() const;
+    virtual void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
+    virtual SPolarCoors polarCoorsToLinkedSelectionPoint() const;
+    void showAnchorLines();
+    void hideAnchorLines();
+    bool isAnchorLineVisible() const;
 public: // instance methods (simulation methods)
     //void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
@@ -785,6 +797,9 @@ protected slots: // overridables
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);
     virtual void onConnectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjConnectionPoint);
+    virtual void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked);
+    virtual void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
+    virtual void onLinkedObjectAboutToBeDestroyed(CGraphObj* i_pGraphObjLinked);
 public slots: // overridables
     virtual void onActionFormatTriggered();
 public: // instance methods
@@ -897,6 +912,12 @@ protected: // instance members
          the drawing scene will emit "drawingSizeChanged" and the slot method
          "onDrawingSizeChanged" of the graphical object must set this flag to true. */
     bool m_bForceConversionToSceneCoors = false;
+    /*!< Flag used to avoid recursive calls of "updatePosition". */
+    bool m_bUpdatePositionInProgress = false;
+    /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
+         to the linked selection point is changed if the position is updated because the parent's
+         geometry is changed. */
+    bool m_bPositionUpdateOnParentGeometryChanged = false;
     /*!< Pointer to drawing scene the graphical object belongs to.
          Is set if the graphical object is added to the scene. */
     CDrawingScene* m_pDrawingScene = nullptr;
@@ -936,7 +957,7 @@ protected: // instance members
     /*!< If valid, defines the fixed size of the graphical object. */
     CPhysValSize m_physValSizeFixed;
     /*!< Alignments of the graphical object to the parent group.. */
-    QList<SGraphObjAlignment> m_arAlignments;
+    //QList<SGraphObjAlignment> m_arAlignments;
     /*!< Flag indicating whether the graphical object is hit by the mouse cursor
          (between hoverEnterEvent and hoverLeaveEvent). */
     //bool m_bIsHit;
@@ -1013,7 +1034,7 @@ protected: // instance members
          unique name and assigning a text. Both the name and the text are stored in the Label object.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, SAnchorLayoutDscr> m_hshLabelDscrs;
+    QHash<QString, SObjectLinkageDscr> m_hshLabelDscrs;
     /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
          Created on demand from the label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
@@ -1029,17 +1050,29 @@ protected: // instance members
          "Length" and "Angle" may be shown.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, SAnchorLayoutDscr> m_hshGeometryLabelDscrs;
+    QHash<QString, SObjectLinkageDscr> m_hshGeometryLabelDscrs;
     /*!< Hash with geometry labels which may be indicated by the graphical object.
          Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
     /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
          Connection points may be at the same position of selection points but may also be arbitrarily positioned.
          The desriptors are used to set the relative position to of the connection point to the graphical object. */
-    QHash<QString, SAnchorLayoutDscr> m_hshConnectionPointsDscrs;
-    /*!< Hash with geometry labels which may be indicated by the graphical object.
-         Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
+    QHash<QString, SObjectLinkageDscr> m_hshConnectionPointsDscrs;
+    /*!< Hash with connection points which may be linked to the graphical object. */
     QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;
+    /*!< Each object (not just labels, selection points and connection points) may be linked to other objects.
+         The linkage is between a selection point of this (source) object and at least one selection point
+         at the linked (target) object. Some linkages require two selection points at target objects and
+         the selection points may be on different objects (for e.g. labels to show the distance between
+         two objects). Objects, like labels and selection points, may implicitly create linkages.
+         For other objects (like line or rectangle) linkages may be created programmatically when
+         creating grouped objects usually imported as plugins. */
+    SObjectLinkageDscr m_objectLinkageDscr;
+    /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
+         in local coordinates drawn from the label to the selection point(s) of the parent.
+         The start point of the line at the label depend on the position of the label relative
+         to the selection point(s) of the parent (see "updatePosition" for more details). */
+    QList<QLineF> m_anchorLines;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */
     QString m_strToolTip;

@@ -953,12 +953,12 @@ protected slots: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjLinked->keyInTree();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -971,12 +971,12 @@ void CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjSelectionPoint::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjLinked->keyInTree();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

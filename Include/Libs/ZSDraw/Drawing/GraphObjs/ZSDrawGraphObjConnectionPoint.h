@@ -131,7 +131,7 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
-    void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
+    void setLinkedObject(const SObjectLinkageDscr& i_anchorLayoutDscr) override;
     CGraphObj* linkedObject() const override;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
@@ -224,11 +224,6 @@ protected: // class members
 protected: // instance members
     /*!< List with connection lines linked to the connection point. */
     QList<CGraphObjConnectionLine*> m_lstConnectionLines;
-    /*!< Key and selection point(s) the connection point is linked to. */
-    SAnchorLayoutDscr m_anchorLayoutDscr;
-    /*!< Coordindates of the line segment forming the anchor line. The line coordinates are stored
-         in local coordinates drawn from the connection point to the selection point of the parent. */
-    QLineF m_anchorLine;
     /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates in local
          coordinates relative to the origin of the item's bounding rectangle.
          This member is set if any shape point is directly set via the method call "setRect"
