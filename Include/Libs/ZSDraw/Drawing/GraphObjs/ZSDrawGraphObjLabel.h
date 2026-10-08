@@ -91,19 +91,19 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strKey,
+        const QString& i_strName,
         const QString& i_strText,
         const SGraphObjSelectionPoint& i_selPt);
 protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition)
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strKey,
+        const QString& i_strName,
         const QString& i_strText,
         EGraphObjType i_labelType,
         const SGraphObjSelectionPoint& i_selPt);
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
-        const QString& i_strKey,
+        const QString& i_strName,
         const QString& i_strText,
         EGraphObjType i_labelType,
         const SGraphObjSelectionPoint& i_selPt1,

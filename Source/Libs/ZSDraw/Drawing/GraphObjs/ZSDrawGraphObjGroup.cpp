@@ -2433,7 +2433,7 @@ bool CGraphObjGroup::labelHasDefaultValues(const QString& i_strName) const
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strLabelName) {
@@ -2528,7 +2528,7 @@ bool CGraphObjGroup::geometryLabelHasDefaultValues(const QString& i_strName) con
         else if (!labelDscr.m_strText.isEmpty()) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameTopLeft) {

@@ -878,13 +878,8 @@ public: // struct methods
     static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* o_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
-    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
-    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, const QString& i_strKey, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, ESelectionPointType i_selPtType, int i_idxPt);
-    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, const QString& i_strKey, ESelectionPointType i_selPtType, int i_idxPt);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt);
     SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
 public: // operators
@@ -895,19 +890,7 @@ public: // struct methods
     QString name() const;
     QString toString(bool i_bIncludeGraphObj = false) const;
     bool isValid() const;
-public: // struct methods
-    //EGraphObjType graphObjType() const;
-    //QString key() const;
-    //CGraphObj* graphObj() const;
-    //ESelectionPointType selectionPointType() const;
-    //ESelectionPoint selectionPoint() const;
-    //int polygonPointIndex() const;
 public: // struct members
-    /*!< Type of the object the selection point belongs to. */
-    //EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
-    /*!< Name of the linkage. Must be unique within the source object.
-         E.g. the unique name of a label (but not the text shown in the label). */
-    //QString m_strKey;
     /*!< Graphical object the selection point belongs to.
          nullptr, if the selection point is not used (undefined). */
     CGraphObj* m_pGraphObj = nullptr;
@@ -1030,40 +1013,50 @@ struct ZSDRAWDLL_API SObjectLinkageDscr
 {
 public: // ctors
     SObjectLinkageDscr();
-    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
-    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strName);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strName,
+                       const SGraphObjSelectionPoint& i_selPtTarget);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
+                       const SGraphObjSelectionPoint& i_selPtTarget);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strName,
+                       const SGraphObjSelectionPoint& i_selPt1Target,
+                       const SGraphObjSelectionPoint& i_selPt2Target);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
+                       const SGraphObjSelectionPoint& i_selPt1Target,
+                       const SGraphObjSelectionPoint& i_selPt2Target);
     SObjectLinkageDscr(const SObjectLinkageDscr& i_other);
 public: // struct methods
     QString toString() const;
 public: // struct members
     /*!< Type of the source object of the linkage. */
     EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
-    /*!< Name of the linkage. Must be unique within the source object.
-         E.g. the unique name of a label (but not the text shown in the label). */
-    QString m_strKey;
-    /*!< For connection points, text labels or geometry labels (like position) selPt1 defines the
-         selection point the object is linked to.
-         For geometry labels using two selection points like length, width or height,
-         selPt1 defines the first selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPtSource;
-    /*!< For connection points, text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
-         For geometry labels using two selection points like length, width or height,
-         selPt2 defines the second selection point the label is linked to. */
-    QList<SGraphObjSelectionPoint> m_arSelPtsTargets;
+    /*!< Name of the linkage. Must be unique within the source object. */
+    QString m_strName;
     /*!< Text to be indicated for the linkage. Not set (empty string) for geometry labels.
          For geometry labels the indicated text is calculated during runtime
          by the label item and set at the QGraphicsSimpleTextItem. */
     QString m_strText;
-    /*!< When modifying the shape of graphical objects the relative position of labels
-         linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
-    SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag indicating whether the anchored object is visible. */
     bool m_bIsVisible = false;
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
+    /*!< Defines the selection point of the source object of the linkage.
+         For connection points, text labels or geometry labels (like position)
+         this is usually the center of the items bounding rectangle.
+         For lines or polylines this may be any shape point (e.g. the start or end point of a line). */
+    SGraphObjSelectionPoint m_selPtSource;
+    /*!< When modifying the shape of graphical objects the relative position of labels
+         linked to the graphical objects should always be the same.
+         This can only be managed when keeping the distance and the angle to the selection point
+         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+    SPolarCoors m_polarCoorsToSelPt1Target;
+    /*!< Defines the selection at the target object of the linkage. */
+    SGraphObjSelectionPoint m_selPt1Target;
+    /*!< Defines, if necessary, a second selection at the target object for the linkage.
+         Used for geometry labels like length, width or height.
+         May also be used to indicate the distance between two selection or shape points
+         of different items. */
+    SGraphObjSelectionPoint m_selPt2Target;
 
 }; // struct SObjectLinkageDscr
 

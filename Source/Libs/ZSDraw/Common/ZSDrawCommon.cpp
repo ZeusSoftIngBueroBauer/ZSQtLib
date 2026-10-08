@@ -1194,36 +1194,6 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint() = default;
 
 //------------------------------------------------------------------------------
 /*! @brief Constructor creating an invalid selection point descriptor
-           assigning the given graphical object type to the struct.
-
-    @param [in] i_graphObjType
-        Type of the graphical object to be assigned to the descriptor.
-*/
-//SGraphObjSelectionPoint::SGraphObjSelectionPoint(EGraphObjType i_graphObjType) :
-////------------------------------------------------------------------------------
-//    m_graphObjType(i_graphObjType)
-//{
-//}
-
-//------------------------------------------------------------------------------
-/*! @brief Constructor creating an invalid selection point descriptor
-           assigning the given graphical object to the struct.
-
-    @param [in] i_graphObjType
-        Type of the graphical object to be assigned to the descriptor.
-    @param [in] i_strKey
-        Key of the graphical object to be assigned to the descriptor.
-*/
-//SGraphObjSelectionPoint::SGraphObjSelectionPoint(
-//    EGraphObjType i_graphObjType, const QString& i_strKey) :
-////------------------------------------------------------------------------------
-//    m_graphObjType(i_graphObjType),
-//    m_strKey(i_strKey)
-//{
-//}
-
-//------------------------------------------------------------------------------
-/*! @brief Constructor creating an invalid selection point descriptor
            assigning the given graphical object to the struct.
 
     @param [in] i_pGraphObj
@@ -1234,69 +1204,6 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj) :
     m_pGraphObj(i_pGraphObj)
 {
 }
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a descriptor for a selection point at the bounding rectangle
-           assigning the given graphical object type and selection point to the struct.
-
-    @param [in] i_graphObjType
-        Type of the graphical object to be assigned to the descriptor.
-    @param [in] i_selPtType
-        Selection point type.
-        Range [BoundingRectangle]
-    @param [in] i_selPt
-        Selection point at the bounding rectangle.
-        Range [TopLeft, .., RotateBottom]
-        PolygonPoint, LineCenterPoint as well as All and Any are not allowed.
-*/
-//SGraphObjSelectionPoint::SGraphObjSelectionPoint(
-//    EGraphObjType i_graphObjType, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) :
-////------------------------------------------------------------------------------
-//    m_graphObjType(i_graphObjType),
-//    m_selPtType(i_selPtType),
-//    m_selPt(i_selPt)
-//{
-//    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
-//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-//    }
-//    if (i_selPt < ESelectionPoint::TopLeft || i_selPt > ESelectionPoint::RotateBottom) {
-//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPoint(i_selPt).toString());
-//    }
-//}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a descriptor for a selection point at the bounding rectangle
-           assigning the given graphical object type, key and selection point
-           to the struct.
-
-    @param [in] i_graphObjType
-        Type of the graphical object to be assigned to the descriptor.
-    @param [in] i_strKey
-        Key of the graphical object to be assigned to the descriptor.
-    @param [in] i_selPtType
-        Selection point type.
-        Range [BoundingRectangle]
-    @param [in] i_selPt
-        Selection point at the bounding rectangle.
-        Range [TopLeft, .., RotateBottom]
-        PolygonPoint, LineCenterPoint as well as All and Any are not allowed.
-*/
-//SGraphObjSelectionPoint::SGraphObjSelectionPoint(
-//    EGraphObjType i_graphObjType, const QString& i_strKey,
-//    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) :
-////------------------------------------------------------------------------------
-//    m_graphObjType(i_graphObjType),
-//    m_strKey(i_strKey),
-//    m_selPtType(i_selPtType),
-//    m_selPt(i_selPt)
-//{
-//    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
-//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-//    }
-//    if (i_selPt < ESelectionPoint::TopLeft || i_selPt > ESelectionPoint::RotateBottom) {
-//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPoint(i_selPt).toString());
-//    }
-//}
 
 //------------------------------------------------------------------------------
 /*! @brief Creates a descriptor for a selection point at the bounding rectangle
@@ -1326,61 +1233,6 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPoint(i_selPt).toString());
     }
 }
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a descriptor for a selection point at the bounding rectangle
-           assigning the given graphical object type and selection point to the struct.
-
-    @param [in] i_graphObjType
-        Type of the graphical object to be assigned to the descriptor.
-    @param [in] i_selPtType
-        Selection point type.
-        Range [BoundingRectangle]
-    @param [in] i_idxPt
-        Index of the polygon (or line) point.
-        For i_selPtType = LineCenterPoint the end of the line segment is (i_idxPt + 1).
-*/
-//SGraphObjSelectionPoint::SGraphObjSelectionPoint(
-//    EGraphObjType i_graphObjType, ESelectionPointType i_selPtType, int i_idxPt) :
-////------------------------------------------------------------------------------
-//    m_graphObjType(i_graphObjType),
-//    m_selPtType(i_selPtType),
-//    m_idxPt(i_idxPt)
-//{
-//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-//    }
-//}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a descriptor for a selection point at the bounding rectangle
-           assigning the given graphical object type, key and selection point
-           to the struct.
-
-    @param [in] i_graphObjType
-        Type of the graphical object to be assigned to the descriptor.
-    @param [in] i_strKey
-        Key of the graphical object to be assigned to the descriptor.
-    @param [in] i_selPtType
-        Selection point type.
-        Range [BoundingRectangle]
-    @param [in] i_idxPt
-        Index of the polygon (or line) point.
-        For i_selPtType = LineCenterPoint the end of the line segment is (i_idxPt + 1).
-*/
-//SGraphObjSelectionPoint::SGraphObjSelectionPoint(
-//    EGraphObjType i_graphObjType, const QString& i_strKey,
-//    ESelectionPointType i_selPtType, int i_idxPt) :
-////------------------------------------------------------------------------------
-//    m_graphObjType(i_graphObjType),
-//    m_strKey(i_strKey),
-//    m_selPtType(i_selPtType),
-//    m_idxPt(i_idxPt)
-//{
-//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-//    }
-//}
 
 //------------------------------------------------------------------------------
 /*! @brief Creates a descriptor for a polygon point or a line center point
@@ -1900,7 +1752,7 @@ SObjectLinkageDscr::SObjectLinkageDscr(
     EGraphObjType i_graphObjType, const QString& i_strKey) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strKey(i_strKey)
+    m_strName(i_strKey)
 {
 }
 
@@ -1910,8 +1762,8 @@ SObjectLinkageDscr::SObjectLinkageDscr(
     const SGraphObjSelectionPoint& i_selPtTarget) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strKey(i_strKey),
-    m_arSelPtsTargets({i_selPtTarget})
+    m_strName(i_strKey),
+    m_selPt1Target(i_selPtTarget)
 {
 }
 
@@ -1921,8 +1773,36 @@ SObjectLinkageDscr::SObjectLinkageDscr(
     const SGraphObjSelectionPoint& i_selPtTarget) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strKey(i_strKey),
-    m_arSelPtsTargets({i_selPtTarget})
+    m_strName(i_strKey),
+    m_strText(i_strText),
+    m_selPt1Target(i_selPtTarget)
+{
+}
+
+//------------------------------------------------------------------------------
+SObjectLinkageDscr::SObjectLinkageDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey,
+    const SGraphObjSelectionPoint& i_selPt1Target,
+    const SGraphObjSelectionPoint& i_selPt2Target) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strName(i_strKey),
+    m_selPt1Target(i_selPt1Target),
+    m_selPt2Target(i_selPt2Target)
+{
+}
+
+//------------------------------------------------------------------------------
+SObjectLinkageDscr::SObjectLinkageDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt1Target,
+    const SGraphObjSelectionPoint& i_selPt2Target) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strName(i_strKey),
+    m_strText(i_strText),
+    m_selPt1Target(i_selPt1Target),
+    m_selPt2Target(i_selPt2Target)
 {
 }
 
@@ -1930,13 +1810,14 @@ SObjectLinkageDscr::SObjectLinkageDscr(
 SObjectLinkageDscr::SObjectLinkageDscr(const SObjectLinkageDscr& i_other) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_other.m_graphObjType),
-    m_strKey(i_other.m_strKey),
-    m_selPtSource(i_other.m_selPtSource),
-    m_arSelPtsTargets(i_other.m_arSelPtsTargets),
+    m_strName(i_other.m_strName),
     m_strText(i_other.m_strText),
-    m_polarCoorsToLinkedSelPt(i_other.m_polarCoorsToLinkedSelPt),
     m_bIsVisible(i_other.m_bIsVisible),
-    m_bShowAnchorLine(i_other.m_bShowAnchorLine)
+    m_bShowAnchorLine(i_other.m_bShowAnchorLine),
+    m_selPtSource(i_other.m_selPtSource),
+    m_polarCoorsToSelPt1Target(i_other.m_polarCoorsToSelPt1Target),
+    m_selPt1Target(i_other.m_selPt1Target),
+    m_selPt2Target(i_other.m_selPt2Target)
 {
 }
 
@@ -1944,20 +1825,11 @@ SObjectLinkageDscr::SObjectLinkageDscr(const SObjectLinkageDscr& i_other) :
 QString SObjectLinkageDscr::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = "Source {" + QString(m_selPtSource.isValid() ? m_selPtSource.toString() : "?") + "}" +
-        ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
+    return "Source {" + QString(m_selPtSource.isValid() ? m_selPtSource.toString() : "?") + "}" +
         ", Visible: " + bool2Str(m_bIsVisible) +
-        ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
-        ", Targets [" + QString::number(m_arSelPtsTargets.size()) + "]";
-    if (!m_arSelPtsTargets.empty()) {
-        str += "(";
-        for (const SGraphObjSelectionPoint& selPt : m_arSelPtsTargets) {
-            if (!str.endsWith("(")) str += ", ";
-            str += "{" + QString(selPt.isValid() ? selPt.toString() : "?") + "}";
-        }
-        str += ")";
-    }
-    return str;
+        ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine) +
+        ", Target {" + QString(m_selPt1Target.isValid() ? m_selPt1Target.toString() : "?") + "}" +
+        QString(m_selPt2Target.isValid() ? ", Target2 {" + m_selPt2Target.toString() + "}" : "");
 }
 
 } // namespace ZS::Draw

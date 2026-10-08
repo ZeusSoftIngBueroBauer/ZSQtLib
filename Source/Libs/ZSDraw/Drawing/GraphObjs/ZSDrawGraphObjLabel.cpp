@@ -99,7 +99,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strKey,
+    const QString& i_strName,
     const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strKey,
+    const QString& i_strName,
     const QString& i_strText,
     EGraphObjType i_labelType,
     const SGraphObjSelectionPoint& i_selPt) :
@@ -179,7 +179,7 @@ CGraphObjLabel::CGraphObjLabel(
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
-    const QString& i_strKey,
+    const QString& i_strName,
     const QString& i_strText,
     EGraphObjType i_labelType,
     const SGraphObjSelectionPoint& i_selPt1,
@@ -1046,11 +1046,11 @@ void CGraphObjLabel::updatePosition()
     QLineF anchorLine;
     if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
         anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+            m_anchorLayoutDscr.m_polarCoorsToSelPt1Target, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
     }
     else {
         anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+            m_anchorLayoutDscr.m_polarCoorsToSelPt1Target, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
     }
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -1110,16 +1110,16 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
     if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
     }
     else {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px) + " px" +
+            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
     updateAnchorLines();
@@ -1216,7 +1216,7 @@ void CGraphObjLabel::QGraphicsItem_prepareGeometryChange()
 //        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
 //        else strTrcInfo = "";
 //        strTrcInfo +=
-//            "PolarCoorsToLinkedSelPt {" + m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.toString() + "}" +
+//            "PolarCoorsToLinkedSelPt {" + m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.toString() + "}" +
 //            ", AnchorLines [" + QString::number(m_anchorLines.size()) + "]";
 //        if (m_anchorLines.size() > 0) {
 //            strTrcInfo += "(";

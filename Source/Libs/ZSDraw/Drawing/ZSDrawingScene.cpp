@@ -993,20 +993,26 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         // Connection points need to be recalled before the connection lines as on
         // creating the connection lines their connection points must already exist.
         // For this the connection lines will be saved at the end of the XML file.
-        // Temporary objects like selection points will not be saved at all.
+        // Temporary objects like selection points will not be saved at all
+        // (those don't belong to the index tree anyway).
         // Text and geometry labels are saved as child elements of their parents.
         // Anchored connection points will be saved as child items of their parents.
-        // Selection points, labels and anchored connection points are linked to other objects.
-        // Not anchored connection points (stand alone connection points) will be saved as "normal" graphical objects.
-        // Group members will be saved as child items of the groups.
+        // Selection points are temporary objects and will not be saved as all.
+        // Labels and anchored connection points are saved together with the objects
+        // to which they belong.
+        // Not anchored connection points (stand alone connection points) will be saved as
+        // "normal" graphical objects.
+        // Group members will be saved by the group as child items of the groups (recursively).
         CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
         while (itIdxTree != m_pGraphObjsIdxTree->end()) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
-            if (pGraphObj != nullptr && !pGraphObj->isConnectionLine()) {
-                if ((pGraphObj->linkedObject() == nullptr) && (pGraphObj->parentGroup() == nullptr)) {
-                    errResultInfo = save(pGraphObj, xmlStreamWriter);
-                    if (errResultInfo.isErrorResult()) {
-                        break;
+            if (pGraphObj != nullptr && (pGraphObj->parentGroup() == nullptr)) {
+                if (!pGraphObj->isConnectionLine() && !pGraphObj->isLabel()) {
+                    if (!(pGraphObj->isConnectionPoint() && pGraphObj->isLinkedToAnyOtherObject())) {
+                        errResultInfo = save(pGraphObj, xmlStreamWriter);
+                        if (errResultInfo.isErrorResult()) {
+                            break;
+                        }
                     }
                 }
             }
@@ -1017,11 +1023,9 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             while (itIdxTree != m_pGraphObjsIdxTree->end()) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
                 if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
-                    if ((pGraphObj->linkedObject() == nullptr) && (pGraphObj->parentGroup() == nullptr)) {
-                        errResultInfo = save(pGraphObj, xmlStreamWriter);
-                        if (errResultInfo.isErrorResult()) {
-                            break;
-                        }
+                    errResultInfo = save(pGraphObj, xmlStreamWriter);
+                    if (errResultInfo.isErrorResult()) {
+                        break;
                     }
                 }
                 ++itIdxTree;

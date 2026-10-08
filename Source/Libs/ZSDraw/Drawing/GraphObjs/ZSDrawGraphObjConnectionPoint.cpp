@@ -1485,8 +1485,8 @@ void CGraphObjConnectionPoint::setPolarCoorsToLinkedSelectionPoint(const SPolarC
         /* strMethod    */ "setPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
+    if (m_anchorLayoutDscr.m_polarCoorsToSelPt1Target != i_polarCoors) {
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target = i_polarCoors;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -1498,7 +1498,7 @@ void CGraphObjConnectionPoint::setPolarCoorsToLinkedSelectionPoint(const SPolarC
 SPolarCoors CGraphObjConnectionPoint::polarCoorsToLinkedSelectionPoint() const
 //------------------------------------------------------------------------------
 {
-    return m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt;
+    return m_anchorLayoutDscr.m_polarCoorsToSelPt1Target;
 }
 
 /*==============================================================================
@@ -1803,7 +1803,7 @@ bool CGraphObjConnectionPoint::labelHasDefaultValues(const QString& i_strName) c
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strLabelName) {
@@ -1898,7 +1898,7 @@ bool CGraphObjConnectionPoint::geometryLabelHasDefaultValues(const QString& i_st
         else if (!labelDscr.m_strText.isEmpty()) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameTopCenter) {
@@ -3027,11 +3027,11 @@ void CGraphObjConnectionPoint::updatePosition()
         // Get anchor line in scene coordinates.
         if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
             anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-                m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+                m_anchorLayoutDscr.m_polarCoorsToSelPt1Target, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
         }
         else {
             anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-                m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+                m_anchorLayoutDscr.m_polarCoorsToSelPt1Target, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
         }
 
         // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -3089,16 +3089,16 @@ void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
     if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
     }
     else {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px) + " px" +
+            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
     updateAnchorLine();
