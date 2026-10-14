@@ -761,20 +761,21 @@ public: // overridables (connection points)
     virtual void showConnectionPointAnchorLine(const QString& i_strName);
     virtual void hideConnectionPointAnchorLine(const QString& i_strName);
     virtual bool isConnectionPointAnchorLineVisible(const QString& i_strName) const;
-public: // overridables (linked objects)
-    virtual void setLinkedObject(const SObjectLinkageDscr& i_objectLinkageDscr);
-    virtual CGraphObj* linkedObject() const;
-    virtual QString pathNameOfLinkedObject() const;
-    virtual QString path() const;
-    virtual void setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_selPt);
-    virtual SGraphObjSelectionPoint linkedObjectSelectionPoint1() const;
-    virtual void setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_selPt);
-    virtual SGraphObjSelectionPoint linkedObjectSelectionPoint2() const;
-    virtual void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
-    virtual SPolarCoors polarCoorsToLinkedSelectionPoint() const;
-    void showAnchorLines();
-    void hideAnchorLines();
-    bool isAnchorLineVisible() const;
+public: // overridables (linking objects)
+    bool isLinkedToAnyOtherObject() const;
+    virtual bool addObjectLinkage(const SObjectLinkageDscr& i_objectLinkageDscr);
+    virtual CGraphObj* getLinkedObject(const QString& i_strLinkageName) const;
+    virtual QString pathNameOfLinkedObject(const QString& i_strLinkageName) const;
+    virtual QString myPathIncludingPathOfLinkedObject(const QString& i_strLinkageName) const;
+    virtual void setLinkedObjectSelectionPoint1(const QString& i_strLinkageName, const SGraphObjSelectionPoint& i_selPt);
+    virtual SGraphObjSelectionPoint linkedObjectSelectionPoint1(const QString& i_strLinkageName) const;
+    virtual void setLinkedObjectSelectionPoint2(const QString& i_strLinkageName, const SGraphObjSelectionPoint& i_selPt);
+    virtual SGraphObjSelectionPoint linkedObjectSelectionPoint2(const QString& i_strLinkageName) const;
+    virtual void setPolarCoorsToLinkedSelectionPoint(const QString& i_strLinkageName, const SPolarCoors& i_polarCoors);
+    virtual SPolarCoors polarCoorsToLinkedSelectionPoint(const QString& i_strLinkageName) const;
+    void showLinkedObjectAnchorLines(const QString& i_strLinkageName);
+    void hideLinkedObjectAnchorLines(const QString& i_strLinkageName);
+    bool isLinkedObjectAnchorLineVisible(const QString& i_strLinkageName) const;
 public: // instance methods (simulation methods)
     //void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
@@ -853,6 +854,10 @@ protected: // auxiliary instance methods (method tracing)
     void emit_connectionPointRemoved(const QString& i_strName);
     void emit_connectionPointRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_connectionPointChanged(const QString& i_strName);
+    void emit_linkageAdded(const QString& i_strName);
+    void emit_linkageRemoved(const QString& i_strName);
+    void emit_linkageRenamed(const QString& i_strName, const QString& i_strNameNew);
+    void emit_linkageChanged(const QString& i_strName);
     void emit_optionPaintBoundingRectChanged(bool i_bOptionSet);
     void emit_optionPaintShapePathChanged(bool i_bOptionSet);
 protected: // overridable auxiliary instance methods (method tracing)
@@ -1066,13 +1071,13 @@ protected: // instance members
          the selection points may be on different objects (for e.g. labels to show the distance between
          two objects). Objects, like labels and selection points, may implicitly create linkages.
          For other objects (like line or rectangle) linkages may be created programmatically when
-         creating grouped objects usually imported as plugins. */
-    SObjectLinkageDscr m_objectLinkageDscr;
+         creating grouped objects usually imported as plugins. Each linkage must get a unique name. */
+    QHash<QString, SObjectLinkageDscr> m_hshLinkedObjects;
     /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
          in local coordinates drawn from the label to the selection point(s) of the parent.
          The start point of the line at the label depend on the position of the label relative
-         to the selection point(s) of the parent (see "updatePosition" for more details). */
-    QList<QLineF> m_anchorLines;
+         to the selection point(s) of the parent (see "onLinkedObjectGeometryOnSceneChanged" for more details). */
+    QHash<QString, QList<QLineF>> m_hshLinkedObjectsAnchorLines;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */
     QString m_strToolTip;

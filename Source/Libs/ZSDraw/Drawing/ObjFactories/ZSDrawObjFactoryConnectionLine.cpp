@@ -390,7 +390,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 }
             }
             pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
-                layoutDscr.m_strKey, layoutDscr.m_polarCoorsToLinkedSelPt);
+                layoutDscr.m_strKey, layoutDscr.m_polarCoorsToSelPt1Target);
             layoutDscr.m_bIsVisible ?
                 pGraphObj->showLabel(layoutDscr.m_strKey) :
                 pGraphObj->hideLabel(layoutDscr.m_strKey);
@@ -406,7 +406,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
             }
             else {
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
-                    layoutDscr.m_strKey, layoutDscr.m_polarCoorsToLinkedSelPt);
+                    layoutDscr.m_strKey, layoutDscr.m_polarCoorsToSelPt1Target);
                 layoutDscr.m_bIsVisible ?
                     pGraphObj->showGeometryLabel(layoutDscr.m_strKey) :
                     pGraphObj->hideGeometryLabel(layoutDscr.m_strKey);

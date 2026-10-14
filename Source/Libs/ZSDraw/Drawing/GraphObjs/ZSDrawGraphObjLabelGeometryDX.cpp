@@ -364,8 +364,8 @@ void CGraphObjLabelGeometryDX::updatePosition()
     // for which the angle has to be indicated.
     QLineF lineFPolarBase(lineSelPtSceneCoors.center(), lineSelPtSceneCoors.p2());
     QLineF anchorLine = ZS::Draw::getLineFromPolar(
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px,
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px,
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees,
         lineFPolarBase);
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -455,14 +455,14 @@ void CGraphObjLabelGeometryDX::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
 
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
+    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px = lineFromSelPtSceneCoors.length();
+    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees =
+        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px) + " px" +
+            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 

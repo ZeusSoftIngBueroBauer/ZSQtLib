@@ -5404,7 +5404,8 @@ SObjectLinkageDscr CGraphObj::getLabelDescriptor(const QString& i_strName) const
     SObjectLinkageDscr labelLinkageDscr = m_hshLabelDscrs.value(i_strName, SObjectLinkageDscr());
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
-        labelLinkageDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
+        labelLinkageDscr.m_polarCoorsToSelPt1Target =
+            pGraphObjLabel->polarCoorsToLinkedSelectionPoint(i_strName);
     }
     return labelLinkageDscr;
 }
@@ -5691,7 +5692,7 @@ bool CGraphObj::renameLabel(const QString& i_strName, const QString& i_strNameNe
     if (bCanRename) {
         SObjectLinkageDscr labelLinkageDscr = m_hshLabelDscrs[i_strName];
         m_hshLabelDscrs.remove(i_strName);
-        labelLinkageDscr.m_strKey = i_strNameNew;
+        labelLinkageDscr.m_strName = i_strNameNew;
         m_hshLabelDscrs.insert(i_strNameNew, labelLinkageDscr);
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
@@ -5819,16 +5820,11 @@ void CGraphObj::setLabelAnchorPoint(
     }
 
     SObjectLinkageDscr& labelLinkageDscr = m_hshLabelDscrs[i_strName];
-    if (labelLinkageDscr.m_arSelPtsTargets.empty()) {
-        labelLinkageDscr.m_arSelPtsTargets.append(
-            SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
-    }
-    SGraphObjSelectionPoint& selPtTarget = labelLinkageDscr.m_arSelPtsTargets[0];
-    if (selPtTarget.m_selPtType != i_selPtType || selPtTarget.m_selPt != i_selPt) {
-        selPtTarget = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
+    if (labelLinkageDscr.m_selPt1Target.m_selPtType != i_selPtType || labelLinkageDscr.m_selPt1Target.m_selPt != i_selPt) {
+        labelLinkageDscr.m_selPt1Target = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setLinkedObjectSelectionPoint1(selPtTarget);
+            pGraphObjLabel->setLinkedObjectSelectionPoint1(i_strName, labelLinkageDscr.m_selPt1Target);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -5883,16 +5879,12 @@ void CGraphObj::setLabelAnchorPoint(
     }
 
     SObjectLinkageDscr& labelLinkageDscr = m_hshLabelDscrs[i_strName];
-    if (labelLinkageDscr.m_arSelPtsTargets.empty()) {
-        labelLinkageDscr.m_arSelPtsTargets.append(
-            SGraphObjSelectionPoint(this, i_selPtType, i_idxPt));
-    }
-    SGraphObjSelectionPoint& selPtTarget = labelLinkageDscr.m_arSelPtsTargets[0];
-    if (selPtTarget.m_selPtType != i_selPtType || selPtTarget.m_idxPt != i_idxPt) {
-        selPtTarget = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
+    if (labelLinkageDscr.m_selPt1Target.m_selPtType != i_selPtType || labelLinkageDscr.m_selPt1Target.m_idxPt != i_idxPt) {
+        labelLinkageDscr.m_selPt1Target.m_selPtType = i_selPtType;
+        labelLinkageDscr.m_selPt1Target.m_idxPt = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setLinkedObjectSelectionPoint1(selPtTarget);
+            pGraphObjLabel->setLinkedObjectSelectionPoint1(i_strName, labelLinkageDscr.m_selPt1Target);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -5913,11 +5905,7 @@ SGraphObjSelectionPoint CGraphObj::labelAnchorPoint(const QString& i_strName) co
     if (!m_hshLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    const SObjectLinkageDscr& labelLinkageDscr = m_hshLabelDscrs[i_strName];
-    if (labelLinkageDscr.m_arSelPtsTargets.empty()) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
-    return m_hshLabelDscrs[i_strName].m_arSelPtsTargets[0];
+    return m_hshLabelDscrs[i_strName].m_selPt1Target;
 }
 
 //------------------------------------------------------------------------------
@@ -5947,15 +5935,12 @@ void CGraphObj::showLabel(const QString& i_strName)
     }
 
     SObjectLinkageDscr& labelLinkageDscr = m_hshLabelDscrs[i_strName];
-    if (labelLinkageDscr.m_arSelPtsTargets.empty()) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
         labelLinkageDscr.m_bIsVisible = true;
         pGraphObjLabel = new CGraphObjLabel(
             m_pDrawingScene, i_strName, labelLinkageDscr.m_strText,
-            labelLinkageDscr.m_arSelPtsTargets[0]);
+            labelLinkageDscr.m_selPt1Target);
         m_hshpLabels.insert(i_strName, pGraphObjLabel);
         // Please note that labels should not belong as child to the graphics items
         // for which the labels are created. Otherwise the "boundingRect" call of groups
@@ -5965,8 +5950,8 @@ void CGraphObj::showLabel(const QString& i_strName)
         // should not be indicated in the index tree.
         m_pDrawingScene->addItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(true);
-        pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelLinkageDscr.m_polarCoorsToLinkedSelPt);
-        labelLinkageDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLines() : pGraphObjLabel->hideAnchorLines();
+        pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_strName, labelLinkageDscr.m_polarCoorsToSelPt1Target);
+        labelLinkageDscr.m_bShowAnchorLine ? pGraphObjLabel->showLinkedObjectAnchorLines(i_strName) : pGraphObjLabel->hideLinkedObjectAnchorLines(i_strName);
         QObject::connect(
             pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onLabelAboutToBeDestroyed);
@@ -6073,11 +6058,11 @@ void CGraphObj::setLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strNam
     }
 
     SObjectLinkageDscr& labelLinkageDscr = m_hshLabelDscrs[i_strName];
-    if (labelLinkageDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        labelLinkageDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
+    if (labelLinkageDscr.m_polarCoorsToSelPt1Target != i_polarCoors) {
+        labelLinkageDscr.m_polarCoorsToSelPt1Target = i_polarCoors;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_polarCoors);
+            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_strName, i_polarCoors);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6101,7 +6086,7 @@ SPolarCoors CGraphObj::labelPolarCoorsToLinkedSelectionPoint(const QString& i_st
     if (!m_hshLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return m_hshLabelDscrs[i_strName].m_polarCoorsToLinkedSelPt;
+    return m_hshLabelDscrs[i_strName].m_polarCoorsToSelPt1Target;
 }
 
 //------------------------------------------------------------------------------
@@ -6133,7 +6118,7 @@ void CGraphObj::showLabelAnchorLine(const QString& i_strName)
         labelLinkageDscr.m_bShowAnchorLine = true;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->showAnchorLines();
+            pGraphObjLabel->showLinkedObjectAnchorLines(i_strName);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6173,7 +6158,7 @@ void CGraphObj::hideLabelAnchorLine(const QString& i_strName)
         labelLinkageDscr.m_bShowAnchorLine = false;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->hideAnchorLines();
+            pGraphObjLabel->hideLinkedObjectAnchorLines(i_strName);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6255,7 +6240,8 @@ SObjectLinkageDscr CGraphObj::getGeometryLabelDescriptor(const QString& i_strNam
     SObjectLinkageDscr labelLinkageDscr = m_hshGeometryLabelDscrs.value(i_strName, SObjectLinkageDscr());
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
-        labelLinkageDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
+        labelLinkageDscr.m_polarCoorsToSelPt1Target =
+            pGraphObjLabel->polarCoorsToLinkedSelectionPoint(i_strName);
     }
     return labelLinkageDscr;
 }
@@ -6311,53 +6297,38 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
     if (pGraphObjLabel == nullptr) {
         CGraphObjLabel* pGraphObjLabel = nullptr;
         if (labelLinkageDscr.m_graphObjType == EGraphObjTypeLabelGeometryPosition) {
-            if (labelLinkageDscr.m_arSelPtsTargets.empty()) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-            }
             pGraphObjLabel = new CGraphObjLabelGeometryPosition(
-                m_pDrawingScene, i_strName, labelLinkageDscr.m_arSelPtsTargets[0]);
+                m_pDrawingScene, i_strName, labelLinkageDscr.m_selPt1Target);
         }
         else if (labelLinkageDscr.m_graphObjType == EGraphObjTypeLabelGeometryDX) {
-            if (labelLinkageDscr.m_arSelPtsTargets.size() < 2) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-            }
             pGraphObjLabel = new CGraphObjLabelGeometryDX(
                 m_pDrawingScene, i_strName,
-                labelLinkageDscr.m_arSelPtsTargets[0],
-                labelLinkageDscr.m_arSelPtsTargets[1]);
+                labelLinkageDscr.m_selPt1Target,
+                labelLinkageDscr.m_selPt2Target);
         }
         else if (labelLinkageDscr.m_graphObjType == EGraphObjTypeLabelGeometryDY) {
-            if (labelLinkageDscr.m_arSelPtsTargets.size() < 2) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-            }
             pGraphObjLabel = new CGraphObjLabelGeometryDY(
                 m_pDrawingScene, i_strName,
-                labelLinkageDscr.m_arSelPtsTargets[0],
-                labelLinkageDscr.m_arSelPtsTargets[1]);
+                labelLinkageDscr.m_selPt1Target,
+                labelLinkageDscr.m_selPt2Target);
         }
         else if (labelLinkageDscr.m_graphObjType == EGraphObjTypeLabelGeometryLength) {
-            if (labelLinkageDscr.m_arSelPtsTargets.size() < 2) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-            }
             pGraphObjLabel = new CGraphObjLabelGeometryLength(
                 m_pDrawingScene, i_strName,
-                labelLinkageDscr.m_arSelPtsTargets[0],
-                labelLinkageDscr.m_arSelPtsTargets[1]);
+                labelLinkageDscr.m_selPt1Target,
+                labelLinkageDscr.m_selPt2Target);
         }
         else if (labelLinkageDscr.m_graphObjType == EGraphObjTypeLabelGeometryAngle) {
-            if (labelLinkageDscr.m_arSelPtsTargets.size() < 2) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-            }
             pGraphObjLabel = new CGraphObjLabelGeometryAngle(
                 m_pDrawingScene, i_strName,
-                labelLinkageDscr.m_arSelPtsTargets[0],
-                labelLinkageDscr.m_arSelPtsTargets[1]);
+                labelLinkageDscr.m_selPt1Target,
+                labelLinkageDscr.m_selPt2Target);
         }
         if (pGraphObjLabel != nullptr) {
             labelLinkageDscr.m_bIsVisible = true;
             pGraphObjLabel->setVisible(false);
-            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelLinkageDscr.m_polarCoorsToLinkedSelPt);
-            labelLinkageDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLines() : pGraphObjLabel->hideAnchorLines();
+            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_strName, labelLinkageDscr.m_polarCoorsToSelPt1Target);
+            labelLinkageDscr.m_bShowAnchorLine ? pGraphObjLabel->showLinkedObjectAnchorLines(i_strName) : pGraphObjLabel->hideLinkedObjectAnchorLines(i_strName);
             m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
             QObject::connect(
                 pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
@@ -6462,7 +6433,8 @@ bool CGraphObj::isGeometryLabelVisible(const QString& i_strName) const
         Polar coordinates (length in pixels, angle in degrees)
         as a relative position of the label to the linked selection point.
 */
-void CGraphObj::setGeometryLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors)
+void CGraphObj::setGeometryLabelPolarCoorsToLinkedSelectionPoint(
+    const QString& i_strName, const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -6481,11 +6453,11 @@ void CGraphObj::setGeometryLabelPolarCoorsToLinkedSelectionPoint(const QString& 
     }
 
     SObjectLinkageDscr& labelLinkageDscr = m_hshGeometryLabelDscrs[i_strName];
-    if (labelLinkageDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        labelLinkageDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
+    if (labelLinkageDscr.m_polarCoorsToSelPt1Target != i_polarCoors) {
+        labelLinkageDscr.m_polarCoorsToSelPt1Target = i_polarCoors;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_polarCoors);
+            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_strName, i_polarCoors);
         }
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6509,7 +6481,7 @@ SPolarCoors CGraphObj::geometryLabelPolarCoorsToLinkedSelectionPoint(const QStri
     if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return m_hshGeometryLabelDscrs[i_strName].m_polarCoorsToLinkedSelPt;
+    return m_hshGeometryLabelDscrs[i_strName].m_polarCoorsToSelPt1Target;
 }
 
 //------------------------------------------------------------------------------
@@ -6541,7 +6513,7 @@ void CGraphObj::showGeometryLabelAnchorLine(const QString& i_strName)
         labelLinkageDscr.m_bShowAnchorLine = true;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->showAnchorLines();
+            pGraphObjLabel->showLinkedObjectAnchorLines(i_strName);
         }
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6581,7 +6553,7 @@ void CGraphObj::hideGeometryLabelAnchorLine(const QString& i_strName)
         labelLinkageDscr.m_bShowAnchorLine = false;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->hideAnchorLines();
+            pGraphObjLabel->hideLinkedObjectAnchorLines(i_strName);
         }
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6657,11 +6629,11 @@ bool CGraphObj::addGeometryLabel(
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         SObjectLinkageDscr labelLinkageDscr(i_labelType, i_strName);
-        labelLinkageDscr.m_arSelPtsTargets.append(
-            SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt1));
+        labelLinkageDscr.m_selPt1Target =
+            SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt1);
         if (i_selPt2 != ESelectionPoint::None) {
-            labelLinkageDscr.m_arSelPtsTargets.append(
-                SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt2));
+            labelLinkageDscr.m_selPt2Target =
+                SGraphObjSelectionPoint(this, ESelectionPointType::BoundingRectangle, i_selPt2);
         }
         m_hshGeometryLabelDscrs.insert(i_strName, labelLinkageDscr);
         emit_geometryLabelAdded(i_strName);
@@ -6719,11 +6691,11 @@ bool CGraphObj::addGeometryLabel(
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         SObjectLinkageDscr labelLinkageDscr(i_labelType, i_strName);
-        labelLinkageDscr.m_arSelPtsTargets.append(
-            SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt1));
+        labelLinkageDscr.m_selPt1Target =
+            SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt1);
         if (i_idxPt2 >= 0) {
-            labelLinkageDscr.m_arSelPtsTargets.append(
-                SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt2));
+            labelLinkageDscr.m_selPt2Target =
+                SGraphObjSelectionPoint(this, ESelectionPointType::PolygonPoint, i_idxPt2);
         }
         m_hshGeometryLabelDscrs.insert(i_strName, labelLinkageDscr);
         emit_geometryLabelAdded(i_strName);
@@ -6818,7 +6790,8 @@ SObjectLinkageDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strN
     SObjectLinkageDscr linkedCnctPtDscr = m_hshConnectionPointsDscrs.value(i_strName, SObjectLinkageDscr());
     CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
     if (pGraphObjConnectionPoint != nullptr) {
-        linkedCnctPtDscr.m_polarCoorsToLinkedSelPt = pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint();
+        linkedCnctPtDscr.m_polarCoorsToSelPt1Target =
+            pGraphObjConnectionPoint->polarCoorsToLinkedSelectionPoint(i_strName);
     }
     return linkedCnctPtDscr;
 }
@@ -6888,16 +6861,12 @@ bool CGraphObj::isConnectionPointAdded(ESelectionPointType i_selPtType, ESelecti
     }
     bool bIsAdded = false;
     for (const SObjectLinkageDscr& linkedCnctPtDscr : m_hshConnectionPointsDscrs) {
-        if (linkedCnctPtDscr.m_graphObjType == EGraphObjTypeConnectionPoint) {
-            if (linkedCnctPtDscr.m_arSelPtsTargets.empty()) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, linkedCnctPtDscr.toString());
-            }
-            if (    (linkedCnctPtDscr.m_arSelPtsTargets[0].m_selPtType == i_selPtType)
-                &&  (linkedCnctPtDscr.m_arSelPtsTargets[0].m_selPt == i_selPt1))
-            {
-                bIsAdded = true;
-                break;
-            }
+        if (    (linkedCnctPtDscr.m_graphObjType == EGraphObjTypeConnectionPoint)
+             && (linkedCnctPtDscr.m_selPt1Target.m_selPtType == i_selPtType)
+             && (linkedCnctPtDscr.m_selPt1Target.m_selPt == i_selPt1))
+        {
+            bIsAdded = true;
+            break;
         }
     }
     return bIsAdded;
@@ -6923,16 +6892,12 @@ bool CGraphObj::isConnectionPointAdded(ESelectionPointType i_selPtType, int i_id
     }
     bool bIsAdded = false;
     for (const SObjectLinkageDscr& linkedCnctPtDscr : m_hshConnectionPointsDscrs) {
-        if (linkedCnctPtDscr.m_graphObjType == EGraphObjTypeConnectionPoint) {
-            if (linkedCnctPtDscr.m_arSelPtsTargets.empty()) {
-                throw CException(__FILE__, __LINE__, EResultObjNotInList, linkedCnctPtDscr.toString());
-            }
-            if (    (linkedCnctPtDscr.m_arSelPtsTargets[0].m_selPtType == i_selPtType)
-                &&  (linkedCnctPtDscr.m_arSelPtsTargets[0].m_idxPt == i_idxPt))
-            {
-                bIsAdded = true;
-                break;
-            }
+        if (    (linkedCnctPtDscr.m_graphObjType == EGraphObjTypeConnectionPoint)
+            &&  (linkedCnctPtDscr.m_selPt1Target.m_selPtType == i_selPtType)
+            &&  (linkedCnctPtDscr.m_selPt1Target.m_idxPt == i_idxPt))
+        {
+            bIsAdded = true;
+            break;
         }
     }
     return bIsAdded;
@@ -7049,7 +7014,7 @@ bool CGraphObj::addConnectionPoint(
         m_pDrawingScene->addItem(pGraphObjCnctPt);
         m_pDrawingScene->getGraphObjsIdxTree()->add(pGraphObjCnctPt, this);
         pGraphObjCnctPt->setVisible(true);
-        pGraphObjCnctPt->setLinkedObject(linkedCnctPtDscr);
+        pGraphObjCnctPt->addObjectLinkage(linkedCnctPtDscr);
         QObject::connect(
             pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
@@ -7113,7 +7078,7 @@ bool CGraphObj::addConnectionPoint(
         m_pDrawingScene->addItem(pGraphObjCnctPt);
         m_pDrawingScene->getGraphObjsIdxTree()->add(pGraphObjCnctPt, this);
         pGraphObjCnctPt->setVisible(true);
-        pGraphObjCnctPt->setLinkedObject(linkedCnctPtDscr);
+        pGraphObjCnctPt->addObjectLinkage(linkedCnctPtDscr);
         QObject::connect(
             pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
@@ -7288,7 +7253,7 @@ bool CGraphObj::renameConnectionPoint(const QString& i_strName, const QString& i
 
     SObjectLinkageDscr linkedCnctPtDscr = m_hshConnectionPointsDscrs[i_strName];
     m_hshConnectionPointsDscrs.remove(i_strName);
-    linkedCnctPtDscr.m_strKey = i_strNameNew;
+    linkedCnctPtDscr.m_strName = i_strNameNew;
     m_hshConnectionPointsDscrs.insert(i_strNameNew, linkedCnctPtDscr);
     CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
     if (pGraphObjConnectionPoint != nullptr) {
@@ -7341,16 +7306,12 @@ void CGraphObj::setConnectionPointAnchorPoint(
     }
 
     SObjectLinkageDscr& linkedCnctPtDscr = m_hshConnectionPointsDscrs[i_strName];
-    if (linkedCnctPtDscr.m_arSelPtsTargets.empty()) {
-        linkedCnctPtDscr.m_arSelPtsTargets.append(
-            SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
-    }
-    SGraphObjSelectionPoint& selPtTarget = linkedCnctPtDscr.m_arSelPtsTargets[0];
+    SGraphObjSelectionPoint& selPtTarget = linkedCnctPtDscr.m_selPt1Target;
     if (selPtTarget.m_selPtType != i_selPtType || selPtTarget.m_selPt != i_selPt) {
         selPtTarget = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint(selPtTarget);
+            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint1(i_strName, selPtTarget);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7393,16 +7354,12 @@ void CGraphObj::setConnectionPointAnchorPoint(
     }
 
     SObjectLinkageDscr& linkedCnctPtDscr = m_hshConnectionPointsDscrs[i_strName];
-    if (linkedCnctPtDscr.m_arSelPtsTargets.empty()) {
-        linkedCnctPtDscr.m_arSelPtsTargets.append(
-            SGraphObjSelectionPoint(this, i_selPtType, i_idxPt));
-    }
-    SGraphObjSelectionPoint& selPtTarget = linkedCnctPtDscr.m_arSelPtsTargets[0];
+    SGraphObjSelectionPoint& selPtTarget = linkedCnctPtDscr.m_selPt1Target;
     if (selPtTarget.m_selPtType != i_selPtType || selPtTarget.m_idxPt != i_idxPt) {
         selPtTarget = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint(selPtTarget);
+            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint1(i_strName, selPtTarget);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7425,10 +7382,7 @@ SGraphObjSelectionPoint CGraphObj::connectionPointAnchorPoint(const QString& i_s
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
     const SObjectLinkageDscr& linkedCnctPtDscr = m_hshConnectionPointsDscrs[i_strName];
-    if (linkedCnctPtDscr.m_arSelPtsTargets.empty()) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
-    return m_hshConnectionPointsDscrs[i_strName].m_arSelPtsTargets[0];
+    return m_hshConnectionPointsDscrs[i_strName].m_selPt1Target;
 }
 
 //------------------------------------------------------------------------------
@@ -7443,7 +7397,8 @@ SGraphObjSelectionPoint CGraphObj::connectionPointAnchorPoint(const QString& i_s
         Polar coordinates (length in pixels, angle in degrees)
         as a relative position of the connection point to the linked selection point.
 */
-void CGraphObj::setConnectionPointPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors)
+void CGraphObj::setConnectionPointPolarCoorsToLinkedSelectionPoint(
+    const QString& i_strName, const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7462,11 +7417,11 @@ void CGraphObj::setConnectionPointPolarCoorsToLinkedSelectionPoint(const QString
     }
 
     SObjectLinkageDscr& linkedCnctPtDscr = m_hshConnectionPointsDscrs[i_strName];
-    if (linkedCnctPtDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        linkedCnctPtDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
+    if (linkedCnctPtDscr.m_polarCoorsToSelPt1Target != i_polarCoors) {
+        linkedCnctPtDscr.m_polarCoorsToSelPt1Target = i_polarCoors;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setPolarCoorsToLinkedSelectionPoint(i_polarCoors);
+            pGraphObjConnectionPoint->setPolarCoorsToLinkedSelectionPoint(i_strName, i_polarCoors);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7491,7 +7446,7 @@ SPolarCoors CGraphObj::connectionPointPolarCoorsToLinkedSelectionPoint(const QSt
     if (!m_hshConnectionPointsDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return m_hshConnectionPointsDscrs[i_strName].m_polarCoorsToLinkedSelPt;
+    return m_hshConnectionPointsDscrs[i_strName].m_polarCoorsToSelPt1Target;
 }
 
 //------------------------------------------------------------------------------
@@ -7525,7 +7480,7 @@ void CGraphObj::showConnectionPointAnchorLine(const QString& i_strName)
         linkedCnctPtDscr.m_bShowAnchorLine = true;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->showAnchorLine();
+            pGraphObjConnectionPoint->showLinkedObjectAnchorLines(i_strName);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7565,7 +7520,7 @@ void CGraphObj::hideConnectionPointAnchorLine(const QString& i_strName)
         linkedCnctPtDscr.m_bShowAnchorLine = false;
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->hideAnchorLine();
+            pGraphObjConnectionPoint->hideLinkedObjectAnchorLines(i_strName);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7598,7 +7553,14 @@ public: // overridables (linked objects)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObj::setLinkedObject(const SObjectLinkageDscr& i_objectLinkageDscr)
+bool CGraphObj::isLinkedToAnyOtherObject() const
+//------------------------------------------------------------------------------
+{
+    return !m_hshLinkedObjects.empty();
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::addObjectLinkage(const SObjectLinkageDscr& i_objectLinkageDscr)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7609,45 +7571,47 @@ void CGraphObj::setLinkedObject(const SObjectLinkageDscr& i_objectLinkageDscr)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setLinkedObjectSelectionPoint1",
+        /* strMethod    */ "addObjectLinkage",
         /* strAddInfo   */ strMthInArgs );
 
-    for (SGraphObjSelectionPoint& selPtTarget : m_objectLinkageDscr.m_arSelPtsTargets) {
-        if (selPtTarget.m_pGraphObj != nullptr) {
-            QObject::disconnect(
-                selPtTarget.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
-            QObject::disconnect(
-                selPtTarget.m_pGraphObj, &CGraphObj::zValueChanged,
-                this, &CGraphObj::onLinkedObjectZValueChanged);
-            QObject::disconnect(
-                selPtTarget.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
-                this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
-        }
-    }
-
-    m_objectLinkageDscr = i_objectLinkageDscr;
-
-    for (SGraphObjSelectionPoint& selPtTarget : m_objectLinkageDscr.m_arSelPtsTargets) {
-        if (selPtTarget.m_pGraphObj != nullptr) {
+    bool bCanAdd = !m_hshLinkedObjects.contains(i_objectLinkageDscr.m_strName);
+    if (bCanAdd) {
+        m_hshLinkedObjects.insert(i_objectLinkageDscr.m_strName, i_objectLinkageDscr);
+        emit_linkageAdded(i_objectLinkageDscr.m_strName);
+        if (i_objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
             QObject::connect(
-                selPtTarget.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                i_objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
                 this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
             QObject::connect(
-                selPtTarget.m_pGraphObj, &CGraphObj::zValueChanged,
+                i_objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
                 this, &CGraphObj::onLinkedObjectZValueChanged);
             QObject::connect(
-                selPtTarget.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                i_objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
-
-            onLinkedObjectGeometryOnSceneChanged(selPtTarget.m_pGraphObj);
-            onLinkedObjectZValueChanged(selPtTarget.m_pGraphObj);
+            onLinkedObjectGeometryOnSceneChanged(i_objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+            onLinkedObjectZValueChanged(i_objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+        }
+        if (i_objectLinkageDscr.m_selPt2Target.m_pGraphObj != nullptr) {
+            QObject::connect(
+                i_objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
+            QObject::connect(
+                i_objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObj::onLinkedObjectZValueChanged);
+            QObject::connect(
+                i_objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
+            onLinkedObjectGeometryOnSceneChanged(i_objectLinkageDscr.m_selPt2Target.m_pGraphObj);
+            onLinkedObjectZValueChanged(i_objectLinkageDscr.m_selPt2Target.m_pGraphObj);
+        }
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
         }
     }
-
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanAdd);
     }
+    return bCanAdd;
 }
 
 //------------------------------------------------------------------------------
@@ -7658,17 +7622,13 @@ void CGraphObj::setLinkedObject(const SObjectLinkageDscr& i_objectLinkageDscr)
     linked to other objects and are usually anchored to selection points of the
     objects they are linked to.
 */
-CGraphObj* CGraphObj::linkedObject() const
+CGraphObj* CGraphObj::getLinkedObject(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
+    #pragma message(__TODO__ "Selection point 2 may refer to a different object thant selection point 1")
     CGraphObj* pGraphObjLinked = nullptr;
-    for (const SGraphObjSelectionPoint& selPtTarget : m_objectLinkageDscr.m_arSelPtsTargets) {
-        if (selPtTarget.m_pGraphObj != nullptr) {
-            pGraphObjLinked = selPtTarget.m_pGraphObj;
-            break;
-        }
-    }
-    return pGraphObjLinked;
+    SObjectLinkageDscr objectLinkageDscr = m_hshLinkedObjects.value(i_strLinkageName, SObjectLinkageDscr());
+    return objectLinkageDscr.m_selPt1Target.m_pGraphObj;
 }
 
 //------------------------------------------------------------------------------
@@ -7679,11 +7639,11 @@ CGraphObj* CGraphObj::linkedObject() const
     linked to other objects and are usually anchored to selection points of the
     objects they are linked to.
 */
-QString CGraphObj::pathNameOfLinkedObject() const
+QString CGraphObj::pathNameOfLinkedObject(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
     QString strPath;
-    CGraphObj* pGraphObjLinked = linkedObject();
+    CGraphObj* pGraphObjLinked = getLinkedObject(i_strLinkageName);
     if (pGraphObjLinked != nullptr) {
         strPath = pGraphObjLinked->path();
     }
@@ -7691,19 +7651,20 @@ QString CGraphObj::pathNameOfLinkedObject() const
 }
 
 //------------------------------------------------------------------------------
-QString CGraphObj::path() const
+QString CGraphObj::myPathIncludingPathOfLinkedObject(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
-    return tree()->buildPathStr(pathNameOfLinkedObject(), m_strName);
+    return tree()->buildPathStr(pathNameOfLinkedObject(i_strLinkageName), m_strName);
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObj::setLinkedObjectSelectionPoint1(
+    const QString& i_strLinkageName, const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_selPt.toString(true);
+        strMthInArgs = i_strLinkageName + ", {" + i_selPt.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7712,38 +7673,38 @@ void CGraphObj::setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_
         /* strMethod    */ "setLinkedObjectSelectionPoint1",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_objectLinkageDscr.m_arSelPtsTargets.empty()) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_selPt.toString());
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
     }
 
-    SGraphObjSelectionPoint& selPtTarget = m_objectLinkageDscr.m_arSelPtsTargets[0];
-    if (selPtTarget.m_pGraphObj != nullptr) {
+    SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
+    if (objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
         QObject::disconnect(
-            selPtTarget.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
             this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
         QObject::disconnect(
-            selPtTarget.m_pGraphObj, &CGraphObj::zValueChanged,
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
             this, &CGraphObj::onLinkedObjectZValueChanged);
         QObject::disconnect(
-            selPtTarget.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
     }
 
-    selPtTarget = i_selPt;
+    objectLinkageDscr.m_selPt1Target = i_selPt;
 
-    if (selPtTarget.m_pGraphObj != nullptr) {
+    if (objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
         QObject::connect(
-            selPtTarget.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
             this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
         QObject::connect(
-            selPtTarget.m_pGraphObj, &CGraphObj::zValueChanged,
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
             this, &CGraphObj::onLinkedObjectZValueChanged);
         QObject::connect(
-            selPtTarget.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
 
-        onLinkedObjectGeometryOnSceneChanged(selPtTarget.m_pGraphObj);
-        onLinkedObjectZValueChanged(selPtTarget.m_pGraphObj);
+        onLinkedObjectGeometryOnSceneChanged(objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+        onLinkedObjectZValueChanged(objectLinkageDscr.m_selPt1Target.m_pGraphObj);
     }
 }
 
@@ -7753,22 +7714,23 @@ void CGraphObj::setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-SGraphObjSelectionPoint CGraphObj::linkedObjectSelectionPoint1() const
+SGraphObjSelectionPoint CGraphObj::linkedObjectSelectionPoint1(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
-    if (m_objectLinkageDscr.m_arSelPtsTargets.empty()) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, "linkedObjectSelectionPoint1");
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
     }
-    return m_objectLinkageDscr.m_arSelPtsTargets[0];
+    return m_hshLinkedObjects[i_strLinkageName].m_selPt1Target;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObj::setLinkedObjectSelectionPoint2(
+    const QString& i_strLinkageName, const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_selPt.toString(true);
+        strMthInArgs = i_strLinkageName + ", {" + i_selPt.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7777,38 +7739,38 @@ void CGraphObj::setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_
         /* strMethod    */ "setLinkedObjectSelectionPoint2",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_objectLinkageDscr.m_arSelPtsTargets.size() < 2) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_selPt.toString());
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
     }
 
-    SGraphObjSelectionPoint& selPtTarget = m_objectLinkageDscr.m_arSelPtsTargets[1];
-    if (selPtTarget.m_pGraphObj != nullptr) {
+    SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
+    if (objectLinkageDscr.m_selPt2Target.m_pGraphObj != nullptr) {
         QObject::disconnect(
-            selPtTarget.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
             this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
         QObject::disconnect(
-            selPtTarget.m_pGraphObj, &CGraphObj::zValueChanged,
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::zValueChanged,
             this, &CGraphObj::onLinkedObjectZValueChanged);
         QObject::disconnect(
-            selPtTarget.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
     }
 
-    selPtTarget = i_selPt;
+    objectLinkageDscr.m_selPt2Target = i_selPt;
 
-    if (selPtTarget.m_pGraphObj != nullptr) {
+    if (objectLinkageDscr.m_selPt2Target.m_pGraphObj != nullptr) {
         QObject::connect(
-            selPtTarget.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
             this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
         QObject::connect(
-            selPtTarget.m_pGraphObj, &CGraphObj::zValueChanged,
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::zValueChanged,
             this, &CGraphObj::onLinkedObjectZValueChanged);
         QObject::connect(
-            selPtTarget.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
 
-        onLinkedObjectGeometryOnSceneChanged(selPtTarget.m_pGraphObj);
-        onLinkedObjectZValueChanged(selPtTarget.m_pGraphObj);
+        onLinkedObjectGeometryOnSceneChanged(objectLinkageDscr.m_selPt2Target.m_pGraphObj);
+        onLinkedObjectZValueChanged(objectLinkageDscr.m_selPt2Target.m_pGraphObj);
     }
 }
 
@@ -7818,22 +7780,23 @@ void CGraphObj::setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-SGraphObjSelectionPoint CGraphObj::linkedObjectSelectionPoint2() const
+SGraphObjSelectionPoint CGraphObj::linkedObjectSelectionPoint2(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
-    if (m_objectLinkageDscr.m_arSelPtsTargets.size() < 2) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, "linkedObjectSelectionPoint2");
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
     }
-    return m_objectLinkageDscr.m_arSelPtsTargets[1];
+    return m_hshLinkedObjects[i_strLinkageName].m_selPt2Target;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors)
+void CGraphObj::setPolarCoorsToLinkedSelectionPoint(
+    const QString& i_strLinkageName, const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_polarCoors.toString();
+        strMthInArgs = i_strLinkageName + ", {" + i_polarCoors.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7842,14 +7805,13 @@ void CGraphObj::setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCo
         /* strMethod    */ "setPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_objectLinkageDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        m_objectLinkageDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
-        for (const SGraphObjSelectionPoint& selPtTarget : m_objectLinkageDscr.m_arSelPtsTargets) {
-            if (selPtTarget.m_pGraphObj != nullptr) {
-                onLinkedObjectGeometryOnSceneChanged(selPtTarget.m_pGraphObj);
-                onLinkedObjectZValueChanged(selPtTarget.m_pGraphObj);
-            }
-        }
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
+    }
+
+    SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
+    if (objectLinkageDscr.m_polarCoorsToSelPt1Target != i_polarCoors) {
+        objectLinkageDscr.m_polarCoorsToSelPt1Target = i_polarCoors;
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -7857,37 +7819,43 @@ void CGraphObj::setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCo
 }
 
 //------------------------------------------------------------------------------
-SPolarCoors CGraphObj::polarCoorsToLinkedSelectionPoint() const
+SPolarCoors CGraphObj::polarCoorsToLinkedSelectionPoint(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
-    return m_objectLinkageDscr.m_polarCoorsToLinkedSelPt;
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
+    }
+    return m_hshLinkedObjects[i_strLinkageName].m_polarCoorsToSelPt1Target;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::showAnchorLines()
+void CGraphObj::showLinkedObjectAnchorLines(const QString& i_strLinkageName)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strLinkageName;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "showAnchorLines",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "showLinkedObjectAnchorLines",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
+    }
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    if (!m_objectLinkageDscr.m_bShowAnchorLine) {
-        m_objectLinkageDscr.m_bShowAnchorLine = true;
+    SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
+    if (!objectLinkageDscr.m_bShowAnchorLine) {
+        objectLinkageDscr.m_bShowAnchorLine = true;
         if (pGraphicsItemThis->scene() != nullptr) {
             QGraphicsItem_prepareGeometryChange();
             QRectF rctBounding = pGraphicsItemThis->boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             pGraphicsItemThis->scene()->update(rctBounding);
-            for (const SGraphObjSelectionPoint& selPtTarget : m_objectLinkageDscr.m_arSelPtsTargets) {
-                if (selPtTarget.m_pGraphObj != nullptr) {
-                    onLinkedObjectGeometryOnSceneChanged(selPtTarget.m_pGraphObj);
-                    onLinkedObjectZValueChanged(selPtTarget.m_pGraphObj);
-                }
-            }
         }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -7896,27 +7864,35 @@ void CGraphObj::showAnchorLines()
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::hideAnchorLines()
+void CGraphObj::hideLinkedObjectAnchorLines(const QString& i_strLinkageName)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strLinkageName;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "hideAnchorLines",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "hideLinkedObjectAnchorLines",
+        /* strAddInfo   */ strMthInArgs );
 
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
+    }
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    if (m_objectLinkageDscr.m_bShowAnchorLine) {
+    SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
+    if (objectLinkageDscr.m_bShowAnchorLine) {
         if (pGraphicsItemThis->scene() != nullptr) {
             QRectF rctBounding = pGraphicsItemThis->boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
-            m_objectLinkageDscr.m_bShowAnchorLine = false;
+            objectLinkageDscr.m_bShowAnchorLine = false;
             QGraphicsItem_prepareGeometryChange();
             pGraphicsItemThis->scene()->update(rctBounding);
         }
         else {
-            m_objectLinkageDscr.m_bShowAnchorLine = false;
+            objectLinkageDscr.m_bShowAnchorLine = false;
         }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -7925,10 +7901,13 @@ void CGraphObj::hideAnchorLines()
 }
 
 //------------------------------------------------------------------------------
-bool CGraphObj::isAnchorLineVisible() const
+bool CGraphObj::isLinkedObjectAnchorLineVisible(const QString& i_strLinkageName) const
 //------------------------------------------------------------------------------
 {
-    return m_objectLinkageDscr.m_bShowAnchorLine;
+    if (!m_hshLinkedObjects.contains(i_strLinkageName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
+    }
+    return m_hshLinkedObjects[i_strLinkageName].m_bShowAnchorLine;
 }
 
 /*==============================================================================
@@ -8619,9 +8598,12 @@ void CGraphObj::onLinkedObjectAboutToBeDestroyed(CGraphObj* i_pGraphObjLinked)
         /* strMethod    */ "CGraphObj::onLinkedObjectAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
 
-    for (SGraphObjSelectionPoint& selPtTarget : m_objectLinkageDscr.m_arSelPtsTargets) {
-        if (selPtTarget.m_pGraphObj == i_pGraphObjLinked) {
-            selPtTarget.m_pGraphObj = nullptr;
+    for (SObjectLinkageDscr& objectLinkageDscr : m_hshLinkedObjects) {
+        if (objectLinkageDscr.m_selPt1Target.m_pGraphObj == i_pGraphObjLinked) {
+            objectLinkageDscr.m_selPt1Target.m_pGraphObj = nullptr;
+        }
+        if (objectLinkageDscr.m_selPt2Target.m_pGraphObj == i_pGraphObjLinked) {
+            objectLinkageDscr.m_selPt2Target.m_pGraphObj = nullptr;
         }
     }
 }

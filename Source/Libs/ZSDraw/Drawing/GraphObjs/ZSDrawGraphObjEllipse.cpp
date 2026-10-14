@@ -1409,7 +1409,7 @@ bool CGraphObjEllipse::labelHasDefaultValues(const QString& i_strName) const
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strLabelName) {
@@ -1504,7 +1504,7 @@ bool CGraphObjEllipse::geometryLabelHasDefaultValues(const QString& i_strName) c
         else if (!labelDscr.m_strText.isEmpty()) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameTopCenter) {

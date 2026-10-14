@@ -1626,7 +1626,7 @@ bool CGraphObjConnectionLine::labelHasDefaultValues(const QString& i_strName) co
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strLabelName) {
@@ -1677,7 +1677,7 @@ bool CGraphObjConnectionLine::geometryLabelHasDefaultValues(const QString& i_str
         else if (!labelDscr.m_strText.isEmpty() && labelDscr.m_strText != labelDscr.m_strKey) {
             bHasDefaultValues = false;
         }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+        else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameCenter) {
@@ -3096,7 +3096,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
             SObjectLinkageDscr& labelDscrNew = m_hshLabelDscrs[strLabelNameNew];
             labelDscrNew.m_bIsVisible = labelDscrOld.m_bIsVisible;
             labelDscrNew.m_bShowAnchorLine = labelDscrOld.m_bShowAnchorLine;
-            labelDscrNew.m_polarCoorsToLinkedSelPt = labelDscrOld.m_polarCoorsToLinkedSelPt;
+            labelDscrNew.m_polarCoorsToSelPt1Target = labelDscrOld.m_polarCoorsToSelPt1Target;
             CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelNameOld, nullptr);
             if (pGraphObjLabel != nullptr) {
                 m_hshpLabels.remove(strLabelNameOld);
@@ -3108,7 +3108,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
             }
             labelDscrOld.m_bIsVisible = false;
             labelDscrOld.m_bShowAnchorLine = false;
-            labelDscrOld.m_polarCoorsToLinkedSelPt = SPolarCoors();
+            labelDscrOld.m_polarCoorsToSelPt1Target = SPolarCoors();
         }
         // Update the position of the indicated name and user defined labels.
         // But only if previously a polygon was set ..
@@ -3158,7 +3158,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
             SObjectLinkageDscr& labelDscrNew = m_hshGeometryLabelDscrs[strLabelNameNew];
             labelDscrNew.m_bIsVisible = labelDscrOld.m_bIsVisible;
             labelDscrNew.m_bShowAnchorLine = labelDscrOld.m_bShowAnchorLine;
-            labelDscrNew.m_polarCoorsToLinkedSelPt = labelDscrOld.m_polarCoorsToLinkedSelPt;
+            labelDscrNew.m_polarCoorsToSelPt1Target = labelDscrOld.m_polarCoorsToSelPt1Target;
             CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(strLabelNameOld, nullptr);
             if (pGraphObjLabel != nullptr) {
                 m_hshpGeometryLabels.remove(strLabelNameOld);
@@ -3170,7 +3170,7 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
             }
             labelDscrOld.m_bIsVisible = false;
             labelDscrOld.m_bShowAnchorLine = false;
-            labelDscrOld.m_polarCoorsToLinkedSelPt = SPolarCoors();
+            labelDscrOld.m_polarCoorsToSelPt1Target = SPolarCoors();
         }
     }
 }

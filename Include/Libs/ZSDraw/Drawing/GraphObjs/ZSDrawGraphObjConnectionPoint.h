@@ -130,21 +130,21 @@ public: // must overridables of base class CGraphObj
     void setPosition(const CPhysValPoint& i_physValPos) override;
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
-public: // instance methods
-    void setLinkedObject(const SObjectLinkageDscr& i_anchorLayoutDscr) override;
-    CGraphObj* linkedObject() const override;
-    QString pathNameOfLinkedObject() const;
-    QString path() const override;
-public: // instance methods
-    void setLinkedObjectSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint linkedObjectSelectionPoint() const;
-public: // instance methods
-    void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
-    SPolarCoors polarCoorsToLinkedSelectionPoint() const;
-public: // instance methods
-    void showAnchorLine();
-    void hideAnchorLine();
-    bool isAnchorLineVisible() const;
+//public: // instance methods
+//    void setLinkedObject(const SObjectLinkageDscr& i_anchorLayoutDscr) override;
+//    CGraphObj* linkedObject() const override;
+//    QString pathNameOfLinkedObject() const;
+//    QString path() const override;
+//public: // instance methods
+//    void setLinkedObjectSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
+//    SGraphObjSelectionPoint linkedObjectSelectionPoint() const;
+//public: // instance methods
+//    void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
+//    SPolarCoors polarCoorsToLinkedSelectionPoint() const;
+//public: // instance methods
+//    void showAnchorLine();
+//    void hideAnchorLine();
+//    bool isAnchorLineVisible() const;
 public: // overridables of base class CGraphObj
     void openFormatGraphObjsDialog() override;
     void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;

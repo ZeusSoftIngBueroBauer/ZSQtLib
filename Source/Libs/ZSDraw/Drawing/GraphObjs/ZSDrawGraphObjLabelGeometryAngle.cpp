@@ -374,8 +374,8 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     // for which the angle has to be indicated.
     QLineF lineFPolarBaseSceneCoors(m_lineSelPtsSceneCoors.center(), m_lineSelPtsSceneCoors.p2());
     QLineF anchorLineSceneCoors = ZS::Draw::getLineFromPolar(
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px,
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px,
+        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees,
         lineFPolarBaseSceneCoors);
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -472,14 +472,14 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
 
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = m_lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
+    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px = lineFromSelPtSceneCoors.length();
+    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees = m_lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees =
+        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px) + " px" +
+            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
@@ -512,8 +512,8 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     QPointF ptSelPt2 = mapFromScene(m_lineSelPtsSceneCoors.p2());
     QLineF lineSelPts = QLineF(ptSelPt1, ptSelPt2);
     QPointF ptCenterLineSelPts = lineSelPts.center();
-    m_rectPie.setWidth(2.0 * m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
-    m_rectPie.setHeight(2.0 * m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    m_rectPie.setWidth(2.0 * m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px);
+    m_rectPie.setHeight(2.0 * m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px);
     m_rectPie.moveCenter(ptCenterLineSelPts);
     // The angle returned by QLineF is counter-clockwise with 0° at 3 o'clock.
     // The graphics scene uses clockwise angles with 0° at 3 o'clock.
@@ -544,7 +544,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     }
 
     QLineF lineEndOfSegment(ptCenterLineSelPts, ptSelPt2);
-    lineEndOfSegment.setLength(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    lineEndOfSegment.setLength(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px);
     QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
         QLineF(lineSelPts.p1(), lineSelPts.p2()), lineEndOfSegment.p2(), 10.0);
 
