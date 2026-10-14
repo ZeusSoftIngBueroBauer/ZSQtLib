@@ -10510,7 +10510,14 @@ void CGraphObj::traceGraphObjStates(
         else strRuntimeInfo = "   ";
         strRuntimeInfo += "EditMode: " + m_editMode.toString() +
             ", IsHighlighted: " + bool2Str(m_bIsHighlighted) +
-            ", ForceConversion: " + bool2Str(m_bForceConversionToSceneCoors);
+            ", ForceConversion: " + bool2Str(m_bForceConversionToSceneCoors) +
+            ", ZValues [" + QString::number(m_arfZValues.size()) + "](";
+        for (CEnumRowVersion rowVersion = 0; rowVersion < m_arfZValues.size(); rowVersion++) {
+            if (!strRuntimeInfo.endsWith("(")) strRuntimeInfo += ", ";
+            strRuntimeInfo += "{" + rowVersion.toString() +
+                ": " + QString::number(m_arfZValues[rowVersion.enumeratorAsInt()]) + "}";
+        }
+        strRuntimeInfo += ")";
         i_mthTracer.trace(strRuntimeInfo);
     }
     if (i_strFilter.isEmpty() || i_strFilter.contains("BlockedCounter")) {

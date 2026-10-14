@@ -63,6 +63,8 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjSelectionPoint(CDrawingScene* i_pDrawingScene, const SGraphObjSelectionPoint& i_selPt);
     ~CGraphObjSelectionPoint() override;
+public: // overridables of base class CIdxTreeEntry
+    QString path() const override;
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj

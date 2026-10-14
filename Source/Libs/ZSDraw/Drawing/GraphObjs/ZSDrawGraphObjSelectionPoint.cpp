@@ -111,7 +111,11 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
 
-    addObjectLinkage(SObjectLinkageDscr(EGraphObjTypeSelectionPoint, m_strName, i_selPt));
+    SObjectLinkageDscr objectLinkageDscr(EGraphObjTypeSelectionPoint, m_strName, i_selPt);
+    addObjectLinkage(objectLinkageDscr);
+
+    double fZValueParent = objectLinkageDscr.m_selPt1Target.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints, ERowVersion::Original);
 }
 
 //------------------------------------------------------------------------------
@@ -134,6 +138,34 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
     if (m_pDrawingScene != nullptr) {
         m_pDrawingScene->removeItem(this);
     }
+}
+
+/*==============================================================================
+public: // overridables of base class CIdxTreeEntry
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the path method of the base class CIdxTreeEntry.
+
+    CIdxTreeEntry::path returns the path of the object within the index tree.
+    Selectionpoints are not added to the index tree and therefore the base
+    implementation of path just returns the name of the selection point.
+    To uniquely identify the object the path of the object the selection point
+    is linked to is inserted before the name of the selection point.
+*/
+QString CGraphObjSelectionPoint::path() const
+//------------------------------------------------------------------------------
+{
+    QString strPath;
+    // The method is also called within the constructor, while the instance has not
+    // been added to the tree yet.
+    if (m_hshLinkedObjects.contains(m_strName)) {
+        strPath = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->path();
+    }
+    if (!strPath.isEmpty()) {
+        strPath += QString(m_pTree == nullptr ?  "::" : m_pTree->nodeSeparator());
+    }
+    return strPath + name();
 }
 
 /*==============================================================================
