@@ -141,9 +141,9 @@ CGraphObjLabelGeometryDY::CGraphObjLabelGeometryDY(
     m_drawSettingsArrowHeads.setArrowHeadWidth(ELinePoint::End, EArrowHeadWidth::Thin);
     m_drawSettingsArrowHeads.setArrowHeadLength(ELinePoint::End, EArrowHeadLength::Short);
 
-    m_anchorLines.append(QLineF());
-    m_anchorLines.append(QLineF());
-    m_anchorLines.append(QLineF());
+    m_hshLinkedObjectsAnchorLines[m_strName].append(QLineF());
+    m_hshLinkedObjectsAnchorLines[m_strName].append(QLineF());
+    m_hshLinkedObjectsAnchorLines[m_strName].append(QLineF());
 
 } // ctor
 
@@ -232,8 +232,8 @@ QRectF CGraphObjLabelGeometryDY::boundingRect() const
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (/*m_bIsHit ||*/ isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine) {
-        for (const QLineF& anchorLine : m_anchorLines) {
+    if (/*m_bIsHit ||*/ isSelected() || m_hshLinkedObjects[m_strName].m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_hshLinkedObjectsAnchorLines[m_strName]) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
         }
@@ -281,14 +281,14 @@ void CGraphObjLabelGeometryDY::paint(
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    if (/*m_bIsHit ||*/ isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_hshLinkedObjects[m_strName].m_bShowAnchorLine) {
         i_pPainter->save();
         i_pPainter->setRenderHint(QPainter::Antialiasing);
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-        const QLineF& anchorLine = m_anchorLines[2];
+        const QLineF& anchorLine = m_hshLinkedObjectsAnchorLines[m_strName][2];
          if (!rctBounding.contains(anchorLine.p2())) {
              if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
                 QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
@@ -325,23 +325,23 @@ void CGraphObjLabelGeometryDY::updatePosition()
         /* strAddInfo   */ "" );
 
     QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelPt1ScenePos = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPt);
     }
     else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        ptSelPt1ScenePos = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt1Target.m_idxPt);
     }
 
     QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
+    if (m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelPt2ScenePos = m_hshLinkedObjects[m_strName].m_selPt2Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPt);
     }
     else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
+        ptSelPt2ScenePos = m_hshLinkedObjects[m_strName].m_selPt2Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt2Target.m_idxPt);
     }
 
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
@@ -365,8 +365,8 @@ void CGraphObjLabelGeometryDY::updatePosition()
     // for which the angle has to be indicated.
     QLineF lineFPolarBase(lineSelPtSceneCoors.center(), lineSelPtSceneCoors.p2());
     QLineF anchorLine = ZS::Draw::getLineFromPolar(
-        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px,
-        m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees,
+        m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fLength_px,
+        m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fAngle_degrees,
         lineFPolarBase);
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -427,23 +427,23 @@ void CGraphObjLabelGeometryDY::updatePolarCoorsToLinkedSelPt()
     // The start point of the anchor line should be the center point of the line
     // for which the length has to be indicated.
     QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelPt1ScenePos = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPt);
     }
     else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        ptSelPt1ScenePos = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt1Target.m_idxPt);
     }
 
     QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
+    if (m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelPt2ScenePos = m_hshLinkedObjects[m_strName].m_selPt2Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPt);
     }
     else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
+        ptSelPt2ScenePos = m_hshLinkedObjects[m_strName].m_selPt2Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt2Target.m_idxPt);
     }
 
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
@@ -456,14 +456,14 @@ void CGraphObjLabelGeometryDY::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
 
-    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px = lineFromSelPtSceneCoors.length();
-    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees);
+    m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fLength_px = lineFromSelPtSceneCoors.length();
+    m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fAngle_degrees =
+        Math::toClockWiseAngleDegree(m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToSelPt1Target.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fLength_px) + " px" +
+            ", " + QString::number(m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
@@ -509,23 +509,23 @@ void CGraphObjLabelGeometryDY::updateAnchorLines()
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
     QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelPt1ScenePos = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPt);
     }
     else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        ptSelPt1ScenePos = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt1Target.m_idxPt);
     }
 
     QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
+    if (m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelPt2ScenePos = m_hshLinkedObjects[m_strName].m_selPt2Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPt);
     }
     else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
+        ptSelPt2ScenePos = m_hshLinkedObjects[m_strName].m_selPt2Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_hshLinkedObjects[m_strName].m_selPt2Target.m_selPtType, m_hshLinkedObjects[m_strName].m_selPt2Target.m_idxPt);
     }
 
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
@@ -541,21 +541,21 @@ void CGraphObjLabelGeometryDY::updateAnchorLines()
     QLineF lineP2(lineSelPtSceneCoors.p2(), ptLineP2End);
 
     // As the anchor lines are painted by this object, they have to be translated into local coordinates.
-    m_anchorLines[0] = QLineF(mapFromScene(lineP1.p1()), mapFromScene(lineP1.p2()));
-    m_anchorLines[1] = QLineF(mapFromScene(lineP2.p1()), mapFromScene(lineP2.p2()));
-    m_anchorLines[2] = QLineF(mapFromScene(lineP1.p2()), mapFromScene(lineP2.p2()));
+    m_hshLinkedObjectsAnchorLines[m_strName][0] = QLineF(mapFromScene(lineP1.p1()), mapFromScene(lineP1.p2()));
+    m_hshLinkedObjectsAnchorLines[m_strName][1] = QLineF(mapFromScene(lineP2.p1()), mapFromScene(lineP2.p2()));
+    m_hshLinkedObjectsAnchorLines[m_strName][2] = QLineF(mapFromScene(lineP1.p2()), mapFromScene(lineP2.p2()));
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "AnchorLine0 {" + qLine2Str(m_anchorLines[0]) + "} px";
+        QString strRuntimeInfo = "AnchorLine0 {" + qLine2Str(m_hshLinkedObjectsAnchorLines[m_strName][0]) + "} px";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
-        strRuntimeInfo = "AnchorLine1 {" + qLine2Str(m_anchorLines[1]) + "} px";
+        strRuntimeInfo = "AnchorLine1 {" + qLine2Str(m_hshLinkedObjectsAnchorLines[m_strName][1]) + "} px";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
-        strRuntimeInfo = "AnchorLine2 {" + qLine2Str(m_anchorLines[2]) + "} px";
+        strRuntimeInfo = "AnchorLine2 {" + qLine2Str(m_hshLinkedObjectsAnchorLines[m_strName][2]) + "} px";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
     getLineEndArrowPolygons(
-        /* line          */ m_anchorLines[2],
+        /* line          */ m_hshLinkedObjectsAnchorLines[m_strName][2],
         /* drawSetings   */ m_drawSettingsArrowHeads,
         /* pplgLineStart */ &m_plgP1ArrowHead,
         /* pplgLineEnd   */ &m_plgP2ArrowHead);

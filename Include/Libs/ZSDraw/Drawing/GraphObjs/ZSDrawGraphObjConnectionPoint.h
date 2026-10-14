@@ -68,8 +68,6 @@ public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
-public: // overridables of base class CGraphObj
-    void setName(const QString& i_strName) override;
 public: // instance methods
     void appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
     void removeConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine);
@@ -136,9 +134,6 @@ public: // must overridables of base class CGraphObj
 //    QString pathNameOfLinkedObject() const;
 //    QString path() const override;
 //public: // instance methods
-//    void setLinkedObjectSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
-//    SGraphObjSelectionPoint linkedObjectSelectionPoint() const;
-//public: // instance methods
 //    void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
 //    SPolarCoors polarCoorsToLinkedSelectionPoint() const;
 //public: // instance methods
@@ -158,6 +153,10 @@ public: // overridables of base class CGraphObj (text labels)
     bool labelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
     bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
+public: // instance methods
+    void setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
+    SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
+    CGraphObj* linkedObject() const;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

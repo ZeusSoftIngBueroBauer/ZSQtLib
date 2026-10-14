@@ -501,6 +501,14 @@ signals:
     void connectionPointRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
     /*!< This signal is emitted if a connection point has been changed. */
     void connectionPointChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a new text label has been added. */
+    void objectLinkageAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a text label has been removed. */
+    void objectLinkageRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a text label has been renamed. */
+    void objectLinkageRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
+    /*!< This signal is emitted if a text label has been changed. */
+    void objectLinkageChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if the option to paint the bounding rectangle has been changed. */
     void optionPaintBoundingRectChanged(CGraphObj* i_pGraphObj, bool i_bOptionSet);
     /*!< This signal is emitted if the option to paint the shape path has been changed. */
@@ -519,7 +527,7 @@ public: // instance methods
     bool isPolygon() const;
     bool isPolyline() const;
     bool isText() const;
-    bool isImage() const;
+    bool isPixmap() const;
     bool isConnectionPoint() const;
     bool isConnectionLine() const;
     bool isGroup() const;
@@ -854,10 +862,10 @@ protected: // auxiliary instance methods (method tracing)
     void emit_connectionPointRemoved(const QString& i_strName);
     void emit_connectionPointRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_connectionPointChanged(const QString& i_strName);
-    void emit_linkageAdded(const QString& i_strName);
-    void emit_linkageRemoved(const QString& i_strName);
-    void emit_linkageRenamed(const QString& i_strName, const QString& i_strNameNew);
-    void emit_linkageChanged(const QString& i_strName);
+    void emit_objectLinkageAdded(const QString& i_strName);
+    void emit_objectLinkageRemoved(const QString& i_strName);
+    void emit_objectLinkageRenamed(const QString& i_strName, const QString& i_strNameNew);
+    void emit_objectLinkageChanged(const QString& i_strName);
     void emit_optionPaintBoundingRectChanged(bool i_bOptionSet);
     void emit_optionPaintShapePathChanged(bool i_bOptionSet);
 protected: // overridable auxiliary instance methods (method tracing)

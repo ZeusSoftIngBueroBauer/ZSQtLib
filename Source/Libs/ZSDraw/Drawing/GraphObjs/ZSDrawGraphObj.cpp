@@ -526,7 +526,7 @@ bool CGraphObj::isText() const
 //------------------------------------------------------------------------------
 /*! @brief Convenience method to returning true if this object is an image.
 */
-bool CGraphObj::isImage() const
+bool CGraphObj::isPixmap() const
 //------------------------------------------------------------------------------
 {
     return m_type == EGraphObjTypePixmap;
@@ -793,8 +793,7 @@ void CGraphObj::setName( const QString& i_strName )
         /* strMethod    */ "CGraphObj::setName",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_strName != i_strName)
-    {
+    if (m_strName != i_strName) {
         QString strNameOld = m_strName;
         CIdxTreeEntry::setName(i_strName);
         if (m_hshLabelDscrs.contains(c_strLabelName)) {
@@ -803,6 +802,9 @@ void CGraphObj::setName( const QString& i_strName )
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(c_strLabelName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setText(name());
+        }
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
         }
         emit_nameChanged(m_strName, strNameOld);
         //updateEditInfo();
@@ -7311,7 +7313,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         selPtTarget = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint1(i_strName, selPtTarget);
+            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint(selPtTarget);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7359,7 +7361,7 @@ void CGraphObj::setConnectionPointAnchorPoint(
         selPtTarget = SGraphObjSelectionPoint(this, i_selPtType, i_idxPt);
         CGraphObjConnectionPoint* pGraphObjConnectionPoint = m_hshpConnectionPoints.value(i_strName, nullptr);
         if (pGraphObjConnectionPoint != nullptr) {
-            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint1(i_strName, selPtTarget);
+            pGraphObjConnectionPoint->setLinkedObjectSelectionPoint(selPtTarget);
         }
         emit_connectionPointChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7565,7 +7567,7 @@ bool CGraphObj::addObjectLinkage(const SObjectLinkageDscr& i_objectLinkageDscr)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Dscr {" + i_objectLinkageDscr.toString() + "}";
+        strMthInArgs = "Dscr {" + i_objectLinkageDscr.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7577,7 +7579,7 @@ bool CGraphObj::addObjectLinkage(const SObjectLinkageDscr& i_objectLinkageDscr)
     bool bCanAdd = !m_hshLinkedObjects.contains(i_objectLinkageDscr.m_strName);
     if (bCanAdd) {
         m_hshLinkedObjects.insert(i_objectLinkageDscr.m_strName, i_objectLinkageDscr);
-        emit_linkageAdded(i_objectLinkageDscr.m_strName);
+        emit_objectLinkageAdded(i_objectLinkageDscr.m_strName);
         if (i_objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
             QObject::connect(
                 i_objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
@@ -7588,8 +7590,11 @@ bool CGraphObj::addObjectLinkage(const SObjectLinkageDscr& i_objectLinkageDscr)
             QObject::connect(
                 i_objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
-            onLinkedObjectGeometryOnSceneChanged(i_objectLinkageDscr.m_selPt1Target.m_pGraphObj);
-            onLinkedObjectZValueChanged(i_objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+            // Update position of this object if it already belongs to the scene.
+            //if (scene() != nullptr) {
+            //    onLinkedObjectGeometryOnSceneChanged(i_objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+            //    onLinkedObjectZValueChanged(i_objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+            //}
         }
         if (i_objectLinkageDscr.m_selPt2Target.m_pGraphObj != nullptr) {
             QObject::connect(
@@ -7601,8 +7606,11 @@ bool CGraphObj::addObjectLinkage(const SObjectLinkageDscr& i_objectLinkageDscr)
             QObject::connect(
                 i_objectLinkageDscr.m_selPt2Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
-            onLinkedObjectGeometryOnSceneChanged(i_objectLinkageDscr.m_selPt2Target.m_pGraphObj);
-            onLinkedObjectZValueChanged(i_objectLinkageDscr.m_selPt2Target.m_pGraphObj);
+            // Update position of this object if it already belongs to the scene.
+            //if (scene() != nullptr) {
+            //    onLinkedObjectGeometryOnSceneChanged(i_objectLinkageDscr.m_selPt2Target.m_pGraphObj);
+            //    onLinkedObjectZValueChanged(i_objectLinkageDscr.m_selPt2Target.m_pGraphObj);
+            //}
         }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -7678,33 +7686,35 @@ void CGraphObj::setLinkedObjectSelectionPoint1(
     }
 
     SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
-    if (objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
-        QObject::disconnect(
-            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
-        QObject::disconnect(
-            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObj::onLinkedObjectZValueChanged);
-        QObject::disconnect(
-            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
-            this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
-    }
+    if (objectLinkageDscr.m_selPt1Target != i_selPt) {
+        if (objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
+            QObject::disconnect(
+                objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
+            QObject::disconnect(
+                objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObj::onLinkedObjectZValueChanged);
+            QObject::disconnect(
+                objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
+        }
 
-    objectLinkageDscr.m_selPt1Target = i_selPt;
+        objectLinkageDscr.m_selPt1Target = i_selPt;
 
-    if (objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
-        QObject::connect(
-            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
-        QObject::connect(
-            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObj::onLinkedObjectZValueChanged);
-        QObject::connect(
-            objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
-            this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
+        if (objectLinkageDscr.m_selPt1Target.m_pGraphObj != nullptr) {
+            QObject::connect(
+                objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onLinkedObjectGeometryOnSceneChanged);
+            QObject::connect(
+                objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObj::onLinkedObjectZValueChanged);
+            QObject::connect(
+                objectLinkageDscr.m_selPt1Target.m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CGraphObj::onLinkedObjectAboutToBeDestroyed);
 
-        onLinkedObjectGeometryOnSceneChanged(objectLinkageDscr.m_selPt1Target.m_pGraphObj);
-        onLinkedObjectZValueChanged(objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+            onLinkedObjectGeometryOnSceneChanged(objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+            onLinkedObjectZValueChanged(objectLinkageDscr.m_selPt1Target.m_pGraphObj);
+        }
     }
 }
 
@@ -9802,6 +9812,74 @@ void CGraphObj::emit_connectionPointChanged(const QString& i_strName)
         /* strMethod    */ "CGraphObj::emit_connectionPointChanged",
         /* strAddInfo   */ strMthInArgs );
     emit connectionPointChanged(this, i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_objectLinkageAdded(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_objectLinkageAdded",
+        /* strAddInfo   */ strMthInArgs );
+    emit objectLinkageAdded(this, i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_objectLinkageRemoved(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_objectLinkageRemoved",
+        /* strAddInfo   */ strMthInArgs );
+    emit objectLinkageRemoved(this, i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_objectLinkageRenamed(const QString& i_strName, const QString& i_strNameNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + i_strNameNew;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_objectLinkageRenamed",
+        /* strAddInfo   */ strMthInArgs );
+    emit objectLinkageRenamed(this, i_strName, i_strNameNew);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_objectLinkageChanged(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::emit_objectLinkageChanged",
+        /* strAddInfo   */ strMthInArgs );
+    emit objectLinkageChanged(this, i_strName);
 }
 
 //------------------------------------------------------------------------------

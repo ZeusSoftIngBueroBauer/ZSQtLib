@@ -887,8 +887,8 @@ public: // operators
     bool operator == (const SGraphObjSelectionPoint& i_other) const;
     bool operator != (const SGraphObjSelectionPoint& i_other) const;
 public: // struct methods
-    QString name() const;
-    QString toString(bool i_bIncludeGraphObj = false) const;
+    QString name(bool i_bIncludeGraphObjPath = false) const;
+    QString toString(bool i_bIncludeGraphObjPath = false) const;
     bool isValid() const;
 public: // struct members
     /*!< Graphical object the selection point belongs to.
@@ -1024,9 +1024,23 @@ public: // ctors
     SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
                        const SGraphObjSelectionPoint& i_selPt1Target,
                        const SGraphObjSelectionPoint& i_selPt2Target);
+    SObjectLinkageDscr(const SGraphObjSelectionPoint& i_selPtSource,
+                       EGraphObjType i_graphObjType, const QString& i_strName,
+                       const SGraphObjSelectionPoint& i_selPtTarget);
+    SObjectLinkageDscr(const SGraphObjSelectionPoint& i_selPtSource,
+                       EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
+                       const SGraphObjSelectionPoint& i_selPtTarget);
+    SObjectLinkageDscr(const SGraphObjSelectionPoint& i_selPtSource,
+                       EGraphObjType i_graphObjType, const QString& i_strName,
+                       const SGraphObjSelectionPoint& i_selPt1Target,
+                       const SGraphObjSelectionPoint& i_selPt2Target);
+    SObjectLinkageDscr(const SGraphObjSelectionPoint& i_selPtSource,
+                       EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
+                       const SGraphObjSelectionPoint& i_selPt1Target,
+                       const SGraphObjSelectionPoint& i_selPt2Target);
     SObjectLinkageDscr(const SObjectLinkageDscr& i_other);
 public: // struct methods
-    QString toString() const;
+    QString toString(bool i_bIncludeTargetGraphObjPath = true, bool i_bIncludeSourceGraphObjPath = false) const;
 public: // struct members
     /*!< Type of the source object of the linkage. */
     EGraphObjType m_graphObjType = EGraphObjTypeUndefined;

@@ -62,17 +62,6 @@ class CGraphObjSelectionPoint : public CGraphObj, public QGraphicsEllipseItem
 *******************************************************************************/
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-double CGraphObjSelectionPoint::defaultWidthInPx()
-//------------------------------------------------------------------------------
-{
-    return s_fDefaultWidth_px;
-}
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
@@ -122,7 +111,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
     QGraphicsItem_setAcceptHoverEvents(true);
 
-    setLinkedObjectSelectionPoint(i_selPt);
+    addObjectLinkage(SObjectLinkageDscr(EGraphObjTypeSelectionPoint, m_strName, i_selPt));
 }
 
 //------------------------------------------------------------------------------
@@ -139,15 +128,12 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
     m_bDtorInProgress = true;
     emit_aboutToBeDestroyed();
 
-    // Selection points have been "directly" added to the graphics scene and not by
-    // invoking CDrawingScene::addGraphObj so that they don't appear in the index tree.
-    // For this labels "directly" remove themselves from the graphics scene.
+    // Selection points have been "directly" added to the graphics scene and not by invoking
+    // CDrawingScene::addGraphObj so that they don't appear in the index tree.
+    // For this the object must "directly" remove itself from the graphics scene.
     if (m_pDrawingScene != nullptr) {
         m_pDrawingScene->removeItem(this);
     }
-
-    m_fWidth_px = 0.0;
-    m_bUpdatePositionInProgress = false;
 }
 
 /*==============================================================================
@@ -184,149 +170,32 @@ CGraphObj* CGraphObjSelectionPoint::clone()
 public: // instance methods
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_selPt.toString(true);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setLinkedObjectSelectionPoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_selPt != i_selPt) {
-        if (m_selPt.m_pGraphObj != nullptr) {
-            QObject::disconnect(
-                m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged);
-            QObject::disconnect(
-                m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
-                this, &CGraphObjSelectionPoint::onLinkedObjectZValueChanged);
-        }
-
-        if (i_selPt.m_pGraphObj == nullptr) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
-
-        m_selPt = i_selPt;
-
-        double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-        setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints, ERowVersion::Original);
-
-        QObject::connect(
-            m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged);
-        QObject::connect(
-            m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObjSelectionPoint::onLinkedObjectZValueChanged);
-
-        update();
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the description of the selection point at the linked object
-           the selection point is linked to.
-
-    Selection points may be linked to selection points at the bounding rectangle
-    or to polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjSelectionPoint::selectionPointAtLinkedObject() const
-//------------------------------------------------------------------------------
-{
-    return m_selPt;
-}
-
-//------------------------------------------------------------------------------
-CGraphObj* CGraphObjSelectionPoint::linkedObject() const
-//------------------------------------------------------------------------------
-{
-    return m_selPt.m_pGraphObj;
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjSelectionPoint::pathNameOfLinkedObject() const
-//------------------------------------------------------------------------------
-{
-    QString strPath;
-    if (m_selPt.m_pGraphObj != nullptr) {
-        strPath = m_selPt.m_pGraphObj->path();
-    }
-    return strPath;
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjSelectionPoint::path() const
-//------------------------------------------------------------------------------
-{
-    QString strPath = pathNameOfLinkedObject();
-    if (m_selPt.m_pGraphObj != nullptr) {
-        strPath = m_selPt.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
-    }
-    return strPath;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setWidthInPx( double i_fWidth_px )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fWidth_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setWidthInPx",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_fWidth_px != i_fWidth_px) {
-        m_fWidth_px = i_fWidth_px;
-    }
-}
-
-//------------------------------------------------------------------------------
-double CGraphObjSelectionPoint::getWidthInPx() const
-//------------------------------------------------------------------------------
-{
-    return m_fWidth_px;
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OldSettings {" + i_drawSettingsOld.toString() + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onDrawSettingsChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bDrawSettingsChanged = (m_drawSettings != i_drawSettingsOld);
-    if (bDrawSettingsChanged) {
-        update();
-        emit_drawSettingsChanged();
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::setWidthInPx( double i_fWidth_px )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString::number(i_fWidth_px);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "setWidthInPx",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_fWidth_px != i_fWidth_px) {
+//        m_fWidth_px = i_fWidth_px;
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+//double CGraphObjSelectionPoint::getWidthInPx() const
+////------------------------------------------------------------------------------
+//{
+//    return m_fWidth_px;
+//}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj
@@ -385,18 +254,20 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
         /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::CrossCursor;
-    if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    if (linkedObject.m_selPt1Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
         double fRotationAngle_degree = 0.0;
-        if (m_selPt.m_pGraphObj != nullptr) {
-            fRotationAngle_degree = 0.0; //m_selPt.m_pGraphObj->getRotationAngleInDegree();
+        if (linkedObject.m_selPt1Target.m_pGraphObj != nullptr) {
+            fRotationAngle_degree = 
+                linkedObject.m_selPt1Target.m_pGraphObj->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
         }
-        cursor = selectionPoint2Cursor(m_selPt.m_selPt, fRotationAngle_degree);
+        cursor = selectionPoint2Cursor(linkedObject.m_selPt1Target.m_selPt, fRotationAngle_degree);
     }
-    else if (m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
+    else if (linkedObject.m_selPt1Target.m_selPtType == ESelectionPointType::PolygonPoint) {
         cursor = Qt::CrossCursor;
-        CGraphObj* pGraphObjParent = m_selPt.m_pGraphObj;
-        if (pGraphObjParent != nullptr && pGraphObjParent->type() == EGraphObjTypeConnectionLine) {
-            if (pGraphObjParent->editMode() == EEditMode::CreatingByMouseEvents) {
+        CGraphObj* pGraphObjLinked = linkedObject.m_selPt1Target.m_pGraphObj;
+        if (pGraphObjLinked != nullptr && pGraphObjLinked->type() == EGraphObjTypeConnectionLine) {
+            if (pGraphObjLinked->editMode() == EEditMode::CreatingByMouseEvents) {
                 const QGraphicsEllipseItem* pGraphicsItemThis = dynamic_cast<const QGraphicsEllipseItem*>(this);
                 // Check whether a connection point has been hit.
                 QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
@@ -413,6 +284,70 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
     }
     return cursor;
 }
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_selPt.toString(true);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setLinkedObjectSelectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
+    setLinkedObjectSelectionPoint1(m_strName, i_selPt);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the description of the selection point at the linked object
+           the selection point is linked to.
+
+    Selection points may be linked to selection points at the bounding rectangle
+    or to polygon shape points.
+*/
+SGraphObjSelectionPoint CGraphObjSelectionPoint::selectionPointAtLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    return linkedObjectSelectionPoint1(m_strName);
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CGraphObjSelectionPoint::linkedObject() const
+//------------------------------------------------------------------------------
+{
+    return linkedObjectSelectionPoint1(m_strName).m_pGraphObj;
+}
+
+////------------------------------------------------------------------------------
+//QString CGraphObjSelectionPoint::pathNameOfLinkedObject() const
+////------------------------------------------------------------------------------
+//{
+//    QString strPath;
+//    if (linkedObject.m_selPt1Target.m_pGraphObj != nullptr) {
+//        strPath = linkedObject.m_selPt1Target.m_pGraphObj->path();
+//    }
+//    return strPath;
+//}
+//
+////------------------------------------------------------------------------------
+//QString CGraphObjSelectionPoint::path() const
+////------------------------------------------------------------------------------
+//{
+//    QString strPath = pathNameOfLinkedObject();
+//    if (linkedObject.m_selPt1Target.m_pGraphObj != nullptr) {
+//        strPath = linkedObject.m_selPt1Target.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+//    }
+//    return strPath;
+//}
 
 /*==============================================================================
 pbulic: // overridables of base class QGraphicsItem
@@ -440,10 +375,6 @@ bool CGraphObjSelectionPoint::contains(const QPointF& i_pt) const
     return bContains;
 }
 
-/*==============================================================================
-public: // overridables of base class QGraphicsItem
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 QRectF CGraphObjSelectionPoint::boundingRect() const
 //------------------------------------------------------------------------------
@@ -469,17 +400,17 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
     // When including the anchor lines in the bounding rectangle, the bounding rectangle of the
     // rotation selection points overlap the top and bottom center selection points.
     //if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
-    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //    QPointF ptSelScenePosLinkedObject = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
     //        ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
-    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+    //    QPointF ptSelPosLinkedObject = mapFromScene(ptSelScenePosLinkedObject);
+    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosLinkedObject);
     //    rctBounding |= rctBoundingAnchorLine;
     //}
     //else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //    QPointF ptSelScenePosLinkedObject = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
     //        ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
-    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+    //    QPointF ptSelPosLinkedObject = mapFromScene(ptSelScenePosLinkedObject);
+    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosLinkedObject);
     //    rctBounding |= rctBoundingAnchorLine;
     //}
 
@@ -508,19 +439,19 @@ QPainterPath CGraphObjSelectionPoint::shape() const
     // When including the anchor lines in the bounding rectangle, the bounding rectangle of the
     // rotation selection points overlap the top and bottom center selection points.
     //if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
-    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //    QPointF ptSelScenePosLinkedObject = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
     //        ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
-    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-    //    QPolygonF polygon({pos(), ptSelPosParent});
+    //    QPointF ptSelPosLinkedObject = mapFromScene(ptSelScenePosLinkedObject);
+    //    QPolygonF polygon({pos(), ptSelPosLinkedObject});
     //    painterPath.closeSubpath();
     //    painterPath.moveTo(0.0, 0.0);
     //    painterPath.addPolygon(polygon);
     //}
     //else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //    QPointF ptSelScenePosLinkedObject = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
     //        ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
-    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-    //    QPolygonF polygon({pos(), ptSelPosParent});
+    //    QPointF ptSelPosLinkedObject = mapFromScene(ptSelScenePosLinkedObject);
+    //    QPolygonF polygon({pos(), ptSelPosLinkedObject});
     //    painterPath.closeSubpath();
     //    painterPath.moveTo(0.0, 0.0);
     //    painterPath.addPolygon(polygon);
@@ -570,23 +501,25 @@ void CGraphObjSelectionPoint::paint(
 
     QGraphicsEllipseItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    if (linkedObject.m_selPt1Target.m_selPt == ESelectionPoint::RotateTop) {
         pn.setStyle(Qt::DotLine);
         pn.setWidth(1);
-        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
-        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QPointF ptSelScenePosLinkedObject =
+            linkedObject.m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+        QPointF ptSelPosLinkedObject = mapFromScene(ptSelScenePosLinkedObject);
         QRectF rct = rect();
-        i_pPainter->drawLine(rct.center(), ptSelPosParent);
+        i_pPainter->drawLine(rct.center(), ptSelPosLinkedObject);
     }
-    else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+    else if (linkedObject.m_selPt1Target.m_selPt == ESelectionPoint::RotateBottom) {
         pn.setStyle(Qt::DotLine);
         pn.setWidth(1);
-        QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+        QPointF ptSelScenePosLinkedObject = linkedObject.m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
             ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
-        QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+        QPointF ptSelPosLinkedObject = mapFromScene(ptSelScenePosLinkedObject);
         QRectF rct = rect();
-        i_pPainter->drawLine(rct.center(), ptSelPosParent);
+        i_pPainter->drawLine(rct.center(), ptSelPosLinkedObject);
     }
 
     i_pPainter->restore();
@@ -721,9 +654,10 @@ void CGraphObjSelectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     // We inform the linked object of the mouse press event as the graphics
     // scene will not forward the event even if we would ignore the event.
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
-    if (pGraphicsItemParent != nullptr) {
-        m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    QGraphicsItem* pGraphicsItemLinkedObject = dynamic_cast<QGraphicsItem*>(linkedObject.m_selPt1Target.m_pGraphObj);
+    if (pGraphicsItemLinkedObject != nullptr) {
+        m_pDrawingScene->sendEvent(pGraphicsItemLinkedObject, i_pEv);
     }
     i_pEv->accept();
 
@@ -767,9 +701,10 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
     }
 
     bool bUnsetCursor = true;
-    if (m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
-        CGraphObj* pGraphObjParent = m_selPt.m_pGraphObj;
-        if (pGraphObjParent != nullptr && pGraphObjParent->type() == EGraphObjTypeConnectionLine) {
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    if (linkedObject.m_selPt1Target.m_selPtType == ESelectionPointType::PolygonPoint) {
+        CGraphObj* pGraphObjLinkedObject = linkedObject.m_selPt1Target.m_pGraphObj;
+        if (pGraphObjLinkedObject != nullptr && pGraphObjLinkedObject->type() == EGraphObjTypeConnectionLine) {
             bUnsetCursor = false;
         }
     }
@@ -779,9 +714,9 @@ void CGraphObjSelectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 
     // We inform the linked object of the mouse press event as the graphics
     // scene will not forward the event even if we would ignore the event.
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
-    if (pGraphicsItemParent != nullptr) {
-        m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
+    QGraphicsItem* pGraphicsItemLinkedObject = dynamic_cast<QGraphicsItem*>(linkedObject.m_selPt1Target.m_pGraphObj);
+    if (pGraphicsItemLinkedObject != nullptr) {
+        m_pDrawingScene->sendEvent(pGraphicsItemLinkedObject, i_pEv);
     }
     i_pEv->accept();
 
@@ -828,9 +763,10 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 
     // We inform the linked object of the mouse press event as the graphics
     // scene will not forward the event even if the event is ignored.
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
-    if (pGraphicsItemParent != nullptr) {
-        m_pDrawingScene->sendEvent(pGraphicsItemParent, i_pEv);
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    QGraphicsItem* pGraphicsItemLinkedObject = dynamic_cast<QGraphicsItem*>(linkedObject.m_selPt1Target.m_pGraphObj);
+    if (pGraphicsItemLinkedObject != nullptr) {
+        m_pDrawingScene->sendEvent(pGraphicsItemLinkedObject, i_pEv);
     }
     i_pEv->accept();
 
@@ -967,7 +903,9 @@ void CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_
         /* strMethod    */ "onLinkedObjectGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    m_bPositionUpdateOnParentGeometryChanged = true;
     updatePosition();
+    m_bPositionUpdateOnParentGeometryChanged = false;
 }
 
 //------------------------------------------------------------------------------
@@ -986,8 +924,9 @@ void CGraphObjSelectionPoint::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObj
         /* strAddInfo   */ strMthInArgs );
 
     // The selection point should be drawn after the parent object is drawn.
-    double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetSelectionPoints);
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    double fZValueLinkedObject = linkedObject.m_selPt1Target.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueLinkedObject + c_fStackingOrderOffsetSelectionPoints);
 }
 
 /*==============================================================================
@@ -1011,7 +950,6 @@ void CGraphObjSelectionPoint::updatePosition()
     if (m_bUpdatePositionInProgress) {
         return;
     }
-    m_bUpdatePositionInProgress = true;
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1020,16 +958,19 @@ void CGraphObjSelectionPoint::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    QPointF ptSelScenePosParent;
-    if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_selPt.m_selPtType, m_selPt.m_selPt);
+    m_bUpdatePositionInProgress = true;
+
+    QPointF ptSelScenePosLinkedObject;
+    const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
+    if (linkedObject.m_selPt1Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelScenePosLinkedObject = linkedObject.m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            linkedObject.m_selPt1Target.m_selPtType, linkedObject.m_selPt1Target.m_selPt);
     }
     else {
-        ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_selPt.m_selPtType, m_selPt.m_idxPt);
+        ptSelScenePosLinkedObject = linkedObject.m_selPt1Target.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            linkedObject.m_selPt1Target.m_selPtType, linkedObject.m_selPt1Target.m_idxPt);
     }
-    setPos(ptSelScenePosParent);
+    setPos(ptSelScenePosLinkedObject);
 
     m_bUpdatePositionInProgress = false;
 }

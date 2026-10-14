@@ -1633,10 +1633,10 @@ bool CGraphObjConnectionLine::labelHasDefaultValues(const QString& i_strName) co
             if (labelDscr.m_strText != m_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::LineCenterPoint) {
+            else if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+            else if (labelDscr.m_selPt1Target.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1674,17 +1674,17 @@ bool CGraphObjConnectionLine::geometryLabelHasDefaultValues(const QString& i_str
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (!labelDscr.m_strText.isEmpty() && labelDscr.m_strText != labelDscr.m_strKey) {
+        else if (!labelDscr.m_strText.isEmpty() && labelDscr.m_strText != labelDscr.m_strName) {
             bHasDefaultValues = false;
         }
         else if (labelDscr.m_polarCoorsToSelPt1Target != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt1Target.m_selPt != ESelectionPoint::Center) {
                 bHasDefaultValues = false;
             }
         }
@@ -3103,8 +3103,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                 m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscrNew.m_selPt1);
-                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscrNew.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(strLabelNameNew, labelDscrNew.m_selPt1Target);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(strLabelNameNew, labelDscrNew.m_selPt2Target);
             }
             labelDscrOld.m_bIsVisible = false;
             labelDscrOld.m_bShowAnchorLine = false;
@@ -3117,25 +3117,25 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                 if (!isPolygonPointLabelName(strLabelName)) {
                     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
                     SObjectLinkageDscr& labelDscr = m_hshLabelDscrs[strLabelName];
-                    if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
-                        || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    if ((labelDscr.m_selPt1Target.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt1Target.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
-                        if (labelDscr.m_selPt1.m_idxPt >= m_idxsAdded.first) {
-                            labelDscr.m_selPt1.m_idxPt += m_idxsAdded.second;
+                        if (labelDscr.m_selPt1Target.m_idxPt >= m_idxsAdded.first) {
+                            labelDscr.m_selPt1Target.m_idxPt += m_idxsAdded.second;
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint1(strLabelName, labelDscr.m_selPt1Target);
                     }
-                    if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
-                        || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    if ((labelDscr.m_selPt2Target.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt2Target.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
-                        if (labelDscr.m_selPt2.m_idxPt >= m_idxsAdded.first) {
-                            labelDscr.m_selPt2.m_idxPt += m_idxsAdded.second;
+                        if (labelDscr.m_selPt2Target.m_idxPt >= m_idxsAdded.first) {
+                            labelDscr.m_selPt2Target.m_idxPt += m_idxsAdded.second;
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint2(strLabelName, labelDscr.m_selPt2Target);
                     }
                 }
             }
@@ -3165,8 +3165,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsAdded()
                 m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscrNew.m_selPt1);
-                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscrNew.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(strLabelNameNew, labelDscrNew.m_selPt1Target);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(strLabelNameNew, labelDscrNew.m_selPt2Target);
             }
             labelDscrOld.m_bIsVisible = false;
             labelDscrOld.m_bShowAnchorLine = false;
@@ -3208,9 +3208,9 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
             SObjectLinkageDscr labelDscr = m_hshLabelDscrs[strLabelNameOld];
-            labelDscr.m_strKey = strLabelNameNew;
+            labelDscr.m_strName = strLabelNameNew;
             labelDscr.m_strText = strLabelNameNew;
-            labelDscr.m_selPt1.m_idxPt = idxPt;
+            labelDscr.m_selPt1Target.m_idxPt = idxPt;
             m_hshLabelDscrs[strLabelNameNew] = labelDscr;
             m_hshLabelDscrs.remove(strLabelNameOld);
             int idxLabelName = m_strlstPredefinedLabelNames.indexOf(strLabelNameOld);
@@ -3221,8 +3221,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                 m_hshpLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
-                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(strLabelNameNew, labelDscr.m_selPt1Target);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(strLabelNameNew, labelDscr.m_selPt2Target);
             }
         }
         // Update the position of the indicated name and user defined labels.
@@ -3232,25 +3232,25 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                 if (!isPolygonPointLabelName(strLabelName)) {
                     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(strLabelName, nullptr);
                     SObjectLinkageDscr& labelDscr = m_hshLabelDscrs[strLabelName];
-                    if ((labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonPoint)
-                        || (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    if ((   labelDscr.m_selPt1Target.m_selPtType == ESelectionPointType::PolygonPoint)
+                        ||  (labelDscr.m_selPt1Target.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
-                        if (labelDscr.m_selPt1.m_idxPt >= m_idxsRemoved.first) {
-                            labelDscr.m_selPt1.m_idxPt -= m_idxsRemoved.second;
+                        if (labelDscr.m_selPt1Target.m_idxPt >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt1Target.m_idxPt -= m_idxsRemoved.second;
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint1(strLabelName, labelDscr.m_selPt1Target);
                     }
-                    if ((labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonPoint)
-                        || (labelDscr.m_selPt2.m_selPtType == ESelectionPointType::LineCenterPoint))
+                    if ((labelDscr.m_selPt2Target.m_selPtType == ESelectionPointType::PolygonPoint)
+                        || (labelDscr.m_selPt2Target.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
-                        if (labelDscr.m_selPt2.m_idxPt >= m_idxsRemoved.first) {
-                            labelDscr.m_selPt2.m_idxPt -= m_idxsRemoved.second;
+                        if (labelDscr.m_selPt2Target.m_idxPt >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt2Target.m_idxPt -= m_idxsRemoved.second;
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
-                        pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
+                        pGraphObjLabel->setLinkedObjectSelectionPoint2(strLabelName, labelDscr.m_selPt2Target);
                     }
                 }
             }
@@ -3270,9 +3270,9 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
             SObjectLinkageDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
-            labelDscr.m_strKey = strLabelNameNew;
+            labelDscr.m_strName = strLabelNameNew;
             labelDscr.m_strText = strLabelNameNew;
-            labelDscr.m_selPt1.m_idxPt = idxPt;
+            labelDscr.m_selPt1Target.m_idxPt = idxPt;
             m_hshGeometryLabelDscrs[strLabelNameNew] = labelDscr;
             m_hshGeometryLabelDscrs.remove(strLabelNameOld);
             int idxLabelName = m_strlstGeometryLabelNames.indexOf(strLabelNameOld);
@@ -3283,8 +3283,8 @@ void CGraphObjConnectionLine::updateLabelsOnPolygonPointsRemoved()
                 m_hshpGeometryLabels[strLabelNameNew] = pGraphObjLabel;
                 pGraphObjLabel->setName(strLabelNameNew);
                 pGraphObjLabel->setText(strLabelNameNew);
-                pGraphObjLabel->setLinkedObjectSelectionPoint1(labelDscr.m_selPt1);
-                pGraphObjLabel->setLinkedObjectSelectionPoint2(labelDscr.m_selPt2);
+                pGraphObjLabel->setLinkedObjectSelectionPoint1(strLabelNameNew, labelDscr.m_selPt1Target);
+                pGraphObjLabel->setLinkedObjectSelectionPoint2(strLabelNameNew, labelDscr.m_selPt2Target);
             }
         }
     }

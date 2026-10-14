@@ -511,7 +511,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing100x100px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol() + ")",
         /* pTSGrpParent */ pGrpPixelsDrawing );
 
     createTestGroupPrepareScene(pGrpPixelsDrawing100x100px, drawingSize, gridSettings, mapGraphObjTypeRenderHints);
@@ -531,7 +531,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing101x101px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol() + ")",
         /* pTSGrpParent */ pGrpPixelsDrawing );
 
     createTestGroupPrepareScene(pGrpPixelsDrawing101x101px, drawingSize, gridSettings, mapGraphObjTypeRenderHints);
@@ -3300,14 +3300,17 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         /* strMethod    */ "doTestStepShowLabels",
         /* strAddInfo   */ strMthInArgs );
 
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strLabelName = i_pTestStep->getConfigValue("LabelName").toString();
-
-    QString strKeyInTree = "B:" + strGraphObjName;
-    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
-    if (pGraphObj != nullptr) {
-        pGraphObj->showLabel(strLabelName);
-        pGraphObj->showLabelAnchorLine(strLabelName);
+    QString strGraphObjName; // may be set as config value or at data rows
+    if (i_pTestStep->hasConfigValue("GraphObjName")) {
+        strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    }
+    QString strGraphObjKeyInTree = "B:" + strGraphObjName;
+    if (i_pTestStep->hasConfigValue("GraphObjKeyInTree")) {
+        strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    }
+    QString strLabelName; // may be set as config value or at data rows
+    if (i_pTestStep->hasConfigValue("LabelName")) {
+        strGraphObjName = i_pTestStep->getConfigValue("LabelName").toString();
     }
 
     QStringList strlstExpectedValues;
@@ -3315,9 +3318,20 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
     {
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
-        QString strGraphObjName = dataRow["GraphObjName"].toString();
-        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
-        QString strLabelName = dataRow["LabelName"].toString();
+        if (dataRow.contains("GraphObjName")) {
+            strGraphObjName = dataRow["GraphObjName"].toString();
+        }
+        if (dataRow.contains("GraphObjKeyInTree")) {
+            strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        }
+        if (dataRow.contains("LabelName")) {
+            strLabelName = dataRow["LabelName"].toString();
+        }
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            pGraphObj->showLabel(strLabelName);
+            pGraphObj->showLabelAnchorLine(strLabelName);
+        }
         QPointF posToSet;
         if (dataRow.contains("setPos")) {
             posToSet = dataRow["setPos"].toPointF();
@@ -3333,10 +3347,7 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         }
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
-        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            pGraphObj->showLabel(strLabelName);
-            pGraphObj->showLabelAnchorLine(strLabelName);
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
@@ -3827,6 +3838,9 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
+    QString strImageFilePath = i_pTestStep->getConfigValue("ImageFilePath").toString();
+    QPointF pos = i_pTestStep->getConfigValue("setPos").toPointF();
+
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(graphObjType);
@@ -3834,7 +3848,8 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjPixmap* pGraphObjImage = dynamic_cast<CGraphObjPixmap*>(pGraphObj);
         if (pGraphObjImage != nullptr) {
-            //pGraphObjImage->setPicture(polygon, drawingSize.unit());
+            pGraphObjImage->setImageFilePath(strImageFilePath);
+            pGraphObjImage->setPos(pos);
         }
         pGraphObj->rename(strGraphObjName);
     }
@@ -7234,6 +7249,14 @@ QStringList CTest::resultValuesForGraphObj(
                     pGraphObjPolygon->polygon(), pGraphObjPolygon->getPolygon(), i_bIsSelected, i_iPrecision);
             }
         }
+        else if (i_pGraphObj->isPixmap()) {
+            const CGraphObjPixmap* pGraphObjPixmap = dynamic_cast<const CGraphObjPixmap*>(i_pGraphObj);
+            if (pGraphObjPixmap != nullptr) {
+                strlstResultValues = resultValuesForPixmap(
+                    i_pGraphObj->name(), pGraphicsItem->pos(),
+                    pGraphObjPixmap->getRect(), i_bIsSelected, i_iPrecision);
+            }
+        }
         else if (i_pGraphObj->isConnectionPoint()) {
             const CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<const CGraphObjConnectionPoint*>(i_pGraphObj);
             if (pGraphObjConnectionPoint != nullptr) {
@@ -7460,7 +7483,7 @@ QStringList CTest::resultValuesForPolygon(
 }
 
 //------------------------------------------------------------------------------
-QStringList CTest::resultValuesForImage(
+QStringList CTest::resultValuesForPixmap(
     const QString& strGraphObjName, const QPointF& i_pos,
     const CPhysValRect& i_physValRect,
     bool i_bIsSelected, int i_iPrecision) const

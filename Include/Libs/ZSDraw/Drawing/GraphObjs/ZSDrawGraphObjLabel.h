@@ -93,21 +93,21 @@ public: // ctors and dtor
         CDrawingScene* i_pDrawingScene,
         const QString& i_strName,
         const QString& i_strText,
-        const SGraphObjSelectionPoint& i_selPt);
+        const SGraphObjSelectionPoint& i_selPtTarget);
 protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition)
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strName,
         const QString& i_strText,
         EGraphObjType i_labelType,
-        const SGraphObjSelectionPoint& i_selPt);
+        const SGraphObjSelectionPoint& i_selPtTarget);
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strName,
         const QString& i_strText,
         EGraphObjType i_labelType,
-        const SGraphObjSelectionPoint& i_selPt1,
-        const SGraphObjSelectionPoint& i_selPt2);
+        const SGraphObjSelectionPoint& i_selPt1Target,
+        const SGraphObjSelectionPoint& i_selPt2Target);
 public: // dtor
     ~CGraphObjLabel() override;
 public: // must overridables of base class CGraphObj

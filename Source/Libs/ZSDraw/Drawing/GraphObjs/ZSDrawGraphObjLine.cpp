@@ -1503,10 +1503,10 @@ bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != m_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            else if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt1Target.m_selPt != ESelectionPoint::Center) {
                 bHasDefaultValues = false;
             }
         }
@@ -1514,10 +1514,10 @@ bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != i_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            else if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+            else if (labelDscr.m_selPt1Target.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1525,10 +1525,10 @@ bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != i_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            else if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            if (labelDscr.m_selPt1.m_idxPt != 1) {
+            if (labelDscr.m_selPt1Target.m_idxPt != 1) {
                 bHasDefaultValues = false;
             }
         }
@@ -1573,40 +1573,40 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameP1) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+            else if (labelDscr.m_selPt1Target.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameP2) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 1) {
+            else if (labelDscr.m_selPt1Target.m_idxPt != 1) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt1Target.m_selPt != ESelectionPoint::Center) {
                 bHasDefaultValues = false;
             }
         }
         else {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            if (labelDscr.m_selPt1Target.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+            else if (labelDscr.m_selPt1Target.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt2.m_selPtType != ESelectionPointType::PolygonPoint) {
+            else if (labelDscr.m_selPt2Target.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt2.m_idxPt != 1) {
+            else if (labelDscr.m_selPt2Target.m_idxPt != 1) {
                 bHasDefaultValues = false;
             }
         }

@@ -574,6 +574,9 @@ QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRota
         QPixmap pxmCursor(":/ZS/Draw/CursorRotateFree16x16.png");
         cursor = QCursor(pxmCursor);
     }
+    else if (i_selPt == ESelectionPoint::Center) {
+        cursor = Qt::SizeAllCursor;
+    }
     else {
         cursor = s_hshCursorShapes.value(static_cast<int>(i_selPt), Qt::ArrowCursor);
         if (i_fRotationAngle_degree != 0.0) {
@@ -606,13 +609,13 @@ QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRota
                 cursor = Qt::SizeHorCursor;
             }
             else if (fCursorAngle_degree >= 45.0/2.0 && fCursorAngle_degree < 3.0*45.0/2.0) { // 22.5° .. 67.5°
-                cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
+                cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
             }
             else if (fCursorAngle_degree >= 3.0*45.0/2.0 && fCursorAngle_degree < 5.0*45.0/2.0) { // 67.5° .. 112.5°
                 cursor = Qt::SizeVerCursor;
             }
             else if (fCursorAngle_degree >= 5.0*45.0/2.0 && fCursorAngle_degree < 7.0*45.0/2.0) { // 112.5° .. 157.5°
-                cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
+                cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
             }
             else if (fCursorAngle_degree >= 7.0*45.0/2.0 && fCursorAngle_degree <= 180.0) { // 157.5° .. 180.0°
                 cursor = Qt::SizeHorCursor;
@@ -1111,11 +1114,12 @@ struct SGraphObjSelectionPoint
 
     @param [in] i_str
         String to be parsed. Following formats are possible:
-            "<SelectionPointType>, <BoundingRectSelectionPoint|IdxPt1>[, <IdxPt2>]"
+            "<SelectionPointType>.<BoundingRectSelectionPoint|IdxPt1>[, <IdxPt2>]"
         For example:
-            "BoundingRect, TopLeft"
-            "PolygonPoint, 2"
-            "LineCenterPoint, 0" (Center point of line segment between points 0 and 1)
+            "Rect1.BoundingRect.Center"
+            "BoundingRect.TopLeft"
+            "PolygonPoint.2"
+            "LineCenterPoint.0" (Center point of line segment between points 0 and 1)
     @param [out] o_pbOk (optional)
         If != nullptr:
             true, if the string contained a valid selection point description, false otherwise.
@@ -1126,22 +1130,30 @@ SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
 {
     bool bOk = false;
     SGraphObjSelectionPoint selPt;
-    QStringList strlst = i_str.split(",");
-    if (strlst.size() == 2) {
-        strlst[0] = strlst[0].trimmed();
-        strlst[1] = strlst[1].trimmed();
-        CEnumSelectionPointType selPtType = CEnumSelectionPointType::fromString(strlst[0], &bOk);
+    QStringList strlst = i_str.split(".");
+    QString strSelPtType;
+    QString strSelPt;
+    if (strlst.size() == 3) { // May start with name of graphical object
+        strSelPtType = strlst[1].trimmed();
+        strSelPt = strlst[2].trimmed();
+    }
+    else if (strlst.size() == 2) {
+        strSelPtType = strlst[0].trimmed();
+        strSelPt = strlst[1].trimmed();
+    }
+    if (!strSelPtType.isEmpty() && !strSelPt.isEmpty()) {
+        CEnumSelectionPointType selPtType = CEnumSelectionPointType::fromString(strSelPtType, &bOk);
         if (bOk) {
             if (selPtType == ESelectionPointType::BoundingRectangle && strlst.size() == 2) {
-                CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strlst[1], &bOk);
+                CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strSelPt, &bOk);
                 if (bOk) {
                     selPt.m_selPtType = selPtType.enumerator();
                     selPt.m_selPt = selPtTmp.enumerator();
                 }
             }
             else {
-                QString strIdx = strlst[1];
-                if (strlst[1].startsWith("P") || strlst[1].startsWith("L")) {
+                QString strIdx = strSelPt;
+                if (strSelPt.startsWith("P") || strSelPt.startsWith("L")) {
                     strIdx = strlst[1].mid(1);
                 }
                 int idxPt = strIdx.toInt(&bOk);
@@ -1315,11 +1327,11 @@ bool SGraphObjSelectionPoint::operator != (const SGraphObjSelectionPoint& i_othe
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString SGraphObjSelectionPoint::name() const
+QString SGraphObjSelectionPoint::name(bool i_bIncludeGraphObjPath) const
 //------------------------------------------------------------------------------
 {
     QString strName;
-    if (m_pGraphObj != nullptr) {
+    if (i_bIncludeGraphObjPath && (m_pGraphObj != nullptr)) {
         strName = m_pGraphObj->path() + ".";
     }
     if (m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -1335,16 +1347,14 @@ QString SGraphObjSelectionPoint::name() const
 }
 
 //------------------------------------------------------------------------------
-QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObj) const
+QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObjPath) const
 //------------------------------------------------------------------------------
 {
     QString str;
-    if (i_bIncludeGraphObj) {
-        if (m_pGraphObj != nullptr) {
-            str = m_pGraphObj->path() + ".";
-        }
+    if (i_bIncludeGraphObjPath && (m_pGraphObj != nullptr)) {
+        str = m_pGraphObj->path() + ".";
     }
-    str += CEnumSelectionPointType(m_selPtType).toString() + ", ";
+    str += CEnumSelectionPointType(m_selPtType).toString() + ".";
     if (m_selPtType == ESelectionPointType::BoundingRectangle) {
         str += CEnumSelectionPoint(m_selPt).toString();
     } else if (m_selPtType == ESelectionPointType::PolygonPoint) {
@@ -1748,32 +1758,40 @@ SObjectLinkageDscr::SObjectLinkageDscr() = default;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+/*! @brief Creates a linkage descriptor between two objects..
+
+    @param i_graphObjType [in]
+        Object type of the linkage source.
+    @param i_strName [in]
+        Name of the linkage. The linkage name is used to identify the linkage
+        at the source object and must be unique at the source object.
+*/
 SObjectLinkageDscr::SObjectLinkageDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey) :
+    EGraphObjType i_graphObjType, const QString& i_strName) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strName(i_strKey)
+    m_strName(i_strName)
 {
 }
 
 //------------------------------------------------------------------------------
 SObjectLinkageDscr::SObjectLinkageDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey,
+    EGraphObjType i_graphObjType, const QString& i_strName,
     const SGraphObjSelectionPoint& i_selPtTarget) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strName(i_strKey),
+    m_strName(i_strName),
     m_selPt1Target(i_selPtTarget)
 {
 }
 
 //------------------------------------------------------------------------------
 SObjectLinkageDscr::SObjectLinkageDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
+    EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPtTarget) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strName(i_strKey),
+    m_strName(i_strName),
     m_strText(i_strText),
     m_selPt1Target(i_selPtTarget)
 {
@@ -1781,12 +1799,12 @@ SObjectLinkageDscr::SObjectLinkageDscr(
 
 //------------------------------------------------------------------------------
 SObjectLinkageDscr::SObjectLinkageDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey,
+    EGraphObjType i_graphObjType, const QString& i_strName,
     const SGraphObjSelectionPoint& i_selPt1Target,
     const SGraphObjSelectionPoint& i_selPt2Target) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strName(i_strKey),
+    m_strName(i_strName),
     m_selPt1Target(i_selPt1Target),
     m_selPt2Target(i_selPt2Target)
 {
@@ -1794,13 +1812,71 @@ SObjectLinkageDscr::SObjectLinkageDscr(
 
 //------------------------------------------------------------------------------
 SObjectLinkageDscr::SObjectLinkageDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
+    EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt1Target,
     const SGraphObjSelectionPoint& i_selPt2Target) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
-    m_strName(i_strKey),
+    m_strName(i_strName),
     m_strText(i_strText),
+    m_selPt1Target(i_selPt1Target),
+    m_selPt2Target(i_selPt2Target)
+{
+}
+
+//------------------------------------------------------------------------------
+SObjectLinkageDscr::SObjectLinkageDscr(
+    const SGraphObjSelectionPoint& i_selPtSource,
+    EGraphObjType i_graphObjType, const QString& i_strName,
+    const SGraphObjSelectionPoint& i_selPtTarget) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strName(i_strName),
+    m_selPtSource(i_selPtSource),
+    m_selPt1Target(i_selPtTarget)
+{
+}
+
+//------------------------------------------------------------------------------
+SObjectLinkageDscr::SObjectLinkageDscr(
+    const SGraphObjSelectionPoint& i_selPtSource,
+    EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPtTarget) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strName(i_strName),
+    m_strText(i_strText),
+    m_selPtSource(i_selPtSource),
+    m_selPt1Target(i_selPtTarget)
+{
+}
+
+//------------------------------------------------------------------------------
+SObjectLinkageDscr::SObjectLinkageDscr(
+    const SGraphObjSelectionPoint& i_selPtSource,
+    EGraphObjType i_graphObjType, const QString& i_strName,
+    const SGraphObjSelectionPoint& i_selPt1Target,
+    const SGraphObjSelectionPoint& i_selPt2Target) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strName(i_strName),
+    m_selPtSource(i_selPtSource),
+    m_selPt1Target(i_selPt1Target),
+    m_selPt2Target(i_selPt2Target)
+{
+}
+
+//------------------------------------------------------------------------------
+SObjectLinkageDscr::SObjectLinkageDscr(
+    const SGraphObjSelectionPoint& i_selPtSource,
+    EGraphObjType i_graphObjType, const QString& i_strName, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt1Target,
+    const SGraphObjSelectionPoint& i_selPt2Target) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strName(i_strName),
+    m_strText(i_strText),
+    m_selPtSource(i_selPtSource),
     m_selPt1Target(i_selPt1Target),
     m_selPt2Target(i_selPt2Target)
 {
@@ -1822,14 +1898,15 @@ SObjectLinkageDscr::SObjectLinkageDscr(const SObjectLinkageDscr& i_other) :
 }
 
 //------------------------------------------------------------------------------
-QString SObjectLinkageDscr::toString() const
+QString SObjectLinkageDscr::toString(
+    bool i_bIncludeTargetGraphObjPath, bool i_bIncludeSourceGraphObjPath) const
 //------------------------------------------------------------------------------
 {
-    return "Source {" + QString(m_selPtSource.isValid() ? m_selPtSource.toString() : "?") + "}" +
+    return "Source {" + QString(m_selPtSource.isValid() ? m_selPtSource.toString(i_bIncludeSourceGraphObjPath) : "?") + "}" +
         ", Visible: " + bool2Str(m_bIsVisible) +
         ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine) +
-        ", Target {" + QString(m_selPt1Target.isValid() ? m_selPt1Target.toString() : "?") + "}" +
-        QString(m_selPt2Target.isValid() ? ", Target2 {" + m_selPt2Target.toString() + "}" : "");
+        ", Target {" + QString(m_selPt1Target.isValid() ? m_selPt1Target.toString(i_bIncludeTargetGraphObjPath) : "?") + "}" +
+        QString(m_selPt2Target.isValid() ? ", Target2 {" + m_selPt2Target.toString(i_bIncludeTargetGraphObjPath) + "}" : "");
 }
 
 } // namespace ZS::Draw

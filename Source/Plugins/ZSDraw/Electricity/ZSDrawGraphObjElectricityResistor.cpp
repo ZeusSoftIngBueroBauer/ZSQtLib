@@ -28,11 +28,8 @@ may result in using the software modules.
 #include "Electricity/ZSDrawWdgtFormatGraphObjsElectricityResistor.h"
 
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -109,14 +106,17 @@ CGraphObjResistor::CGraphObjResistor(
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
     #pragma message(__TODO__"Don't use connection lines")
-    // Stattdessen eine durchgezogene Linie. Und zwei connection points an der Gruppe Left und RightCenter.
     /*
                           Body
                        +--------+
-             CnctLine1 |        | CnctLine2
+               Wire1   |        |   Wire2
     CnctPt1 X----------X        X----------X CnctPt2
                        |        |
                        +--------+
+
+    The wires are linked to the line center points at the body rect and to the line center
+    points of the group combining the wires and the body as the resistor.
+    At the groups line center points two connection points are added.
     */
 
 
@@ -154,74 +154,37 @@ CGraphObjResistor::CGraphObjResistor(
     m_pDrawingScene->addGraphObj(m_pGraphObjRectBody);
     m_pGraphObjRectBody->rename("Body");
     m_pGraphObjRectBody->setRect(physValRectBody);
+
     QString strCnctPtNameRectBodyLeftCenter =
         m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
     m_pGraphObjCnctPtRectBodyLeftCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyLeftCenter);
     m_pGraphObjCnctPtRectBodyLeftCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
+
     QString strCnctPtNameRectBodyRightCenter =
         m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
     m_pGraphObjCnctPtRectBodyRightCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyRightCenter);
     m_pGraphObjCnctPtRectBodyRightCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
     arpGraphObjs.append(m_pGraphObjRectBody);
 
-    m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
-        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
-    m_pGraphObjCnctPt1->rename("CnctPt1");
-    m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
-    arpGraphObjs.append(m_pGraphObjCnctPt1);
-
-    m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
-        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
-    m_pGraphObjCnctPt2->rename("CnctPt2");
-    m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
-    arpGraphObjs.append(m_pGraphObjCnctPt2);
-
-    m_pGraphObjCnctLine1 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine1");
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine1);
-    m_pGraphObjCnctLine1->setConnectionPoint(ELinePoint::Start, m_pGraphObjCnctPt1);
-    m_pGraphObjCnctLine1->setConnectionPoint(ELinePoint::End, m_pGraphObjCnctPtRectBodyLeftCenter);
-
-    m_pGraphObjCnctLine2 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine2");
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine2);
-    m_pGraphObjCnctLine2->setConnectionPoint(ELinePoint::Start, m_pGraphObjCnctPtRectBodyRightCenter);
-    m_pGraphObjCnctLine2->setConnectionPoint(ELinePoint::End, m_pGraphObjCnctPt2);
-
     // Create resistor as object group
     //--------------------------------
 
     addToGroup(arpGraphObjs, true);
 
-    // The alignments will be adjusted in the order they are added. The order
-    // takes effect on the result. Usually the size should be adjusted before
-    // the positions to get relative adjustments working as expected.
+    // Add connection points at resistor
+    //----------------------------------
 
-    //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0);
-    //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
-    //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pLinCnct->addAlignment(alignment);
+    QString strCnctPtNameResistorLeftCenter =
+        this->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
+    m_pGraphObjCnctPt1 = this->getConnectionPoint(strCnctPtNameResistorLeftCenter);
+    m_pGraphObjCnctPt1->rename("CnctPt1");
+    m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
 
-    //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width());
-    //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRefHeight, EAlignmentRefHeight, false, rctBody.height()/rctBounding.height());
-    //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::HCenter, EAlignmentRef::HCenter, true, 0.0);
-    //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pRctBody->addAlignment(alignment);
-
-    //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
-    //m_pCnctPt1->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pCnctPt1->addAlignment(alignment);
-
-    //alignment = SGraphObjAlignment(EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0);
-    //m_pCnctPt2->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pCnctPt2->addAlignment(alignment);
+    QString strCnctPtNameResistorRightCenter =
+        this->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
+    m_pGraphObjCnctPt2 = this->getConnectionPoint(strCnctPtNameResistorLeftCenter);
+    m_pGraphObjCnctPt2->rename("CnctPt2");
+    m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
 }
 
 //------------------------------------------------------------------------------
