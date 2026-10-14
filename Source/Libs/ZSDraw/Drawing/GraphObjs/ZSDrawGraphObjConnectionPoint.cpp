@@ -2481,9 +2481,9 @@ void CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i
     // the relative distance in polar coordinates (length and angle) to the linked selection
     // point must not be changed.
     m_bPositionUpdateOnParentGeometryChanged = true;
-    updatePosition();
-    bGeometryOnSceneChanged = true;
+    updatePositionToLinkedObject();
     m_bPositionUpdateOnParentGeometryChanged = false;
+    bGeometryOnSceneChanged = true;
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -2798,12 +2798,12 @@ protected: // auxiliary instance methods
     any other geometry change) the item must be moved so that the relative position
     (distance and angle) of the item to the linked selection point remains the same.
 */
-void CGraphObjConnectionPoint::updatePosition()
+void CGraphObjConnectionPoint::updatePositionToLinkedObject()
 //------------------------------------------------------------------------------
 {
     // "setPos" leads to a "itemChange" call with ItemPositionChange(d) whereupon
-    // "updatePosition" would be called again. This reentry is not desired.
-    if (m_bUpdatePositionInProgress) {
+    // "updatePositionToLinkedObject" would be called again. This reentry is not desired.
+    if (m_bUpdatePositionToLinkedObjectInProgress) {
         return;
     }
 
@@ -2811,13 +2811,13 @@ void CGraphObjConnectionPoint::updatePosition()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
+        /* strMethod    */ "updatePositionToLinkedObject",
         /* strAddInfo   */ "" );
 
     QLineF anchorLine;
     CGraphObj* pGraphObjLinked = m_hshLinkedObjects[m_strName].m_selPt1Target.m_pGraphObj;
     if (pGraphObjLinked != nullptr) {
-        m_bUpdatePositionInProgress = true;
+        m_bUpdatePositionToLinkedObjectInProgress = true;
         // Get anchor line in scene coordinates.
         if (m_hshLinkedObjects[m_strName].m_selPt1Target.m_selPtType == ESelectionPointType::BoundingRectangle) {
             anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
@@ -2840,9 +2840,10 @@ void CGraphObjConnectionPoint::updatePosition()
             QString strRuntimeInfo = "Pos {" + qPoint2Str(anchorLineP2ScenePos) + "} px";
             mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
         }
-        // Please note that on calling setPos the itemChange method is called invoking updateAnchorLines.
+        // Please note that on calling setPos the itemChange method
+        // is called invoking updateAnchorLinesToLinkedObject.
         setPos(anchorLineP2ScenePos);
-        m_bUpdatePositionInProgress = false;
+        m_bUpdatePositionToLinkedObjectInProgress = false;
     }
 }
 
@@ -2865,7 +2866,7 @@ void CGraphObjConnectionPoint::updatePosition()
     label and the object may increase to an undesired value (far away
     from the object or to close).
 */
-void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
+void CGraphObjConnectionPoint::updatePolarCoorsToLinkedObject()
 //------------------------------------------------------------------------------
 {
     // If the position is updated because the parent's geometry is changed,
@@ -2879,7 +2880,7 @@ void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedObject",
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -2904,7 +2905,7 @@ void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
         QString strRuntimeInfo = "PolarCoors {" + m_hshLinkedObjects[m_strName].m_polarCoorsToSelPt1Target.toString() + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
-    updateAnchorLine();
+    updateAnchorLinesToLinkedObject();
 }
 
 //------------------------------------------------------------------------------
@@ -2914,14 +2915,14 @@ void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
     The anchor lines will be drawn to one of the selection points at the bounding rectangle
     or to one of the polygon shape points of the linked graphical object.
 */
-void CGraphObjConnectionPoint::updateAnchorLine()
+void CGraphObjConnectionPoint::updateAnchorLinesToLinkedObject()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateAnchorLine",
+        /* strMethod    */ "updateAnchorLinesToLinkedObject",
         /* strAddInfo   */ "" );
 
     QPointF ptSelScenePosParent;

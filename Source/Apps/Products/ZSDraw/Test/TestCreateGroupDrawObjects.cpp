@@ -1221,7 +1221,7 @@ void CTest::createTestGroupDrawStandardShapesRectModifications(
     pTestStep->setConfigValue("P1", pt1SelPt);
     pTestStep->setConfigValue("P2", pt2SelPt);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
-    m_pPhysValAngleRect1 = physValRectNew.angle();
+    m_physValAngleRect1 = physValRectNew.angle();
     *m_pPhysValRect1 = physValRectNew;
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForRect(

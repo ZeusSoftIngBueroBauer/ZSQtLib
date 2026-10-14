@@ -313,14 +313,14 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryLength::updatePosition()
+void CGraphObjLabelGeometryLength::updatePositionToLinkedObject()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
+        /* strMethod    */ "updatePositionToLinkedObject",
         /* strAddInfo   */ "" );
 
     QPointF ptSelPt1ScenePos;
@@ -356,7 +356,7 @@ void CGraphObjLabelGeometryLength::updatePosition()
 
     // First set the text at the graphics item so that the
     // bounding rectangle includes the new text.
-    m_bUpdatePositionInProgress = true;
+    m_bUpdatePositionToLinkedObjectInProgress = true;
 
     // Get anchor line in scene coordinates.
     // The start point of the anchor line should be the center point of the line
@@ -377,10 +377,9 @@ void CGraphObjLabelGeometryLength::updatePosition()
     }
     setPos(anchorLineP2ScenePos);
 
-    // Please note that on calling setPos the itemChange method of the
-    // label is called invoking updateAnchorLines.
-
-    m_bUpdatePositionInProgress = false;
+    // Please note that on calling setPos the itemChange method
+    // is called invoking updateAnchorLinesToLinkedObject.
+    m_bUpdatePositionToLinkedObjectInProgress = false;
 }
 
 //------------------------------------------------------------------------------
@@ -402,7 +401,7 @@ void CGraphObjLabelGeometryLength::updatePosition()
          P1 +----------------x----------------+ P2
                           Center
 */
-void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
+void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedObject()
 //------------------------------------------------------------------------------
 {
     // If the position is updated because the parent's geometry is changed,
@@ -416,7 +415,7 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedObject",
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -466,7 +465,7 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
     }
 
     // Update coordinates of the anchor line.
-    updateAnchorLines();
+    updateAnchorLinesToLinkedObject();
 }
 
 //------------------------------------------------------------------------------
@@ -489,14 +488,14 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
          P1 +----------------x----------------+ P2
                           Center
 */
-void CGraphObjLabelGeometryLength::updateAnchorLines()
+void CGraphObjLabelGeometryLength::updateAnchorLinesToLinkedObject()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateAnchorLines",
+        /* strMethod    */ "updateAnchorLinesToLinkedObject",
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);

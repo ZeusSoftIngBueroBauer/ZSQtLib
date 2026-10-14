@@ -317,14 +317,14 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryAngle::updatePosition()
+void CGraphObjLabelGeometryAngle::updatePositionToLinkedObject()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
+        /* strMethod    */ "updatePositionToLinkedObject",
         /* strAddInfo   */ "" );
 
     QPointF ptSelPt1ScenePos;
@@ -367,7 +367,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
 
     // First set the text at the graphics item so that the
     // bounding rectangle includes the new text.
-    m_bUpdatePositionInProgress = true;
+    m_bUpdatePositionToLinkedObjectInProgress = true;
 
     // Get anchor line in scene coordinates.
     // The start point of the anchor line should be the center point of the line
@@ -389,10 +389,9 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     }
     setPos(anchorLineP2ScenePos);
 
-    // Please note that on calling setPos the itemChange method of the
-    // label is called invoking updateAnchorLines.
-
-    m_bUpdatePositionInProgress = false;
+    // Please note that on calling setPos the itemChange method
+    // is called invoking updateAnchorLinesToLinkedObject.
+    m_bUpdatePositionToLinkedObjectInProgress = false;
 }
 
 //------------------------------------------------------------------------------
@@ -420,7 +419,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
                         |
                         P1
 */
-void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
+void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedObject()
 //------------------------------------------------------------------------------
 {
     // If the position is updated because the parent's geometry is changed,
@@ -434,7 +433,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedObject",
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -484,7 +483,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     }
 
     // Update coordinates of the anchor line.
-    updateAnchorLines();
+    updateAnchorLinesToLinkedObject();
 }
 
 //------------------------------------------------------------------------------
@@ -494,14 +493,14 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     The angle label does not use the common anchor lines but draws the anchor lines
     as a circle segment (pie).
 */
-void CGraphObjLabelGeometryAngle::updateAnchorLines()
+void CGraphObjLabelGeometryAngle::updateAnchorLinesToLinkedObject()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateAnchorLines",
+        /* strMethod    */ "updateAnchorLinesToLinkedObject",
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);

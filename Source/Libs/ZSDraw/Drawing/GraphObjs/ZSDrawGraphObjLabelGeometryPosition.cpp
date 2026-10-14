@@ -180,14 +180,14 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryPosition::updatePosition()
+void CGraphObjLabelGeometryPosition::updatePositionToLinkedObject()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
+        /* strMethod    */ "updatePositionToLinkedObject",
         /* strAddInfo   */ "" );
 
     CPhysValPoint physValPos(*m_pDrawingScene);
@@ -201,7 +201,7 @@ void CGraphObjLabelGeometryPosition::updatePosition()
     }
     QString strText = physValPos.toString();
     // First set the text at the graphics item so that the bounding rectangle
-    // needed in updatePosition includes the new text.
+    // needed in updatePositionToLinkedObject includes the new text.
     if (QGraphicsSimpleTextItem::text() != strText) {
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
             QString strRuntimeInfo = "Text: " + strText;
@@ -212,5 +212,5 @@ void CGraphObjLabelGeometryPosition::updatePosition()
             m_pTree->onTreeEntryChanged(this);
         }
     }
-    CGraphObjLabel::updatePosition();
+    CGraphObjLabel::updatePositionToLinkedObject();
 }

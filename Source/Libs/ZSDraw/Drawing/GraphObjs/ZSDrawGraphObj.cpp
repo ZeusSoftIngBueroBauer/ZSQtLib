@@ -7822,6 +7822,7 @@ void CGraphObj::setPolarCoorsToLinkedSelectionPoint(
     SObjectLinkageDscr& objectLinkageDscr = m_hshLinkedObjects[i_strLinkageName];
     if (objectLinkageDscr.m_polarCoorsToSelPt1Target != i_polarCoors) {
         objectLinkageDscr.m_polarCoorsToSelPt1Target = i_polarCoors;
+        updatePositionToLinkedObject();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -7918,6 +7919,39 @@ bool CGraphObj::isLinkedObjectAnchorLineVisible(const QString& i_strLinkageName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strLinkageName);
     }
     return m_hshLinkedObjects[i_strLinkageName].m_bShowAnchorLine;
+}
+
+/*==============================================================================
+protected: // overridables (linking objects)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the position of the label and the
+           coordinates (start and end point) of the anchor line.
+
+    If the geometry of the parent item changes (position moved or size changed or
+    any other geometry change) the label must be moved so that the relative position
+    (distance and angle) of the label to the selection point remains the same.
+*/
+void CGraphObj::updatePositionToLinkedObject()
+//------------------------------------------------------------------------------
+{
+    // "setPos" leads to a "itemChange" call with ItemPositionChange(d) whereupon
+    // "updatePositionToLinkedObject" would be called again. This reentry is not desired.
+    if (m_bUpdatePositionToLinkedObjectInProgress) {
+        return;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updatePositionToLinkedObject",
+        /* strAddInfo   */ "" );
+
+    m_bUpdatePositionToLinkedObjectInProgress = true;
+    // When reimplementing the method in derived classes, add the specialized code here.
+    m_bUpdatePositionToLinkedObjectInProgress = false;
 }
 
 /*==============================================================================
@@ -8267,22 +8301,6 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 
     m_bForceConversionToSceneCoors = false;
 }
-
-////------------------------------------------------------------------------------
-//void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_pGraphObjParent->keyInTree();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::onGraphObjParentScenePosChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//}
 
 //------------------------------------------------------------------------------
 /*! @brief The slot method is called if the parent item of the item changes

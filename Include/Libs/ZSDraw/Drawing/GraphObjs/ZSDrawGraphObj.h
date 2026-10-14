@@ -784,6 +784,8 @@ public: // overridables (linking objects)
     void showLinkedObjectAnchorLines(const QString& i_strLinkageName);
     void hideLinkedObjectAnchorLines(const QString& i_strLinkageName);
     bool isLinkedObjectAnchorLineVisible(const QString& i_strLinkageName) const;
+protected: // overridables (linking objects)
+    virtual void updatePositionToLinkedObject();
 public: // instance methods (simulation methods)
     //void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     //void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
@@ -925,8 +927,8 @@ protected: // instance members
          the drawing scene will emit "drawingSizeChanged" and the slot method
          "onDrawingSizeChanged" of the graphical object must set this flag to true. */
     bool m_bForceConversionToSceneCoors = false;
-    /*!< Flag used to avoid recursive calls of "updatePosition". */
-    bool m_bUpdatePositionInProgress = false;
+    /*!< Flag used to avoid recursive calls of "updatePositionToLinkedObject". */
+    bool m_bUpdatePositionToLinkedObjectInProgress = false;
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
          to the linked selection point is changed if the position is updated because the parent's
          geometry is changed. */

@@ -58,8 +58,8 @@ public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
-protected: // overridable auxiliary instance methods of base class CGraphObjLabel
-    virtual void updatePosition() override;
+protected: // overridables (linking objects) of base class CGraphObj
+    void updatePositionToLinkedObject() override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 

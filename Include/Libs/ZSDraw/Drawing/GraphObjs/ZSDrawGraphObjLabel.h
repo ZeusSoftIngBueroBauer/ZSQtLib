@@ -143,10 +143,11 @@ public slots: // overridables of base class CGraphObj
     void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked) override;
 protected: // overridables of base class QGraphicsItem
     QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // overridables (linking objects) of base class CGraphObj
+    void updatePositionToLinkedObject() override;
 protected: // overridable auxiliary instance methods
-    virtual void updatePosition();
-    virtual void updatePolarCoorsToLinkedSelPt();
-    virtual void updateAnchorLines();
+    virtual void updatePolarCoorsToLinkedObject();
+    virtual void updateAnchorLinesToLinkedObject();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // class members

@@ -855,7 +855,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
-            updatePosition();
+            updatePositionToLinkedObject();
             bGeometryChanged = true;
         }
     }
@@ -903,8 +903,11 @@ void CGraphObjSelectionPoint::onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_
         /* strMethod    */ "onLinkedObjectGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
     m_bPositionUpdateOnParentGeometryChanged = true;
-    updatePosition();
+    updatePositionToLinkedObject();
     m_bPositionUpdateOnParentGeometryChanged = false;
 }
 
@@ -942,12 +945,12 @@ protected: // auxiliary instance methods
     any other geometry change) the label must be moved so that the distance remains
     the same.
 */
-void CGraphObjSelectionPoint::updatePosition()
+void CGraphObjSelectionPoint::updatePositionToLinkedObject()
 //------------------------------------------------------------------------------
 {
     // "setPos" leads to a "itemChange" call with ItemPositionChange(d) whereupon
-    // "updatePosition" would be called again. This reentry is not desired.
-    if (m_bUpdatePositionInProgress) {
+    // "updatePositionToLinkedObject" would be called again. This reentry is not desired.
+    if (m_bUpdatePositionToLinkedObjectInProgress) {
         return;
     }
 
@@ -955,10 +958,10 @@ void CGraphObjSelectionPoint::updatePosition()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
+        /* strMethod    */ "updatePositionToLinkedObject",
         /* strAddInfo   */ "" );
 
-    m_bUpdatePositionInProgress = true;
+    m_bUpdatePositionToLinkedObjectInProgress = true;
 
     QPointF ptSelScenePosLinkedObject;
     const SObjectLinkageDscr& linkedObject = m_hshLinkedObjects[m_strName];
@@ -972,5 +975,5 @@ void CGraphObjSelectionPoint::updatePosition()
     }
     setPos(ptSelScenePosLinkedObject);
 
-    m_bUpdatePositionInProgress = false;
+    m_bUpdatePositionToLinkedObjectInProgress = false;
 }

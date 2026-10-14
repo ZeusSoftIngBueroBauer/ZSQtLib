@@ -62,10 +62,11 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
-protected: // overridable auxiliary instance methods of base class CGraphObjLabel
-    virtual void updatePosition() override;
-    virtual void updatePolarCoorsToLinkedSelPt() override;
-    virtual void updateAnchorLines() override;
+protected: // overridables (linking objects) of base class CGraphObj
+    void updatePositionToLinkedObject() override;
+protected: // overridables (linking objects) of base class CGraphObjLabel
+    void updatePolarCoorsToLinkedObject() override;
+    void updateAnchorLinesToLinkedObject() override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members

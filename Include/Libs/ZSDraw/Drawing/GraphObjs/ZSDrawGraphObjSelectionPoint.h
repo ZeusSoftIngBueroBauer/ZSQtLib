@@ -101,8 +101,8 @@ protected: // overridables of base class QGraphicsItem
 protected slots: // overridables of base class CGraphObj
     void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked);
     void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
-protected: // auxiliary instance methods
-    void updatePosition();
+protected: // overridables (linking objects) of base class CGraphObj
+    void updatePositionToLinkedObject() override;
 protected: // class members
     /*!< Default radius to be used for painting the selection points. */
     static double s_fDefaultWidth_px;
@@ -118,8 +118,6 @@ protected: // instance members
     //SGraphObjSelectionPoint m_selPt;
     /*!< Radius for drawing the selection point. */
     double m_fWidth_px = 7.0;
-    /*!< Flag used to avoid recursive calls of "updatePosition". */
-    //bool m_bUpdatePositionInProgress = false;
 
 }; // class CGraphObjSelectionPoint
 

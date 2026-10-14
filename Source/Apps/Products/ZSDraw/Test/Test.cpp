@@ -3438,35 +3438,59 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
         /* strMethod    */ "doTestStepShowGeometryLabels",
         /* strAddInfo   */ strMthInArgs );
 
+    QString strGraphObjName; // may be set as config value or at data rows
+    if (i_pTestStep->hasConfigValue("GraphObjName")) {
+        strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    }
+    QString strGraphObjKeyInTree = "B:" + strGraphObjName;
+    if (i_pTestStep->hasConfigValue("GraphObjKeyInTree")) {
+        strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    }
+    QString strLabelName; // may be set as config value or at data rows
+    if (i_pTestStep->hasConfigValue("LabelName")) {
+        strGraphObjName = i_pTestStep->getConfigValue("LabelName").toString();
+    }
+
     QStringList strlstExpectedValues;
     QStringList strlstResultValues;
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
     {
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
-        QString strGraphObjName = dataRow["GraphObjName"].toString();
-        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
-        QString strLabelName = dataRow["LabelName"].toString();
-        QPointF pos;
-        if (dataRow.contains("setPos")) {
-            pos = dataRow["setPos"].toPointF();
+        if (dataRow.contains("GraphObjName")) {
+            strGraphObjName = dataRow["GraphObjName"].toString();
         }
-        QString strExpectedText = dataRow["ExpectedText"].toString();
-        strlstExpectedValues.append(resultValuesForLabel(
-            strGraphObjName + "." + strLabelName, pos, strExpectedText));
+        if (dataRow.contains("GraphObjKeyInTree")) {
+            strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        }
+        if (dataRow.contains("LabelName")) {
+            strLabelName = dataRow["LabelName"].toString();
+        }
         CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showGeometryLabel(strLabelName);
             pGraphObj->showGeometryLabelAnchorLine(strLabelName);
+        }
+        QPointF posToSet;
+        if (dataRow.contains("setPos")) {
+            posToSet = dataRow["setPos"].toPointF();
+        }
+        QString strExpectedText = dataRow["ExpectedText"].toString();
+        QPointF posExpected = posToSet;
+        if (dataRow.contains("ExpectedPos")) {
+            posExpected = dataRow["ExpectedPos"].toPointF();
+        }
+        strlstExpectedValues.append(resultValuesForLabel(
+            strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
+        if (pGraphObj != nullptr) {
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getGeometryLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
-                if (!pos.isNull()) {
-                    pGraphicsItemLabel->setPos(pos);
-                    pos = pGraphicsItemLabel->pos();
+                if (!posToSet.isNull()) {
+                    pGraphicsItemLabel->setPos(posToSet);
                 }
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(resultValuesForLabel(
-                    pGraphObj->name() + "." + pGraphObjLabel->name(), pos, strText));
+                    pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
@@ -6607,22 +6631,22 @@ void CTest::initObjectCoors()
     m_ptPosRect1 = QPointF();
     m_rectRect1 = QRectF();
     *m_pPhysValRect1 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRect2 = QPointF();
     m_rectRect2 = QRectF();
     *m_pPhysValRect2 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRect3 = QPointF();
     m_rectRect3 = QRectF();
     *m_pPhysValRect3 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRect4 = QPointF();
     m_rectRect4 = QRectF();
     *m_pPhysValRect4 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRectBigCrossVerticalBar = QPointF();
     m_rectRectBigCrossVerticalBar = QRectF();

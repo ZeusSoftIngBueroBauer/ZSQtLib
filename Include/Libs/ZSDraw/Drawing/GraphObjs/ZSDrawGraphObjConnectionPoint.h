@@ -186,10 +186,11 @@ protected: // auxiliary instance methods
     QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
-protected: // auxiliary instance methods
-    void updatePosition();
-    void updatePolarCoorsToLinkedSelPt();
-    void updateAnchorLine();
+protected: // overridables (linking objects) of base class CGraphObj
+    void updatePositionToLinkedObject() override;
+protected: // overridables (linking objects)
+    virtual void updatePolarCoorsToLinkedObject();
+    virtual void updateAnchorLinesToLinkedObject();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
     QRectF QGraphicsEllipseItem_setRect(const QRectF& i_rect);
@@ -252,12 +253,6 @@ protected: // instance members
          The scaled and rotated rectangle is returned by the "getRect" method
          (and all other methods retrieving the resulting coordinates in the current unit). */
     CPhysValRect m_physValRectScaledAndRotated;
-    /*!< Flag used to avoid recursive calls of "updatePosition". */
-    bool m_bUpdatePositionInProgress = false;
-    /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
-         to the linked selection point is changed if the position is updated because the parent's
-         geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged = false;
     /*!< Counter to block debug trace outputs for connection lines. */
     int m_iTraceConnectionLinesBlockedCounter = 0;
 
