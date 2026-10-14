@@ -119,23 +119,6 @@ public: // overridables of base class CGraphObj
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);
     QString text() const;
-public: // instance methods
-    void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
-    CGraphObj* linkedObject() const override;
-    QString pathNameOfLinkedObject() const override;
-    QString path() const override;
-public: // instance methods
-    void setLinkedObjectSelectionPoint1( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint linkedObjectSelectionPoint1() const;
-    void setLinkedObjectSelectionPoint2( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint linkedObjectSelectionPoint2() const;
-public: // instance methods
-    void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
-    SPolarCoors polarCoorsToLinkedSelectionPoint() const;
-public: // instance methods
-    void showAnchorLines();
-    void hideAnchorLines();
-    bool isAnchorLineVisible() const;
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // must overridables of base class CGraphObj
@@ -156,10 +139,10 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 public slots: // overridables of base class CGraphObj
-    virtual void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked);
-    virtual void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
+    void onLinkedObjectGeometryOnSceneChanged(CGraphObj* i_pGraphObjLinked) override;
+    void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked) override;
 protected: // overridables of base class QGraphicsItem
-    virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+    QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable auxiliary instance methods
     virtual void updatePosition();
     virtual void updatePolarCoorsToLinkedSelPt();
@@ -168,20 +151,6 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
-protected: // instance members
-    /*!< Key and selection point(s) the label is linked to. */
-    SAnchorLayoutDscr m_anchorLayoutDscr;
-    /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
-         in local coordinates drawn from the label to the selection point(s) of the parent.
-         The start point of the line at the label depend on the position of the label relative
-         to the selection point(s) of the parent (see "updatePosition" for more details). */
-    QList<QLineF> m_anchorLines;
-    /*!< Flag used to avoid recursive calls of "updatePosition". */
-    bool m_bUpdatePositionInProgress = false;
-    /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
-         to the linked selection point is changed if the position is updated because the parent's
-         geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged = false;
 
 }; // class CGraphObjLabel
 

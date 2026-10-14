@@ -265,9 +265,9 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
     CPhysValSize physValSize(*i_pDrawingScene);
     CPhysVal physValAngle(0.0, Units.Angle.Degree);
     double fZValue = 0.0;
-    QList<SAnchorLayoutDscr> arTextLabels;
-    QList<SAnchorLayoutDscr> arGeometryLabels;
-    QList<SAnchorLayoutDscr> arConnectionPoints;
+    QList<SObjectLinkageDscr> arTextLabels;
+    QList<SObjectLinkageDscr> arGeometryLabels;
+    QList<SObjectLinkageDscr> arConnectionPoints;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
@@ -392,7 +392,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
     } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
     if (!i_xmlStreamReader.hasError()) {
-        for (const SAnchorLayoutDscr& layoutDscr : arTextLabels) {
+        for (const SObjectLinkageDscr& layoutDscr : arTextLabels) {
             if (!pGraphObj->isLabelAdded(layoutDscr.m_strKey)) {
                 if (layoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->addLabel(
@@ -423,7 +423,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 pGraphObj->showLabelAnchorLine(layoutDscr.m_strKey) :
                 pGraphObj->hideLabelAnchorLine(layoutDscr.m_strKey);
         }
-        for (const SAnchorLayoutDscr& layoutDscr : arGeometryLabels) {
+        for (const SObjectLinkageDscr& layoutDscr : arGeometryLabels) {
             if (!pGraphObj->isValidGeometryLabelName(layoutDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Invalid geometry label name \"" + layoutDscr.m_strKey + "\".");
@@ -439,7 +439,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                     pGraphObj->hideGeometryLabelAnchorLine(layoutDscr.m_strKey);
             }
         }
-        for (const SAnchorLayoutDscr& layoutDscr : arConnectionPoints) {
+        for (const SObjectLinkageDscr& layoutDscr : arConnectionPoints) {
             if (pGraphObj->isConnectionPointAdded(layoutDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Connection point with name \"" + layoutDscr.m_strKey + "\". already existing.");

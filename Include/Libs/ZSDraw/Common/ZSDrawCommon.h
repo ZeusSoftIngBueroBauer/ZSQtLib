@@ -50,10 +50,9 @@ may result in using the software modules.
 global type definitions and constants
 *******************************************************************************/
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 class CGraphObj;
-} }
+}
 
 // Note about CEnum template instantiation:
 // gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope"
@@ -62,8 +61,7 @@ class CGraphObj;
 // enum classes are encapsulated in namespace ZS::System but the temlate instantiation is
 // done in global namespace.
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Normed paper sizes.
 */
@@ -81,18 +79,15 @@ enum class ENormedPaperSize {
     DinA9, /*!< 37 x 52 mm. */
     DinA10 /*!< 26 x 37 mm. */
 };
-
-} }
+} // ZS::Draw
 
 // template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ENormedPaperSize>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ENormedPaperSize> CEnumNormedPaperSize;
-} }
+}
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 
 const double c_fNormedPaperSizeWidthDinA0_mm  = 841.0;
 const double c_fNormedPaperSizeHeightDinA0_mm = 1189.0;
@@ -187,10 +182,9 @@ Signatures for simulation event methods
 typedef void (*TFctMouseEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QGraphicsSceneMouseEvent* i_pEv );
 typedef void (*TFctKeyEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QKeyEvent* i_pEv );
 
-} } // ZS::Draw
+} // ZS::Draw
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Paper source for the printer.
 */
@@ -202,17 +196,15 @@ enum class EPrinterPaperSource
     Tray1      = 2,
     Tray2      = 3
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EPrinterPaperSource>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EPrinterPaperSource> CEnumPrinterPaperSource;
-} }
+}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Dimension unit for scales.
 */
@@ -223,16 +215,14 @@ enum class EScaleDimensionUnit {
                  The logical pixel positions got to be calculated depending
                  on the screen resolution given in Dots/Inch or Pixels/Inch. */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EScaleDimensionUnit>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EScaleDimensionUnit> CEnumScaleDimensionUnit;
-} }
+}
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! enum EGraphObjType
 
@@ -271,11 +261,10 @@ ZSDRAWDLL_API QString graphObjType2Str( int i_type );
 ZSDRAWDLL_API EGraphObjType str2GraphObjType( const QString& i_str );
 ZSDRAWDLL_API QString graphObjType2ClassName( int i_type );
 ZSDRAWDLL_API EGraphObjType className2GraphObjType( const QString& i_str );
-} }
+} // ZS::Draw
 
 
-//namespace ZS {
-//namespace Draw {
+//namespace ZS::Draw {
 ////==============================================================================
 ///*! Defines the current edit tool.
 //*/
@@ -287,17 +276,15 @@ ZSDRAWDLL_API EGraphObjType className2GraphObjType( const QString& i_str );
 //    CreateObjects = 2, /*! A valid object factory is selected and objects may be created. */
 //    Undefined     = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
 //};
-//} }
-//
+//} // ZS::Draw
+
 //template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditTool>;
-//namespace ZS {
-//namespace Draw {
+//namespace ZS::Draw {
 //typedef ::CEnum<EEditTool> CEnumEditTool;
-//} }
+//}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! When formating the shape of an object using transformatons like scaling or
     or rotating the original coordinates need to be kept to avoid inaccuracies.
@@ -310,17 +297,15 @@ enum class ECoordinatesVersion
     Original    = 0,    /*!< The coordinate has been explicitly set. */
     Transformed = 1     /*!< Current coordinates resulting when transforming the original coordinates. */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ECoordinatesVersion>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ECoordinatesVersion> CEnumCoordinatesVersion;
-} }
+}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Defines the current edit mode of the drawing scene and the graphics item.
 */
@@ -342,16 +327,14 @@ enum class EEditMode
     ModifyingContent = 4        /*!< The interior (content) of the object is about to be modified.
                                      This mode is used by the text graphics item to edit the text. */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditMode>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EEditMode> CEnumEditMode;
-} }
+}
 
-//namespace ZS {
-//namespace Draw {
+//namespace ZS::Draw {
 ////==============================================================================
 ///*! When currently resizing an object (EditMode::Resize) the resize mode defines
 //    in which direction the object is being resized.
@@ -365,17 +348,15 @@ typedef ::CEnum<EEditMode> CEnumEditMode;
 //    ResizeVer = 3, /*!< The selected object is resized vertically. */
 //    Undefined = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
 //};
-//} }
-//
+//} // ZS::Draw
+
 //template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditResizeMode>;
-//namespace ZS {
-//namespace Draw {
+//namespace ZS::Draw {
 //typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
-//} }
+//}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Object may provide different selection points for editing and selecting.
 */
@@ -387,16 +368,14 @@ enum class ESelectionPointType
     PolygonPoint      = 2,  /*!< The selection point is one of the points of a line or a polygon. */
     LineCenterPoint   = 3   /*!< The selection point is at the center point of a line (also line segments of polygons). */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ESelectionPointType>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ESelectionPointType> CEnumSelectionPointType;
-} }
+}
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! TSelectionPoints
 */
@@ -416,11 +395,10 @@ const TSelectionPointTypes c_uSelectionPointsLineCenter                     = 0x
 const TSelectionPointTypes c_uSelectionPointsAll                            = 0x7f;
 
 ZSDRAWDLL_API QString selectionPointTypes2Str( TSelectionPointTypes i_selPts );
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Defines the different selection points which an object may provide for
     editing and moving an object.
@@ -470,11 +448,10 @@ enum class ESelectionPoint
     All             = 14, /*!< To select all selection points at once. */
     Any             = 15  /*!< To specify any selection point. */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ESelectionPoint>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ESelectionPoint> CEnumSelectionPoint;
 
 const int ESelectionPointRectMin = static_cast<int>(ESelectionPoint::TopLeft);
@@ -493,11 +470,10 @@ ZSDRAWDLL_API ESelectionPoint getOppositeSelectionPoint( ESelectionPoint i_selPt
 //ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );
 //ZSDRAWDLL_API CEnumEditResizeMode selectionPoint2EditResizeMode( ESelectionPoint i_selPt );
 ZSDRAWDLL_API QCursor selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRotationAngle_degree = 0.0 );
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Defines the possible line points.
 */
@@ -508,17 +484,15 @@ enum class ELinePoint
     Start = 1,  /*!< Start point of a line (usually P1). */
     End   = 2   /*!< End point of a line (usually P2). */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELinePoint>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ELinePoint> CEnumLinePoint;
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -530,20 +504,18 @@ enum class ETextStyle
    Bold       = 2,
    BoldItalic = 3  /*!< Italic|Bold */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ETextStyle>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ETextStyle> CEnumTextStyle;
 
 ZSDRAWDLL_API bool isTextStyleBold(const CEnumTextStyle& i_style);
 ZSDRAWDLL_API bool isTextStyleItalic(const CEnumTextStyle& i_style);
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 enum ETextSize
@@ -577,11 +549,10 @@ typedef enum {
 ZSDRAWDLL_API int textSize2SizeInPixels( ETextSize i_textSize );
 ZSDRAWDLL_API QString textSize2Str( ETextSize i_textSize );
 ZSDRAWDLL_API ETextSize str2TextSize( const QString& i_str, bool* o_pbConverted = nullptr );
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -593,19 +564,17 @@ enum class ETextEffect
     Underline          = 2,
     StrikeoutUnderline = 3, // Strikeout|Underline
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ETextEffect>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ETextEffect> CEnumTextEffect;
 
 ZSDRAWDLL_API bool isTextEffectStrikeout(const CEnumTextEffect& i_textEffect);
 ZSDRAWDLL_API bool isTextEffectUnderline(const CEnumTextEffect& i_textEffect);
-} }
+} // ZS::Draw
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -633,20 +602,18 @@ enum class EFillStyle
     ConicalGradientPattern = 17,
     TexturePattern         = 18
 } ;
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EFillStyle>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EFillStyle> CEnumFillStyle;
 
 ZSDRAWDLL_API Qt::BrushStyle fillStyle2QtBrushStyle( const CEnumFillStyle& i_fillStyle );
 ZSDRAWDLL_API bool isFillStyleGradientPattern( const CEnumFillStyle& i_fillStyle );
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -660,19 +627,17 @@ enum class ELineStyle
     DashDotLine    = 4,
     DashDotDotLine = 5
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELineStyle>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ELineStyle> CEnumLineStyle;
 
 ZSDRAWDLL_API Qt::PenStyle lineStyle2QtPenStyle( const CEnumLineStyle& i_lineStyle );
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! @brief A line may be indicated with one line (normal), a double line or a triple line.
 */
@@ -683,17 +648,15 @@ enum class ELineRecordType
     Double = 1,
     Triple = 2
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELineRecordType>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ELineRecordType> CEnumLineRecordType;
-} }
+}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! @brief A line end may be indicated normal or showing an arrow head.
 
@@ -732,17 +695,15 @@ enum class ELineEndStyle
     Normal    = 0,
     ArrowHead = 1
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELineEndStyle>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<ELineEndStyle> CEnumLineEndStyle;
-} }
+}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -752,19 +713,17 @@ enum class EArrowHeadFillStyle
     NoFill       = 0,
     SolidPattern = 1
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadFillStyle>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EArrowHeadFillStyle> CEnumArrowHeadFillStyle;
 
 ZSDRAWDLL_API Qt::BrushStyle arrowHeadFillStyle2QtBrushStyle(const CEnumArrowHeadFillStyle& i_fillStyle);
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*! Base line type for the arrow head.
 
@@ -795,17 +754,15 @@ enum class EArrowHeadBaseLineType
     Normal   = 1, // straight lined
     Indented = 2
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadBaseLineType>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EArrowHeadBaseLineType> CEnumArrowHeadBaseLineType;
-} }
+}
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -816,7 +773,7 @@ enum class EArrowHeadWidth
     Medium = 1,    /*!< 13 Pixel */
     Wide   = 2     /*!< 19 Pixel */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadWidth>;
 namespace ZS {
@@ -827,8 +784,7 @@ ZSDRAWDLL_API double arrowHeadWidth2dy(const CEnumArrowHeadWidth& i_width);
 } }
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -839,19 +795,17 @@ enum class EArrowHeadLength
     Medium = 1,   /*!< 10 Pixel */
     Long   = 2    /*!< 13 Pixel */
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadLength>;
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EArrowHeadLength> CEnumArrowHeadLength;
 
 ZSDRAWDLL_API double arrowHeadLength2dx(const CEnumArrowHeadLength& i_length);
-} }
+} // ZS::Draw
 
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 //==============================================================================
 /*!
 */
@@ -868,20 +822,16 @@ enum class EAlignmentRef
     Width   = 7,
     Height  = 8
 };
-} }
+} // ZS::Draw
 
 template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EAlignmentRef>;
 
-namespace ZS {
-namespace Draw {
+namespace ZS::Draw {
 typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
-} }
+} // ZS::Draw
 
 
-namespace ZS
-{
-namespace Draw
-{
+namespace ZS::Draw {
 //******************************************************************************
 struct ZSDRAWDLL_API SGraphObjAlignment
 //******************************************************************************
@@ -928,8 +878,13 @@ public: // struct methods
     static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* o_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
+    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
+    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, const QString& i_strKey, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, ESelectionPointType i_selPtType, int i_idxPt);
+    //SGraphObjSelectionPoint(EGraphObjType i_graphObjType, const QString& i_strKey, ESelectionPointType i_selPtType, int i_idxPt);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt);
     SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
 public: // operators
@@ -940,21 +895,33 @@ public: // struct methods
     QString name() const;
     QString toString(bool i_bIncludeGraphObj = false) const;
     bool isValid() const;
+public: // struct methods
+    //EGraphObjType graphObjType() const;
+    //QString key() const;
+    //CGraphObj* graphObj() const;
+    //ESelectionPointType selectionPointType() const;
+    //ESelectionPoint selectionPoint() const;
+    //int polygonPointIndex() const;
 public: // struct members
+    /*!< Type of the object the selection point belongs to. */
+    //EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
+    /*!< Name of the linkage. Must be unique within the source object.
+         E.g. the unique name of a label (but not the text shown in the label). */
+    //QString m_strKey;
     /*!< Graphical object the selection point belongs to.
          nullptr, if the selection point is not used (undefined). */
-    CGraphObj* m_pGraphObj;
+    CGraphObj* m_pGraphObj = nullptr;
     /*!< Type of the selection point. Selection points are differentiated into
          selection points on the bounding rectangle around the graphical object
          or into polygon shape points. */
-    ESelectionPointType m_selPtType;
+    ESelectionPointType m_selPtType = ESelectionPointType::Undefined;
     /*!< For selection points on the bounding rectangle specifies the position
          on (or within) the bounding rectangle.
          For polygon shape points the enum is set to PolygonPoint. */
-    ESelectionPoint m_selPt;
+    ESelectionPoint m_selPt = ESelectionPoint::None;
     /*!< For selection points on a polygon the index of the polygon point
          is stored the selection point is assigned to. */
-    int m_idxPt;
+    int m_idxPt = -1;
 
 }; // struct SGraphObjSelectionPoint
 
@@ -1058,36 +1025,33 @@ public: // struct members
     are not created but the descriptors are kept in the parent object. This way
     the labels can be created with the desired properties on demand.
 */
-struct ZSDRAWDLL_API SAnchorLayoutDscr
+struct ZSDRAWDLL_API SObjectLinkageDscr
 //******************************************************************************
 {
 public: // ctors
-    SAnchorLayoutDscr();
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other);
+    SObjectLinkageDscr();
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SObjectLinkageDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SObjectLinkageDscr(const SObjectLinkageDscr& i_other);
 public: // struct methods
     QString toString() const;
 public: // struct members
-    /*!< Key of the linked object within the parent's list of linked objects. */
+    /*!< Type of the source object of the linkage. */
+    EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
+    /*!< Name of the linkage. Must be unique within the source object.
+         E.g. the unique name of a label (but not the text shown in the label). */
     QString m_strKey;
-    /*!< Type of the anchored object. Limited to Labels and ConnectionPoints.
-         Range [EGraphcObjConnectionPoint, EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
-    EGraphObjType m_graphObjType;
     /*!< For connection points, text labels or geometry labels (like position) selPt1 defines the
          selection point the object is linked to.
          For geometry labels using two selection points like length, width or height,
          selPt1 defines the first selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt1;
+    SGraphObjSelectionPoint m_selPtSource;
     /*!< For connection points, text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
          For geometry labels using two selection points like length, width or height,
          selPt2 defines the second selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt2;
-    /*!< Text to be indicated by the anchored object. Not set (empty string) for geometry labels.
+    QList<SGraphObjSelectionPoint> m_arSelPtsTargets;
+    /*!< Text to be indicated for the linkage. Not set (empty string) for geometry labels.
          For geometry labels the indicated text is calculated during runtime
          by the label item and set at the QGraphicsSimpleTextItem. */
     QString m_strText;
@@ -1097,16 +1061,13 @@ public: // struct members
          after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag indicating whether the anchored object is visible. */
-    bool m_bIsVisible;
+    bool m_bIsVisible = false;
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
-    bool m_bShowAnchorLine;
+    bool m_bShowAnchorLine = false;
 
-}; // struct SAnchorLayoutDscr
+}; // struct SObjectLinkageDscr
 
-} // namespace Draw
-
-} // namespace ZS
-
+} // namespace ZS::Draw
 
 #ifdef _WINDOWS
 #pragma warning( pop )
