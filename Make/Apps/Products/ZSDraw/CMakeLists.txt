@@ -72,7 +72,6 @@ list(APPEND _Sources
 )
 
 list(APPEND _Resources
-    ${_ResourcesPath}/ZSDraw/ZSDraw.qrc
 )
 
 if(WIN32)

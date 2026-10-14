@@ -519,7 +519,7 @@ public: // instance methods
     bool isPolygon() const;
     bool isPolyline() const;
     bool isText() const;
-    bool isImage() const;
+    bool isPixmap() const;
     bool isConnectionPoint() const;
     bool isConnectionLine() const;
     bool isGroup() const;

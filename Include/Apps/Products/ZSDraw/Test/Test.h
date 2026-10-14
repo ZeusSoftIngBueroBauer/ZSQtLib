@@ -41,7 +41,7 @@ may result in using the software modules.
 class QGraphicsItem;
 class QPainterPath;
 
-#define TEST_ALL 0
+#define TEST_ALL 1
 
 #if TEST_ALL == 0
 
@@ -63,20 +63,20 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALPOLYGON 0
 #define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
-#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
+#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
@@ -91,7 +91,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_IMAGES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
@@ -127,12 +127,12 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_IMAGES 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_IMAGES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOLINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TORECTS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOELLIPSES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOPOLYGONS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 1
@@ -190,7 +190,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_IMAGES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
@@ -334,9 +334,9 @@ public: // type definition and constants
     const QString c_strGraphObjNameStar2 = "Star-2";
     const QString c_strGraphObjNameStar3 = "Star-3";
     const QString c_strGraphObjNameStar4 = "Star-4";
-    // Images
+    // Pixmaps
     //-----------
-    const QString c_strGraphObjNameImage1 = "Image-1";
+    const QString c_strGraphObjNamePixmap1 = "Pixmap-1";
     // Connection Points
     //------------------
     const QString c_strGraphObjNameConnectionPoint1 = "CnctPt1";
@@ -424,7 +424,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesImage(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPixmap(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsNotAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsNotAnchoredModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -531,7 +531,7 @@ protected slots:
     void doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep);
-    void doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjPixmap(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep);
@@ -576,7 +576,7 @@ protected: // auxiliary instance methods
     QStringList resultValuesForPolygon(
         const QString& strGraphObjName, const QPointF& i_pos,
         const QPolygonF& i_polygonItemCoors, const ZS::Draw::CPhysValPolygon& i_physValPolygon, bool i_bIsSelected, int i_iPrecision = -1) const;
-    QStringList resultValuesForImage(
+    QStringList resultValuesForPixmap(
         const QString& strGraphObjName, const QPointF& i_pos,
         const ZS::Draw::CPhysValRect& i_physValRect, bool i_bIsSelected, int i_iPrecision = -1) const;
     QStringList resultValuesForConnectionPoint(
@@ -663,22 +663,22 @@ protected: // instance members
     QPointF m_ptPosRect1;
     QRectF m_rectRect1;
     ZS::Draw::CPhysValRect* m_pPhysValRect1 = nullptr;
-    ZS::PhysVal::CPhysVal m_pPhysValAngleRect1;
+    ZS::PhysVal::CPhysVal m_physValAngleRect1;
     // Rectangle 2
     QPointF m_ptPosRect2;
     QRectF m_rectRect2;
     ZS::Draw::CPhysValRect* m_pPhysValRect2 = nullptr;
-    ZS::PhysVal::CPhysVal m_pPhysValAngleRect2;
+    ZS::PhysVal::CPhysVal m_physValAngleRect2;
     // Rectangle 3
     QPointF m_ptPosRect3;
     QRectF m_rectRect3;
     ZS::Draw::CPhysValRect* m_pPhysValRect3 = nullptr;
-    ZS::PhysVal::CPhysVal m_pPhysValAngleRect3;
+    ZS::PhysVal::CPhysVal m_physValAngleRect3;
     // Rectangle 4
     QPointF m_ptPosRect4;
     QRectF m_rectRect4;
     ZS::Draw::CPhysValRect* m_pPhysValRect4 = nullptr;
-    ZS::PhysVal::CPhysVal m_pPhysValAngleRect4;
+    ZS::PhysVal::CPhysVal m_physValAngleRect4;
     // Rect-BigCross-VerticalBar
     QPointF m_ptPosRectBigCrossVerticalBar;
     QRectF m_rectRectBigCrossVerticalBar;
@@ -789,13 +789,13 @@ protected: // instance members
     QPolygonF m_polygonStar4;
     ZS::PhysVal::CPhysVal m_physValAngleStar4;
 
-    // Images
+    // Pixmaps
     //------------------
 
-    QPointF m_ptPosImage1;
-    QSizeF m_sizeImage1;
-    ZS::Draw::CPhysValRect* m_pPhysValRectImage1 = nullptr;
-    ZS::PhysVal::CPhysVal m_physValAngleImage1;
+    QPointF m_ptPosPixmap1;
+    QSizeF m_sizePixmap1;
+    ZS::Draw::CPhysValRect* m_pPhysValRectPixmap1 = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAnglePixmap1;
 
     // Connection Points
     //------------------

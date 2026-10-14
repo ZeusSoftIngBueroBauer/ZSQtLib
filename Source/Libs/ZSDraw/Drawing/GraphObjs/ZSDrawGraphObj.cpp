@@ -526,7 +526,7 @@ bool CGraphObj::isText() const
 //------------------------------------------------------------------------------
 /*! @brief Convenience method to returning true if this object is an image.
 */
-bool CGraphObj::isImage() const
+bool CGraphObj::isPixmap() const
 //------------------------------------------------------------------------------
 {
     return m_type == EGraphObjTypePixmap;

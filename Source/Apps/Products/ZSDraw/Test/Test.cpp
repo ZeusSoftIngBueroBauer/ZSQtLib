@@ -233,8 +233,8 @@ CTest::~CTest()
     delete m_pPhysValPolygonStar4;
     m_pPhysValPolygonStar4 = nullptr;
 
-    delete m_pPhysValRectImage1;
-    m_pPhysValRectImage1 = nullptr;
+    delete m_pPhysValRectPixmap1;
+    m_pPhysValRectPixmap1 = nullptr;
 
     delete m_pPhysValConnectionPoint1;
     m_pPhysValConnectionPoint1 = nullptr;
@@ -417,7 +417,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Images
     //----------
-    m_pPhysValRectImage1 = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValRectPixmap1 = new CPhysValRect(*m_pDrawingScene);
 
     // Connection Points
     //------------------
@@ -511,7 +511,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing100x100px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol() + ")",
         /* pTSGrpParent */ pGrpPixelsDrawing );
 
     createTestGroupPrepareScene(pGrpPixelsDrawing100x100px, drawingSize, gridSettings, mapGraphObjTypeRenderHints);
@@ -531,7 +531,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing101x101px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol(),
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ImageSize(" + qSize2Str(drawingSize.imageSizeInPixels()) + " " + drawingSize.unit().symbol() + ")",
         /* pTSGrpParent */ pGrpPixelsDrawing );
 
     createTestGroupPrepareScene(pGrpPixelsDrawing101x101px, drawingSize, gridSettings, mapGraphObjTypeRenderHints);
@@ -3038,7 +3038,7 @@ void CTest::doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep* i_p
     else {
         physValPointResult = m_pDrawingScene->convert(pt, unitDest);
     }
-    QString strResultValue = "{" + physValPointResult.toString() + "} " + physValPointResult.unit().symbol();
+    QString strResultValue = "{" + physValPointResult.toString(false) + "} " + physValPointResult.unit().symbol();
     i_pTestStep->setResultValue(strResultValue);
 }
 
@@ -3076,7 +3076,7 @@ void CTest::doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep* i_pT
     else {
         physValSizeResult = m_pDrawingScene->convert(sizeF, unitDest);
     }
-    QString strResultValue = "{" + physValSizeResult.toString() + "} " + physValSizeResult.unit().symbol();
+    QString strResultValue = "{" + physValSizeResult.toString(false) + "} " + physValSizeResult.unit().symbol();
     i_pTestStep->setResultValue(strResultValue);
 }
 
@@ -3115,9 +3115,9 @@ void CTest::doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep* i_pT
         physValLineResult = m_pDrawingScene->convert(lineF, unitDest);
     }
     QStringList strlstResultValues;
-    strlstResultValues.append("P1 {" + physValLineResult.p1().toString() + "} " + physValLineResult.unit().symbol());
-    strlstResultValues.append("P2 {" + physValLineResult.p2().toString() + "} " + physValLineResult.unit().symbol());
-    strlstResultValues.append("Center {" + physValLineResult.center().toString() + "} " + physValLineResult.unit().symbol());
+    strlstResultValues.append("P1 {" + physValLineResult.p1().toString(false) + "} " + physValLineResult.unit().symbol());
+    strlstResultValues.append("P2 {" + physValLineResult.p2().toString(false) + "} " + physValLineResult.unit().symbol());
+    strlstResultValues.append("Center {" + physValLineResult.center().toString(false) + "} " + physValLineResult.unit().symbol());
     strlstResultValues.append("dx: " + physValLineResult.dx().toString());
     strlstResultValues.append("dy: " + physValLineResult.dy().toString());
     strlstResultValues.append("Length: " + physValLineResult.length().toString());
@@ -3161,11 +3161,11 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pT
         physValRectResult = m_pDrawingScene->convert(QRectF(ptTL, size), unitDest);
     }
     QStringList strlstResultValues;
-    strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString() + "} " + physValRectResult.unit().symbol());
-    strlstResultValues.append("TopRight {" + physValRectResult.topRight().toString() + "} " + physValRectResult.unit().symbol());
-    strlstResultValues.append("BottomRight {" + physValRectResult.bottomRight().toString() + "} " + physValRectResult.unit().symbol());
-    strlstResultValues.append("BottomLeft {" + physValRectResult.bottomLeft().toString() + "} " + physValRectResult.unit().symbol());
-    strlstResultValues.append("Center {" + physValRectResult.center().toString() + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString(false) + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("TopRight {" + physValRectResult.topRight().toString(false) + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("BottomRight {" + physValRectResult.bottomRight().toString(false) + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("BottomLeft {" + physValRectResult.bottomLeft().toString(false) + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("Center {" + physValRectResult.center().toString(false) + "} " + physValRectResult.unit().symbol());
     strlstResultValues.append("Width: " + physValRectResult.width().toString());
     strlstResultValues.append("Height: " + physValRectResult.height().toString());
     i_pTestStep->setResultValues(strlstResultValues);
@@ -3300,14 +3300,17 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         /* strMethod    */ "doTestStepShowLabels",
         /* strAddInfo   */ strMthInArgs );
 
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strLabelName = i_pTestStep->getConfigValue("LabelName").toString();
-
-    QString strKeyInTree = "B:" + strGraphObjName;
-    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
-    if (pGraphObj != nullptr) {
-        pGraphObj->showLabel(strLabelName);
-        pGraphObj->showLabelAnchorLine(strLabelName);
+    QString strGraphObjName; // may be set as config value or at data rows
+    if (i_pTestStep->hasConfigValue("GraphObjName")) {
+        strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    }
+    QString strGraphObjKeyInTree = "B:" + strGraphObjName;
+    if (i_pTestStep->hasConfigValue("GraphObjKeyInTree")) {
+        strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    }
+    QString strLabelName; // may be set as config value or at data rows
+    if (i_pTestStep->hasConfigValue("LabelName")) {
+        strGraphObjName = i_pTestStep->getConfigValue("LabelName").toString();
     }
 
     QStringList strlstExpectedValues;
@@ -3315,9 +3318,20 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
     {
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
-        QString strGraphObjName = dataRow["GraphObjName"].toString();
-        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
-        QString strLabelName = dataRow["LabelName"].toString();
+        if (dataRow.contains("GraphObjName")) {
+            strGraphObjName = dataRow["GraphObjName"].toString();
+        }
+        if (dataRow.contains("GraphObjKeyInTree")) {
+            strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        }
+        if (dataRow.contains("LabelName")) {
+            strLabelName = dataRow["LabelName"].toString();
+        }
+        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            pGraphObj->showLabel(strLabelName);
+            pGraphObj->showLabelAnchorLine(strLabelName);
+        }
         QPointF posToSet;
         if (dataRow.contains("setPos")) {
             posToSet = dataRow["setPos"].toPointF();
@@ -3333,10 +3347,7 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         }
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
-        CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            pGraphObj->showLabel(strLabelName);
-            pGraphObj->showLabelAnchorLine(strLabelName);
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
@@ -3802,7 +3813,7 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
+void CTest::doTestStepAddGraphObjPixmap(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3812,7 +3823,7 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepAddGraphObjImage",
+        /* strMethod    */ "doTestStepAddGraphObjPixmap",
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -3827,6 +3838,9 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
+    QString strImageFilePath = i_pTestStep->getConfigValue("ImageFilePath").toString();
+    QPointF pos = i_pTestStep->getConfigValue("setPos").toPointF();
+
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(graphObjType);
@@ -3834,7 +3848,8 @@ void CTest::doTestStepAddGraphObjImage(ZS::Test::CTestStep* i_pTestStep)
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjPixmap* pGraphObjImage = dynamic_cast<CGraphObjPixmap*>(pGraphObj);
         if (pGraphObjImage != nullptr) {
-            //pGraphObjImage->setPicture(polygon, drawingSize.unit());
+            pGraphObjImage->setImageFilePath(strImageFilePath);
+            pGraphObjImage->setPos(pos);
         }
         pGraphObj->rename(strGraphObjName);
     }
@@ -6592,22 +6607,22 @@ void CTest::initObjectCoors()
     m_ptPosRect1 = QPointF();
     m_rectRect1 = QRectF();
     *m_pPhysValRect1 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRect2 = QPointF();
     m_rectRect2 = QRectF();
     *m_pPhysValRect2 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect2 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRect3 = QPointF();
     m_rectRect3 = QRectF();
     *m_pPhysValRect3 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect3 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRect4 = QPointF();
     m_rectRect4 = QRectF();
     *m_pPhysValRect4 = CPhysValRect(*m_pDrawingScene);
-    m_pPhysValAngleRect4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_physValAngleRect4 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     m_ptPosRectBigCrossVerticalBar = QPointF();
     m_rectRectBigCrossVerticalBar = QRectF();
@@ -6717,10 +6732,10 @@ void CTest::initObjectCoors()
     // Images
     //------------------
 
-    m_ptPosImage1 = QPointF();
-    m_sizeImage1 = QSizeF();
-    *m_pPhysValRectImage1 = CPhysValRect(*m_pDrawingScene);
-    m_physValAngleImage1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    m_ptPosPixmap1 = QPointF();
+    m_sizePixmap1 = QSizeF();
+    *m_pPhysValRectPixmap1 = CPhysValRect(*m_pDrawingScene);
+    m_physValAnglePixmap1 = CPhysVal(0.0, Units.Angle.Degree, 0.1);
 
     // Connection Points
     //------------------
@@ -7234,6 +7249,14 @@ QStringList CTest::resultValuesForGraphObj(
                     pGraphObjPolygon->polygon(), pGraphObjPolygon->getPolygon(), i_bIsSelected, i_iPrecision);
             }
         }
+        else if (i_pGraphObj->isPixmap()) {
+            const CGraphObjPixmap* pGraphObjPixmap = dynamic_cast<const CGraphObjPixmap*>(i_pGraphObj);
+            if (pGraphObjPixmap != nullptr) {
+                strlstResultValues = resultValuesForPixmap(
+                    i_pGraphObj->name(), pGraphicsItem->pos(),
+                    pGraphObjPixmap->getRect(), i_bIsSelected, i_iPrecision);
+            }
+        }
         else if (i_pGraphObj->isConnectionPoint()) {
             const CGraphObjConnectionPoint* pGraphObjConnectionPoint = dynamic_cast<const CGraphObjConnectionPoint*>(i_pGraphObj);
             if (pGraphObjConnectionPoint != nullptr) {
@@ -7460,7 +7483,7 @@ QStringList CTest::resultValuesForPolygon(
 }
 
 //------------------------------------------------------------------------------
-QStringList CTest::resultValuesForImage(
+QStringList CTest::resultValuesForPixmap(
     const QString& strGraphObjName, const QPointF& i_pos,
     const CPhysValRect& i_physValRect,
     bool i_bIsSelected, int i_iPrecision) const

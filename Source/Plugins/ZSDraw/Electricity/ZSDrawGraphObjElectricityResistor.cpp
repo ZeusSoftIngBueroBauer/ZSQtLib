@@ -164,19 +164,19 @@ CGraphObjResistor::CGraphObjResistor(
     m_pGraphObjCnctPtRectBodyRightCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
     arpGraphObjs.append(m_pGraphObjRectBody);
 
-    m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
-        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
-    m_pGraphObjCnctPt1->rename("CnctPt1");
-    m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
-    arpGraphObjs.append(m_pGraphObjCnctPt1);
+    //m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
+    //    pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
+    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
+    //m_pGraphObjCnctPt1->rename("CnctPt1");
+    //m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
+    //arpGraphObjs.append(m_pGraphObjCnctPt1);
 
-    m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
-        pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
-    m_pGraphObjCnctPt2->rename("CnctPt2");
-    m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
-    arpGraphObjs.append(m_pGraphObjCnctPt2);
+    //m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
+    //    pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
+    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
+    //m_pGraphObjCnctPt2->rename("CnctPt2");
+    //m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
+    //arpGraphObjs.append(m_pGraphObjCnctPt2);
 
     m_pGraphObjCnctLine1 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine1");
     m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine1);
