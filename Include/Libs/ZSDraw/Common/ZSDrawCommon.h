@@ -878,9 +878,7 @@ typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
 } }
 
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 struct ZSDRAWDLL_API SGraphObjAlignment
@@ -1058,18 +1056,18 @@ public: // struct members
     are not created but the descriptors are kept in the parent object. This way
     the labels can be created with the desired properties on demand.
 */
-struct ZSDRAWDLL_API SAnchorLayoutDscr
+struct ZSDRAWDLL_API SAnchorLayoutDscr_Obsolete
 //******************************************************************************
 {
 public: // ctors
-    SAnchorLayoutDscr();
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other);
+    SAnchorLayoutDscr_Obsolete();
+    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType);
+    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey);
+    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SAnchorLayoutDscr_Obsolete(const SAnchorLayoutDscr_Obsolete& i_other);
 public: // struct methods
     QString toString() const;
 public: // struct members
@@ -1101,12 +1099,120 @@ public: // struct members
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine;
 
-}; // struct SAnchorLayoutDscr
+}; // struct SAnchorLayoutDscr_Obsolete
 
-} // namespace Draw
 
-} // namespace ZS
+//******************************************************************************
+/*! @brief Struct definining how to position labels relative to the linked object.
 
+    Used to position text labels and geometry which may be arbitrarily moved.
+
+    Descriptors are used by the graphical object to keep (save and restore)
+    the inoformation whether a label should be visible or not and to position
+    the object even if the object has not been created yet, is not yet existing
+    and not yet visible.
+
+    E.g. as long as a label is not added to the graphics scene the label objects
+    are not created but the descriptors are kept in the linked object. This way
+    the labels can be created with the desired properties on demand.
+*/
+struct ZSDRAWDLL_API SLabelAnchorDscr
+//******************************************************************************
+{
+public: // ctors
+    SLabelAnchorDscr();
+    SLabelAnchorDscr(EGraphObjType i_graphObjType);
+    SLabelAnchorDscr(EGraphObjType i_graphObjType, const SGraphObjSelectionPoint& i_selPt);
+    SLabelAnchorDscr(const SLabelAnchorDscr& i_other);
+public: // struct methods
+    QString toString() const;
+public: // struct members
+    /*!< Type of the label to be created. If the object is created, this information could
+         also be retrieved from the created object referenced through the selection point struct.
+         Range [EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
+    EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
+    /*!< Defines the selection point the object is linked to. For text labels the selection
+         point may be changed during runtime. For geometry labels the selection point is
+         given by the geometry information which should be indicated. E.g. the position of
+         an object is always linked to the center point of the bounding rectangle.
+         The position of the top left corner to the corresponding selection point.
+         Width, height and angle are also linked to the center point of the bounding rectangle. */
+    SGraphObjSelectionPoint m_selPt;
+    /*!< When modifying the shape of graphical objects the relative position of labels
+         linked to the graphical objects should always be the same.
+         This can only be managed when keeping the distance and the angle to the selection point
+         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+    SPolarCoors m_polarCoorsToLinkedSelPt;
+    /*!< Flag indicating whether the anchored object is visible. */
+    bool m_bIsVisible = false;
+    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
+    bool m_bShowAnchorLine = false;
+};
+
+
+//******************************************************************************
+/*! @brief Struct extending SLabelAnchorDscr with special properties for text labels.
+
+    Text labels may be used to indicated user defined texts.
+    As text labels may aribtrarily added by the user, each label need a unique key.
+    This key may be implicitly assigned (e.g. "Name" to indicate the name of the object
+    or "HelpText" which may be assigned by the user).
+*/
+struct ZSDRAWDLL_API STextLabelAnchorDscr : public SLabelAnchorDscr
+//******************************************************************************
+{
+public: // ctors
+    STextLabelAnchorDscr();
+    STextLabelAnchorDscr(const QString& i_strKey);
+    STextLabelAnchorDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    STextLabelAnchorDscr(const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    STextLabelAnchorDscr(const STextLabelAnchorDscr& i_other);
+public: // struct methods
+    QString toString() const;
+public: // struct members
+    /*!< Key of the linked object within the parent's list of linked objects. */
+    QString m_strKey;
+    /*!< Text to be indicated by the anchored object. Not set (empty string) for geometry labels.
+         For geometry labels the indicated text is calculated during runtime
+         by the label item and set at the QGraphicsSimpleTextItem. */
+    QString m_strText;
+
+}; // struct STextLabelAnchorDscr
+
+
+//******************************************************************************
+/*! @brief Struct defining an aribtrary connection between two objects.
+
+    E.g. the end points of a line may be linked to different objects (like,
+    but not in the same way as, connection lines).
+
+    This kind of linkages are mainly used for layout purposes so that the source
+    object of the linkage adjust its position to the target object if the target
+    object is moved or resized.
+
+    This kind of linkages may also be used to indicate the distance between two
+    objects by class CGraphObjLabelGeometryDistance.
+*/
+struct ZSDRAWDLL_API SLinkageAnchorDscr
+//******************************************************************************
+{
+    SLinkageAnchorDscr();
+    SLinkageAnchorDscr(const QString& i_strKey);
+    SLinkageAnchorDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPtSource, const SGraphObjSelectionPoint& i_selPtTarget);
+    SLinkageAnchorDscr(const SLinkageAnchorDscr& i_other);
+public: // struct methods
+    QString toString() const;
+public: // struct members
+    /*!< Unique name of the linkage. */
+    QString m_strKey;
+    /*!<  */
+    SGraphObjSelectionPoint m_selPtSource;
+    /*!<  */
+    SGraphObjSelectionPoint m_selPtTarget;
+
+}; // struct SLinkageAnchorDscr
+
+} // namespace ZS::Draw
 
 #ifdef _WINDOWS
 #pragma warning( pop )

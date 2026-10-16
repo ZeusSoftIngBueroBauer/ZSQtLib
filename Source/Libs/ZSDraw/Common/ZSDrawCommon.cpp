@@ -1084,9 +1084,7 @@ template<> const QVector<SEnumEntry> CEnum<EAlignmentRef>::s_arEnumEntries =
 };
 
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 /*******************************************************************************
 struct SGraphObjAlignment
@@ -1749,7 +1747,7 @@ QString SPolarCoors::toString(bool i_bAddUnit, const QString& i_strSeparator) co
 
 
 /*******************************************************************************
-struct SAnchorLayoutDscr
+struct SLabelAnchorDscr
 *******************************************************************************/
 
 /*==============================================================================
@@ -1757,120 +1755,30 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr() :
+SLabelAnchorDscr::SLabelAnchorDscr() = default;
 //------------------------------------------------------------------------------
-    m_strKey(),
-    m_graphObjType(EGraphObjTypeUndefined),
-    m_strText(),
-    m_selPt1(),
-    m_selPt2(),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
+
+//------------------------------------------------------------------------------
+SLabelAnchorDscr::SLabelAnchorDscr(EGraphObjType i_graphObjType) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType)
 {
 }
 
 //------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(EGraphObjType i_graphObjType) :
+SLabelAnchorDscr::SLabelAnchorDscr(
+    EGraphObjType i_graphObjType, const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
-    m_strKey(),
     m_graphObjType(i_graphObjType),
-    m_strText(),
-    m_selPt1(),
-    m_selPt2(),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
+    m_selPt(i_selPt)
 {
 }
 
 //------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(EGraphObjType i_graphObjType, const QString& i_strKey) :
+SLabelAnchorDscr::SLabelAnchorDscr(const SLabelAnchorDscr& i_other) :
 //------------------------------------------------------------------------------
-    m_strKey(i_strKey),
-    m_graphObjType(i_graphObjType),
-    m_strText(),
-    m_selPt1(),
-    m_selPt2(),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
-{
-}
-
-//------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey,
-    const SGraphObjSelectionPoint& i_selPt) :
-//------------------------------------------------------------------------------
-    m_strKey(i_strKey),
-    m_graphObjType(i_graphObjType),
-    m_strText(),
-    m_selPt1(i_selPt),
-    m_selPt2(),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
-{
-}
-
-//------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey,
-    const SGraphObjSelectionPoint& i_selPt1,
-    const SGraphObjSelectionPoint& i_selPt2) :
-//------------------------------------------------------------------------------
-    m_strKey(i_strKey),
-    m_graphObjType(i_graphObjType),
-    m_strText(),
-    m_selPt1(i_selPt1),
-    m_selPt2(i_selPt2),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
-{
-}
-
-//------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
-    const SGraphObjSelectionPoint& i_selPt) :
-//------------------------------------------------------------------------------
-    m_strKey(i_strKey),
-    m_graphObjType(i_graphObjType),
-    m_strText(i_strText),
-    m_selPt1(i_selPt),
-    m_selPt2(),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
-{
-}
-
-//------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(
-    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
-    const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2) :
-//------------------------------------------------------------------------------
-    m_strKey(i_strKey),
-    m_graphObjType(i_graphObjType),
-    m_strText(i_strText),
-    m_selPt1(i_selPt1),
-    m_selPt2(i_selPt2),
-    m_polarCoorsToLinkedSelPt(),
-    m_bIsVisible(false),
-    m_bShowAnchorLine(false)
-{
-}
-
-//------------------------------------------------------------------------------
-SAnchorLayoutDscr::SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other) :
-//------------------------------------------------------------------------------
-    m_strKey(i_other.m_strKey),
     m_graphObjType(i_other.m_graphObjType),
-    m_strText(i_other.m_strText),
-    m_selPt1(i_other.m_selPt1),
-    m_selPt2(i_other.m_selPt2),
+    m_selPt(i_other.m_selPt),
     m_polarCoorsToLinkedSelPt(i_other.m_polarCoorsToLinkedSelPt),
     m_bIsVisible(i_other.m_bIsVisible),
     m_bShowAnchorLine(i_other.m_bShowAnchorLine)
@@ -1878,30 +1786,123 @@ SAnchorLayoutDscr::SAnchorLayoutDscr(const SAnchorLayoutDscr& i_other) :
 }
 
 //------------------------------------------------------------------------------
-QString SAnchorLayoutDscr::toString() const
+QString SLabelAnchorDscr::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if (m_selPt1.isValid() || m_selPt2.isValid()) {
-        if (m_selPt1.isValid()) {
-            str = "SelPt1 {" + m_selPt1.toString(true) + "}";
-        }
-        if (m_selPt2.isValid()) {
-            if (!str.isEmpty()) {
-                str += ", ";
-            }
-            str += "SelPt2 {" + m_selPt2.toString(true) + "}";
-        }
-        str +=  ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
-                ", Visible: " + bool2Str(m_bIsVisible) +
-                ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
-    }
-    else {
-        str = "-";
-    }
-    return str;
+    return "Type: " + graphObjType2Str(m_graphObjType) +
+        ", SelPt {" + m_selPt.toString(true) + "}" +
+        ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
+        ", Visible: " + bool2Str(m_bIsVisible) +
+        ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
 }
 
-} // namespace Draw
 
-} // namespace ZS
+/*******************************************************************************
+struct STextLabelAnchorDscr
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+STextLabelAnchorDscr::STextLabelAnchorDscr() :
+//------------------------------------------------------------------------------
+    SLabelAnchorDscr(EGraphObjTypeLabel)
+{
+}
+
+//------------------------------------------------------------------------------
+STextLabelAnchorDscr::STextLabelAnchorDscr(const QString& i_strKey) :
+//------------------------------------------------------------------------------
+    SLabelAnchorDscr(EGraphObjTypeLabel),
+    m_strKey(i_strKey)
+{
+}
+
+//------------------------------------------------------------------------------
+STextLabelAnchorDscr::STextLabelAnchorDscr(
+    const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt) :
+//------------------------------------------------------------------------------
+    SLabelAnchorDscr(EGraphObjTypeLabel, i_selPt),
+    m_strKey(i_strKey)
+{
+}
+
+//------------------------------------------------------------------------------
+STextLabelAnchorDscr::STextLabelAnchorDscr(
+    const QString& i_strKey, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt) :
+//------------------------------------------------------------------------------
+    SLabelAnchorDscr(EGraphObjTypeLabel, i_selPt),
+    m_strKey(i_strKey),
+    m_strText(i_strText)
+{
+}
+
+//------------------------------------------------------------------------------
+STextLabelAnchorDscr::STextLabelAnchorDscr(const STextLabelAnchorDscr& i_other) :
+//------------------------------------------------------------------------------
+    SLabelAnchorDscr(i_other),
+    m_strKey(i_other.m_strKey),
+    m_strText(i_other.m_strText)
+{
+}
+
+//------------------------------------------------------------------------------
+QString STextLabelAnchorDscr::toString() const
+//------------------------------------------------------------------------------
+{
+    return m_strKey + ", {" + SLabelAnchorDscr::toString() + "}";
+}
+
+
+/*******************************************************************************
+struct SLinkageAnchorDscr
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SLinkageAnchorDscr::SLinkageAnchorDscr() = default;
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+SLinkageAnchorDscr::SLinkageAnchorDscr(const QString& i_strKey) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey)
+{
+}
+
+//------------------------------------------------------------------------------
+SLinkageAnchorDscr::SLinkageAnchorDscr(
+    const QString& i_strKey,
+    const SGraphObjSelectionPoint& i_selPtSource,
+    const SGraphObjSelectionPoint& i_selPtTarget) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey),
+    m_selPtSource(i_selPtSource),
+    m_selPtTarget(i_selPtTarget)
+{
+}
+
+//------------------------------------------------------------------------------
+SLinkageAnchorDscr::SLinkageAnchorDscr(const SLinkageAnchorDscr& i_other) :
+//------------------------------------------------------------------------------
+    m_strKey(i_other.m_strKey),
+    m_selPtSource(i_other.m_selPtSource),
+    m_selPtTarget(i_other.m_selPtTarget)
+{
+}
+
+//------------------------------------------------------------------------------
+QString SLinkageAnchorDscr::toString() const
+//------------------------------------------------------------------------------
+{
+    return m_strKey + ", Source {" + m_selPtSource.toString() + "}" +
+        ", Target {" + m_selPtTarget.toString() + "}";
+}
+
+} // namespace ZS::Draw

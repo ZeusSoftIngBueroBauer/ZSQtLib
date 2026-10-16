@@ -695,37 +695,37 @@ protected: // overridables (selection points)
     virtual void showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectionPointTypes i_selPts = c_uSelectionPointsBoundingRectAll);
     virtual void showSelectionPointsOfPolygon(const QPolygonF& i_plg);
 public: // overridables (text labels)
-    QString findUniqueLabelName(const QString& i_strPrefix = "") const;
-    QStringList getLabelNames() const;
-    virtual QStringList getPredefinedLabelNames() const;
-    virtual bool isPredefinedLabelName(const QString& i_strName) const;
-    CGraphObjLabel* getLabel(const QString& i_strName) const;
-    SAnchorLayoutDscr getLabelDescriptor(const QString& i_strName) const;
-    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
-    virtual bool labelHasDefaultValues(const QString& i_strName) const;
-    virtual bool isLabelAdded(const QString& i_strName) const;
-    virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
-    virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt);
-    virtual bool removeLabel(const QString& i_strName);
-    virtual bool renameLabel(const QString& i_strName, const QString& i_strNameNew);
-    virtual void setLabelText(const QString& i_strName, const QString& i_strText);
-    virtual QString labelText(const QString& i_strName) const;
-    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
-    virtual SGraphObjSelectionPoint labelAnchorPoint(const QString& i_strName) const;
-    virtual void showLabel(const QString& i_strName);
-    virtual void hideLabel(const QString& i_strName);
-    virtual bool isLabelVisible(const QString& i_strName) const;
-    virtual void setLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors);
-    virtual SPolarCoors labelPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const;
-    virtual void showLabelAnchorLine(const QString& i_strName);
-    virtual void hideLabelAnchorLine(const QString& i_strName);
-    virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
+    QString findUniqueTextLabelName(const QString& i_strPrefix = "") const;
+    QStringList getTextLabelNames() const;
+    virtual QStringList getPredefinedTextLabelNames() const;
+    virtual bool isPredefinedTextLabelName(const QString& i_strName) const;
+    CGraphObjLabel* getTextLabel(const QString& i_strName) const;
+    STextLabelAnchorDscr getTextLabelDescriptor(const QString& i_strName) const;
+    virtual QList<SGraphObjSelectionPoint> getPossibleTextLabelAnchorPoints(const QString& i_strName) const;
+    virtual bool textLabelHasDefaultValues(const QString& i_strName) const;
+    virtual bool isTextLabelAdded(const QString& i_strName) const;
+    virtual bool addTextLabel(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual bool addTextLabel(const QString& i_strName, const QString& i_strText, ESelectionPointType i_selPtType, int i_idxPt);
+    virtual bool removeTextLabel(const QString& i_strName);
+    virtual bool renameTextLabel(const QString& i_strName, const QString& i_strNameNew);
+    virtual void setTextLabelText(const QString& i_strName, const QString& i_strText);
+    virtual QString textLabelText(const QString& i_strName) const;
+    virtual void setTextLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    virtual void setTextLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
+    virtual SGraphObjSelectionPoint textLabelAnchorPoint(const QString& i_strName) const;
+    virtual void showTextLabel(const QString& i_strName);
+    virtual void hideTextLabel(const QString& i_strName);
+    virtual bool isTextLabelVisible(const QString& i_strName) const;
+    virtual void setTextLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors);
+    virtual SPolarCoors textLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const;
+    virtual void showTextLabelAnchorLine(const QString& i_strName);
+    virtual void hideTextLabelAnchorLine(const QString& i_strName);
+    virtual bool isTextLabelAnchorLineVisible(const QString& i_strName) const;
 public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
     virtual bool isValidGeometryLabelName(const QString& i_strName) const;
     CGraphObjLabel* getGeometryLabel(const QString& i_strName) const;
-    SAnchorLayoutDscr getGeometryLabelDescriptor(const QString& i_strName) const;
+    SLabelAnchorDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
@@ -742,7 +742,7 @@ protected: // overridables (geometry labels)
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;
     CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    //SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
     //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
@@ -1000,7 +1000,7 @@ protected: // instance members
          during runtime. E.g. when added or removing points to a polygon. For this label
          names "P<IdxPt>" are predefined label names and may not be used as user defined label names.
          If user defined labels got to be added the reserved names may not be used. */
-    QStringList m_strlstPredefinedLabelNames;
+    QStringList m_strlstPredefinedTextLabelNames;
     /*!< Hash with descriptors for labels which may be assigned to and indicated by the graphical object.
          For each label a unique name has to be assigned.
          Some names are reserved for internal use.
@@ -1013,10 +1013,10 @@ protected: // instance members
          unique name and assigning a text. Both the name and the text are stored in the Label object.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, SAnchorLayoutDscr> m_hshLabelDscrs;
+    QHash<QString, STextLabelAnchorDscr> m_hshTextLabelDscrs;
     /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
          Created on demand from the label descriptors if the labels are added to the graphics scene. */
-    QHash<QString, CGraphObjLabel*> m_hshpLabels;
+    QHash<QString, CGraphObjLabel*> m_hshpTextLabels;
     /*!< List with the geometry label names. May be initialised in the constructor of derived classes
          in addition to the hash with geometry labels. Keeping the geometry label names also in a string list
          beside the geometry label hashes should verify that the returned value names are always in the same order
@@ -1029,14 +1029,14 @@ protected: // instance members
          "Length" and "Angle" may be shown.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, SAnchorLayoutDscr> m_hshGeometryLabelDscrs;
+    QHash<QString, SLabelAnchorDscr> m_hshGeometryLabelDscrs;
     /*!< Hash with geometry labels which may be indicated by the graphical object.
          Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
     /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
          Connection points may be at the same position of selection points but may also be arbitrarily positioned.
          The desriptors are used to set the relative position to of the connection point to the graphical object. */
-    QHash<QString, SAnchorLayoutDscr> m_hshConnectionPointsDscrs;
+    QHash<QString, SGraphObjSelectionPoint> m_hshConnectionPointsSelPts;
     /*!< Hash with geometry labels which may be indicated by the graphical object.
          Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;
