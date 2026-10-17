@@ -139,7 +139,6 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
         /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem(),
-    m_anchorLayoutDscr(EGraphObjTypeConnectionPoint, i_strObjName),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),
     m_physValRectScaledAndRotated(*m_pDrawingScene)
@@ -208,44 +207,11 @@ void CGraphObjConnectionPoint::init(const QString& i_strObjName)
         /* strMethod    */ "init",
         /* strAddInfo   */ i_strObjName );
 
-    m_strlstPredefinedLabelNames.append(c_strLabelName);
-    addLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    m_strlstPredefinedTextLabelNames.append(c_strLabelName);
+    addTextLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
 
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
-    //m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
-
-    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
-        if (strLabelName == c_strGeometryLabelNameCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
-        }
-        else if (strLabelName == c_strGeometryLabelNameWidth) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameHeight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
-        }
-        else if (strLabelName == c_strGeometryLabelNameTopLeft) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
-        }
-        else if (strLabelName == c_strGeometryLabelNameTopRight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
-        }
-        else if (strLabelName == c_strGeometryLabelNameBottomRight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
-        }
-        else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
-        }
-    }
+    addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
             |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
@@ -283,34 +249,6 @@ int CGraphObjConnectionPoint::type() const
 //------------------------------------------------------------------------------
 {
     return EGraphObjTypeConnectionPoint;
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setName(const QString& i_strName)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setName",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_strKey != i_strName) {
-        CGraphObj::setName(i_strName);
-        m_anchorLayoutDscr.m_strKey = i_strName;
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
 }
 
 /*==============================================================================
@@ -1332,94 +1270,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "AnchoredTo {" + i_anchorLayoutDscr.toString() + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setLinkedObject",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        QObject::disconnect(
-            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged);
-        QObject::disconnect(
-            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObjConnectionPoint::onLinkedObjectZValueChanged);
-    }
-    m_anchorLayoutDscr = i_anchorLayoutDscr;
-    m_anchorLayoutDscr.m_graphObjType = EGraphObjTypeConnectionPoint;
-    m_anchorLayoutDscr.m_strKey = m_strKeyInTree;
-
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        QObject::connect(
-            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged);
-        QObject::connect(
-            m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-            this, &CGraphObjConnectionPoint::onLinkedObjectZValueChanged);
-    }
-    updatePosition();
-
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
-    }
-}
-
-//------------------------------------------------------------------------------
-CGraphObj* CGraphObjConnectionPoint::linkedObject() const
-//------------------------------------------------------------------------------
-{
-    CGraphObj* pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        pGraphObjLinked = m_anchorLayoutDscr.m_selPt2.m_pGraphObj;
-    }
-    return pGraphObjLinked;
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
-//------------------------------------------------------------------------------
-{
-    QString strPath;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->path();
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->path();
-    }
-    return strPath;
-}
-
-//------------------------------------------------------------------------------
-QString CGraphObjConnectionPoint::path() const
-//------------------------------------------------------------------------------
-{
-    QString strPath = pathNameOfLinkedObject();
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
-    }
-    return strPath;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 void CGraphObjConnectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
@@ -1434,20 +1284,34 @@ void CGraphObjConnectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSele
         /* strMethod    */ "setLinkedObjectSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_anchorLayoutDscr.m_selPt1 != i_selPt) {
-        if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
+    if (m_selPtLinkedObject != i_selPt) {
+        if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
             QObject::disconnect(
-                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged);
+                m_selPtLinkedObject.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged);
+            QObject::disconnect(
+                m_selPtLinkedObject.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObjConnectionPoint::onLinkedObjectZValueChanged);
         }
-        m_anchorLayoutDscr.m_selPt1 = i_selPt;
 
-        if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-            QObject::connect(
-                m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObjConnectionPoint::onSelectionPointGeometryOnSceneChanged);
+        if (i_selPt.m_pGraphObj == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
         }
+
+        m_selPtLinkedObject = i_selPt;
+
+        double fZValueParent = m_selPtLinkedObject.m_pGraphObj->getStackingOrderValue();
+        setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
+
+        QObject::connect(
+            m_selPtLinkedObject.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjConnectionPoint::onLinkedObjectGeometryOnSceneChanged);
+        QObject::connect(
+            m_selPtLinkedObject.m_pGraphObj, &CGraphObj::zValueChanged,
+            this, &CGraphObjConnectionPoint::onLinkedObjectZValueChanged);
+
         updatePosition();
+
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -1455,15 +1319,39 @@ void CGraphObjConnectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSele
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point.
-
-    Selection points are differentiated into selection points on the bounding
-    rectangle around the graphical object or into polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjConnectionPoint::linkedObjectSelectionPoint() const
+SGraphObjSelectionPoint CGraphObjConnectionPoint::selectionPointAtLinkedObject() const
 //------------------------------------------------------------------------------
 {
-    return m_anchorLayoutDscr.m_selPt1;
+    return m_selPtLinkedObject;
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CGraphObjConnectionPoint::linkedObject() const
+//------------------------------------------------------------------------------
+{
+    return m_selPtLinkedObject.m_pGraphObj;
+}
+
+//------------------------------------------------------------------------------
+QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    QString strPath;
+    if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        strPath = m_selPtLinkedObject.m_pGraphObj->path();
+    }
+    return strPath;
+}
+
+//------------------------------------------------------------------------------
+QString CGraphObjConnectionPoint::path() const
+//------------------------------------------------------------------------------
+{
+    QString strPath = pathNameOfLinkedObject();
+    if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        strPath = m_selPtLinkedObject.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    }
+    return strPath;
 }
 
 /*==============================================================================
@@ -1485,8 +1373,8 @@ void CGraphObjConnectionPoint::setPolarCoorsToLinkedSelectionPoint(const SPolarC
         /* strMethod    */ "setPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
+    if (m_polarCoorsToLinkedSelPt != i_polarCoors) {
+        m_polarCoorsToLinkedSelPt = i_polarCoors;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -1498,7 +1386,7 @@ void CGraphObjConnectionPoint::setPolarCoorsToLinkedSelectionPoint(const SPolarC
 SPolarCoors CGraphObjConnectionPoint::polarCoorsToLinkedSelectionPoint() const
 //------------------------------------------------------------------------------
 {
-    return m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt;
+    return m_polarCoorsToLinkedSelPt;
 }
 
 /*==============================================================================
@@ -1517,8 +1405,8 @@ void CGraphObjConnectionPoint::showAnchorLine()
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    if (!m_anchorLayoutDscr.m_bShowAnchorLine) {
-        m_anchorLayoutDscr.m_bShowAnchorLine = true;
+    if (!m_bShowAnchorLine) {
+        m_bShowAnchorLine = true;
         if (scene() != nullptr) {
             QGraphicsItem_prepareGeometryChange();
             QRectF rctBounding = boundingRect();
@@ -1544,16 +1432,16 @@ void CGraphObjConnectionPoint::hideAnchorLine()
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    if (m_anchorLayoutDscr.m_bShowAnchorLine) {
+    if (m_bShowAnchorLine) {
         if (scene() != nullptr) {
             QRectF rctBounding = boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
-            m_anchorLayoutDscr.m_bShowAnchorLine = false;
+            m_bShowAnchorLine = false;
             QGraphicsItem_prepareGeometryChange();
             scene()->update(rctBounding);
         }
         else {
-            m_anchorLayoutDscr.m_bShowAnchorLine = false;
+            m_bShowAnchorLine = false;
         }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -1565,7 +1453,7 @@ void CGraphObjConnectionPoint::hideAnchorLine()
 bool CGraphObjConnectionPoint::isAnchorLineVisible() const
 //------------------------------------------------------------------------------
 {
-    return m_anchorLayoutDscr.m_bShowAnchorLine;
+    return m_bShowAnchorLine;
 }
 
 /*==============================================================================
@@ -1684,26 +1572,6 @@ CPhysValRect CGraphObjConnectionPoint::getPhysValBoundingRect(const CUnit& i_uni
 }
 
 /*==============================================================================
-protected: // must overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::showSelectionPoints(TSelectionPointTypes i_selPts)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + selectionPointTypes2Str(i_selPts) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "showSelectionPoints",
-        /* strAddInfo   */ strMthInArgs );
-}
-
-/*==============================================================================
 public: // overridables of base class CGraphObj (text labels)
 ==============================================================================*/
 
@@ -1724,258 +1592,26 @@ public: // overridables of base class CGraphObj (text labels)
 
     @return List of possbile selection points.
 */
-QList<SGraphObjSelectionPoint> CGraphObjConnectionPoint::getPossibleLabelAnchorPoints(const QString& i_strName) const
+QList<SGraphObjSelectionPoint> CGraphObjConnectionPoint::getPossibleTextLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
     if (s_arSelPtsUserDefined.isEmpty()) {
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
             const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
-        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
     }
     static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
     if (s_hshSelPtsPredefined.isEmpty()) {
         QList<SGraphObjSelectionPoint> arSelPts;
         arSelPts.append(SGraphObjSelectionPoint(
             const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
         s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
         arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter));
-        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopCenter, arSelPts);
-        arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter));
-        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameRightCenter, arSelPts);
-        arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter));
-        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomCenter, arSelPts);
-        arSelPts.clear();
-        arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjConnectionPoint*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter));
-        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameLeftCenter, arSelPts);
     }
     if (s_hshSelPtsPredefined.contains(i_strName)) {
         return s_hshSelPtsPredefined.value(i_strName);
     }
     return s_arSelPtsUserDefined;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Checks whether the label with the passed name has been modified or still
-           has its default values.
-
-    @param [in] i_strName
-        Name of the label to be checked.
-
-    @return true if the label still has its default values, false otherwise.
-*/
-bool CGraphObjConnectionPoint::labelHasDefaultValues(const QString& i_strName) const
-//------------------------------------------------------------------------------
-{
-    if (!m_hshLabelDscrs.contains(i_strName)) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
-
-    bool bHasDefaultValues = false;
-    if (isPredefinedLabelName(i_strName)) {
-        bHasDefaultValues = true;
-        const SAnchorLayoutDscr& labelDscr = m_hshLabelDscrs[i_strName];
-        if (labelDscr.m_bIsVisible) {
-            bHasDefaultValues = false;
-        }
-        else if (labelDscr.m_bShowAnchorLine) {
-            bHasDefaultValues = false;
-        }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
-            bHasDefaultValues = false;
-        }
-        else if (i_strName == c_strLabelName) {
-            if (labelDscr.m_strText != m_strName) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameTopCenter) {
-            if (labelDscr.m_strText != i_strName) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameRightCenter) {
-            if (labelDscr.m_strText != i_strName) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::RightCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameBottomCenter) {
-            if (labelDscr.m_strText != i_strName) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::BottomCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameLeftCenter) {
-            if (labelDscr.m_strText != i_strName) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::LeftCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-    }
-    return bHasDefaultValues;
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj (geometry labels)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Checks whether the label with the passed name has been modified or still
-           has its default values.
-
-    @param [in] i_strName
-        Name of the label to be checked.
-
-    @return true if the label still has its default values, false otherwise.
-*/
-bool CGraphObjConnectionPoint::geometryLabelHasDefaultValues(const QString& i_strName) const
-//------------------------------------------------------------------------------
-{
-    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
-
-    bool bHasDefaultValues = false;
-    if (m_strlstGeometryLabelNames.contains(i_strName)) {
-        bHasDefaultValues = true;
-        const SAnchorLayoutDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
-        if (labelDscr.m_bIsVisible) {
-            bHasDefaultValues = false;
-        }
-        else if (labelDscr.m_bShowAnchorLine) {
-            bHasDefaultValues = false;
-        }
-        else if (!labelDscr.m_strText.isEmpty()) {
-            bHasDefaultValues = false;
-        }
-        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
-            bHasDefaultValues = false;
-        }
-        else if (i_strName == c_strGeometryLabelNameTopCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameRightCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::RightCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameBottomCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::BottomCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameLeftCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::LeftCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameWidth) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::LeftCenter) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::RightCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameHeight) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopCenter) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::BottomCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-        else if (i_strName == c_strGeometryLabelNameAngle) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::RightCenter) {
-                bHasDefaultValues = false;
-            }
-        }
-    }
-    return bHasDefaultValues;
 }
 
 /*==============================================================================
@@ -2718,7 +2354,7 @@ void CGraphObjConnectionPoint::onLinkedObjectZValueChanged(CGraphObj* i_pGraphOb
 
     // The labels anchor line should be drawn above the parent object.
     // Otherwise the anchor lines may be covered by the painting of the parent object.
-    double fZValueParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
+    double fZValueParent = m_selPtLinkedObject.m_pGraphObj->getStackingOrderValue();
     setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetConnectionPoints);
 }
 
@@ -3021,17 +2657,17 @@ void CGraphObjConnectionPoint::updatePosition()
         /* strAddInfo   */ "" );
 
     QLineF anchorLine;
-    CGraphObj* pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
+    CGraphObj* pGraphObjLinked = m_selPtLinkedObject.m_pGraphObj;
     if (pGraphObjLinked != nullptr) {
         m_bUpdatePositionInProgress = true;
         // Get anchor line in scene coordinates.
-        if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
             anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-                m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+                m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
         }
         else {
             anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-                m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+                m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
         }
 
         // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -3088,17 +2724,17 @@ void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
     QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
-            ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        m_polarCoorsToLinkedSelPt = m_selPtLinkedObject.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+            ptScenePosCenterThis, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
     }
     else {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
-            ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        m_polarCoorsToLinkedSelPt = m_selPtLinkedObject.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+            ptScenePosCenterThis, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
+            ", " + QString::number(m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
     updateAnchorLine();
@@ -3122,13 +2758,13 @@ void CGraphObjConnectionPoint::updateAnchorLine()
         /* strAddInfo   */ "" );
 
     QPointF ptSelScenePosParent;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelScenePosParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelScenePosParent = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
     }
     else {
-        ptSelScenePosParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        ptSelScenePosParent = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
 
     QRectF rctBoundingThis = getBoundingRect();
@@ -3411,7 +3047,7 @@ void CGraphObjConnectionPoint::traceGraphObjStates(
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
-    strRuntimeInfo += "AnchoredTo {" + m_anchorLayoutDscr.toString() + "}";
+    strRuntimeInfo += "AnchoredTo {" + m_selPtLinkedObject.toString() + "}";
     i_mthTracer.trace(strRuntimeInfo);
 }
 

@@ -88,47 +88,33 @@ public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
-public: // ctors and dtor
+public: // ctors and dtor (text labels)
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
         const QString& i_strText,
         const SGraphObjSelectionPoint& i_selPt);
-protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition)
+protected: // ctor (geometry labels)
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
-        const QString& i_strText,
         EGraphObjType i_labelType,
         const SGraphObjSelectionPoint& i_selPt);
-    CGraphObjLabel(
-        CDrawingScene* i_pDrawingScene,
-        const QString& i_strKey,
-        const QString& i_strText,
-        EGraphObjType i_labelType,
-        const SGraphObjSelectionPoint& i_selPt1,
-        const SGraphObjSelectionPoint& i_selPt2);
 public: // dtor
     ~CGraphObjLabel() override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables of base class QGraphicsItem
     int type() const override;
-public: // overridables of base class CGraphObj
-    void setName(const QString& i_strName) override;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);
     QString text() const;
 public: // instance methods
-    void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
+    void setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
+    SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
     CGraphObj* linkedObject() const override;
     QString pathNameOfLinkedObject() const override;
     QString path() const override;
-public: // instance methods
-    void setLinkedObjectSelectionPoint1( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint linkedObjectSelectionPoint1() const;
-    void setLinkedObjectSelectionPoint2( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint linkedObjectSelectionPoint2() const;
 public: // instance methods
     void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
     SPolarCoors polarCoorsToLinkedSelectionPoint() const;
@@ -166,11 +152,23 @@ protected: // overridable auxiliary instance methods
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceGraphObjStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "") const override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
     /*!< Key and selection point(s) the label is linked to. */
-    SAnchorLayoutDscr m_anchorLayoutDscr;
+    SGraphObjSelectionPoint m_selPtLinkedObject;
+    /*!< When modifying the shape of graphical objects the relative position of labels
+         linked to the graphical objects should always be the same.
+         This can only be managed when keeping the distance and the angle to the selection point
+         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+    SPolarCoors m_polarCoorsToLinkedSelPt;
+    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
+    bool m_bShowAnchorLine = false;
     /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
          in local coordinates drawn from the label to the selection point(s) of the parent.
          The start point of the line at the label depend on the position of the label relative

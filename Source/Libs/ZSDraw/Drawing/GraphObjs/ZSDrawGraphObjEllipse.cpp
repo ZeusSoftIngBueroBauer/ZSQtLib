@@ -153,28 +153,28 @@ CGraphObjEllipse::CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_strlstPredefinedLabelNames.append(c_strLabelName);
-    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopCenter);
-    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameRightCenter);
-    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameBottomCenter);
-    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameLeftCenter);
+    m_strlstPredefinedTextLabelNames.append(c_strLabelName);
+    m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameTopCenter);
+    m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameRightCenter);
+    m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameBottomCenter);
+    m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameLeftCenter);
 
-    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
-        if (!m_hshpLabels.contains(strLabelName)) {
+    for (const QString& strLabelName : m_strlstPredefinedTextLabelNames) {
+        if (!m_hshpTextLabels.contains(strLabelName)) {
             if (strLabelName == c_strGeometryLabelNameTopCenter) {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
             }
             else if (strLabelName == c_strGeometryLabelNameRightCenter) {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
             }
             else if (strLabelName == c_strGeometryLabelNameBottomCenter) {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
             }
             else if (strLabelName == c_strGeometryLabelNameLeftCenter) {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
             }
             else {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
             }
         }
     }
@@ -190,28 +190,28 @@ CGraphObjEllipse::CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameWidth) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+            addGeometryLabel(EGraphObjTypeLabelGeometryWidth, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
+            addGeometryLabel(EGraphObjTypeLabelGeometryHeight, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+            addGeometryLabel(EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameTopLeft) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
         }
         else if (strLabelName == c_strGeometryLabelNameTopRight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
         }
         else if (strLabelName == c_strGeometryLabelNameBottomRight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
         }
         else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
         }
     }
 
@@ -1330,7 +1330,7 @@ public: // overridables of base class CGraphObj (text labels)
 
     @return List of possbile selection points.
 */
-QList<SGraphObjSelectionPoint> CGraphObjEllipse::getPossibleLabelAnchorPoints(const QString& i_strName) const
+QList<SGraphObjSelectionPoint> CGraphObjEllipse::getPossibleTextLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
@@ -1392,17 +1392,17 @@ QList<SGraphObjSelectionPoint> CGraphObjEllipse::getPossibleLabelAnchorPoints(co
 
     @return true if the label still has its default values, false otherwise.
 */
-bool CGraphObjEllipse::labelHasDefaultValues(const QString& i_strName) const
+bool CGraphObjEllipse::textLabelHasDefaultValues(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    if (!m_hshLabelDscrs.contains(i_strName)) {
+    if (!m_hshTextLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
     bool bHasDefaultValues = false;
-    if (isPredefinedLabelName(i_strName)) {
+    if (isPredefinedTextLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const SAnchorLayoutDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        const SAnchorLayoutDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }

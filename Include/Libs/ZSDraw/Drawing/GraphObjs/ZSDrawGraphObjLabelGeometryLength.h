@@ -67,8 +67,7 @@ public: // ctors and dtor
     CGraphObjLabelGeometryLength(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
-        const SGraphObjSelectionPoint& i_selPt1,
-        const SGraphObjSelectionPoint& i_selPt2);
+        CGraphObj* i_pGraphObjLinked);
     virtual ~CGraphObjLabelGeometryLength();
 public: // class methods
     static QPainter::RenderHints painterRenderHints();

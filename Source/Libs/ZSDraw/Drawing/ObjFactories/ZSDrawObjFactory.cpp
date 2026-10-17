@@ -354,13 +354,13 @@ void CObjFactory::saveGraphObjTextLabels(
 {
     // The predefined labels should be at the beginning. And sorted by their names so that
     // the content of the file is always the same (hashes have an unpredicted order).
-    QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
+    QStringList strlstLabelNames = i_pGraphObj->getTextLabelNames();
     strlstLabelNames.sort();
-    QStringList strlstPredefinedLabelNames = i_pGraphObj->getPredefinedLabelNames();
+    QStringList strlstPredefinedLabelNames = i_pGraphObj->getPredefinedTextLabelNames();
     QSet<QString> strlstLabelNamesAdded;
     for (const QString& strName : strlstPredefinedLabelNames) {
-        if (!i_pGraphObj->labelHasDefaultValues(strName)) {
-            SAnchorLayoutDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
+        if (!i_pGraphObj->textLabelHasDefaultValues(strName)) {
+            SAnchorLayoutDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
@@ -381,8 +381,8 @@ void CObjFactory::saveGraphObjTextLabels(
     // Add those after the predefined labels.
     for (const QString& strName : strlstLabelNames) {
         if (!strlstLabelNamesAdded.contains(strName)) {
-            if (!i_pGraphObj->labelHasDefaultValues(strName)) {
-                SAnchorLayoutDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
+            if (!i_pGraphObj->textLabelHasDefaultValues(strName)) {
+                SAnchorLayoutDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
                 i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
                 // To keep the XML file as short as possible the properties of
                 // the labels are stored as attributes and not as text elements.

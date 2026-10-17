@@ -105,7 +105,6 @@ CGraphObjLabelGeometryPosition::CGraphObjLabelGeometryPosition(
     CGraphObjLabel(
         /* pDrawingScene */ i_pDrawingScene,
         /* strKey        */ i_strKey,
-        /* strText       */ "Position",
         /* type          */ EGraphObjTypeLabelGeometryPosition,
         /* selPt         */ i_selPt)
 {
@@ -191,13 +190,13 @@ void CGraphObjLabelGeometryPosition::updatePosition()
         /* strAddInfo   */ "" );
 
     CPhysValPoint physValPos(*m_pDrawingScene);
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValPos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
+            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
     }
     else {
-        physValPos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
+            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
     QString strText = physValPos.toString();
     // First set the text at the graphics item so that the bounding rectangle

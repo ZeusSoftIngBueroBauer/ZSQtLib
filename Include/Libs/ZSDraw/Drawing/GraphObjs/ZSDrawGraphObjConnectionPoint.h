@@ -58,9 +58,7 @@ public: // class methods
     static double defaultWidthInPx();
     static QSizeF defaultSizeInPx();
 public: // ctors and dtor
-    CGraphObjConnectionPoint(
-        CDrawingScene* i_pDrawingScene,
-        const QString& i_strObjName = "");
+    CGraphObjConnectionPoint(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     ~CGraphObjConnectionPoint() override;
 protected: // initialisation in ctors
     void init(const QString& i_strObjName);
@@ -68,8 +66,6 @@ public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
-public: // overridables of base class CGraphObj
-    void setName(const QString& i_strName) override;
 public: // instance methods
     void appendConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine); // appends the specified connection line to the list of connection lines. Return false if the line is already connected with the connection point.
     void removeConnectionLine(CGraphObjConnectionLine* i_pGraphObjCnctLine);
@@ -131,13 +127,11 @@ public: // must overridables of base class CGraphObj
     void setRotationAngle(double i_fAngle_degree) override;
     void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
 public: // instance methods
-    void setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr);
+    void setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
+    SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
     CGraphObj* linkedObject() const override;
     QString pathNameOfLinkedObject() const;
     QString path() const override;
-public: // instance methods
-    void setLinkedObjectSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint linkedObjectSelectionPoint() const;
 public: // instance methods
     void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
     SPolarCoors polarCoorsToLinkedSelectionPoint() const;
@@ -152,12 +146,9 @@ public: // must overridables of base class CGraphObj
     QRectF getBoundingRect() const override;
     CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const override;
 protected: // must overridables of base class CGraphObj
-    void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
+    void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {};
 public: // overridables of base class CGraphObj (text labels)
-    QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
-    bool labelHasDefaultValues(const QString& i_strName) const override;
-public: // overridables of base class CGraphObj (geometry labels)
-    bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
+    QList<SGraphObjSelectionPoint> getPossibleTextLabelAnchorPoints(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -225,7 +216,14 @@ protected: // instance members
     /*!< List with connection lines linked to the connection point. */
     QList<CGraphObjConnectionLine*> m_lstConnectionLines;
     /*!< Key and selection point(s) the connection point is linked to. */
-    SAnchorLayoutDscr m_anchorLayoutDscr;
+    SGraphObjSelectionPoint m_selPtLinkedObject;
+    /*!< When modifying the shape of graphical objects the relative position of labels
+         linked to the graphical objects should always be the same.
+         This can only be managed when keeping the distance and the angle to the selection point
+         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+    SPolarCoors m_polarCoorsToLinkedSelPt;
+    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
+    bool m_bShowAnchorLine = false;
     /*!< Coordindates of the line segment forming the anchor line. The line coordinates are stored
          in local coordinates drawn from the connection point to the selection point of the parent. */
     QLineF m_anchorLine;

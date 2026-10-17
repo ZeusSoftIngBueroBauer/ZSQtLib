@@ -156,11 +156,11 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabelGeometryPosition) {
         str = "LabelGeometryPosition";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryDX) {
-        str = "LabelGeometryDX";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryWidth) {
+        str = "LabelGeometryWidth";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryDY) {
-        str = "LabelGeometryDY";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryHeight) {
+        str = "LabelGeometryHeight";
     }
     else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
         str = "LabelGeometryLength";
@@ -212,11 +212,11 @@ QString ZS::Draw::graphObjType2ClassName( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabelGeometryPosition) {
         str = "CGraphObjLabelGeometryPosition";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryDX) {
-        str = "CGraphObjLabelGeometryDX";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryWidth) {
+        str = "CGraphObjLabelGeometryWidth";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryDY) {
-        str = "CGraphObjLabelGeometryDY";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryHeight) {
+        str = "CGraphObjLabelGeometryHeight";
     }
     else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
         str = "CGraphObjLabelGeometryLength";
@@ -1192,14 +1192,8 @@ SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
 //------------------------------------------------------------------------------
 /*! @brief Default constructor creating an invalid selection point descriptor.
 */
-SGraphObjSelectionPoint::SGraphObjSelectionPoint() :
+SGraphObjSelectionPoint::SGraphObjSelectionPoint() = default;
 //------------------------------------------------------------------------------
-    m_pGraphObj(nullptr),
-    m_selPtType(ESelectionPointType::Undefined),
-    m_selPt(ESelectionPoint::None),
-    m_idxPt(-1)
-{
-}
 
 //------------------------------------------------------------------------------
 /*! @brief Default constructor creating an invalid selection point descriptor
@@ -1210,11 +1204,61 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint() :
 */
 SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj) :
 //------------------------------------------------------------------------------
-    m_pGraphObj(i_pGraphObj),
-    m_selPtType(ESelectionPointType::Undefined),
-    m_selPt(ESelectionPoint::None),
-    m_idxPt(-1)
+    m_pGraphObj(i_pGraphObj)
 {
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a descriptor for a selection point at the bounding rectangle
+           assigning the given graphical object to the struct.
+
+    @param [in] i_pGraphObj
+        Pointer to graphical object to be assigned to the descriptor.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [BoundingRectangle]
+    @param [in] i_selPt
+        Selection point at the bounding rectangle.
+        Range [TopLeft, .., RotateBottom]
+        PolygonPoint, LineCenterPoint as well as All and Any are not allowed.
+*/
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) :
+//------------------------------------------------------------------------------
+    m_selPtType(i_selPtType),
+    m_selPt(i_selPt)
+{
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+    if (i_selPt < ESelectionPoint::TopLeft || i_selPt > ESelectionPoint::RotateBottom) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPoint(i_selPt).toString());
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a descriptor for a polygon point or a line center point
+           assigning the given graphical object to the struct.
+
+    @param [in] i_pGraphObj
+        Pointer to graphical object to be assigned to the descriptor.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [PolygonPoint, LineCenterPoint]
+    @param [in] i_idxPt
+        Index of the polygon (or line) point.
+        For i_selPtType = LineCenterPoint the end of the line segment is (i_idxPt + 1).
+*/
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(
+    ESelectionPointType i_selPtType, int i_idxPt) :
+//------------------------------------------------------------------------------
+    m_selPtType(i_selPtType),
+    m_selPt(i_selPtType == ESelectionPointType::PolygonPoint ? ESelectionPoint::PolygonPoint : ESelectionPoint::LineCenterPoint),
+    m_idxPt(i_idxPt)
+{
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1236,8 +1280,7 @@ SGraphObjSelectionPoint::SGraphObjSelectionPoint(
 //------------------------------------------------------------------------------
     m_pGraphObj(i_pGraphObj),
     m_selPtType(i_selPtType),
-    m_selPt(i_selPt),
-    m_idxPt(-1)
+    m_selPt(i_selPt)
 {
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
@@ -1331,10 +1374,7 @@ bool SGraphObjSelectionPoint::operator != (const SGraphObjSelectionPoint& i_othe
 QString SGraphObjSelectionPoint::name() const
 //------------------------------------------------------------------------------
 {
-    QString strName;
-    if (m_pGraphObj != nullptr) {
-        strName = m_pGraphObj->path() + ".";
-    }
+    QString strName = CEnumSelectionPointType(m_selPtType).toString() + ".";
     if (m_selPtType == ESelectionPointType::BoundingRectangle) {
         strName += CEnumSelectionPoint(m_selPt).toString();
     } else if (m_selPtType == ESelectionPointType::PolygonPoint) {

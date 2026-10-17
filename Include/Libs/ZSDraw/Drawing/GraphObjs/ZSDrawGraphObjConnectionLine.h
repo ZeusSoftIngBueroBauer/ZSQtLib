@@ -116,8 +116,8 @@ protected: // auxiliary instance methods
     void updateSelectionPointsOnPolygonPointsAdded();
     void updateSelectionPointsOnPolygonPointsRemoved();
 public: // overridables of base class CGraphObj (text labels)
-    QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
-    bool labelHasDefaultValues(const QString& i_strName) const override;
+    QList<SGraphObjSelectionPoint> getPossibleTextLabelAnchorPoints(const QString& i_strName) const override;
+    bool textLabelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
     bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem

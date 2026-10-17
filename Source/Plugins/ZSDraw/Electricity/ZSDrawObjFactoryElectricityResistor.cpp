@@ -202,7 +202,7 @@ SErrResultInfo CObjFactoryResistor::saveGraphObj(
         i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObj->getStackingOrderValue()));
     }
 
-    if (!i_pGraphObj->getLabelNames().isEmpty()) {
+    if (!i_pGraphObj->getTextLabelNames().isEmpty()) {
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
         saveGraphObjTextLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();

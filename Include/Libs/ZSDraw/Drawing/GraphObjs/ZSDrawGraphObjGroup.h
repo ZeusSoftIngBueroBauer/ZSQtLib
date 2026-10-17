@@ -213,8 +213,8 @@ public: // must overridables of base class CGraphObj
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
-    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
-    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+    virtual QList<SGraphObjSelectionPoint> getPossibleTextLabelAnchorPoints(const QString& i_strName) const override;
+    virtual bool textLabelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 protected: // overridable slots of base class CGraphObj

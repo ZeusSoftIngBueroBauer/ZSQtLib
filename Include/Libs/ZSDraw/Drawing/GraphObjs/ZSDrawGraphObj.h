@@ -736,8 +736,8 @@ public: // overridables (geometry labels)
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
 protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
+    virtual bool addGeometryLabel(EGraphObjType i_labelType, ESelectionPoint i_selPt);
+    virtual bool addGeometryLabel(EGraphObjType i_labelType, int i_idxPt);
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;
@@ -747,11 +747,11 @@ public: // overridables (connection points)
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, int i_idxPt) const;
-    QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
+    QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
     QString generateUniqueConnectionPointName(ESelectionPointType i_selPtType, int i_idxPt) const;
-    virtual bool addConnectionPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual bool addConnectionPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     virtual bool addConnectionPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
-    virtual QString addConnectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1);
+    virtual QString addConnectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     virtual QString addConnectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
     virtual bool removeConnectionPoint(const QString& i_strName);
     virtual bool renameConnectionPoint(const QString& i_strName, const QString& i_strNameNew);
@@ -1035,10 +1035,9 @@ protected: // instance members
     QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
     /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
          Connection points may be at the same position of selection points but may also be arbitrarily positioned.
-         The desriptors are used to set the relative position to of the connection point to the graphical object. */
-    QHash<QString, SGraphObjSelectionPoint> m_hshConnectionPointsSelPts;
-    /*!< Hash with geometry labels which may be indicated by the graphical object.
-         Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
+         The desriptors are used to set the relative position of the connection point to the graphical object. */
+    //QHash<QString, SGraphObjSelectionPoint> m_hshConnectionPointsSelPts;
+    /*!< Hash with the connection points added to the graphical object. */
     QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */

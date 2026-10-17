@@ -81,7 +81,7 @@ CModelGraphObjLabels::SLabelSettings CModelGraphObjLabels::SLabelSettings::fromG
     labelSettings.m_strNameOrig = i_strLabelName;
     labelSettings.m_strNameCurr = i_strLabelName;
     labelSettings.m_iRowIdx = i_iRowIdx;
-    labelSettings.m_bIsPredefinedLabelName = i_pGraphObj->isPredefinedLabelName(i_strLabelName);
+    labelSettings.m_bIsPredefinedLabelName = i_pGraphObj->isPredefinedTextLabelName(i_strLabelName);
     labelSettings.m_strText = i_pGraphObj->labelText(i_strLabelName);
     labelSettings.m_selPt = i_pGraphObj->labelAnchorPoint(i_strLabelName);
     labelSettings.m_bVisible = i_pGraphObj->isLabelVisible(i_strLabelName);
@@ -398,36 +398,36 @@ void CModelGraphObjLabels::acceptChanges()
                 if (!labelSettings.m_strNameOrig.isEmpty()) {
                     int iRow = labelSettings.m_iRowIdx;
                     if (labelSettings.m_strNameOrig != labelSettings.m_strNameCurr) {
-                        if (m_pGraphObj->renameLabel(labelSettings.m_strNameOrig, labelSettings.m_strNameCurr)) {
+                        if (m_pGraphObj->renameTextLabel(labelSettings.m_strNameOrig, labelSettings.m_strNameCurr)) {
                             m_arLabelSettings[labelSettings.m_iRowIdx].m_strNameOrig = labelSettings.m_strNameCurr;
                         }
                     }
                 }
             }
             // Next remove labels which have been removed.
-            QStringList strlstLabelNames = m_pGraphObj->getLabelNames();
+            QStringList strlstLabelNames = m_pGraphObj->getTextLabelNames();
             for (const QString& strName : strlstLabelNames) {
                 if (getLabelRowIndex(strName) < 0) {
-                    m_pGraphObj->removeLabel(strName);
+                    m_pGraphObj->removeTextLabel(strName);
                 }
             }
             // Last add or change labels which have been added or changed.
             for (const SLabelSettings& labelSettings : m_arLabelSettings) {
-                if (!m_pGraphObj->isLabelAdded(labelSettings.m_strNameCurr)) {
+                if (!m_pGraphObj->isTextLabelAdded(labelSettings.m_strNameCurr)) {
                     if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                        m_pGraphObj->addLabel(
+                        m_pGraphObj->addTextLabel(
                             labelSettings.m_strNameCurr, labelSettings.m_strText,
                             labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_selPt);
                     }
                     else {
-                        m_pGraphObj->addLabel(
+                        m_pGraphObj->addTextLabel(
                             labelSettings.m_strNameCurr, labelSettings.m_strText,
                             labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_idxPt);
                     }
                     m_arLabelSettings[labelSettings.m_iRowIdx].m_strNameOrig = labelSettings.m_strNameCurr;
                 }
                 else {
-                    m_pGraphObj->setLabelText(labelSettings.m_strNameCurr, labelSettings.m_strText);
+                    m_pGraphObj->setTextLabelText(labelSettings.m_strNameCurr, labelSettings.m_strText);
                     if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
                         m_pGraphObj->setLabelAnchorPoint(
                             labelSettings.m_strNameCurr, labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_selPt);
@@ -495,7 +495,7 @@ public: // instance methods
 
     @return List of existing label names.
 */
-QString CModelGraphObjLabels::findUniqueLabelName(const QString& i_strPrefix) const
+QString CModelGraphObjLabels::findUniqueTextLabelName(const QString& i_strPrefix) const
 //------------------------------------------------------------------------------
 {
     QString strName = i_strPrefix;
@@ -569,18 +569,18 @@ int CModelGraphObjLabels::getLabelRowIndex(const QString& i_strName) const
 
     @return Name of the label.
 */
-QString CModelGraphObjLabels::addLabel()
+QString CModelGraphObjLabels::addTextLabel()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "addLabel",
+        /* strMethod          */ "addTextLabel",
         /* strMethodInArgs    */ "" );
 
-    QString strName = findUniqueLabelName("Label");
+    QString strName = findUniqueTextLabelName("Label");
     SGraphObjSelectionPoint selPt;
-    QList<SGraphObjSelectionPoint> arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(strName);
+    QList<SGraphObjSelectionPoint> arSelPts = m_pGraphObj->getPossibleTextLabelAnchorPoints(strName);
     if (arSelPts.size() > 0) {
         selPt = arSelPts[0];
     }
@@ -603,7 +603,7 @@ QString CModelGraphObjLabels::addLabel()
 //------------------------------------------------------------------------------
 /*! @brief Removes the label with the given name from the model.
 */
-void CModelGraphObjLabels::removeLabel(const QString& i_strName)
+void CModelGraphObjLabels::removeTextLabel(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -613,7 +613,7 @@ void CModelGraphObjLabels::removeLabel(const QString& i_strName)
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "removeLabel",
+        /* strMethod          */ "removeTextLabel",
         /* strMethodInArgs    */ strMthInArgs );
 
     int iRow = getLabelRowIndex(i_strName);
@@ -665,7 +665,7 @@ QStringList CModelGraphObjLabels::selectedLabelNames() const
 //------------------------------------------------------------------------------
 /*! @brief Removes all selected labels from the model.
 
-    @note The method does not implicitely call removeLabel to remove a single
+    @note The method does not implicitely call removeTextLabel to remove a single
           label on purpose so that the contentChanged signal is emitted just once.
 */
 void CModelGraphObjLabels::removeSelectedLabels()
@@ -813,10 +813,10 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                     else if (i_iRole == Qt::AccessibleTextRole) {
                         QList<SGraphObjSelectionPoint> arSelPts;
                         if (!labelSettings.m_strNameOrig.isEmpty()) {
-                            arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameOrig);
+                            arSelPts = m_pGraphObj->getPossibleTextLabelAnchorPoints(labelSettings.m_strNameOrig);
                         }
                         else {
-                            arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameCurr);
+                            arSelPts = m_pGraphObj->getPossibleTextLabelAnchorPoints(labelSettings.m_strNameCurr);
                         }
                         QList<SComboBoxItem> arItems;
                         for (const SGraphObjSelectionPoint& selPt : arSelPts) {
@@ -908,7 +908,7 @@ bool CModelGraphObjLabels::setData(
             switch (iClm) {
                 case EColumnSelected: {
                     if (i_iRole == Qt::EditRole) {
-                        if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strNameOrig)) {
+                        if (!m_pGraphObj->isPredefinedTextLabelName(labelSettings.m_strNameOrig)) {
                             labelSettings.m_bSelected = i_varData.toBool();
                         }
                         bDataSet = true;
@@ -925,7 +925,7 @@ bool CModelGraphObjLabels::setData(
                                     EResultInvalidObjName, EResultSeverityError,
                                     "User defined label names must at least have one character");
                             }
-                            else if (m_pGraphObj->isPredefinedLabelName(strNameNew)) {
+                            else if (m_pGraphObj->isPredefinedTextLabelName(strNameNew)) {
                                 labelSettings.m_errResultInfo = SErrResultInfo(
                                     NameSpace(), ClassName(), objectName(), "setData",
                                     EResultInvalidObjName, EResultSeverityError,
@@ -1113,7 +1113,7 @@ Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
             SLabelSettings labelSettings = m_arLabelSettings[iRow];
             switch (i_modelIdx.column()) {
                 case EColumnSelected: {
-                    if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strNameOrig)) {
+                    if (!m_pGraphObj->isPredefinedTextLabelName(labelSettings.m_strNameOrig)) {
                         uFlags = uFlags | Qt::ItemIsUserCheckable;
                     }
                     break;
@@ -1419,7 +1419,7 @@ QList<CModelGraphObjLabels::SLabelSettings> CModelGraphObjLabels::getLabelSettin
 {
     QList<SLabelSettings> arLabelSettings;
     if (i_pGraphObj != nullptr) {
-        QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
+        QStringList strlstLabelNames = i_pGraphObj->getTextLabelNames();
         for (const QString& strLabelName : strlstLabelNames) {
             arLabelSettings.append(
                 SLabelSettings::fromGraphObj(i_pGraphObj, strLabelName, arLabelSettings.size()));

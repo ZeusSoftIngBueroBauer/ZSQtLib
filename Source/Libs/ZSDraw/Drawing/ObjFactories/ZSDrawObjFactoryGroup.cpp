@@ -214,7 +214,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObj->getStackingOrderValue()));
     }
 
-    if (!i_pGraphObj->getLabelNames().isEmpty()) {
+    if (!i_pGraphObj->getTextLabelNames().isEmpty()) {
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
         saveGraphObjTextLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
@@ -550,18 +550,18 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     if (!i_xmlStreamReader.hasError()) {
         for (const SAnchorLayoutDscr& layoutDscr : arTextLabels) {
-            if (!pGraphObj->isLabelAdded(layoutDscr.m_strKey)) {
+            if (!pGraphObj->isTextLabelAdded(layoutDscr.m_strKey)) {
                 if (layoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->addLabel(
+                    pGraphObj->addTextLabel(
                         layoutDscr.m_strKey, layoutDscr.m_strText, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_selPt);
                 }
                 else {
-                    pGraphObj->addLabel(
+                    pGraphObj->addTextLabel(
                         layoutDscr.m_strKey, layoutDscr.m_strText, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_idxPt);
                 }
             }
             else {
-                pGraphObj->setLabelText(layoutDscr.m_strKey, layoutDscr.m_strText);
+                pGraphObj->setTextLabelText(layoutDscr.m_strKey, layoutDscr.m_strText);
                 if (layoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->setLabelAnchorPoint(layoutDscr.m_strKey, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_selPt);
                 }

@@ -155,20 +155,20 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_strlstPredefinedLabelNames.append(c_strLabelName);
-    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameP1);
-    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameP2);
+    m_strlstPredefinedTextLabelNames.append(c_strLabelName);
+    m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameP1);
+    m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameP2);
 
-    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
-        if (!m_hshpLabels.contains(strLabelName)) {
+    for (const QString& strLabelName : m_strlstPredefinedTextLabelNames) {
+        if (!m_hshpTextLabels.contains(strLabelName)) {
             if (strLabelName == c_strGeometryLabelNameP1) {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 0);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 0);
             }
             else if (strLabelName == c_strGeometryLabelNameP2) {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 1);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 1);
             }
             else {
-                addLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
             }
         }
     }
@@ -183,25 +183,25 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         if (strLabelName == c_strGeometryLabelNameP1) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, 0);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameP2) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, 1);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameCenter) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameDY) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryDY, 0, 1);
+            addGeometryLabel(EGraphObjTypeLabelGeometryHeight, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameDX) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryDX, 0, 1);
+            addGeometryLabel(EGraphObjTypeLabelGeometryWidth, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameLength) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, 0, 1);
+            addGeometryLabel(EGraphObjTypeLabelGeometryLength, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, 0, 1);
+            addGeometryLabel(EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center);
         }
     }
 
@@ -1437,7 +1437,7 @@ public: // overridables of base class CGraphObj (text labels)
 
     @return List of possbile selection points.
 */
-QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString& i_strName) const
+QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleTextLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
@@ -1479,17 +1479,17 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
 
     @return true if the label still has its default values, false otherwise.
 */
-bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
+bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    if (!m_hshLabelDscrs.contains(i_strName)) {
+    if (!m_hshTextLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
     bool bHasDefaultValues = false;
-    if (isPredefinedLabelName(i_strName)) {
+    if (isPredefinedTextLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const SAnchorLayoutDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        const SAnchorLayoutDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }

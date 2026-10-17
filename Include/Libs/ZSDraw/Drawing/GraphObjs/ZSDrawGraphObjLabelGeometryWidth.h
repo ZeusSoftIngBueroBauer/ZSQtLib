@@ -36,25 +36,24 @@ namespace Draw
 //******************************************************************************
 /*! @brief 
 */
-class ZSDRAWDLL_API CGraphObjLabelGeometryDX : public CGraphObjLabel
+class ZSDRAWDLL_API CGraphObjLabelGeometryWidth : public CGraphObjLabel
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjLabelGeometryDX"; }
+    static QString ClassName() { return "CGraphObjLabelGeometryWidth"; }
 public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
 public: // ctors and dtor
-    CGraphObjLabelGeometryDX(
+    CGraphObjLabelGeometryWidth(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
-        const SGraphObjSelectionPoint& i_selPt1,
-        const SGraphObjSelectionPoint& i_selPt2);
-    virtual ~CGraphObjLabelGeometryDX();
+        CGraphObj* i_pGraphObjLinked);
+    virtual ~CGraphObjLabelGeometryWidth();
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
@@ -76,7 +75,7 @@ protected: // instance members
     /*!< Polygon points for arrow head at P2 (line end) */
     QPolygonF m_plgP2ArrowHead;
 
-}; // class CGraphObjLabelGeometryDX
+}; // class CGraphObjLabelGeometryWidth
 
 } // namespace Draw
 

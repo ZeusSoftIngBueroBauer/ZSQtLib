@@ -113,8 +113,7 @@ public: // ctors and dtor
     CGraphObjLabelGeometryAngle(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
-        const SGraphObjSelectionPoint& i_selPt1,
-        const SGraphObjSelectionPoint& i_selPt2);
+        CGraphObj* i_pGraphObjLinked);
     virtual ~CGraphObjLabelGeometryAngle();
 public: // overridables of base class QGraphicsItem
     int type() const override;

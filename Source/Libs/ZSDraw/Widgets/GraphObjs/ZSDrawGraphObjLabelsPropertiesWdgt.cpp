@@ -458,7 +458,7 @@ void CWdgtGraphObjLabelsProperties::onBtnAddLabelClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnAddLabelClicked",
         /* strAddInfo   */ "" );
 
-    m_pModel->addLabel();
+    m_pModel->addTextLabel();
 }
 
 //------------------------------------------------------------------------------

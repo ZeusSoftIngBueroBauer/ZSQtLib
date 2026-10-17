@@ -85,11 +85,11 @@ public: // instance methods
     void acceptChanges();
     void rejectChanges();
 public: // instance methods
-    QString findUniqueLabelName(const QString& i_strPrefix = "") const;
+    QString findUniqueTextLabelName(const QString& i_strPrefix = "") const;
     bool isUniqueLabelName(const QString& i_strName) const;
     int getLabelRowIndex(const QString& i_strName) const;
-    QString addLabel();
-    void removeLabel(const QString& i_strName);
+    QString addTextLabel();
+    void removeTextLabel(const QString& i_strName);
     QStringList labelNames() const;
     QStringList selectedLabelNames() const;
     void removeSelectedLabels();

@@ -111,7 +111,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_anchorLayoutDscr(EGraphObjTypeLabel, i_strKey, i_selPt)
+    m_selPtLinkedObject(i_selPt)
 {
     createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Labels", ClassName());
 
@@ -139,16 +139,15 @@ CGraphObjLabel::CGraphObjLabel(
     setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
 
     //QObject::connect(
-    //    m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
+    //    m_selPtLinkedObject.m_pGraphObj, &CGraphObj::scenePosChanged,
     //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
-        m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+        m_selPtLinkedObject.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
         this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
     QObject::connect(
-        m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+        m_selPtLinkedObject.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObjLabel::onLinkedObjectZValueChanged);
-
-} // ctor
+}
 
 /*==============================================================================
 protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition)
@@ -158,7 +157,6 @@ protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition
 CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
-    const QString& i_strText,
     EGraphObjType i_labelType,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
@@ -169,8 +167,8 @@ CGraphObjLabel::CGraphObjLabel(
         /* strType             */ ZS::Draw::graphObjType2Str(i_labelType),
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
-    QGraphicsSimpleTextItem(i_strText),
-    m_anchorLayoutDscr(i_labelType, i_strKey, i_selPt)
+    QGraphicsSimpleTextItem(),
+    m_selPtLinkedObject(i_selPt)
 {
     if (i_selPt.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -185,65 +183,13 @@ CGraphObjLabel::CGraphObjLabel(
     setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
 
     //QObject::connect(
-    //    m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
+    //    m_selPtLinkedObject.m_pGraphObj, &CGraphObj::scenePosChanged,
     //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
-        m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+        m_selPtLinkedObject.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
         this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
     QObject::connect(
-        m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onLinkedObjectZValueChanged);
-}
-
-//------------------------------------------------------------------------------
-CGraphObjLabel::CGraphObjLabel(
-    CDrawingScene* i_pDrawingScene,
-    const QString& i_strKey,
-    const QString& i_strText,
-    EGraphObjType i_labelType,
-    const SGraphObjSelectionPoint& i_selPt1,
-    const SGraphObjSelectionPoint& i_selPt2) :
-//------------------------------------------------------------------------------
-    CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
-        /* type                */ i_labelType,
-        /* strType             */ ZS::Draw::graphObjType2Str(i_labelType),
-        /* strObjName          */ i_strKey,
-        /* idxTreeEntryType    */ EEntryType::Leave ),
-    QGraphicsSimpleTextItem(i_strText),
-    m_anchorLayoutDscr(i_labelType, i_strKey, i_selPt1, i_selPt2)
-{
-    if (i_selPt1.m_pGraphObj == nullptr || i_selPt2.m_pGraphObj == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
-           | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
-    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
-    QGraphicsItem_setAcceptHoverEvents(true);
-
-    double fZValueParent = i_selPt1.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
-
-    //QObject::connect(
-    //    m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
-    //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
-    QObject::connect(
-        m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
-    QObject::connect(
-        m_anchorLayoutDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onLinkedObjectZValueChanged);
-
-    //QObject::connect(
-    //    m_anchorLayoutDscr.m_selPt2.m_pGraphObj, &CGraphObj::scenePosChanged,
-    //    this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
-    QObject::connect(
-        m_anchorLayoutDscr.m_selPt2.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
-        this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
-    QObject::connect(
-        m_anchorLayoutDscr.m_selPt2.m_pGraphObj, &CGraphObj::zValueChanged,
+        m_selPtLinkedObject.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObjLabel::onLinkedObjectZValueChanged);
 }
 
@@ -308,34 +254,6 @@ int CGraphObjLabel::type() const
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjLabel::setName(const QString& i_strName)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setName",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_strKey != i_strName) {
-        CGraphObj::setName(i_strName);
-        m_anchorLayoutDscr.m_strKey = i_strName;
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-}
-
-/*==============================================================================
 public: // replacing methods of QGraphicsSimpleTextItem
 ==============================================================================*/
 
@@ -354,12 +272,9 @@ void CGraphObjLabel::setText( const QString& i_strText )
         /* strMethod    */ "setText",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_anchorLayoutDscr.m_strText != i_strText) {
-        m_anchorLayoutDscr.m_strText = i_strText;
-        QGraphicsSimpleTextItem::setText(i_strText);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
+    QGraphicsSimpleTextItem::setText(i_strText);
+    if (m_pTree != nullptr) {
+        m_pTree->onTreeEntryChanged(this);
     }
 }
 
@@ -375,28 +290,66 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::setLinkedObject(const SAnchorLayoutDscr& i_anchorLayoutDscr)
+void CGraphObjLabel::setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
-    m_anchorLayoutDscr = i_anchorLayoutDscr;
-    updatePosition();
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_selPt.toString(true);
     }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setLinkedObjectSelectionPoint",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_selPtLinkedObject != i_selPt) {
+        if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+            QObject::disconnect(
+                m_selPtLinkedObject.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
+            QObject::disconnect(
+                m_selPtLinkedObject.m_pGraphObj, &CGraphObj::zValueChanged,
+                this, &CGraphObjLabel::onLinkedObjectZValueChanged);
+        }
+
+        if (i_selPt.m_pGraphObj == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+
+        m_selPtLinkedObject = i_selPt;
+
+        double fZValueParent = m_selPtLinkedObject.m_pGraphObj->getStackingOrderValue();
+        setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);
+
+        QObject::connect(
+            m_selPtLinkedObject.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjLabel::onLinkedObjectGeometryOnSceneChanged);
+        QObject::connect(
+            m_selPtLinkedObject.m_pGraphObj, &CGraphObj::zValueChanged,
+            this, &CGraphObjLabel::onLinkedObjectZValueChanged);
+
+        updatePosition();
+
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint CGraphObjLabel::selectionPointAtLinkedObject() const
+//------------------------------------------------------------------------------
+{
+    return m_selPtLinkedObject;
 }
 
 //------------------------------------------------------------------------------
 CGraphObj* CGraphObjLabel::linkedObject() const
 //------------------------------------------------------------------------------
 {
-    CGraphObj* pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        pGraphObjLinked = m_anchorLayoutDscr.m_selPt1.m_pGraphObj;
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        pGraphObjLinked = m_anchorLayoutDscr.m_selPt2.m_pGraphObj;
-    }
-    return pGraphObjLinked;
+    return m_selPtLinkedObject.m_pGraphObj;
 }
 
 //------------------------------------------------------------------------------
@@ -404,11 +357,8 @@ QString CGraphObjLabel::pathNameOfLinkedObject() const
 //------------------------------------------------------------------------------
 {
     QString strPath;
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->path();
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->path();
+    if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        strPath = m_selPtLinkedObject.m_pGraphObj->path();
     }
     return strPath;
 }
@@ -418,91 +368,10 @@ QString CGraphObjLabel::path() const
 //------------------------------------------------------------------------------
 {
     QString strPath = pathNameOfLinkedObject();
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
-    }
-    else if (m_anchorLayoutDscr.m_selPt2.m_pGraphObj != nullptr) {
-        strPath = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+    if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        strPath = m_selPtLinkedObject.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
     }
     return strPath;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjLabel::setLinkedObjectSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_selPt.toString(true);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setLinkedObjectSelectionPoint1",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_selPt1 != i_selPt)
-    {
-        m_anchorLayoutDscr.m_selPt1 = i_selPt;
-        updatePosition();
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point.
-
-    Selection points are differentiated into selection points on the bounding
-    rectangle around the graphical object or into polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjLabel::linkedObjectSelectionPoint1() const
-//------------------------------------------------------------------------------
-{
-    return m_anchorLayoutDscr.m_selPt1;
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLabel::setLinkedObjectSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_selPt.toString(true);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "setLinkedObjectSelectionPoint2",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_anchorLayoutDscr.m_selPt2 != i_selPt)
-    {
-        m_anchorLayoutDscr.m_selPt2 = i_selPt;
-        updatePosition();
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point.
-
-    Selection points are differentiated into selection points on the bounding
-    rectangle around the graphical object or into polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjLabel::linkedObjectSelectionPoint2() const
-//------------------------------------------------------------------------------
-{
-    return m_anchorLayoutDscr.m_selPt2;
 }
 
 /*==============================================================================
@@ -524,8 +393,8 @@ void CGraphObjLabel::setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_po
         /* strMethod    */ "setPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
+    if (m_polarCoorsToLinkedSelPt != i_polarCoors) {
+        m_polarCoorsToLinkedSelPt = i_polarCoors;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -537,7 +406,7 @@ void CGraphObjLabel::setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_po
 SPolarCoors CGraphObjLabel::polarCoorsToLinkedSelectionPoint() const
 //------------------------------------------------------------------------------
 {
-    return m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt;
+    return m_polarCoorsToLinkedSelPt;
 }
 
 /*==============================================================================
@@ -556,8 +425,8 @@ void CGraphObjLabel::showAnchorLines()
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    if (!m_anchorLayoutDscr.m_bShowAnchorLine) {
-        m_anchorLayoutDscr.m_bShowAnchorLine = true;
+    if (!m_bShowAnchorLine) {
+        m_bShowAnchorLine = true;
         if (scene() != nullptr) {
             QGraphicsItem_prepareGeometryChange();
             QRectF rctBounding = boundingRect();
@@ -583,16 +452,16 @@ void CGraphObjLabel::hideAnchorLines()
         /* strAddInfo   */ "" );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    if (m_anchorLayoutDscr.m_bShowAnchorLine) {
+    if (m_bShowAnchorLine) {
         if (scene() != nullptr) {
             QRectF rctBounding = boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
-            m_anchorLayoutDscr.m_bShowAnchorLine = false;
+            m_bShowAnchorLine = false;
             QGraphicsItem_prepareGeometryChange();
             scene()->update(rctBounding);
         }
         else {
-            m_anchorLayoutDscr.m_bShowAnchorLine = false;
+            m_bShowAnchorLine = false;
         }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -604,7 +473,7 @@ void CGraphObjLabel::hideAnchorLines()
 bool CGraphObjLabel::isAnchorLineVisible() const
 //------------------------------------------------------------------------------
 {
-    return m_anchorLayoutDscr.m_bShowAnchorLine;
+    return m_bShowAnchorLine;
 }
 
 /*==============================================================================
@@ -704,8 +573,8 @@ public: // must overridables of base class CGraphObj
 //
 //        QRectF rctUpd = QGraphicsSimpleTextItem::boundingRect();
 //        QPolygonF plgLabel = mapToScene(rctUpd);
-//        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getSize(Units.Length.px).toQSizeF());
-//        QPolygonF plgGraphObj = dynamic_cast<QGraphicsItem*>(m_anchorLayoutDscr.m_selPt1.m_pGraphObj)->mapToScene(rctGraphObj);
+//        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_selPtLinkedObject.m_pGraphObj->getSize(Units.Length.px).toQSizeF());
+//        QPolygonF plgGraphObj = dynamic_cast<QGraphicsItem*>(m_selPtLinkedObject.m_pGraphObj)->mapToScene(rctGraphObj);
 //
 //        rctUpd = plgLabel.boundingRect();
 //        rctGraphObj = plgGraphObj.boundingRect();
@@ -846,7 +715,7 @@ QRectF CGraphObjLabel::boundingRect() const
 
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
     // If the object is selected and the anchor line is visible also this area need to be updated.
-    if (isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine) {
+    if (isSelected() || m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
@@ -955,7 +824,7 @@ void CGraphObjLabel::paint(
     // Draw anchor line to selection point of linked object if the label is hit,
     // hovered, selected or if the anchor line is set to be visible.
     // Use a different color if the line is hit, hovered or selected.
-    if (/*m_bIsHit ||*/ isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine && !m_anchorLines.isEmpty()) {
+    if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine && !m_anchorLines.isEmpty()) {
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         for (const QLineF& anchorLine : m_anchorLines) {
             if (!rctBounding.contains(anchorLine.p2())) {
@@ -1226,7 +1095,7 @@ void CGraphObjLabel::onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked)
 
     // The labels anchor line should be drawn above the parent object.
     // Otherwise the anchor lines may be covered by the painting of the parent object.
-    double fZValueParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
+    double fZValueParent = m_selPtLinkedObject.m_pGraphObj->getStackingOrderValue();
     setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels);
 }
 
@@ -1319,13 +1188,13 @@ void CGraphObjLabel::updatePosition()
 
     // Get anchor line in scene coordinates.
     QLineF anchorLine;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        anchorLine = m_selPtLinkedObject.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+            m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
     }
     else {
-        anchorLine = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        anchorLine = m_selPtLinkedObject.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+            m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -1384,17 +1253,17 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
     QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
-            ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        m_polarCoorsToLinkedSelPt = m_selPtLinkedObject.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+            ptScenePosCenterThis, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
     }
     else {
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
-            ptScenePosCenterThis, m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        m_polarCoorsToLinkedSelPt = m_selPtLinkedObject.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
+            ptScenePosCenterThis, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
+            ", " + QString::number(m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
     updateAnchorLines();
@@ -1418,13 +1287,13 @@ void CGraphObjLabel::updateAnchorLines()
         /* strAddInfo   */ "" );
 
     QPointF ptSelScenePosParent;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelScenePosParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
+    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        ptSelScenePosParent = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
     }
     else {
-        ptSelScenePosParent = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
+        ptSelScenePosParent = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
 
     QRectF rctBoundingThis = getBoundingRect();
@@ -1469,40 +1338,25 @@ void CGraphObjLabel::QGraphicsItem_prepareGeometryChange()
     prepareGeometryChange();
 }
 
-////------------------------------------------------------------------------------
-//void CGraphObjLabel::traceInternalStates(
-//    CMethodTracer& i_mthTracer,
-//    EMethodDir i_mthDir,
-//    ELogDetailLevel i_detailLevel) const
-////------------------------------------------------------------------------------
-//{
-//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-//        QString strTrcInfo;
-//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//        else strTrcInfo = "";
-//        strTrcInfo +=
-//            "Key: " + m_anchorLayoutDscr.m_strKey +
-//            ", LinkedTo {" + m_anchorLayoutDscr.m_selPt1.toString(true) + ", " + m_anchorLayoutDscr.m_selPt2.toString(true) + "}" +
-//            ", Visible: " + QString(isVisible() ? "true" : "false") +
-//            ", ShowAnchorLine: " + QString(m_anchorLayoutDscr.m_bShowAnchorLine ? "true" : "false");
-//        i_mthTracer.trace(strTrcInfo);
-//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//        else strTrcInfo = "";
-//        strTrcInfo +=
-//            "PolarCoorsToLinkedSelPt {" + m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.toString() + "}" +
-//            ", AnchorLines [" + QString::number(m_anchorLines.size()) + "]";
-//        if (m_anchorLines.size() > 0) {
-//            strTrcInfo += "(";
-//            for (const QLineF& anchorLine : m_anchorLines) {
-//                if (!strTrcInfo.endsWith("(")) strTrcInfo += ", ";
-//                strTrcInfo += "{" + qLine2Str(anchorLine) + "}";
-//            }
-//            strTrcInfo += ")";
-//        }
-//        i_mthTracer.trace(strTrcInfo);
-//        i_mthTracer.trace(strTrcInfo);
-//        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
-//    }
-//}
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::traceGraphObjStates(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+
+    CGraphObj::traceGraphObjStates(i_mthTracer, i_mthDir, i_strFilter);
+
+    QString strRuntimeInfo;
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "AnchoredTo {" + m_selPtLinkedObject.toString() + "}";
+    i_mthTracer.trace(strRuntimeInfo);
+}

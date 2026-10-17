@@ -38,8 +38,8 @@ ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
@@ -2282,8 +2282,8 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
     //CGraphObjSelectionPoint::resetPainterRenderHints();
     CGraphObjLabel::resetPainterRenderHints();
     CGraphObjLabelGeometryPosition::resetPainterRenderHints();
-    CGraphObjLabelGeometryDX::resetPainterRenderHints();
-    CGraphObjLabelGeometryDY::resetPainterRenderHints();
+    CGraphObjLabelGeometryWidth::resetPainterRenderHints();
+    CGraphObjLabelGeometryHeight::resetPainterRenderHints();
     CGraphObjLabelGeometryLength::resetPainterRenderHints();
     CGraphObjLabelGeometryAngle::resetPainterRenderHints();
 
@@ -2328,11 +2328,11 @@ void CTest::doTestStepSetPainterRenderHints(ZS::Test::CTestStep* i_pTestStep)
         else if (graphObjType == EGraphObjTypeLabelGeometryPosition) {
             CGraphObjLabelGeometryPosition::setPainterRenderHints(uPainterRenderHints);
         }
-        else if (graphObjType == EGraphObjTypeLabelGeometryDX) {
-            CGraphObjLabelGeometryDX::setPainterRenderHints(uPainterRenderHints);
+        else if (graphObjType == EGraphObjTypeLabelGeometryWidth) {
+            CGraphObjLabelGeometryWidth::setPainterRenderHints(uPainterRenderHints);
         }
-        else if (graphObjType == EGraphObjTypeLabelGeometryDY) {
-            CGraphObjLabelGeometryDY::setPainterRenderHints(uPainterRenderHints);
+        else if (graphObjType == EGraphObjTypeLabelGeometryHeight) {
+            CGraphObjLabelGeometryHeight::setPainterRenderHints(uPainterRenderHints);
         }
         else if (graphObjType == EGraphObjTypeLabelGeometryLength) {
             CGraphObjLabelGeometryLength::setPainterRenderHints(uPainterRenderHints);
@@ -3348,7 +3348,7 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
         if (pGraphObj != nullptr) {
-            CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
+            CGraphObjLabel* pGraphObjLabel = pGraphObj->getTextLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
                 if (selPt.isValid()) {
@@ -3405,7 +3405,7 @@ void CTest::doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep)
         if (pGraphObj != nullptr) {
             pGraphObj->hideLabel(strLabelName);
             pGraphObj->hideLabelAnchorLine(strLabelName);
-            CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
+            CGraphObjLabel* pGraphObjLabel = pGraphObj->getTextLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
                 QString strText = pGraphicsItemLabel->text();
@@ -7285,9 +7285,9 @@ QStringList CTest::resultValuesForGraphObj(
             }
         }
         if (i_bAddLabelResultValues) {
-            QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
+            QStringList strlstLabelNames = i_pGraphObj->getTextLabelNames();
             for (const QString& strLabelName : strlstLabelNames) {
-                CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strLabelName);
+                CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getTextLabel(strLabelName);
                 if (pGraphObjLabel != nullptr) {
                     pGraphicsItem = dynamic_cast<const QGraphicsItem*>(pGraphObjLabel);
                     strlstResultValues += resultValuesForLabel(

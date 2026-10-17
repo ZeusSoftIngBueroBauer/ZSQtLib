@@ -101,16 +101,13 @@ public: // ctors and dtor
 CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
-    const SGraphObjSelectionPoint& i_selPt1,
-    const SGraphObjSelectionPoint& i_selPt2) :
+    CGraphObj* i_pGraphObjLinked) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
         /* pDrawingScene */ i_pDrawingScene,
         /* strKey        */ i_strKey,
-        /* strText       */ "Angle",
         /* type          */ EGraphObjTypeLabelGeometryAngle,
-        /* selPt1        */ i_selPt1,
-        /* selPt2        */ i_selPt2),
+        /* selPt         */ SGraphObjSelectionPoint(i_pGraphObjLinked, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center)),
     m_lineSelPtsSceneCoors(),
     m_rectPie(),
     m_fPieStartAngle_degrees(0.0),
@@ -123,8 +120,7 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Key: " + i_strKey +
-            ", SelPt1 {" + i_selPt1.toString(true) + "}" +
-            ", SelPt2 {" + i_selPt2.toString(true) + "}";
+            ", LinkedObject: " + QString(i_pGraphObjLinked == nullptr ? "null" : i_pGraphObjLinked->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -277,7 +273,7 @@ void CGraphObjLabelGeometryAngle::paint(
     // Draw anchor line (circle segment) to indicate the angle if the label is hit,
     // hovered, selected or if the anchor line is set to be visible.
     // Use a different color if the line is hit, hovered or selected.
-    if (/*m_bIsHit ||*/ isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine
+    if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine
      && (fabs(m_rectPie.width()) >= 20.0 || fabs(m_rectPie.height()) >= 20.0)) {
         i_pPainter->save();
         i_pPainter->setRenderHint(QPainter::Antialiasing);
@@ -327,37 +323,15 @@ void CGraphObjLabelGeometryAngle::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
-    }
-    else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
-    }
-    QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
-    }
-    else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
-    }
+    QPointF ptSelPt1ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    QPointF ptSelPt2ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
     m_lineSelPtsSceneCoors = QLineF(ptSelPt1ScenePos, ptSelPt2ScenePos);
 
-    QString strText;
-    // If the label is linked to just one object ..
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj == m_anchorLayoutDscr.m_selPt2.m_pGraphObj) {
-        // .. get coordinate from graphical object.
-        strText = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->rotationAngle().toString();
-    }
-    // If the label is linked to different objects ..
-    else {
-        // .. calculate coordinate from selection points.
-        strText = QString::number(m_lineSelPtsSceneCoors.angle(), 'f', 1) + " " + QString(Math::c_chSymbolDegree);
-    }
+    QString strText = m_selPtLinkedObject.m_pGraphObj->rotationAngle().toString();
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
@@ -374,8 +348,8 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     // for which the angle has to be indicated.
     QLineF lineFPolarBaseSceneCoors(m_lineSelPtsSceneCoors.center(), m_lineSelPtsSceneCoors.p2());
     QLineF anchorLineSceneCoors = ZS::Draw::getLineFromPolar(
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px,
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
+        m_polarCoorsToLinkedSelPt.m_fLength_px,
+        m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
         lineFPolarBaseSceneCoors);
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -442,24 +416,12 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     // Get anchor line in scene coordinates.
     // The start point of the anchor line should be the center point of the line
     // for which the length has to be indicated.
-    QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
-    }
-    else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
-    }
-    QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
-    }
-    else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
-    }
+    QPointF ptSelPt1ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    QPointF ptSelPt2ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
     m_lineSelPtsSceneCoors = QLineF(ptSelPt1ScenePos, ptSelPt2ScenePos);
 
     QPointF ptSelPtSceneCoors = m_lineSelPtsSceneCoors.center();
@@ -472,14 +434,14 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
 
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = m_lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
+    m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
+    m_polarCoorsToLinkedSelPt.m_fAngle_degrees = m_lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
+        Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
+            ", " + QString::number(m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
@@ -512,28 +474,22 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     QPointF ptSelPt2 = mapFromScene(m_lineSelPtsSceneCoors.p2());
     QLineF lineSelPts = QLineF(ptSelPt1, ptSelPt2);
     QPointF ptCenterLineSelPts = lineSelPts.center();
-    m_rectPie.setWidth(2.0 * m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
-    m_rectPie.setHeight(2.0 * m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    m_rectPie.setWidth(2.0 * m_polarCoorsToLinkedSelPt.m_fLength_px);
+    m_rectPie.setHeight(2.0 * m_polarCoorsToLinkedSelPt.m_fLength_px);
     m_rectPie.moveCenter(ptCenterLineSelPts);
     // The angle returned by QLineF is counter-clockwise with 0° at 3 o'clock.
     // The graphics scene uses clockwise angles with 0° at 3 o'clock.
     m_fPieSpanAngle_degrees = m_lineSelPtsSceneCoors.angle();
     m_fPieSpanAngle_degrees = Math::toClockWiseAngleDegree(m_fPieSpanAngle_degrees);
-    // If both selection points are linked to the same object ...
-    if (m_anchorLayoutDscr.m_selPt1.m_pGraphObj == m_anchorLayoutDscr.m_selPt2.m_pGraphObj) {
-        // .. the scenes rotation angle of the parent group of the linked object must be subtracted
-        // to get the start point of the pie and the span has to be corrected correspondingly.
-        CGraphObjGroup* pGraphObjParentGroup = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->parentGroup();
-        if (pGraphObjParentGroup != nullptr) {
-            double fParentGroupSceneRotationAngle_degrees = pGraphObjParentGroup->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-            m_fPieStartAngle_degrees = fParentGroupSceneRotationAngle_degrees;
-            m_fPieStartAngle_degrees = Math::normalizeAngleInDegree(m_fPieStartAngle_degrees);
-            m_fPieSpanAngle_degrees -= fParentGroupSceneRotationAngle_degrees;
-            m_fPieSpanAngle_degrees = Math::normalizeAngleInDegree(m_fPieSpanAngle_degrees);
-        }
-    }
-    else {
-        m_fPieStartAngle_degrees = 0.0;
+    // The scenes rotation angle of the parent group of the linked object must be subtracted
+    // to get the start point of the pie and the span has to be corrected correspondingly.
+    CGraphObjGroup* pGraphObjParentGroup = m_selPtLinkedObject.m_pGraphObj->parentGroup();
+    if (pGraphObjParentGroup != nullptr) {
+        double fParentGroupSceneRotationAngle_degrees = pGraphObjParentGroup->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
+        m_fPieStartAngle_degrees = fParentGroupSceneRotationAngle_degrees;
+        m_fPieStartAngle_degrees = Math::normalizeAngleInDegree(m_fPieStartAngle_degrees);
+        m_fPieSpanAngle_degrees -= fParentGroupSceneRotationAngle_degrees;
+        m_fPieSpanAngle_degrees = Math::normalizeAngleInDegree(m_fPieSpanAngle_degrees);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -544,7 +500,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     }
 
     QLineF lineEndOfSegment(ptCenterLineSelPts, ptSelPt2);
-    lineEndOfSegment.setLength(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    lineEndOfSegment.setLength(m_polarCoorsToLinkedSelPt.m_fLength_px);
     QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
         QLineF(lineSelPts.p1(), lineSelPts.p2()), lineEndOfSegment.p2(), 10.0);
 

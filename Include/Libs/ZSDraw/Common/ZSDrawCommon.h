@@ -258,8 +258,8 @@ typedef enum {
     EGraphObjTypeLabelMin,
     EGraphObjTypeLabel = EGraphObjTypeLabelMin,
     EGraphObjTypeLabelGeometryPosition,
-    EGraphObjTypeLabelGeometryDX,
-    EGraphObjTypeLabelGeometryDY,
+    EGraphObjTypeLabelGeometryWidth,
+    EGraphObjTypeLabelGeometryHeight,
     EGraphObjTypeLabelGeometryLength,
     EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeLabelMax = EGraphObjTypeLabelGeometryAngle,
@@ -926,6 +926,8 @@ public: // struct methods
     static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* o_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
+    SGraphObjSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    SGraphObjSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt);
@@ -941,18 +943,18 @@ public: // struct methods
 public: // struct members
     /*!< Graphical object the selection point belongs to.
          nullptr, if the selection point is not used (undefined). */
-    CGraphObj* m_pGraphObj;
+    CGraphObj* m_pGraphObj = nullptr;
     /*!< Type of the selection point. Selection points are differentiated into
          selection points on the bounding rectangle around the graphical object
          or into polygon shape points. */
-    ESelectionPointType m_selPtType;
+    ESelectionPointType m_selPtType = ESelectionPointType::Undefined;
     /*!< For selection points on the bounding rectangle specifies the position
          on (or within) the bounding rectangle.
          For polygon shape points the enum is set to PolygonPoint. */
-    ESelectionPoint m_selPt;
+    ESelectionPoint m_selPt = ESelectionPoint::None;
     /*!< For selection points on a polygon the index of the polygon point
          is stored the selection point is assigned to. */
-    int m_idxPt;
+    int m_idxPt = -1;
 
 }; // struct SGraphObjSelectionPoint
 

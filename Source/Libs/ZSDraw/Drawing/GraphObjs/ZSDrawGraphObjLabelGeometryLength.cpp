@@ -100,16 +100,13 @@ public: // ctors and dtor
 CGraphObjLabelGeometryLength::CGraphObjLabelGeometryLength(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
-    const SGraphObjSelectionPoint& i_selPt1,
-    const SGraphObjSelectionPoint& i_selPt2) :
+    CGraphObj* i_pGraphObjLinked) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
         /* pDrawingScene */ i_pDrawingScene,
         /* strKey        */ i_strKey,
-        /* strText       */ "Length",
         /* type          */ EGraphObjTypeLabelGeometryLength,
-        /* selPt         */ i_selPt1,
-        /* selPt         */ i_selPt2),
+        /* selPt         */ SGraphObjSelectionPoint(i_pGraphObjLinked, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center)),
     m_drawSettingsArrowHeads(EGraphObjTypeLine),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
@@ -119,8 +116,7 @@ CGraphObjLabelGeometryLength::CGraphObjLabelGeometryLength(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Key: " + i_strKey +
-            ", SelPt1 {" + i_selPt1.toString(true) + "}" +
-            ", SelPt2 {" + i_selPt2.toString(true) + "}";
+            ", LinkedObject: " + QString(i_pGraphObjLinked == nullptr ? "null" : i_pGraphObjLinked->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -232,7 +228,7 @@ QRectF CGraphObjLabelGeometryLength::boundingRect() const
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (/*m_bIsHit ||*/ isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
@@ -281,7 +277,7 @@ void CGraphObjLabelGeometryLength::paint(
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    if (/*m_bIsHit ||*/ isSelected() || m_anchorLayoutDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine) {
         i_pPainter->save();
         i_pPainter->setRenderHint(QPainter::Antialiasing);
         QPen pn = pen();
@@ -323,27 +319,14 @@ void CGraphObjLabelGeometryLength::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
-    }
-    else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
-    }
-
-    QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
-    }
-    else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
-    }
-
+    QPointF ptSelPt1ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::PolygonPoint, 0);
+    QPointF ptSelPt2ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::PolygonPoint, 1);
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
+
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValLength(lineSelPtSceneCoors.length(), drawingSize.unit(), drawingSize.imageCoorsResolution());
     QString strText = physValLength.toString(EUnitFind::None, PhysValSubStr::Val);
@@ -359,12 +342,10 @@ void CGraphObjLabelGeometryLength::updatePosition()
     m_bUpdatePositionInProgress = true;
 
     // Get anchor line in scene coordinates.
-    // The start point of the anchor line should be the center point of the line
-    // for which the angle has to be indicated.
     QLineF lineFPolarBase(lineSelPtSceneCoors.center(), lineSelPtSceneCoors.p2());
     QLineF anchorLine = ZS::Draw::getLineFromPolar(
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px,
-        m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
+        m_polarCoorsToLinkedSelPt.m_fLength_px,
+        m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
         lineFPolarBase);
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -424,26 +405,12 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
     // Get anchor line in scene coordinates.
     // The start point of the anchor line should be the center point of the line
     // for which the length has to be indicated.
-    QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
-    }
-    else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
-    }
-
-    QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(   
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
-    }
-    else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
-    }
-
+    QPointF ptSelPt1ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::PolygonPoint, 0);
+    QPointF ptSelPt2ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::PolygonPoint, 1);
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
     QPointF ptSelPtSceneCoors = lineSelPtSceneCoors.center();
 
@@ -454,14 +421,14 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
 
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
+    m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
+    m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
+        Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_anchorLayoutDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
+            ", " + QString::number(m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
@@ -501,26 +468,15 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
-    QPointF ptSelPt1ScenePos;
-    if (m_anchorLayoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_selPt);
-    }
-    else {
-        ptSelPt1ScenePos = m_anchorLayoutDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt1.m_selPtType, m_anchorLayoutDscr.m_selPt1.m_idxPt);
-    }
-
-    QPointF ptSelPt2ScenePos;
-    if (m_anchorLayoutDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_selPt);
-    }
-    else {
-        ptSelPt2ScenePos = m_anchorLayoutDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_anchorLayoutDscr.m_selPt2.m_selPtType, m_anchorLayoutDscr.m_selPt2.m_idxPt);
-    }
-
+    // Get anchor line in scene coordinates.
+    // The start point of the anchor line should be the center point of the line
+    // for which the length has to be indicated.
+    QPointF ptSelPt1ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::PolygonPoint, 0);
+    QPointF ptSelPt2ScenePos =
+        m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+            ESelectionPointType::PolygonPoint, 1);
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
 
     // The distances to the parent's selection points must be calculated in scene coordinates.
