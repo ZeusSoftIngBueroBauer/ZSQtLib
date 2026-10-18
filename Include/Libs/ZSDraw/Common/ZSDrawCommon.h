@@ -880,36 +880,36 @@ typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
 
 namespace ZS::Draw
 {
-//******************************************************************************
-struct ZSDRAWDLL_API SGraphObjAlignment
-//******************************************************************************
-{
-public: // ctor
-    SGraphObjAlignment() :
-        m_alignmentRefChild(EAlignmentRef::None),
-        m_alignmentRefParent(EAlignmentRef::None),
-        m_bAlignAbsolute(true),
-        m_fVal(0.0)
-    {
-    }
-    SGraphObjAlignment(EAlignmentRef i_refChild, EAlignmentRef i_refParent, bool i_bAbsolute, double i_fVal = 0.0) :
-        m_alignmentRefChild(i_refChild),
-        m_alignmentRefParent(i_refParent),
-        m_bAlignAbsolute(i_bAbsolute),
-        m_fVal(i_fVal)
-    {
-    }
-public: // struct methods
-    QString toString() const;
-public: // struct members
-    CEnumAlignmentRef m_alignmentRefChild;
-    CEnumAlignmentRef m_alignmentRefParent;
-    bool m_bAlignAbsolute;
-    /*!< If aligned absolute: value in pixels.
-         If aligned relative: scale factor to width or height of parent (usually ranging from 0..1) */
-    double m_fVal;
-
-}; // struct SGraphObjAlignment
+////******************************************************************************
+//struct ZSDRAWDLL_API SGraphObjAlignment
+////******************************************************************************
+//{
+//public: // ctor
+//    SGraphObjAlignment() :
+//        m_alignmentRefChild(EAlignmentRef::None),
+//        m_alignmentRefParent(EAlignmentRef::None),
+//        m_bAlignAbsolute(true),
+//        m_fVal(0.0)
+//    {
+//    }
+//    SGraphObjAlignment(EAlignmentRef i_refChild, EAlignmentRef i_refParent, bool i_bAbsolute, double i_fVal = 0.0) :
+//        m_alignmentRefChild(i_refChild),
+//        m_alignmentRefParent(i_refParent),
+//        m_bAlignAbsolute(i_bAbsolute),
+//        m_fVal(i_fVal)
+//    {
+//    }
+//public: // struct methods
+//    QString toString() const;
+//public: // struct members
+//    CEnumAlignmentRef m_alignmentRefChild;
+//    CEnumAlignmentRef m_alignmentRefParent;
+//    bool m_bAlignAbsolute;
+//    /*!< If aligned absolute: value in pixels.
+//         If aligned relative: scale factor to width or height of parent (usually ranging from 0..1) */
+//    double m_fVal;
+//
+//}; // struct SGraphObjAlignment
 
 
 //******************************************************************************
@@ -1045,66 +1045,6 @@ public: // struct members
 
 
 //******************************************************************************
-/*! @brief Struct definining how to position a graphical object relative to
-           another graphical object.
-
-    Used to position text labels and geometry labels but also connection points,
-    which may be arbitrarily moved.
-
-    Descriptors also provide the possibility to keep the position information
-    even if the object is not existing and invisible.
-
-    E.g. as long as a label is not added to the graphics scene the label objects
-    are not created but the descriptors are kept in the parent object. This way
-    the labels can be created with the desired properties on demand.
-*/
-struct ZSDRAWDLL_API SAnchorLayoutDscr_Obsolete
-//******************************************************************************
-{
-public: // ctors
-    SAnchorLayoutDscr_Obsolete();
-    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType);
-    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey);
-    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SAnchorLayoutDscr_Obsolete(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SAnchorLayoutDscr_Obsolete(const SAnchorLayoutDscr_Obsolete& i_other);
-public: // struct methods
-    QString toString() const;
-public: // struct members
-    /*!< Key of the linked object within the parent's list of linked objects. */
-    QString m_strKey;
-    /*!< Type of the anchored object. Limited to Labels and ConnectionPoints.
-         Range [EGraphcObjConnectionPoint, EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
-    EGraphObjType m_graphObjType;
-    /*!< For connection points, text labels or geometry labels (like position) selPt1 defines the
-         selection point the object is linked to.
-         For geometry labels using two selection points like length, width or height,
-         selPt1 defines the first selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt1;
-    /*!< For connection points, text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
-         For geometry labels using two selection points like length, width or height,
-         selPt2 defines the second selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt2;
-    /*!< Text to be indicated by the anchored object. Not set (empty string) for geometry labels.
-         For geometry labels the indicated text is calculated during runtime
-         by the label item and set at the QGraphicsSimpleTextItem. */
-    QString m_strText;
-    /*!< When modifying the shape of graphical objects the relative position of labels
-         linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
-    SPolarCoors m_polarCoorsToLinkedSelPt;
-    /*!< Flag indicating whether the anchored object is visible. */
-    bool m_bIsVisible;
-    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
-    bool m_bShowAnchorLine;
-
-}; // struct SAnchorLayoutDscr_Obsolete
-
-
-//******************************************************************************
 /*! @brief Struct definining how to position labels relative to the linked object.
 
     Used to position text labels and geometry which may be arbitrarily moved.
@@ -1129,8 +1069,9 @@ public: // ctors
 public: // struct methods
     QString toString() const;
 public: // struct members
-    /*!< Type of the label to be created. If the object is created, this information could
-         also be retrieved from the created object referenced through the selection point struct.
+    /*!< Type of the label to be created. If the object is created, this information
+         could also be retrieved from the created object referenced through the selection
+         point struct.
          Range [EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
     EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
     /*!< Defines the selection point the object is linked to. For text labels the selection

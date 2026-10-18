@@ -114,10 +114,10 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
-    pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
-    CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
-    physValSize = i_pDrawingScene->convert(physValSize);
-    pGraphObj->setFixedSize(physValSize);
+    //pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    //CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    //physValSize = i_pDrawingScene->convert(physValSize);
+    //pGraphObj->setFixedSize(physValSize);
     pGraphObj->setDrawSettings(drawSettings);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
@@ -149,11 +149,11 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
     CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
-    pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    //pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    //CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    //physValSize = i_pDrawingScene->convert(physValSize);
+    //pGraphObj->setFixedSize(physValSize);
     pGraphObj->setPosition(i_physValPoint);
-    CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
-    physValSize = i_pDrawingScene->convert(physValSize);
-    pGraphObj->setFixedSize(physValSize);
     pGraphObj->setDrawSettings(drawSettings);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
@@ -258,8 +258,8 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
     CPhysValPoint physValPointCenter(*i_pDrawingScene);
     CPhysValSize physValSize(*i_pDrawingScene);
     double fZValue = 0.0;
-    QList<SAnchorLayoutDscr> arTextLabels;
-    QList<SAnchorLayoutDscr> arGeometryLabels;
+    QList<STextLabelAnchorDscr> arTextLabels;
+    QList<SLabelAnchorDscr> arGeometryLabels;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
@@ -361,51 +361,51 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
     } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
     if (!i_xmlStreamReader.hasError()) {
-        for (const SAnchorLayoutDscr& layoutDscr : arTextLabels) {
-            if (!pGraphObj->isTextLabelAdded(layoutDscr.m_strKey)) {
-                if (layoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        for (const STextLabelAnchorDscr& labelDscr : arTextLabels) {
+            if (!pGraphObj->isTextLabelAdded(labelDscr.m_strKey)) {
+                if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->addTextLabel(
-                        layoutDscr.m_strKey, layoutDscr.m_strText, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_selPt);
+                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
                 }
                 else {
                     pGraphObj->addTextLabel(
-                        layoutDscr.m_strKey, layoutDscr.m_strText, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
                 }
             }
             else {
-                pGraphObj->setTextLabelText(layoutDscr.m_strKey, layoutDscr.m_strText);
-                if (layoutDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->setLabelAnchorPoint(
-                        layoutDscr.m_strKey, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_selPt);
+                pGraphObj->setTextLabelText(labelDscr.m_strKey, labelDscr.m_strText);
+                if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->setTextLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
                 }
                 else {
-                    pGraphObj->setLabelAnchorPoint(
-                        layoutDscr.m_strKey, layoutDscr.m_selPt1.m_selPtType, layoutDscr.m_selPt1.m_idxPt);
+                    pGraphObj->setTextLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
                 }
             }
-            pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
-                layoutDscr.m_strKey, layoutDscr.m_polarCoorsToLinkedSelPt);
-            layoutDscr.m_bIsVisible ?
-                pGraphObj->showLabel(layoutDscr.m_strKey) :
-                pGraphObj->hideLabel(layoutDscr.m_strKey);
-            layoutDscr.m_bShowAnchorLine ?
-                pGraphObj->showLabelAnchorLine(layoutDscr.m_strKey) :
-                pGraphObj->hideLabelAnchorLine(layoutDscr.m_strKey);
+            pGraphObj->setTextLabelPolarCoorsToLinkedSelectionPoint(
+                labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+            labelDscr.m_bIsVisible ?
+                pGraphObj->showTextLabel(labelDscr.m_strKey) :
+                pGraphObj->hideTextLabel(labelDscr.m_strKey);
+            labelDscr.m_bShowAnchorLine ?
+                pGraphObj->showTextLabelAnchorLine(labelDscr.m_strKey) :
+                pGraphObj->hideTextLabelAnchorLine(labelDscr.m_strKey);
         }
-        for (const SAnchorLayoutDscr& layoutDscr : arGeometryLabels) {
-            if (!pGraphObj->isValidGeometryLabelName(layoutDscr.m_strKey)) {
+        for (const SLabelAnchorDscr& labelDscr : arGeometryLabels) {
+            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_selPt.name())) {
                 i_xmlStreamReader.raiseError(
-                    "Invalid geometry label name \"" + layoutDscr.m_strKey + "\".");
+                    "Invalid geometry label name \"" + labelDscr.m_selPt.name() + "\".");
             }
             else {
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
-                    layoutDscr.m_strKey, layoutDscr.m_polarCoorsToLinkedSelPt);
-                layoutDscr.m_bIsVisible ?
-                    pGraphObj->showGeometryLabel(layoutDscr.m_strKey) :
-                    pGraphObj->hideGeometryLabel(layoutDscr.m_strKey);
-                layoutDscr.m_bShowAnchorLine ?
-                    pGraphObj->showGeometryLabelAnchorLine(layoutDscr.m_strKey) :
-                    pGraphObj->hideGeometryLabelAnchorLine(layoutDscr.m_strKey);
+                    labelDscr.m_selPt.name(), labelDscr.m_polarCoorsToLinkedSelPt);
+                labelDscr.m_bIsVisible ?
+                    pGraphObj->showGeometryLabel(labelDscr.m_selPt.name()) :
+                    pGraphObj->hideGeometryLabel(labelDscr.m_selPt.name());
+                labelDscr.m_bShowAnchorLine ?
+                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_selPt.name()) :
+                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_selPt.name());
             }
         }
     }

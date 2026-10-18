@@ -111,7 +111,7 @@ public: // must overridables
 //------------------------------------------------------------------------------
 /*! On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
     "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the "NameLabelVisible" and
-    "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showLabel" "onGraphObjChanged"
+    "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showTextLabel" "onGraphObjChanged"
     is immediately called resetting the check state of "NameLabelAnchorLineVisible".
     To avoid this undesired correction the "onGraphObjChanged" method must be disabled while applying
     changes but will be called after all changes have been applied. For this the flag "m_bApplyingChanges"
@@ -231,7 +231,7 @@ void CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged(const QString& i_strKey
     {
         /*! On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
             "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the "NameLabelVisible" and
-            "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showLabel" "onGraphObjChanged"
+            "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showTextLabel" "onGraphObjChanged"
             is immediately called resetting the check state of "NameLabelAnchorLineVisible".
             To avoid this undesired correction the "onGraphObjChanged" method must be disabled while applying
             changes but will be called after all changes have been applied. For this the flag "m_bApplyingChanges"

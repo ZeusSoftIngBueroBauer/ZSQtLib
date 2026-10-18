@@ -60,8 +60,6 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjConnectionPoint(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     ~CGraphObjConnectionPoint() override;
-protected: // initialisation in ctors
-    void init(const QString& i_strObjName);
 public: // must overridables of base class CGraphObj
     CGraphObj* clone() override;
 public: // overridables of base class QGraphicsItem

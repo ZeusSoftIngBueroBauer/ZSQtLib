@@ -534,7 +534,7 @@ public: // overridables
     virtual CGraphObj* linkedObject() const;
     virtual QString pathNameOfLinkedObject() const;
     virtual void rename(const QString& i_strNameNew);
-protected: // overridables of base class CIdxTreeEntry
+public: // overridables of base class CIdxTreeEntry
     virtual void setName(const QString& i_strName) override;
     virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
@@ -619,13 +619,13 @@ public: // overridables
     virtual bool isResizable() const;
     virtual void setFixedSize( const CPhysValSize& i_physValSize );
     virtual CPhysValSize fixedSize(const ZS::PhysVal::CUnit& i_unit) const;
-public: // overridables
-    virtual int addAlignment(const SGraphObjAlignment& i_alignment);
-    virtual int getAlignmentCount() const;
-    virtual SGraphObjAlignment getAlignment(int i_idx) const;
-    virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
-    virtual void removeAlignment(int i_idx);
-    virtual void clearAlignments();
+//public: // overridables
+//    virtual int addAlignment(const SGraphObjAlignment& i_alignment);
+//    virtual int getAlignmentCount() const;
+//    virtual SGraphObjAlignment getAlignment(int i_idx) const;
+//    virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
+//    virtual void removeAlignment(int i_idx);
+//    virtual void clearAlignments();
 public: // must overridables
     virtual QRectF getBoundingRect() const;
     virtual CPhysValRect getPhysValBoundingRect(const ZS::PhysVal::CUnit& i_unit) const;
@@ -736,14 +736,14 @@ public: // overridables (geometry labels)
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
 protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(EGraphObjType i_labelType, ESelectionPoint i_selPt);
-    virtual bool addGeometryLabel(EGraphObjType i_labelType, int i_idxPt);
+    virtual bool addGeometryLabel(EGraphObjType i_labelType, const QString& i_strName, ESelectionPoint i_selPt);
+    virtual bool addGeometryLabel(EGraphObjType i_labelType, const QString& i_strName, int i_idxPt);
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;
     CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    //SAnchorLayoutDscr getConnectionPointDescriptor(const QString& i_strName) const;
-    //virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
+    STextLabelAnchorDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, int i_idxPt) const;
@@ -936,7 +936,7 @@ protected: // instance members
     /*!< If valid, defines the fixed size of the graphical object. */
     CPhysValSize m_physValSizeFixed;
     /*!< Alignments of the graphical object to the parent group.. */
-    QList<SGraphObjAlignment> m_arAlignments;
+    //QList<SGraphObjAlignment> m_arAlignments;
     /*!< Flag indicating whether the graphical object is hit by the mouse cursor
          (between hoverEnterEvent and hoverLeaveEvent). */
     //bool m_bIsHit;
@@ -1036,7 +1036,7 @@ protected: // instance members
     /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
          Connection points may be at the same position of selection points but may also be arbitrarily positioned.
          The desriptors are used to set the relative position of the connection point to the graphical object. */
-    //QHash<QString, SGraphObjSelectionPoint> m_hshConnectionPointsSelPts;
+    //QHash<QString, STextLabelAnchorDscr> m_hshConnectionPointsLabelDscrs;
     /*!< Hash with the connection points added to the graphical object. */
     QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;
     /*!< The tool tip contains various interesting information about the graphical object like the name,

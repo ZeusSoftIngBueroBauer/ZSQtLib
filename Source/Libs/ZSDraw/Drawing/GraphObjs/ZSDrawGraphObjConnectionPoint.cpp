@@ -160,7 +160,29 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    init(i_strObjName);
+    m_strlstPredefinedTextLabelNames.append(c_strLabelName);
+    bool bAdded = addTextLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    if (!bAdded) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add text label " + c_strLabelName);
+    }
+
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
+    bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, c_strGeometryLabelNameCenter, ESelectionPoint::Center);
+    if (!bAdded) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + c_strGeometryLabelNameCenter);
+    }
+
+    setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
+    physValSize = i_pDrawingScene->convert(physValSize);
+    setFixedSize(physValSize);
+
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
+            |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
+    QGraphicsItem_setAcceptHoverEvents(true);
+
+    setStackingOrderValue(c_fStackingOrderOffsetConnectionPoints, ERowVersion::Original);
 }
 
 //------------------------------------------------------------------------------
@@ -190,35 +212,6 @@ CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
             pGraphObjCnctLine = nullptr;
         }
     }
-}
-
-/*==============================================================================
-protected: // initialisation
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::init(const QString& i_strObjName)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "init",
-        /* strAddInfo   */ i_strObjName );
-
-    m_strlstPredefinedTextLabelNames.append(c_strLabelName);
-    addTextLabel(c_strLabelName, i_strObjName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
-
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
-
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable
-            |QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
-    setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-    QGraphicsItem_setAcceptHoverEvents(true);
-
-    setStackingOrderValue(c_fStackingOrderOffsetConnectionPoints, ERowVersion::Original);
 }
 
 /*==============================================================================
@@ -1299,6 +1292,8 @@ void CGraphObjConnectionPoint::setLinkedObjectSelectionPoint(const SGraphObjSele
         }
 
         m_selPtLinkedObject = i_selPt;
+
+        m_pDrawingScene->getGraphObjsIdxTree()->move(this, i_selPt.m_pGraphObj);
 
         double fZValueParent = m_selPtLinkedObject.m_pGraphObj->getStackingOrderValue();
         setStackingOrderValue(fZValueParent + c_fStackingOrderOffsetLabels, ERowVersion::Original);

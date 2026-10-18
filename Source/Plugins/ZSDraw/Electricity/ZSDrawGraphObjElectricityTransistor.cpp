@@ -198,7 +198,7 @@ CGraphObjTransistor::CGraphObjTransistor(
     QRectF rctCnctPt2( rctBody.center().x()+fBodyDiameter/16.0, rctBounding.top(), fCnctPtWidth, fCnctPtWidth );
     QRectF rctCnctPt3( rctBody.center().x()+fBodyDiameter/16.0, rctBounding.bottom()-fCnctPtWidth, fCnctPtWidth, fCnctPtWidth );
 
-    SGraphObjAlignment alignment;
+    //SGraphObjAlignment alignment;
 
     // Draw settings for group item
     //-----------------------------

@@ -360,16 +360,16 @@ void CObjFactory::saveGraphObjTextLabels(
     QSet<QString> strlstLabelNamesAdded;
     for (const QString& strName : strlstPredefinedLabelNames) {
         if (!i_pGraphObj->textLabelHasDefaultValues(strName)) {
-            SAnchorLayoutDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
+            STextLabelAnchorDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
-            SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+            SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString(true, ", "));
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isTextLabelVisible(strName)));
             if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
             }
@@ -382,16 +382,16 @@ void CObjFactory::saveGraphObjTextLabels(
     for (const QString& strName : strlstLabelNames) {
         if (!strlstLabelNamesAdded.contains(strName)) {
             if (!i_pGraphObj->textLabelHasDefaultValues(strName)) {
-                SAnchorLayoutDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
+                STextLabelAnchorDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
                 i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
                 // To keep the XML file as short as possible the properties of
                 // the labels are stored as attributes and not as text elements.
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
-                SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+                SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString(true, ", "));
-                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isTextLabelVisible(strName)));
                 if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
                     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
                 }
@@ -403,17 +403,17 @@ void CObjFactory::saveGraphObjTextLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
+QList<STextLabelAnchorDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<SAnchorLayoutDscr> arLayoutDscrs;
+    QList<STextLabelAnchorDscr> arLabelDscr;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameLabel) {
-                    SAnchorLayoutDscr layoutDscr;
+                    STextLabelAnchorDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 
@@ -422,36 +422,36 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
 
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameKey)) {
-                        layoutDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
+                        labelDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameText)) {
-                        layoutDscr.m_strText = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameText).toString();
+                        labelDscr.m_strText = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameText).toString();
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameSelPt)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameSelPt).toString();
                         SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(strAttr, &bConverted);
                         if (bConverted) {
-                            layoutDscr.m_selPt1 = selPtTmp;
+                            labelDscr.m_selPt = selPtTmp;
                         }
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
                         SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
                         if (bConverted) {
-                            layoutDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
+                            labelDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
                         }
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameVisible).toString();
-                        layoutDscr.m_bIsVisible = str2Bool(strAttr);
+                        labelDscr.m_bIsVisible = str2Bool(strAttr);
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameAnchorLineVisible).toString();
-                        layoutDscr.m_bShowAnchorLine = str2Bool(strAttr);
+                        labelDscr.m_bShowAnchorLine = str2Bool(strAttr);
                     }
 
-                    if (!layoutDscr.m_strKey.isEmpty()) {
-                        arLayoutDscrs.append(layoutDscr);
+                    if (!labelDscr.m_strKey.isEmpty()) {
+                        arLabelDscr.append(labelDscr);
                     }
                 }
             }
@@ -463,7 +463,7 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-    return arLayoutDscrs;
+    return arLabelDscr;
 }
 
 //------------------------------------------------------------------------------
@@ -475,12 +475,10 @@ void CObjFactory::saveGraphObjGeometryLabels(
     strlstLabelNames.sort();
     for (const QString& strName : strlstLabelNames) {
         if (!i_pGraphObj->geometryLabelHasDefaultValues(strName)) {
-            SAnchorLayoutDscr labelDscr = i_pGraphObj->getGeometryLabelDescriptor(strName);
+            SLabelAnchorDscr labelDscr = i_pGraphObj->getGeometryLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isGeometryLabelVisible(strName)));
             if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
@@ -492,17 +490,17 @@ void CObjFactory::saveGraphObjGeometryLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader)
+QList<SLabelAnchorDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<SAnchorLayoutDscr> arLayoutDscrs;
+    QList<SLabelAnchorDscr> arLabelDscr;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameLabel) {
-                    SAnchorLayoutDscr layoutDscr;
+                    SLabelAnchorDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 
@@ -510,26 +508,20 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReade
                     // the labels are stored as attributes and not as text elements.
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
 
-                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameKey)) {
-                        layoutDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
-                    }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
                         SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
                         if (bConverted) {
-                            layoutDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
+                            labelDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
                         }
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameVisible).toString();
-                        layoutDscr.m_bIsVisible = str2Bool(strAttr);
+                        labelDscr.m_bIsVisible = str2Bool(strAttr);
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameAnchorLineVisible).toString();
-                        layoutDscr.m_bShowAnchorLine = str2Bool(strAttr);
-                    }
-                    if (!layoutDscr.m_strKey.isEmpty()) {
-                        arLayoutDscrs.append(layoutDscr);
+                        labelDscr.m_bShowAnchorLine = str2Bool(strAttr);
                     }
                 }
             }
@@ -541,7 +533,7 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReade
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-    return arLayoutDscrs;
+    return arLabelDscr;
 }
 
 //------------------------------------------------------------------------------
@@ -551,13 +543,11 @@ void CObjFactory::saveGraphObjConnectionPoints(
 {
     QStringList strlstCnctPtNames = i_pGraphObj->getConnectionPointsNames();
     for (const QString& strName : strlstCnctPtNames) {
-        SAnchorLayoutDscr labelDscr = i_pGraphObj->getConnectionPointDescriptor(strName);
+        STextLabelAnchorDscr labelDscr = i_pGraphObj->getConnectionPointDescriptor(strName);
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameConnectionPoint);
         // To keep the XML file as short as possible the properties of
         // the connection points are stored as attributes and not as text elements.
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
-        SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+        SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
         if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
@@ -568,17 +558,17 @@ void CObjFactory::saveGraphObjConnectionPoints(
 }
 
 //------------------------------------------------------------------------------
-QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamReader& i_xmlStreamReader)
+QList<STextLabelAnchorDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<SAnchorLayoutDscr> arLayoutDscrs;
+    QList<STextLabelAnchorDscr> arLabelDscr;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameConnectionPoint) {
-                    SAnchorLayoutDscr layoutDscr;
+                    STextLabelAnchorDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 
@@ -587,35 +577,35 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamRea
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
 
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameKey)) {
-                        layoutDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
+                        labelDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameText)) {
-                        layoutDscr.m_strText = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameText).toString();
+                        labelDscr.m_strText = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameText).toString();
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameSelPt)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameSelPt).toString();
                         SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(strAttr, &bConverted);
                         if (bConverted) {
-                            layoutDscr.m_selPt1 = selPtTmp;
+                            labelDscr.m_selPt = selPtTmp;
                         }
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
                         SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
                         if (bConverted) {
-                            layoutDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
+                            labelDscr.m_polarCoorsToLinkedSelPt = polarCoorsTmp;
                         }
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameVisible).toString();
-                        layoutDscr.m_bIsVisible = str2Bool(strAttr);
+                        labelDscr.m_bIsVisible = str2Bool(strAttr);
                     }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameAnchorLineVisible).toString();
-                        layoutDscr.m_bShowAnchorLine = str2Bool(strAttr);
+                        labelDscr.m_bShowAnchorLine = str2Bool(strAttr);
                     }
-                    if (!layoutDscr.m_strKey.isEmpty()) {
-                        arLayoutDscrs.append(layoutDscr);
+                    if (!labelDscr.m_strKey.isEmpty()) {
+                        arLabelDscr.append(labelDscr);
                     }
                 }
             }
@@ -627,5 +617,5 @@ QList<SAnchorLayoutDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamRea
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-    return arLayoutDscrs;
+    return arLabelDscr;
 }

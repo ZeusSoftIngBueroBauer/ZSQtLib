@@ -3287,7 +3287,7 @@ void CTest::doTestStepSetDrawSettings(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
+void CTest::doTestStepShowTextLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3297,7 +3297,7 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepShowLabels",
+        /* strMethod    */ "doTestStepShowTextLabels",
         /* strAddInfo   */ strMthInArgs );
 
     QString strGraphObjName; // may be set as config value or at data rows
@@ -3329,8 +3329,8 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
         }
         CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            pGraphObj->showLabel(strLabelName);
-            pGraphObj->showLabelAnchorLine(strLabelName);
+            pGraphObj->showTextLabel(strLabelName);
+            pGraphObj->showTextLabelAnchorLine(strLabelName);
         }
         QPointF posToSet;
         if (dataRow.contains("setPos")) {
@@ -3353,10 +3353,10 @@ void CTest::doTestStepShowLabels(ZS::Test::CTestStep* i_pTestStep)
             if (pGraphicsItemLabel != nullptr) {
                 if (selPt.isValid()) {
                     if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                        pGraphObj->setLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_selPt);
+                        pGraphObj->setTextLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_selPt);
                     }
                     else {
-                        pGraphObj->setLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_idxPt);
+                        pGraphObj->setTextLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_idxPt);
                     }
                 }
                 if (!posToSet.isNull()) {
@@ -3403,8 +3403,8 @@ void CTest::doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep)
         strlstExpectedValues.append(dataRow["ExpectedValue"].toString());
         CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            pGraphObj->hideLabel(strLabelName);
-            pGraphObj->hideLabelAnchorLine(strLabelName);
+            pGraphObj->hideTextLabel(strLabelName);
+            pGraphObj->hideTextLabelAnchorLine(strLabelName);
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getTextLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {

@@ -146,7 +146,7 @@ CGraphObjInductor::CGraphObjInductor(
     QRectF rctCnctPt1( rctBounding.left(), rctBounding.center().y()-fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth );
     QRectF rctCnctPt2( rctBounding.right()-fCnctPtWidth, rctBounding.center().y()-fCnctPtWidth/2.0, fCnctPtWidth, fCnctPtWidth );
 
-    SGraphObjAlignment alignment;
+    //SGraphObjAlignment alignment;
     CDrawSettings      drawSettings = m_drawSettings;
 
     // Draw settings for group item

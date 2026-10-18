@@ -82,10 +82,10 @@ CModelGraphObjLabels::SLabelSettings CModelGraphObjLabels::SLabelSettings::fromG
     labelSettings.m_strNameCurr = i_strLabelName;
     labelSettings.m_iRowIdx = i_iRowIdx;
     labelSettings.m_bIsPredefinedLabelName = i_pGraphObj->isPredefinedTextLabelName(i_strLabelName);
-    labelSettings.m_strText = i_pGraphObj->labelText(i_strLabelName);
-    labelSettings.m_selPt = i_pGraphObj->labelAnchorPoint(i_strLabelName);
-    labelSettings.m_bVisible = i_pGraphObj->isLabelVisible(i_strLabelName);
-    labelSettings.m_bAnchorLineVisible = i_pGraphObj->isLabelAnchorLineVisible(i_strLabelName);
+    labelSettings.m_strText = i_pGraphObj->textLabelText(i_strLabelName);
+    labelSettings.m_selPt = i_pGraphObj->textLabelAnchorPoint(i_strLabelName);
+    labelSettings.m_bVisible = i_pGraphObj->isTextLabelVisible(i_strLabelName);
+    labelSettings.m_bAnchorLineVisible = i_pGraphObj->isTextLabelAnchorLineVisible(i_strLabelName);
     labelSettings.m_errResultInfo = SErrResultInfo();
     return labelSettings;
 }
@@ -429,20 +429,20 @@ void CModelGraphObjLabels::acceptChanges()
                 else {
                     m_pGraphObj->setTextLabelText(labelSettings.m_strNameCurr, labelSettings.m_strText);
                     if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                        m_pGraphObj->setLabelAnchorPoint(
+                        m_pGraphObj->setTextLabelAnchorPoint(
                             labelSettings.m_strNameCurr, labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_selPt);
                     }
                     else {
-                        m_pGraphObj->setLabelAnchorPoint(
+                        m_pGraphObj->setTextLabelAnchorPoint(
                             labelSettings.m_strNameCurr, labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_idxPt);
                     }
                 }
                 labelSettings.m_bVisible ?
-                    m_pGraphObj->showLabel(labelSettings.m_strNameCurr) :
-                    m_pGraphObj->hideLabel(labelSettings.m_strNameCurr);
+                    m_pGraphObj->showTextLabel(labelSettings.m_strNameCurr) :
+                    m_pGraphObj->hideTextLabel(labelSettings.m_strNameCurr);
                 labelSettings.m_bAnchorLineVisible ?
-                    m_pGraphObj->showLabelAnchorLine(labelSettings.m_strNameCurr) :
-                    m_pGraphObj->hideLabelAnchorLine(labelSettings.m_strNameCurr);
+                    m_pGraphObj->showTextLabelAnchorLine(labelSettings.m_strNameCurr) :
+                    m_pGraphObj->hideTextLabelAnchorLine(labelSettings.m_strNameCurr);
             }
         }
     }

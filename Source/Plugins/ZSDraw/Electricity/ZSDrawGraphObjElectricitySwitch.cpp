@@ -179,7 +179,7 @@ CGraphObjSwitch::CGraphObjSwitch(
     QRectF rctCnctPt1( rctBounding.left(), rctBounding.bottom()-fCnctPtWidth, fCnctPtWidth, fCnctPtWidth );
     QRectF rctCnctPt2( rctBounding.right()-fCnctPtWidth, rctBounding.bottom()-fCnctPtWidth, fCnctPtWidth, fCnctPtWidth );
 
-    SGraphObjAlignment alignment;
+    //SGraphObjAlignment alignment;
 
     // Draw settings for group item
     //-----------------------------

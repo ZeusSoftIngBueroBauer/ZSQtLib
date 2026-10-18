@@ -1090,16 +1090,16 @@ namespace ZS::Draw
 struct SGraphObjAlignment
 *******************************************************************************/
 
-//------------------------------------------------------------------------------
-QString SGraphObjAlignment::toString() const
-//------------------------------------------------------------------------------
-{
-    QString str = "RefChild:" + m_alignmentRefChild.toString() +
-                  ", RefParent:" + m_alignmentRefParent.toString() +
-                  ", Absolute:" + bool2Str(m_bAlignAbsolute) +
-                  ", Val:" + QString::number(m_fVal);
-    return str;
-}
+////------------------------------------------------------------------------------
+//QString SGraphObjAlignment::toString() const
+////------------------------------------------------------------------------------
+//{
+//    QString str = "RefChild:" + m_alignmentRefChild.toString() +
+//                  ", RefParent:" + m_alignmentRefParent.toString() +
+//                  ", Absolute:" + bool2Str(m_bAlignAbsolute) +
+//                  ", Val:" + QString::number(m_fVal);
+//    return str;
+//}
 
 
 /*******************************************************************************

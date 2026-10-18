@@ -832,7 +832,7 @@ void CGraphObj::rename( const QString& i_strNameNew )
 }
 
 /*==============================================================================
-protected: // overridables of base class CIdxTreeEntry
+public: // overridables of base class CIdxTreeEntry
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -2619,113 +2619,113 @@ public: // overridables
     The order takes effect on the result. Usually the size should be adjusted
     before the positions to get relative adjustments working as expected.
 */
-int CGraphObj::addAlignment( const SGraphObjAlignment& i_alignment )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_alignment.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::addAlignment",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idx = m_arAlignments.size();
-    m_arAlignments.append(i_alignment);
-
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
-    }
-    return idx;
-}
-
-//------------------------------------------------------------------------------
-int CGraphObj::getAlignmentCount() const
-//------------------------------------------------------------------------------
-{
-    return m_arAlignments.size();
-}
-
-//------------------------------------------------------------------------------
-SGraphObjAlignment CGraphObj::getAlignment( int i_idx ) const
-//------------------------------------------------------------------------------
-{
-    if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
-    }
-    return m_arAlignments[i_idx];
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::setAlignment( int i_idx, const SGraphObjAlignment& i_alignment )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_idx) + ": " + i_alignment.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setAlignment",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx));
-    }
-    m_arAlignments[i_idx] = i_alignment;
-
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeAlignment( int i_idx )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_idx);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::removeAlignment",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
-    }
-    m_arAlignments.removeAt(i_idx);
-
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::clearAlignments()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::clearAlignments",
-        /* strAddInfo   */ "" );
-
-    m_arAlignments.clear();
-
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
-    }
-}
+//int CGraphObj::addAlignment( const SGraphObjAlignment& i_alignment )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_alignment.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::addAlignment",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idx = m_arAlignments.size();
+//    m_arAlignments.append(i_alignment);
+//
+//    if (m_pTree != nullptr) {
+//        m_pTree->onTreeEntryChanged(this);
+//    }
+//    return idx;
+//}
+//
+////------------------------------------------------------------------------------
+//int CGraphObj::getAlignmentCount() const
+////------------------------------------------------------------------------------
+//{
+//    return m_arAlignments.size();
+//}
+//
+////------------------------------------------------------------------------------
+//SGraphObjAlignment CGraphObj::getAlignment( int i_idx ) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+//    }
+//    return m_arAlignments[i_idx];
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::setAlignment( int i_idx, const SGraphObjAlignment& i_alignment )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString::number(i_idx) + ": " + i_alignment.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::setAlignment",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx));
+//    }
+//    m_arAlignments[i_idx] = i_alignment;
+//
+//    if (m_pTree != nullptr) {
+//        m_pTree->onTreeEntryChanged(this);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeAlignment( int i_idx )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString::number(i_idx);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::removeAlignment",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+//    }
+//    m_arAlignments.removeAt(i_idx);
+//
+//    if (m_pTree != nullptr) {
+//        m_pTree->onTreeEntryChanged(this);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::clearAlignments()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::clearAlignments",
+//        /* strAddInfo   */ "" );
+//
+//    m_arAlignments.clear();
+//
+//    if (m_pTree != nullptr) {
+//        m_pTree->onTreeEntryChanged(this);
+//    }
+//}
 
 /*==============================================================================
 public: // must overridables
@@ -5893,7 +5893,7 @@ void CGraphObj::setTextLabelAnchorPoint(
         labelAnchorDscr.m_selPt = SGraphObjSelectionPoint(this, i_selPtType, i_selPt);
         CGraphObjLabel* pGraphObjLabel = m_hshpTextLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setLinkedObjectSelectionPoint1(labelAnchorDscr.m_selPt);
+            pGraphObjLabel->setLinkedObjectSelectionPoint(labelAnchorDscr.m_selPt);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -5953,7 +5953,7 @@ void CGraphObj::setTextLabelAnchorPoint(
         labelAnchorDscr.m_selPt.m_idxPt = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpTextLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setLinkedObjectSelectionPoint1(labelAnchorDscr.m_selPt);
+            pGraphObjLabel->setLinkedObjectSelectionPoint(labelAnchorDscr.m_selPt);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6030,7 +6030,7 @@ void CGraphObj::showTextLabel(const QString& i_strName)
             m_pTree->onTreeEntryChanged(this);
         }
     }
-} // showLabel
+} // showTextLabel
 
 //------------------------------------------------------------------------------
 /*! Hides the label.
@@ -6649,28 +6649,26 @@ protected: // overridables (geometry labels)
     The label is not added to the graphics scene and remains invisible.
     To add the label also to the graphics scene the label must be shown.
 
-    @param [in] i_strName
-        Name of the label. The name must be unique otherwise no label is created.
     @param [in] i_labelType
         Range [EGraphObjTypeLabelGeometryPosition,
                EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
                EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
         If not empty defines the text to be shown.
-    @param [in] i_selPt1
-        First selection point the label should use to indicate the geometry.
-    @param [in] i_selPt2 (optional)
-        Second selection point the label should use to indicate the geometry.
-        For position label only one selection point is used and the second selection
-        point is set to invalid.
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_selPt
+        Selection point the label should use to indicate the geometry.
 
     @return true, if the label has been created and added, false otherwise.
 */
-bool CGraphObj::addGeometryLabel(EGraphObjType i_labelType, ESelectionPoint i_selPt)
+bool CGraphObj::addGeometryLabel(
+    EGraphObjType i_labelType, const QString& i_strName, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = graphObjType2Str(i_labelType) + ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = graphObjType2Str(i_labelType) + ", " + i_strName + ", " +
+            CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6680,12 +6678,11 @@ bool CGraphObj::addGeometryLabel(EGraphObjType i_labelType, ESelectionPoint i_se
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjSelectionPoint selPt(this, ESelectionPointType::BoundingRectangle, i_selPt);
-    QString strName = selPt.name();
-    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(strName);
+    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         SLabelAnchorDscr labelAnchorDscr(i_labelType, selPt);
-        m_hshGeometryLabelDscrs.insert(strName, labelAnchorDscr);
-        emit_geometryLabelAdded(strName);
+        m_hshGeometryLabelDscrs.insert(i_strName, labelAnchorDscr);
+        emit_geometryLabelAdded(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6703,28 +6700,26 @@ bool CGraphObj::addGeometryLabel(EGraphObjType i_labelType, ESelectionPoint i_se
     The label is not added to the graphics scene and remains invisible.
     To add the label also to the graphics scene the label must be shown.
 
-    @param [in] i_strName
-        Name of the label. The name must be unique otherwise no label is created.
     @param [in] i_labelType
         Range [EGraphObjTypeLabelGeometryPosition,
                EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
                EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
         If not empty defines the text to be shown.
-    @param [in] i_idxPt1
-        First selection point the label should use to indicate the geometry.
-    @param [in] i_idxPt2 (optional)
-        Second selection point the label should use to indicate the geometry.
-        For position labels only one selection point is used and the second selection
-        point is set to invalid.
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_idxPt
+        Selection point the label should use to indicate the geometry.
 
     @return true, if the label has been created and added, false otherwise.
 */
-bool CGraphObj::addGeometryLabel(EGraphObjType i_labelType, int i_idxPt)
+bool CGraphObj::addGeometryLabel(
+    EGraphObjType i_labelType, const QString& i_strName, int i_idxPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = graphObjType2Str(i_labelType) + ", Pt: " + QString::number(i_idxPt);
+        strMthInArgs = graphObjType2Str(i_labelType) + ", " + i_strName + ", " +
+            ", Pt: " + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6734,12 +6729,11 @@ bool CGraphObj::addGeometryLabel(EGraphObjType i_labelType, int i_idxPt)
         /* strAddInfo   */ strMthInArgs );
 
     SGraphObjSelectionPoint selPt(this, ESelectionPointType::PolygonPoint, i_idxPt);
-    QString strName = selPt.name();
-    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(strName);
+    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         SLabelAnchorDscr labelAnchorDscr(i_labelType, selPt);
-        m_hshGeometryLabelDscrs.insert(strName, labelAnchorDscr);
-        emit_geometryLabelAdded(strName);
+        m_hshGeometryLabelDscrs.insert(i_strName, labelAnchorDscr);
+        emit_geometryLabelAdded(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6822,19 +6816,25 @@ CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName
     return m_hshpConnectionPoints.value(i_strName, nullptr);
 }
 
-////------------------------------------------------------------------------------
-///*! @brief Returns the connection point descriptor for the given name.
-//*/
-//SAnchorLayoutDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
-////------------------------------------------------------------------------------
-//{
-//    SAnchorLayoutDscr linkedChildDscr = m_hshConnectionPointsDscrs.value(i_strName, SAnchorLayoutDscr());
-//    CGraphObjConnectionPoint* pGraphObjCnctPt = m_hshpConnectionPoints.value(i_strName, nullptr);
-//    if (pGraphObjCnctPt != nullptr) {
-//        linkedChildDscr.m_polarCoorsToLinkedSelPt = pGraphObjCnctPt->polarCoorsToLinkedSelectionPoint();
-//    }
-//    return linkedChildDscr;
-//}
+//------------------------------------------------------------------------------
+/*! @brief Returns the connection point descriptor for the given name.
+*/
+STextLabelAnchorDscr CGraphObj::getConnectionPointDescriptor(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    STextLabelAnchorDscr labelDscr;
+    CGraphObjConnectionPoint* pGraphObjCnctPt = m_hshpConnectionPoints.value(i_strName, nullptr);
+    if (pGraphObjCnctPt != nullptr) {
+        labelDscr.m_strKey = pGraphObjCnctPt->name();
+        labelDscr.m_strText = pGraphObjCnctPt->name();
+        labelDscr.m_graphObjType = EGraphObjTypeConnectionPoint;
+        labelDscr.m_selPt = pGraphObjCnctPt->selectionPointAtLinkedObject();
+        labelDscr.m_polarCoorsToLinkedSelPt = pGraphObjCnctPt->polarCoorsToLinkedSelectionPoint();
+        labelDscr.m_bIsVisible = true;
+        labelDscr.m_bShowAnchorLine = pGraphObjCnctPt->isAnchorLineVisible();
+    }
+    return labelDscr;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the list of the possible selection points a connection point may be anchored to.
@@ -6852,20 +6852,16 @@ CGraphObjConnectionPoint* CGraphObj::getConnectionPoint(const QString& i_strName
         If PolygonPoint is contained in the list of returned selection points the possible
         anchor points depend on the number of line points of the polygon or polyline.
 */
-//QList<SGraphObjSelectionPoint> CGraphObj::getPossibleConnectionPointAnchorPoints(const QString& i_strName) const
-////------------------------------------------------------------------------------
-//{
-//    static QList<SGraphObjSelectionPoint> s_arSelPts;
-//    if (s_arSelPts.isEmpty()) {
-//        s_arSelPts.append(SGraphObjSelectionPoint(
-//            const_cast<CGraphObj*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
-//    }
-//    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
-//    if (s_hshSelPtsPredefined.isEmpty()) {
-//        s_hshSelPtsPredefined.insert(c_strLabelName, s_arSelPts);
-//    }
-//    return s_hshSelPtsPredefined.value(i_strName, QList<SGraphObjSelectionPoint>());
-//}
+QList<SGraphObjSelectionPoint> CGraphObj::getPossibleConnectionPointAnchorPoints() const
+//------------------------------------------------------------------------------
+{
+    static QList<SGraphObjSelectionPoint> s_arSelPts;
+    if (s_arSelPts.isEmpty()) {
+        s_arSelPts.append(SGraphObjSelectionPoint(
+            const_cast<CGraphObj*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+    }
+    return s_arSelPts;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns whether a label with the passed name has been added to the

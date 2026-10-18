@@ -160,16 +160,18 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameP2);
 
     for (const QString& strLabelName : m_strlstPredefinedTextLabelNames) {
-        if (!m_hshpTextLabels.contains(strLabelName)) {
-            if (strLabelName == c_strGeometryLabelNameP1) {
-                addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 0);
-            }
-            else if (strLabelName == c_strGeometryLabelNameP2) {
-                addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 1);
-            }
-            else {
-                addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
-            }
+        bool bAdded = false;
+        if (strLabelName == c_strGeometryLabelNameP1) {
+            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 0);
+        }
+        else if (strLabelName == c_strGeometryLabelNameP2) {
+            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 1);
+        }
+        else {
+            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+        }
+        if (!bAdded) {
+            throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add text label " + strLabelName);
         }
     }
 
@@ -182,26 +184,30 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        bool bAdded = false;
         if (strLabelName == c_strGeometryLabelNameP1) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, 0);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameP2) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, 1);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameCenter) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameDY) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryHeight, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryHeight, strLabelName, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameDX) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryWidth, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryWidth, strLabelName, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameLength) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryLength, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryLength, strLabelName, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::Center);
+        }
+        if (!bAdded) {
+            throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);
         }
     }
 
@@ -1489,7 +1495,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
     bool bHasDefaultValues = false;
     if (isPredefinedTextLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const SAnchorLayoutDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
+        const STextLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }
@@ -1503,10 +1509,10 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != m_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
                 bHasDefaultValues = false;
             }
         }
@@ -1514,10 +1520,10 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != i_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1525,10 +1531,10 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != i_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            if (labelDscr.m_selPt1.m_idxPt != 1) {
+            if (labelDscr.m_selPt.m_idxPt != 1) {
                 bHasDefaultValues = false;
             }
         }
@@ -1559,54 +1565,45 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
     bool bHasDefaultValues = false;
     if (m_strlstGeometryLabelNames.contains(i_strName)) {
         bHasDefaultValues = true;
-        const SAnchorLayoutDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        const SLabelAnchorDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }
         else if (labelDscr.m_bShowAnchorLine) {
             bHasDefaultValues = false;
         }
-        else if (!labelDscr.m_strText.isEmpty()) {
-            bHasDefaultValues = false;
-        }
         else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
             bHasDefaultValues = false;
         }
         else if (i_strName == c_strGeometryLabelNameP1) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameP2) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 1) {
+            else if (labelDscr.m_selPt.m_idxPt != 1) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameCenter) {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
                 bHasDefaultValues = false;
             }
         }
         else {
-            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonPoint) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt1.m_idxPt != 0) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt2.m_selPtType != ESelectionPointType::PolygonPoint) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt2.m_idxPt != 1) {
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }

@@ -781,7 +781,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::applyChanges()
 
     // On changing a setting of the graphical object "onGraphObjChanged" will be called as reentry.
     // "onGraphObjChanged" will modify the states of the GUI controls. E.g. if the "NameLabelVisible" and
-    // "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showLabel" "onGraphObjChanged"
+    // "NameLabelAnchorLineVisible" CheckBoxes are checked and you call "showTextLabel" "onGraphObjChanged"
     // is immediately called resetting the check state of "NameLabelAnchorLineVisible".
     // To avoid this undesired correction the "onGraphObjChanged" method must be disabled while applying
     // changes but will be called after all changes have been applied. For this the flag "m_bApplyingChanges"
@@ -801,23 +801,23 @@ void CWdgtFormatGraphObjsLabelVisibilities::applyChanges()
 
         if (bConverted) {
             if (m_pChkNameLabelVisible->isChecked()) {
-                if (!m_pGraphObj->isLabelVisible("Name")) {
-                    m_pGraphObj->showLabel("Name");
+                if (!m_pGraphObj->isTextLabelVisible("Name")) {
+                    m_pGraphObj->showTextLabel("Name");
                 }
             }
             else {
-                if (m_pGraphObj->isLabelVisible("Name")) {
-                    m_pGraphObj->hideLabel("Name");
+                if (m_pGraphObj->isTextLabelVisible("Name")) {
+                    m_pGraphObj->hideTextLabel("Name");
                 }
             }
             if (m_pChkNameLabelAnchorLineVisible->isChecked()) {
-                if (!m_pGraphObj->isLabelAnchorLineVisible("Name")) {
-                    m_pGraphObj->showLabelAnchorLine("Name");
+                if (!m_pGraphObj->isTextLabelAnchorLineVisible("Name")) {
+                    m_pGraphObj->showTextLabelAnchorLine("Name");
                 }
             }
             else {
-                if (m_pGraphObj->isLabelAnchorLineVisible("Name")) {
-                    m_pGraphObj->hideLabelAnchorLine("Name");
+                if (m_pGraphObj->isTextLabelAnchorLineVisible("Name")) {
+                    m_pGraphObj->hideTextLabelAnchorLine("Name");
                 }
             }
         }
@@ -933,11 +933,11 @@ bool CWdgtFormatGraphObjsLabelVisibilities::hasChanges() const
             bool bConverted = false;
             CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
 
-            bHasChanges = (m_pGraphObj->isLabelVisible("Name") != m_pChkNameLabelVisible->isChecked());
+            bHasChanges = (m_pGraphObj->isTextLabelVisible("Name") != m_pChkNameLabelVisible->isChecked());
 
             if( !bHasChanges )
             {
-                bHasChanges = (m_pGraphObj->isLabelAnchorLineVisible("Name") != m_pChkNameLabelAnchorLineVisible->isChecked());
+                bHasChanges = (m_pGraphObj->isTextLabelAnchorLineVisible("Name") != m_pChkNameLabelAnchorLineVisible->isChecked());
             }
         }
 
@@ -1517,10 +1517,10 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
 
         if (i_pCmbSelPt->objectName() == "Name")
         {
-            bAllLabelsAreVisible = m_pGraphObj->isLabelVisible("Name");
+            bAllLabelsAreVisible = m_pGraphObj->isTextLabelVisible("Name");
             bAnyLabelsIsVisible = bAllLabelsAreVisible;
-            bAllLabelsAnchorLinesAreVisible = m_pGraphObj->isLabelAnchorLineVisible("Name");
-            bAnyLabelsAnchorLineIsVisible = m_pGraphObj->isLabelAnchorLineVisible("Name");
+            bAllLabelsAnchorLinesAreVisible = m_pGraphObj->isTextLabelAnchorLineVisible("Name");
+            bAnyLabelsAnchorLineIsVisible = m_pGraphObj->isTextLabelAnchorLineVisible("Name");
         }
         else if( i_pCmbSelPt->objectName() == "DimensionPos" )
         {
@@ -1564,8 +1564,8 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
 
         if( i_pCmbSelPt->objectName() == "Name" )
         {
-            bIsLabelVisible = m_pGraphObj->isLabelVisible("Name");
-            bIsLabelAnchorLineVisible = m_pGraphObj->isLabelAnchorLineVisible("Name");
+            bIsLabelVisible = m_pGraphObj->isTextLabelVisible("Name");
+            bIsLabelAnchorLineVisible = m_pGraphObj->isTextLabelAnchorLineVisible("Name");
         }
         else if (i_pCmbSelPt->objectName() == "DimensionPos")
         {
