@@ -194,17 +194,17 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         else if (strLabelName == c_strGeometryLabelNameCenter) {
             bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::Center);
         }
-        else if (strLabelName == c_strGeometryLabelNameDY) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryHeight, strLabelName, ESelectionPoint::Center);
-        }
-        else if (strLabelName == c_strGeometryLabelNameDX) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryWidth, strLabelName, ESelectionPoint::Center);
-        }
         else if (strLabelName == c_strGeometryLabelNameLength) {
             bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryLength, strLabelName, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameDX) {
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryDX, strLabelName, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameDY) {
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryDY, strLabelName, ESelectionPoint::Center);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);
@@ -1495,7 +1495,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
     bool bHasDefaultValues = false;
     if (isPredefinedTextLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const STextLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
+        const SLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }

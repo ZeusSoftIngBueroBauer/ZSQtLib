@@ -329,9 +329,9 @@ void CGraphObjLabelGeometryHeight::updatePosition()
     QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValdY(lineSelPtSceneCoors.dy(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-    physValdY.convertValue(drawingSize.unit());
-    QString strText = physValdY.toString(EUnitFind::None, PhysValSubStr::Val);
+    CPhysVal physValHeight(lineSelPtSceneCoors.length(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+    physValHeight.convertValue(drawingSize.unit());
+    QString strText = physValHeight.toString(EUnitFind::None, PhysValSubStr::Val);
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {

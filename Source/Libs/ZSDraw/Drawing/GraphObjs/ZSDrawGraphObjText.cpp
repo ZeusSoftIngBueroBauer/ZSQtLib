@@ -1972,7 +1972,7 @@ bool CGraphObjText::textLabelHasDefaultValues(const QString& i_strName) const
     bool bHasDefaultValues = false;
     if (isPredefinedTextLabelName(i_strName)) {
         bHasDefaultValues = true;
-        const STextLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
+        const SLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
         if (labelDscr.m_bIsVisible) {
             bHasDefaultValues = false;
         }

@@ -360,7 +360,7 @@ void CObjFactory::saveGraphObjTextLabels(
     QSet<QString> strlstLabelNamesAdded;
     for (const QString& strName : strlstPredefinedLabelNames) {
         if (!i_pGraphObj->textLabelHasDefaultValues(strName)) {
-            STextLabelAnchorDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
+            SLabelAnchorDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
@@ -382,7 +382,7 @@ void CObjFactory::saveGraphObjTextLabels(
     for (const QString& strName : strlstLabelNames) {
         if (!strlstLabelNamesAdded.contains(strName)) {
             if (!i_pGraphObj->textLabelHasDefaultValues(strName)) {
-                STextLabelAnchorDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
+                SLabelAnchorDscr labelDscr = i_pGraphObj->getTextLabelDescriptor(strName);
                 i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
                 // To keep the XML file as short as possible the properties of
                 // the labels are stored as attributes and not as text elements.
@@ -403,17 +403,17 @@ void CObjFactory::saveGraphObjTextLabels(
 }
 
 //------------------------------------------------------------------------------
-QList<STextLabelAnchorDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
+QList<SLabelAnchorDscr> CObjFactory::loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<STextLabelAnchorDscr> arLabelDscr;
+    QList<SLabelAnchorDscr> arLabelDscr;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameLabel) {
-                    STextLabelAnchorDscr labelDscr;
+                    SLabelAnchorDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 
@@ -479,6 +479,10 @@ void CObjFactory::saveGraphObjGeometryLabels(
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
+            SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isGeometryLabelVisible(strName)));
             if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
@@ -508,6 +512,19 @@ QList<SLabelAnchorDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader
                     // the labels are stored as attributes and not as text elements.
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
 
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameKey)) {
+                        labelDscr.m_strKey = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameKey).toString();
+                    }
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameText)) {
+                        labelDscr.m_strText = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameText).toString();
+                    }
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameSelPt)) {
+                        strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameSelPt).toString();
+                        SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(strAttr, &bConverted);
+                        if (bConverted) {
+                            labelDscr.m_selPt = selPtTmp;
+                        }
+                    }
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameDistance)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameDistance).toString();
                         SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, ", ", &bConverted);
@@ -522,6 +539,10 @@ QList<SLabelAnchorDscr> CObjFactory::loadGraphObjGeometryLabels(QXmlStreamReader
                     if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible)) {
                         strAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameAnchorLineVisible).toString();
                         labelDscr.m_bShowAnchorLine = str2Bool(strAttr);
+                    }
+
+                    if (!labelDscr.m_strKey.isEmpty()) {
+                        arLabelDscr.append(labelDscr);
                     }
                 }
             }
@@ -543,7 +564,7 @@ void CObjFactory::saveGraphObjConnectionPoints(
 {
     QStringList strlstCnctPtNames = i_pGraphObj->getConnectionPointsNames();
     for (const QString& strName : strlstCnctPtNames) {
-        STextLabelAnchorDscr labelDscr = i_pGraphObj->getConnectionPointDescriptor(strName);
+        SLabelAnchorDscr labelDscr = i_pGraphObj->getConnectionPointDescriptor(strName);
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameConnectionPoint);
         // To keep the XML file as short as possible the properties of
         // the connection points are stored as attributes and not as text elements.
@@ -558,17 +579,17 @@ void CObjFactory::saveGraphObjConnectionPoints(
 }
 
 //------------------------------------------------------------------------------
-QList<STextLabelAnchorDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamReader& i_xmlStreamReader)
+QList<SLabelAnchorDscr> CObjFactory::loadGraphObjConnectionPoints(QXmlStreamReader& i_xmlStreamReader)
 //------------------------------------------------------------------------------
 {
-    QList<STextLabelAnchorDscr> arLabelDscr;
+    QList<SLabelAnchorDscr> arLabelDscr;
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameConnectionPoint) {
-                    STextLabelAnchorDscr labelDscr;
+                    SLabelAnchorDscr labelDscr;
                     QString strAttr;
                     bool bConverted;
 

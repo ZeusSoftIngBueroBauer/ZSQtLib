@@ -700,7 +700,7 @@ public: // overridables (text labels)
     virtual QStringList getPredefinedTextLabelNames() const;
     virtual bool isPredefinedTextLabelName(const QString& i_strName) const;
     CGraphObjLabel* getTextLabel(const QString& i_strName) const;
-    STextLabelAnchorDscr getTextLabelDescriptor(const QString& i_strName) const;
+    SLabelAnchorDscr getTextLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleTextLabelAnchorPoints(const QString& i_strName) const;
     virtual bool textLabelHasDefaultValues(const QString& i_strName) const;
     virtual bool isTextLabelAdded(const QString& i_strName) const;
@@ -742,7 +742,7 @@ protected: // overridables (geometry labels)
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;
     CGraphObjConnectionPoint* getConnectionPoint(const QString& i_strName) const;
-    STextLabelAnchorDscr getConnectionPointDescriptor(const QString& i_strName) const;
+    SLabelAnchorDscr getConnectionPointDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleConnectionPointAnchorPoints() const;
     virtual bool isConnectionPointAdded(const QString& i_strName) const;
     virtual bool isConnectionPointAdded(ESelectionPointType i_selPtType, ESelectionPoint i_selPt1) const;
@@ -1013,7 +1013,7 @@ protected: // instance members
          unique name and assigning a text. Both the name and the text are stored in the Label object.
          When showing labels (adding them to the graphics scene) the desriptors are used to set
          the properties (text, relative position to linked object) of the label objects. */
-    QHash<QString, STextLabelAnchorDscr> m_hshTextLabelDscrs;
+    QHash<QString, SLabelAnchorDscr> m_hshTextLabelDscrs;
     /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
          Created on demand from the label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpTextLabels;
@@ -1036,7 +1036,7 @@ protected: // instance members
     /*!< Hash with descriptors for connection points which may be assigned to the graphical object.
          Connection points may be at the same position of selection points but may also be arbitrarily positioned.
          The desriptors are used to set the relative position of the connection point to the graphical object. */
-    //QHash<QString, STextLabelAnchorDscr> m_hshConnectionPointsLabelDscrs;
+    //QHash<QString, SLabelAnchorDscr> m_hshConnectionPointsLabelDscrs;
     /*!< Hash with the connection points added to the graphical object. */
     QHash<QString, CGraphObjConnectionPoint*> m_hshpConnectionPoints;
     /*!< The tool tip contains various interesting information about the graphical object like the name,

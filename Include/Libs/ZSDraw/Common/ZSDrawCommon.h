@@ -261,6 +261,8 @@ typedef enum {
     EGraphObjTypeLabelGeometryWidth,
     EGraphObjTypeLabelGeometryHeight,
     EGraphObjTypeLabelGeometryLength,
+    EGraphObjTypeLabelGeometryDX,
+    EGraphObjTypeLabelGeometryDY,
     EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeLabelMax = EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeUserDefined,
@@ -1064,7 +1066,9 @@ struct ZSDRAWDLL_API SLabelAnchorDscr
 public: // ctors
     SLabelAnchorDscr();
     SLabelAnchorDscr(EGraphObjType i_graphObjType);
-    SLabelAnchorDscr(EGraphObjType i_graphObjType, const SGraphObjSelectionPoint& i_selPt);
+    SLabelAnchorDscr(EGraphObjType i_graphObjType, const QString& i_strKey);
+    SLabelAnchorDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SLabelAnchorDscr(EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
     SLabelAnchorDscr(const SLabelAnchorDscr& i_other);
 public: // struct methods
     QString toString() const;
@@ -1074,6 +1078,12 @@ public: // struct members
          point struct.
          Range [EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
     EGraphObjType m_graphObjType = EGraphObjTypeUndefined;
+    /*!< Key of the linked object within the parent's list of linked objects. */
+    QString m_strKey;
+    /*!< Text to be indicated by the anchored object. Not set (empty string) for geometry labels.
+         For geometry labels the indicated text is calculated during runtime
+         by the label item and set at the QGraphicsSimpleTextItem. */
+    QString m_strText;
     /*!< Defines the selection point the object is linked to. For text labels the selection
          point may be changed during runtime. For geometry labels the selection point is
          given by the geometry information which should be indicated. E.g. the position of
@@ -1091,36 +1101,6 @@ public: // struct members
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
 };
-
-
-//******************************************************************************
-/*! @brief Struct extending SLabelAnchorDscr with special properties for text labels.
-
-    Text labels may be used to indicated user defined texts.
-    As text labels may aribtrarily added by the user, each label need a unique key.
-    This key may be implicitly assigned (e.g. "Name" to indicate the name of the object
-    or "HelpText" which may be assigned by the user).
-*/
-struct ZSDRAWDLL_API STextLabelAnchorDscr : public SLabelAnchorDscr
-//******************************************************************************
-{
-public: // ctors
-    STextLabelAnchorDscr();
-    STextLabelAnchorDscr(const QString& i_strKey);
-    STextLabelAnchorDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    STextLabelAnchorDscr(const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    STextLabelAnchorDscr(const STextLabelAnchorDscr& i_other);
-public: // struct methods
-    QString toString() const;
-public: // struct members
-    /*!< Key of the linked object within the parent's list of linked objects. */
-    QString m_strKey;
-    /*!< Text to be indicated by the anchored object. Not set (empty string) for geometry labels.
-         For geometry labels the indicated text is calculated during runtime
-         by the label item and set at the QGraphicsSimpleTextItem. */
-    QString m_strText;
-
-}; // struct STextLabelAnchorDscr
 
 
 //******************************************************************************

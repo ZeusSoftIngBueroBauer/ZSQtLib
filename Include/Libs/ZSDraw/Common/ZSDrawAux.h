@@ -92,8 +92,8 @@ ZSDRAWDLL_API QString qGraphicsSceneContextMenuEvent2Str( QGraphicsSceneContextM
 ZSDRAWDLL_API void getLineEndArrowPolygons(
     const QLineF& i_line,
     const CDrawSettings& i_drawSettings,
-    QPolygonF* i_pplgLineStart, // != nullptr to calculate it, may be resized
-    QPolygonF* i_pplgLineEnd ); // != nullptr to calculate it, may be resized
+    QPolygonF* i_pplgLineStart,
+    QPolygonF* i_pplgLineEnd = nullptr);
 
 //ZSDRAWDLL_API QRectF resizeRect(
 //    const QRectF& i_rect,

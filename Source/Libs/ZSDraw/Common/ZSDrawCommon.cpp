@@ -165,6 +165,12 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
         str = "LabelGeometryLength";
     }
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryDX) {
+        str = "LabelGeometryDX";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryDY) {
+        str = "LabelGeometryDY";
+    }
     else if (i_graphObjType == EGraphObjTypeLabelGeometryAngle) {
         str = "LabelGeometryAngle";
     }
@@ -1129,7 +1135,16 @@ SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
 {
     bool bOk = false;
     SGraphObjSelectionPoint selPt;
-    QStringList strlst = i_str.split(",");
+    QStringList strlst;
+    if (i_str.contains("@")) {
+        strlst = i_str.split("@");
+        if (strlst.size() == 2) {
+            strlst = strlst[1].split(".");
+        }
+    }
+    else {
+        strlst = i_str.split(".");
+    }
     if (strlst.size() == 2) {
         strlst[0] = strlst[0].trimmed();
         strlst[1] = strlst[1].trimmed();
@@ -1393,19 +1408,9 @@ QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObj) const
 {
     QString str;
     if (i_bIncludeGraphObj && m_pGraphObj != nullptr) {
-        str = m_pGraphObj->path() + ".";
+        str = m_pGraphObj->path() + "@";
     }
-    str += CEnumSelectionPointType(m_selPtType).toString() + ", ";
-    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
-        str += CEnumSelectionPoint(m_selPt).toString();
-    } else if (m_selPtType == ESelectionPointType::PolygonPoint) {
-        str += "P" + QString::number(m_idxPt+1);
-    } else if (m_selPtType == ESelectionPointType::LineCenterPoint) {
-        str += "L" + QString::number(m_idxPt+1);
-    } else {
-        str += "?";
-    }
-    return str;
+    return str + name();
 }
 
 //------------------------------------------------------------------------------
@@ -1806,10 +1811,32 @@ SLabelAnchorDscr::SLabelAnchorDscr(EGraphObjType i_graphObjType) :
 }
 
 //------------------------------------------------------------------------------
-SLabelAnchorDscr::SLabelAnchorDscr(
-    EGraphObjType i_graphObjType, const SGraphObjSelectionPoint& i_selPt) :
+SLabelAnchorDscr::SLabelAnchorDscr(EGraphObjType i_graphObjType, const QString& i_strKey) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_graphObjType),
+    m_strKey(i_strKey)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelAnchorDscr::SLabelAnchorDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey,
+    const SGraphObjSelectionPoint& i_selPt) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strKey(i_strKey),
+    m_selPt(i_selPt)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelAnchorDscr::SLabelAnchorDscr(
+    EGraphObjType i_graphObjType, const QString& i_strKey, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt) :
+//------------------------------------------------------------------------------
+    m_graphObjType(i_graphObjType),
+    m_strKey(i_strKey),
+    m_strText(i_strText),
     m_selPt(i_selPt)
 {
 }
@@ -1818,6 +1845,8 @@ SLabelAnchorDscr::SLabelAnchorDscr(
 SLabelAnchorDscr::SLabelAnchorDscr(const SLabelAnchorDscr& i_other) :
 //------------------------------------------------------------------------------
     m_graphObjType(i_other.m_graphObjType),
+    m_strKey(i_other.m_strKey),
+    m_strText(i_other.m_strText),
     m_selPt(i_other.m_selPt),
     m_polarCoorsToLinkedSelPt(i_other.m_polarCoorsToLinkedSelPt),
     m_bIsVisible(i_other.m_bIsVisible),
@@ -1829,71 +1858,11 @@ SLabelAnchorDscr::SLabelAnchorDscr(const SLabelAnchorDscr& i_other) :
 QString SLabelAnchorDscr::toString() const
 //------------------------------------------------------------------------------
 {
-    return "Type: " + graphObjType2Str(m_graphObjType) +
+    return "Type: " + graphObjType2Str(m_graphObjType) + ", Key: " + m_strKey +
         ", SelPt {" + m_selPt.toString(true) + "}" +
         ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}" +
         ", Visible: " + bool2Str(m_bIsVisible) +
         ", ShowAnchorLine: " + bool2Str(m_bShowAnchorLine);
-}
-
-
-/*******************************************************************************
-struct STextLabelAnchorDscr
-*******************************************************************************/
-
-/*==============================================================================
-public: // ctors and dtor
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-STextLabelAnchorDscr::STextLabelAnchorDscr() :
-//------------------------------------------------------------------------------
-    SLabelAnchorDscr(EGraphObjTypeLabel)
-{
-}
-
-//------------------------------------------------------------------------------
-STextLabelAnchorDscr::STextLabelAnchorDscr(const QString& i_strKey) :
-//------------------------------------------------------------------------------
-    SLabelAnchorDscr(EGraphObjTypeLabel),
-    m_strKey(i_strKey)
-{
-}
-
-//------------------------------------------------------------------------------
-STextLabelAnchorDscr::STextLabelAnchorDscr(
-    const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt) :
-//------------------------------------------------------------------------------
-    SLabelAnchorDscr(EGraphObjTypeLabel, i_selPt),
-    m_strKey(i_strKey)
-{
-}
-
-//------------------------------------------------------------------------------
-STextLabelAnchorDscr::STextLabelAnchorDscr(
-    const QString& i_strKey, const QString& i_strText,
-    const SGraphObjSelectionPoint& i_selPt) :
-//------------------------------------------------------------------------------
-    SLabelAnchorDscr(EGraphObjTypeLabel, i_selPt),
-    m_strKey(i_strKey),
-    m_strText(i_strText)
-{
-}
-
-//------------------------------------------------------------------------------
-STextLabelAnchorDscr::STextLabelAnchorDscr(const STextLabelAnchorDscr& i_other) :
-//------------------------------------------------------------------------------
-    SLabelAnchorDscr(i_other),
-    m_strKey(i_other.m_strKey),
-    m_strText(i_other.m_strText)
-{
-}
-
-//------------------------------------------------------------------------------
-QString STextLabelAnchorDscr::toString() const
-//------------------------------------------------------------------------------
-{
-    return m_strKey + ", {" + SLabelAnchorDscr::toString() + "}";
 }
 
 

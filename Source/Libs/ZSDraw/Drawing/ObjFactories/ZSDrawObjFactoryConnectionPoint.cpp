@@ -258,7 +258,7 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
     CPhysValPoint physValPointCenter(*i_pDrawingScene);
     CPhysValSize physValSize(*i_pDrawingScene);
     double fZValue = 0.0;
-    QList<STextLabelAnchorDscr> arTextLabels;
+    QList<SLabelAnchorDscr> arTextLabels;
     QList<SLabelAnchorDscr> arGeometryLabels;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
@@ -361,7 +361,7 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
     } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
     if (!i_xmlStreamReader.hasError()) {
-        for (const STextLabelAnchorDscr& labelDscr : arTextLabels) {
+        for (const SLabelAnchorDscr& labelDscr : arTextLabels) {
             if (!pGraphObj->isTextLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->addTextLabel(

@@ -263,9 +263,9 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
     CPhysValSize physValSize(*i_pDrawingScene);
     CPhysVal physValAngle(0.0, Units.Angle.Degree);
     double fZValue = 0.0;
-    QList<STextLabelAnchorDscr> arTextLabels;
+    QList<SLabelAnchorDscr> arTextLabels;
     QList<SLabelAnchorDscr> arGeometryLabels;
-    QList<STextLabelAnchorDscr> arConnectionPoints;
+    QList<SLabelAnchorDscr> arConnectionPoints;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
@@ -390,7 +390,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
     } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
 
     if (!i_xmlStreamReader.hasError()) {
-        for (const STextLabelAnchorDscr& labelDscr : arTextLabels) {
+        for (const SLabelAnchorDscr& labelDscr : arTextLabels) {
             if (!pGraphObj->isTextLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
                     pGraphObj->addTextLabel(
@@ -437,7 +437,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
                     pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_selPt.name());
             }
         }
-        for (const STextLabelAnchorDscr& labelDscr : arConnectionPoints) {
+        for (const SLabelAnchorDscr& labelDscr : arConnectionPoints) {
             if (pGraphObj->isConnectionPointAdded(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Connection point with name \"" + labelDscr.m_strKey + "\". already existing.");
