@@ -213,3 +213,19 @@ void CGraphObjLabelGeometryPosition::updatePosition()
     }
     CGraphObjLabel::updatePosition();
 }
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryPosition::traceThisPositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+
+    CGraphObjLabel::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
+}

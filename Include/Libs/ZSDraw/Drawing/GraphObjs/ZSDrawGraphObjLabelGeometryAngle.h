@@ -43,59 +43,25 @@ namespace Draw
     the two shape or selection points and whose width and height is the distance of the
     label to the end point of the line between the shape or selection points.
 
-    The start angle of the is the 0° degree line of the linked object. This start angle
+    The start angle of the pie is the 0° degree line of the linked object. This start angle
     must be calculated as the sum of all rotation angles of all parent groups of the
     linked object.
 
     The span of the pie is the rotation angle of the linked object.
 
-    Examples for lines:
+    Example for a Rectangle (rotated by 270°):
 
-                        P2
-                        +
-                        |
-                        |<--
-                        |  90\°  Pie (circle segment)
-                        |     |
-                        x------
-                        |
-                        |
-                        |
-                        |
-                        +
-                        P1
-
-                       P1
-                       +
-                        \
-                      ---\----\ Pie
-                     /    \       \
-           (Span) 315°     \         \
-                   |        \           |
-                   |         x----------- (Start Angle of Pie)
-                    |         \
-                      \        \
-                          \--- >\
-                                 \
-                                  \
-                                   +
-                                   P2
-
-    Example for a Rectangle (rotated by 90°):
-
-                 TopRight        BottomRight
-                    +-----------------+
-                    |                 |
-                    |         |<---   |
-                    |         |  90\° (Span of Pie)
-                    |         |     | |
-                    x         x-------x (Start Angle of Pie)
-                    |                 |
-                    |                 |
-                    |                 |
-                    |                 |
-                    +-----------------+
-                 TopLeft         BottomLeft
+                TopRight        BottomRight
+                    +---------------+
+                    |    -->|       |
+                    |  /270°|       |
+                    | |     |       |
+                    x |     x-------x (Start Angle of Pie)
+                    | |           | |
+                    |  \         /  |
+                    |    -------    |
+                    +---------------+
+                TopLeft         BottomLeft
 */
 class ZSDRAWDLL_API CGraphObjLabelGeometryAngle : public CGraphObjLabel
 //******************************************************************************
@@ -113,7 +79,7 @@ public: // ctors and dtor
     CGraphObjLabelGeometryAngle(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
-        CGraphObj* i_pGraphObjLinked);
+        const SGraphObjSelectionPoint& i_selPt);
     virtual ~CGraphObjLabelGeometryAngle();
 public: // overridables of base class QGraphicsItem
     int type() const override;
@@ -126,6 +92,11 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     virtual void updatePosition() override;
     virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "") const override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
@@ -138,10 +109,10 @@ protected: // instance members
          The start angle is the 0° horizontal line of the linked object and
          is calculated as the sum of all rotation angles of the parent groups
          of the linked object, excluding the rotation angle of the linked object. */
-    double m_fPieStartAngle_degrees;
+    double m_fPieStartAngle_degrees = 0.0;
     /*!< Span of the pie  to draw the "anchor" line of the rotation angle.
          The span is equal to the rotation angle of the linked object. */
-    double m_fPieSpanAngle_degrees;
+    double m_fPieSpanAngle_degrees = 0.0;
     /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
     CDrawSettings m_drawSettingsArrowHeads;
     /*!< Polygon points for arrow head at P2 (line end) */

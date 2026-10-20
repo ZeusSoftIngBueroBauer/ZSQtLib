@@ -100,13 +100,13 @@ public: // ctors and dtor
 CGraphObjLabelGeometryLength::CGraphObjLabelGeometryLength(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
-    CGraphObj* i_pGraphObjLinked) :
+    const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
         /* pDrawingScene */ i_pDrawingScene,
         /* strKey        */ i_strKey,
         /* type          */ EGraphObjTypeLabelGeometryLength,
-        /* selPt         */ SGraphObjSelectionPoint(i_pGraphObjLinked, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center)),
+        /* selPt         */ i_selPt),
     m_drawSettingsArrowHeads(EGraphObjTypeLine),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
@@ -115,8 +115,7 @@ CGraphObjLabelGeometryLength::CGraphObjLabelGeometryLength(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Key: " + i_strKey +
-            ", LinkedObject: " + QString(i_pGraphObjLinked == nullptr ? "null" : i_pGraphObjLinked->path());
+        strMthInArgs = "Key: " + i_strKey + ", SelPt {" + i_selPt.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -352,11 +351,7 @@ void CGraphObjLabelGeometryLength::updatePosition()
     // Move text item so that its center point is at the line end point of the anchor line.
     QRectF rctBoundingThis = getBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "Pos {" + qPoint2Str(anchorLineP2ScenePos) + "} px";
-        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
-    }
-    setPos(anchorLineP2ScenePos);
+    QGraphicsItem_setPos(anchorLineP2ScenePos);
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.
@@ -512,4 +507,20 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
         /* drawSetings   */ m_drawSettingsArrowHeads,
         /* pplgLineStart */ &m_plgP1ArrowHead,
         /* pplgLineEnd   */ &m_plgP2ArrowHead);
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryLength::traceThisPositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
+//------------------------------------------------------------------------------
+{
+    if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
+
+    CGraphObjLabel::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
 }

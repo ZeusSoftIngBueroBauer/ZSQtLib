@@ -208,6 +208,20 @@ class CGraphObjSelectionPoint;
     the top left corner of Group0 (instead of (-30/-10) the coordinates (20/20)
     for example.
 
+    Rotation angles are defined clockwise.
+    The default value is 0 which is at 3o'clock (the item is not rotated).
+    6o'clock corresponds to 90°, 12o'clock to 270°.
+
+                    270°
+            +-----------------+
+            |                 |
+            |                 |
+       180° x         x-------x 0°
+            |                 |
+            |                 |
+            +-----------------+
+                     90°
+
     Current and Original Coordinates
     ================================
 
@@ -727,6 +741,9 @@ public: // overridables (geometry labels)
     CGraphObjLabel* getGeometryLabel(const QString& i_strName) const;
     SLabelAnchorDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
+    virtual void setGeometryLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    virtual void setGeometryLabelAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
+    virtual SGraphObjSelectionPoint geometryLabelAnchorPoint(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
     virtual bool isGeometryLabelVisible(const QString& i_strName) const;

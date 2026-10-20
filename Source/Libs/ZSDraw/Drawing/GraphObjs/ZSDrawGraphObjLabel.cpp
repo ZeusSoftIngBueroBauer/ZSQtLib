@@ -33,6 +33,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -1183,6 +1184,10 @@ void CGraphObjLabel::updatePosition()
         /* strObjName   */ path(),
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     m_bUpdatePositionInProgress = true;
 
@@ -1211,6 +1216,11 @@ void CGraphObjLabel::updatePosition()
     // label is called invoking updateAnchorLines.
 
     m_bUpdatePositionInProgress = false;
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1248,6 +1258,10 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         /* strObjName   */ path(),
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QRectF rctBoundingThis = getBoundingRect();
@@ -1267,6 +1281,11 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
     updateAnchorLines();
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1285,6 +1304,10 @@ void CGraphObjLabel::updateAnchorLines()
         /* strObjName   */ path(),
         /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     QPointF ptSelScenePosParent;
     if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -1308,9 +1331,10 @@ void CGraphObjLabel::updateAnchorLines()
     else {
         m_anchorLines[0] = anchorLine;
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "AnchorLine0 {" + qLine2Str(m_anchorLines[0]) + "} px";
-        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
     }
 }
 
@@ -1343,7 +1367,7 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::traceGraphObjStates(
+void CGraphObjLabel::traceThisPositionInfo(
     CMethodTracer& i_mthTracer, EMethodDir i_mthDir, const QString& i_strFilter) const
 //------------------------------------------------------------------------------
 {
@@ -1351,12 +1375,39 @@ void CGraphObjLabel::traceGraphObjStates(
         return;
     }
 
-    CGraphObj::traceGraphObjStates(i_mthTracer, i_mthDir, i_strFilter);
+    CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_strFilter);
 
     QString strRuntimeInfo;
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
     strRuntimeInfo += "AnchoredTo {" + m_selPtLinkedObject.toString() + "}";
+    i_mthTracer.trace(strRuntimeInfo);
+
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}";
+    i_mthTracer.trace(strRuntimeInfo);
+
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "AnchorLines [" + QString::number(m_anchorLines.size()) + "]" +
+        ", Visible: " + bool2Str(m_bShowAnchorLine);
+    i_mthTracer.trace(strRuntimeInfo);
+    for (const QLineF& anchorLine : m_anchorLines) {
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ . ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- . ";
+        else strRuntimeInfo = " . . ";
+        strRuntimeInfo += "{" + qLine2Str(anchorLine) + "}";
+        i_mthTracer.trace(strRuntimeInfo);
+    }
+
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "UpdatePositionInProgress: " + bool2Str(m_bUpdatePositionInProgress) +
+        ", PositionUpdateOnParentGeometryChanged: " + bool2Str(m_bPositionUpdateOnParentGeometryChanged);
     i_mthTracer.trace(strRuntimeInfo);
 }

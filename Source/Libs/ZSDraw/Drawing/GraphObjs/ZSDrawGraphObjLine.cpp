@@ -198,7 +198,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
             bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryLength, strLabelName, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::RightCenter);
         }
         else if (strLabelName == c_strGeometryLabelNameDX) {
             bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryDX, strLabelName, ESelectionPoint::Center);

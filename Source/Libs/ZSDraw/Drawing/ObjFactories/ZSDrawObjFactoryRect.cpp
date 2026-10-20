@@ -429,6 +429,14 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                     "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
             }
             else {
+                if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->setGeometryLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
+                }
+                else {
+                    pGraphObj->setGeometryLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                }
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
                 labelDscr.m_bIsVisible ?
@@ -446,10 +454,12 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
             }
             else {
                 if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
+                    pGraphObj->addConnectionPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
                 }
                 else {
-                    pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                    pGraphObj->addConnectionPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
                 }
                 pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);

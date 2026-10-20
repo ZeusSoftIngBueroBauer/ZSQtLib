@@ -60,6 +60,11 @@ public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "") const override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 

@@ -67,7 +67,7 @@ public: // ctors and dtor
     CGraphObjLabelGeometryLength(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
-        CGraphObj* i_pGraphObjLinked);
+        const SGraphObjSelectionPoint& i_selPt);
     virtual ~CGraphObjLabelGeometryLength();
 public: // class methods
     static QPainter::RenderHints painterRenderHints();
@@ -84,6 +84,11 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     virtual void updatePosition() override;
     virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        const QString& i_strFilter = "") const override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
