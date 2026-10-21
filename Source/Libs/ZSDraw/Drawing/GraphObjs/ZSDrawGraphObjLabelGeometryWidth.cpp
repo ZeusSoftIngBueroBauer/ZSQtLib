@@ -135,10 +135,10 @@ CGraphObjLabelGeometryWidth::CGraphObjLabelGeometryWidth(
     m_drawSettingsArrowHeads.setArrowHeadWidth(ELinePoint::End, EArrowHeadWidth::Thin);
     m_drawSettingsArrowHeads.setArrowHeadLength(ELinePoint::End, EArrowHeadLength::Short);
 
-    // Anchor0 and Anchor1 are the extension lines from the item to the dimension line ends.
+    // Anchor0 and Anchor1 are the extension lines from the linked object to the dimension line ends.
     m_anchorLines.append(QLineF());
     m_anchorLines.append(QLineF());
-    // Anchor2 and Anchor3 are the dimension lines from the extension lines to the text.
+    // Anchor2 and Anchor3 are the dimension lines from the extension lines to the label.
     m_anchorLines.append(QLineF());
     m_anchorLines.append(QLineF());
 }
@@ -282,21 +282,15 @@ void CGraphObjLabelGeometryWidth::paint(
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
-        #if 0
         QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
         color.setAlpha(192);
-        #else
-        QColor color = Qt::red;
-        #endif
         pn.setColor(color);
-        pn.setWidth(2);
         i_pPainter->setPen(pn);
-        QBrush brsh(pn.color());
-        i_pPainter->setBrush(brsh);
-        QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         for (const QLineF& anchorLine : m_anchorLines) {
             i_pPainter->drawLine(anchorLine);
         }
+        QBrush brsh(pn.color());
+        i_pPainter->setBrush(brsh);
         QLineF anchorLine = m_anchorLines[2];
         if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
             i_pPainter->drawPolygon(m_plgP1ArrowHead);

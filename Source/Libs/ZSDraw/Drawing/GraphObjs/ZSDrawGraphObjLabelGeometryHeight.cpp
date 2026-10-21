@@ -282,14 +282,9 @@ void CGraphObjLabelGeometryHeight::paint(
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
-        #if 0
         QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
         color.setAlpha(192);
-        #else
-        QColor color = Qt::red;
-        #endif
         pn.setColor(color);
-        pn.setWidth(2);
         i_pPainter->setPen(pn);
         QBrush brsh(pn.color());
         i_pPainter->setBrush(brsh);

@@ -100,9 +100,6 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
 protected: // instance members
-    /*!< The line between the two selection points the label is linked to.
-         The line end points are in scene coordinates. */
-    QLineF m_lineSelPtsSceneCoors;
     /*!< Rectangle to draw the circle segment. */
     QRectF m_rectPie;
     /*!< Start angle of the pie to draw the "anchor" line of the rotation angle.

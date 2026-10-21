@@ -1163,11 +1163,15 @@ protected: // auxiliary instance methods
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to update the position of the label and the
-           coordinates (start and end point) of the anchor line.
+           coordinates (start and end point) of the anchor lines.
 
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the relative position
-    (distance and angle) of the label to the selection point remains the same.
+    The method is called for several reasons.
+
+    - On changing the selection point the label is linked to.
+    - When recalling the distance of the label to the linked selection point
+      on reading the object from file.
+    - If the geometry or position of the linked object changes.
+    - If the label is added to the scene.
 */
 void CGraphObjLabel::updatePosition()
 //------------------------------------------------------------------------------
@@ -1229,18 +1233,29 @@ void CGraphObjLabel::updatePosition()
            point and the selection point the label is linked to.
 
     On moving the label the distance and the angle (polar coordinates) to the
-    selection point have to be updated and saved.
+    selection point, the label is linked to, have to be updated and saved.
 
-    When positioniong labels the distance to selection point the label
-    is linked to should remain the same.
-    This is managed by defining the length and the angle to the line
-    the selection point is positioned.
+    The linked selection point may be changed during runtime, either by the user
+    or internally when moving the label around.
 
-    Defining the length to the selection point with a relative size
-    as a scale factor will not lead to the desired result. If the
-    object of the selection point is resized the distance between the
-    label and the object may increase to an undesired value (far away
-    from the object or to close).
+    When changing the geometry or position of the linked objects, the distance vector,
+    given in polar coordinates, to the linked selection point should remain the same.
+
+    The position of the label, where the distance and angle both are zero,
+    depends on the type of label and the linked selection point. This zero point
+    for calculating the polar coordinates is always in the center of the label's
+    bounding rectangle. But the center may be aligned differently to the linked
+    selection point.
+
+    @Note Text items are positioned relative to their left top corner wheras almost
+          all other items are positioned relative to the center point of their
+          bounding rectangles (for text items, the origin of the local coorrdinate
+          system is not the bounding rectangles center point). This has to be taken
+          into account when calculating the polar coordinates depending on the
+          position of the label.
+
+    For a detailled information about the polar coordinates origin point
+    see implementation of the method in derived classes.
 */
 void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -1294,6 +1309,13 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 
     The anchor lines will be drawn to one of the selection points at the bounding rectangle
     or to one of the polygon shape points of the linked graphical object.
+
+    The method is called for several reasons.
+
+    - On initially showing the anchor lines.
+    - If the label's position is changed.
+    - If the distance and angle from the label to its linked selecton point
+      (given in polar coordinates) is changed.
 */
 void CGraphObjLabel::updateAnchorLines()
 //------------------------------------------------------------------------------
