@@ -947,15 +947,21 @@ public: // struct members
          nullptr, if the selection point is not used (undefined). */
     CGraphObj* m_pGraphObj = nullptr;
     /*!< Type of the selection point. Selection points are differentiated into
-         selection points on the bounding rectangle around the graphical object
-         or into polygon shape points. */
+         - selection points on the item's bounding rectangle
+         - polygon shape points
+         - line center points. */
     ESelectionPointType m_selPtType = ESelectionPointType::Undefined;
     /*!< For selection points on the bounding rectangle specifies the position
          on (or within) the bounding rectangle.
-         For polygon shape points the enum is set to PolygonPoint. */
+         For polygon shape points the enumerator is set to PolygonPoint and the
+         point index is defined by m_idxPt,
+         For line center points the enumerator is set to LineCenterPoint and the
+         line index is defined by m_idxPt. */
     ESelectionPoint m_selPt = ESelectionPoint::None;
     /*!< For selection points on a polygon the index of the polygon point
-         is stored the selection point is assigned to. */
+         is stored the selection point is assigned to. The first point has index 0.
+         For selection points in the center of lines the line index is stored.
+         The first line has index 0. */
     int m_idxPt = -1;
 
 }; // struct SGraphObjSelectionPoint

@@ -753,8 +753,8 @@ public: // overridables (geometry labels)
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
 protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(EGraphObjType i_labelType, const QString& i_strName, ESelectionPoint i_selPt);
-    virtual bool addGeometryLabel(EGraphObjType i_labelType, const QString& i_strName, int i_idxPt);
+    virtual bool addGeometryLabel(EGraphObjType i_labelType, const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+    virtual bool addGeometryLabel(EGraphObjType i_labelType, const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
     virtual bool removeGeometryLabel(const QString& i_strName);
 public: // overridables (connection points)
     virtual QStringList getConnectionPointsNames() const;

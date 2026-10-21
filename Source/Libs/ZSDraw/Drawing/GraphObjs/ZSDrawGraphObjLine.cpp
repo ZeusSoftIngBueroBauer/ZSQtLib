@@ -161,17 +161,14 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
 
     for (const QString& strLabelName : m_strlstPredefinedTextLabelNames) {
         bool bAdded = false;
-        if (strLabelName == c_strGeometryLabelNameP1) {
+        if (strLabelName == c_strLabelName) {
+            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::LineCenterPoint, 0);
+        }
+        else if (strLabelName == c_strGeometryLabelNameP1) {
             bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameP2) {
             bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::PolygonPoint, 1);
-        }
-        else {
-            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
-        }
-        if (!bAdded) {
-            throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add text label " + strLabelName);
         }
     }
 
@@ -186,25 +183,39 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         bool bAdded = false;
         if (strLabelName == c_strGeometryLabelNameP1) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, 0);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::PolygonPoint, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameP2) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, 1);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::PolygonPoint, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameCenter) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::LineCenterPoint, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameLength) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryLength, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryLength, strLabelName,
+                ESelectionPointType::LineCenterPoint, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::RightCenter);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryAngle, strLabelName,
+                ESelectionPointType::LineCenterPoint, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameDX) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryDX, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryDX, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameDY) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryDY, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryDY, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);
@@ -1449,7 +1460,7 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleTextLabelAnchorPoints(c
     static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
     if (s_arSelPtsUserDefined.isEmpty()) {
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjLine*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::LineCenterPoint, 0));
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
             const_cast<CGraphObjLine*>(this), ESelectionPointType::PolygonPoint, 0)); // P1, Start point of the line
         s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(
@@ -1459,7 +1470,7 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleTextLabelAnchorPoints(c
     if (s_hshSelPtsPredefined.isEmpty()) {
         QList<SGraphObjSelectionPoint> arSelPts;
         arSelPts.append(SGraphObjSelectionPoint(
-            const_cast<CGraphObjLine*>(this), ESelectionPointType::BoundingRectangle, ESelectionPoint::Center));
+            const_cast<CGraphObjLine*>(this), ESelectionPointType::LineCenterPoint, 0));
         s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
         arSelPts.clear();
         arSelPts.append(SGraphObjSelectionPoint(
@@ -1509,10 +1520,10 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             if (labelDscr.m_strText != m_strName) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1592,6 +1603,38 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             }
         }
         else if (i_strName == c_strGeometryLabelNameCenter) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameAngle) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameLength) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_idxPt != 0) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameDX) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameDY) {
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
                 bHasDefaultValues = false;
             }
@@ -1600,12 +1643,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             }
         }
         else {
-            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
-                bHasDefaultValues = false;
-            }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
-                bHasDefaultValues = false;
-            }
+            bHasDefaultValues = false;
         }
     }
     return bHasDefaultValues;

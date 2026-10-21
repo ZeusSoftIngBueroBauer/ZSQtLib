@@ -3541,6 +3541,7 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
         /* strAddInfo   */ strMthInArgs );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
@@ -3549,11 +3550,6 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    CPhysValPoint physValPoint1(*m_pDrawingScene);
-    physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
-    CPhysValPoint physValPoint2(*m_pDrawingScene);
-    physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
-
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeLine);
@@ -3561,8 +3557,23 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
         if (pGraphObjLine != nullptr) {
-            pGraphObjLine->setP1(physValPoint1);
-            pGraphObjLine->setP2(physValPoint2);
+            if (i_pTestStep->hasConfigValue("P1") && i_pTestStep->hasConfigValue("P2")) {
+                CPhysValPoint physValPoint1(*m_pDrawingScene);
+                physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
+                CPhysValPoint physValPoint2(*m_pDrawingScene);
+                physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
+                pGraphObjLine->setP1(physValPoint1);
+                pGraphObjLine->setP2(physValPoint2);
+            }
+            else if (i_pTestStep->hasConfigValue("Line")) {
+                QLineF line = i_pTestStep->getConfigValue("Line").value<QLineF>();
+                CUnit unit = drawingSize.unit();
+                if (i_pTestStep->hasConfigValue("Line.Unit")) {
+                    QString strUnit = i_pTestStep->getConfigValue("Line.Unit").toString();
+                    unit = strUnit;
+                }
+                pGraphObjLine->setLine(CPhysValLine(*m_pDrawingScene, line, unit));
+            }
         }
         pGraphObj->rename(strGraphObjName);
     }
@@ -3606,14 +3617,14 @@ void CTest::doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep)
     if (pObjFactory != nullptr) {
         QRectF rect = i_pTestStep->getConfigValue("Rect").value<QRectF>();
         CUnit unit = drawingSize.unit();
-        if (i_pTestStep->hasConfigValue("Rect.Unit")) {
-            QString strUnit = i_pTestStep->getConfigValue("Rect.Unit").toString();
-            unit = strUnit;
-        }
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjRect* pGraphObjRect = dynamic_cast<CGraphObjRect*>(pGraphObj);
+        if (i_pTestStep->hasConfigValue("Rect.Unit")) {
+            QString strUnit = i_pTestStep->getConfigValue("Rect.Unit").toString();
+            unit = strUnit;
+        }
         if (pGraphObjRect != nullptr) {
             pGraphObjRect->setRect(CPhysValRect(*m_pDrawingScene, rect, unit));
         }

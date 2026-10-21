@@ -193,28 +193,44 @@ CGraphObjPixmap::CGraphObjPixmap(CDrawingScene* i_pDrawingScene, const QString& 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         bool bAdded = false;
         if (strLabelName == c_strGeometryLabelNameTopLeft) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::TopLeft);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft);
         }
         else if (strLabelName == c_strGeometryLabelNameTopRight) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::TopRight);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight);
         }
         else if (strLabelName == c_strGeometryLabelNameBottomRight) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::BottomRight);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight);
         }
         else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::BottomLeft);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft);
         }
         else if (strLabelName == c_strGeometryLabelNameCenter) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameWidth) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryWidth, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryWidth, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryHeight, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryHeight, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::RightCenter);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryAngle, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);

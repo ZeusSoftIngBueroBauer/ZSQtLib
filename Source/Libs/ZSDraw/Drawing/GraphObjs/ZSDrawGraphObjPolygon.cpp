@@ -200,16 +200,24 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         bool bAdded = false;
         if (strLabelName == c_strGeometryLabelNameCenter) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryPosition, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameWidth) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryWidth, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryWidth, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryHeight, strLabelName, ESelectionPoint::Center);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryHeight, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryAngle, strLabelName, ESelectionPoint::RightCenter);
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryAngle, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);
@@ -3821,7 +3829,8 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
         for (int idxPt = iCountPrev; idxPt < iCountPrev + m_idxsAdded.second; ++idxPt) {
             const QString strLabelName = createPolygonPointLabelName(idxPt);
             m_strlstGeometryLabelNames.append(strLabelName);
-            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName, idxPt);
+            addGeometryLabel(EGraphObjTypeLabelGeometryPosition, strLabelName,
+                             ESelectionPointType::PolygonPoint, idxPt);
         }
         iCountNew = getNumberOfPolygonPointGeometryLabelNames();
         // Update the indicated position labels. E.g. if inserting a point at the beginning,

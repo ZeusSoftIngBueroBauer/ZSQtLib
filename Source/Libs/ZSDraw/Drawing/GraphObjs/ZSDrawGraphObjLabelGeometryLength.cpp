@@ -289,6 +289,11 @@ void CGraphObjLabelGeometryLength::paint(
                 QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
                 color.setAlpha(192);
                 pn.setColor(color);
+                #if 1
+                pn.setColor(Qt::red);
+                pn.setStyle(Qt::SolidLine);
+                pn.setWidth(2);
+                #endif
                 i_pPainter->setPen(pn);
                 QBrush brsh(pn.color());
                 i_pPainter->setBrush(brsh);

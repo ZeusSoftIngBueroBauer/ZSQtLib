@@ -167,7 +167,8 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
     }
 
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, c_strGeometryLabelNameCenter, ESelectionPoint::Center);
+    bAdded = addGeometryLabel(EGraphObjTypeLabelGeometryPosition, c_strGeometryLabelNameCenter,
+                              ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
     if (!bAdded) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + c_strGeometryLabelNameCenter);
     }

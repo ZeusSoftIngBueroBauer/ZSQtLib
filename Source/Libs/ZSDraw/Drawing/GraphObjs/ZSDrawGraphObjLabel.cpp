@@ -833,6 +833,11 @@ void CGraphObjLabel::paint(
                     QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
                     color.setAlpha(192);
                     pn.setColor(color);
+                    #if 1
+                    pn.setColor(Qt::red);
+                    pn.setStyle(Qt::SolidLine);
+                    pn.setWidth(2);
+                    #endif
                     i_pPainter->setPen(pn);
                     i_pPainter->drawLine(anchorLine);
                 }

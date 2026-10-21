@@ -5592,6 +5592,10 @@ bool CGraphObj::addTextLabel(
         /* strMethod    */ "CGraphObj::addTextLabel",
         /* strAddInfo   */ strMthInArgs );
 
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResult::EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+
     bool bCanAdd = !m_hshTextLabelDscrs.contains(i_strName);
     if (bCanAdd) {
         QString strText = i_strText;
@@ -5649,7 +5653,7 @@ bool CGraphObj::addTextLabel(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strName + ", " + i_strText + + ", " +
-            CEnumSelectionPointType(i_selPtType).toString() + ", P" + QString::number(i_idxPt);
+            CEnumSelectionPointType(i_selPtType).toString() + ", P|L" + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5657,6 +5661,10 @@ bool CGraphObj::addTextLabel(
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::addTextLabel",
         /* strAddInfo   */ strMthInArgs );
+
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResult::EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
 
     bool bCanAdd = !m_hshTextLabelDscrs.contains(i_strName);
     if (bCanAdd) {
@@ -6768,18 +6776,23 @@ protected: // overridables (geometry labels)
         If not empty defines the text to be shown.
     @param [in] i_strName
         Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [BoundingRectangle]
     @param [in] i_selPt
         Selection point the label should use to indicate the geometry.
 
     @return true, if the label has been created and added, false otherwise.
 */
 bool CGraphObj::addGeometryLabel(
-    EGraphObjType i_labelType, const QString& i_strName, ESelectionPoint i_selPt)
+    EGraphObjType i_labelType, const QString& i_strName,
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = graphObjType2Str(i_labelType) + ", " + i_strName + ", " +
+            ", " + CEnumSelectionPointType(i_selPtType).toString() +
             CEnumSelectionPoint(i_selPt).toString();
     }
     CMethodTracer mthTracer(
@@ -6789,10 +6802,14 @@ bool CGraphObj::addGeometryLabel(
         /* strMethod    */ "CGraphObj::addGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    SGraphObjSelectionPoint selPt(this, ESelectionPointType::BoundingRectangle, i_selPt);
+    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+        throw CException(__FILE__, __LINE__, EResult::EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLabelAnchorDscr labelDscr(i_labelType, i_strName, "", selPt);
+        SLabelAnchorDscr labelDscr(
+            i_labelType, i_strName, "", SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
         m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
         emit_geometryLabelAdded(i_strName);
         if (m_pTree != nullptr) {
@@ -6820,19 +6837,25 @@ bool CGraphObj::addGeometryLabel(
         If not empty defines the text to be shown.
     @param [in] i_strName
         Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_selPtType
+        Selection point type.
+        Range [PolygonPoint, LineCenterPoint]
     @param [in] i_idxPt
-        Selection point the label should use to indicate the geometry.
+        Selection point the label should be anchored to.
+        Defines either the index of a polygon (or line) point or the index
+        of the line segment of a polygon.
 
     @return true, if the label has been created and added, false otherwise.
 */
 bool CGraphObj::addGeometryLabel(
-    EGraphObjType i_labelType, const QString& i_strName, int i_idxPt)
+    EGraphObjType i_labelType, const QString& i_strName,
+    ESelectionPointType i_selPtType, int i_idxPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = graphObjType2Str(i_labelType) + ", " + i_strName + ", " +
-            ", Pt: " + QString::number(i_idxPt);
+            CEnumSelectionPointType(i_selPtType).toString() + ", P|L" + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6841,10 +6864,14 @@ bool CGraphObj::addGeometryLabel(
         /* strMethod    */ "CGraphObj::addGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    SGraphObjSelectionPoint selPt(this, ESelectionPointType::PolygonPoint, i_idxPt);
+    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+        throw CException(__FILE__, __LINE__, EResult::EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+    }
+
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLabelAnchorDscr labelDscr(i_labelType, i_strName, "", selPt);
+        SLabelAnchorDscr labelDscr(
+            i_labelType, i_strName, "", SGraphObjSelectionPoint(this, i_selPtType, i_idxPt));
         m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
         emit_geometryLabelAdded(i_strName);
         if (m_pTree != nullptr) {
