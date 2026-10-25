@@ -2147,14 +2147,12 @@ QRectF CPhysValRect::toQRectF() const
 QRectF CPhysValRect::toQRectF(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValRect physValRect = *this;
     physValRect.setAngle(0.0);
-    QPointF ptTL = physValRect.topLeft().toQPointF(i_unit);
-    QSizeF size = physValRect.size().toQSizeF(i_unit);
-    return QRectF(ptTL, size);
+    if (i_unit != m_unit) {
+        physValRect = m_pDrawingScene->convert(physValRect);
+    }
+    return physValRect.toQRectF();
 }
 
 //------------------------------------------------------------------------------
@@ -2178,9 +2176,6 @@ QPolygonF CPhysValRect::toQPolygonF() const
 QPolygonF CPhysValRect::toQPolygonF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     QPointF ptTL = topLeft().toQPointF(i_unit);
     QPointF ptTR = topRight().toQPointF(i_unit);
     QPointF ptBR = bottomRight().toQPointF(i_unit);

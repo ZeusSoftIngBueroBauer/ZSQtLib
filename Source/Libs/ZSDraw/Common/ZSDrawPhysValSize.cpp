@@ -406,13 +406,10 @@ QSizeF CPhysValSize::toQSizeF() const
 QSizeF CPhysValSize::toQSizeF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
-    QSizeF sizeF = m_size;
+    QSizeF size = m_size;
     if (i_unit != m_unit) {
-        sizeF.setWidth(CPhysVal(m_size.width(), m_unit).getVal(i_unit));
-        sizeF.setHeight(CPhysVal(m_size.height(), m_unit).getVal(i_unit));
+        CPhysValSize physValSize = m_pDrawingScene->convert(*this, i_unit);
+        size = physValSize.toQSizeF();
     }
-    return sizeF;
+    return size;
 }

@@ -1252,15 +1252,10 @@ QPolygonF CPhysValPolygon::toQPolygonF() const
 QPolygonF CPhysValPolygon::toQPolygonF(const ZS::PhysVal::CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     QPolygonF polygon = m_polygonScaledAndRotated;
     if (i_unit != m_unit) {
-        for (int idxPt = 0; idxPt < polygon.size(); ++idxPt) {
-            polygon[idxPt].setX(CPhysVal(polygon[idxPt].x(), m_unit).getVal(i_unit));
-            polygon[idxPt].setY(CPhysVal(polygon[idxPt].y(), m_unit).getVal(i_unit));
-        }
+        CPhysValPolygon physValPolygon = m_pDrawingScene->convert(*this, i_unit);
+        polygon = physValPolygon.toQPolygonF();
     }
     return polygon;
 }

@@ -29,10 +29,12 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
@@ -6498,6 +6500,14 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
             pGraphObjLabel = new CGraphObjLabelGeometryLength(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt);
         }
+        else if (labelDscr.m_graphObjType == EGraphObjTypeLabelGeometryDX) {
+            pGraphObjLabel = new CGraphObjLabelGeometryDX(
+                m_pDrawingScene, i_strName, labelDscr.m_selPt);
+        }
+        else if (labelDscr.m_graphObjType == EGraphObjTypeLabelGeometryDY) {
+            pGraphObjLabel = new CGraphObjLabelGeometryDY(
+                m_pDrawingScene, i_strName, labelDscr.m_selPt);
+        }
         else if (labelDscr.m_graphObjType == EGraphObjTypeLabelGeometryAngle) {
             pGraphObjLabel = new CGraphObjLabelGeometryAngle(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt);
@@ -6514,20 +6524,20 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
-        }
-        // Please note that labels should not belong as child to the graphics items
-        // for which the labels are created. Otherwise the "boundingRect" call of groups
-        // (which implicitly calls childrenBoundingRect) does not work as expected as
-        // the labels would be included.
-        // In addition the labels must be directly added to the graphics scene as they
-        // should not be indicated in the index tree.
-        m_pDrawingScene->addItem(pGraphObjLabel);
-        pGraphObjLabel->setVisible(true);
-        // The labels anchor line should be drawn before the object is drawn.
-        // Otherwise the anchor lines may cover the painting of this object.
-        emit_geometryLabelChanged(i_strName);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
+            // Please note that labels should not belong as child to the graphics items
+            // for which the labels are created. Otherwise the "boundingRect" call of groups
+            // (which implicitly calls childrenBoundingRect) does not work as expected as
+            // the labels would be included.
+            // In addition the labels must be directly added to the graphics scene as they
+            // should not be indicated in the index tree.
+            m_pDrawingScene->addItem(pGraphObjLabel);
+            pGraphObjLabel->setVisible(true);
+            // The labels anchor line should be drawn before the object is drawn.
+            // Otherwise the anchor lines may cover the painting of this object.
+            emit_geometryLabelChanged(i_strName);
+            if (m_pTree != nullptr) {
+                m_pTree->onTreeEntryChanged(this);
+            }
         }
     }
 }

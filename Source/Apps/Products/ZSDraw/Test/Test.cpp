@@ -3379,7 +3379,7 @@ void CTest::doTestStepShowTextLabels(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep)
+void CTest::doTestStepHideTextLabels(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3389,7 +3389,7 @@ void CTest::doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepHideLabels",
+        /* strMethod    */ "doTestStepHideTextLabels",
         /* strAddInfo   */ strMthInArgs );
 
     QStringList strlstExpectedValues;
@@ -4941,6 +4941,15 @@ void CTest::doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*
             }
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObj->setPosition(physValPoint);
+        }
+        else if (strMethod.compare("setLength", Qt::CaseInsensitive) == 0) {
+            double fLength = i_pTestStep->getConfigValue("Length").toDouble();
+            if (i_pTestStep->hasConfigValue("Length.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Length.unit").toString();
+                unit = strUnit;
+            }
+            CPhysVal physValLength(fLength, unit);
+            pGraphObj->setLength(physValLength);
         }
         else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
             CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);

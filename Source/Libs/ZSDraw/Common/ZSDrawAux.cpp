@@ -2689,8 +2689,8 @@ QLineF ZS::Draw::getLineFromPolar(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the length and angle of the line from the start point of
-           the given line to the given point.
+/*! @brief Calculates the length and angle (polar coordinates) for a given point
+           in relation to the start point of a line.
 
     @note The returned angle is clockwise counted whereas the angle of the given
           line is counter clockwise counted.
@@ -2706,32 +2706,47 @@ QLineF ZS::Draw::getLineFromPolar(
     @Examples
     ---------
 
-    Input:  Horizontal Line (angle = 0.0°), Pt (QLineF's angle counter clockwise)
-    Result: Length from P1 and Pt, 270° (Resulting angle is clockwise)
+    Input:  Horizontal Line
+            QLine Angle (counter clockwise): 0.0°
+    Result: Length from P1 to Pt, 270° (resulting angle is clockwise)
 
                  Pt +
                     |
-                    |
+              270°  |
                     +----------Line-----------+
                     P1                        P2
 
-    Input:  Horizontal Line (angle = 0.0°), Pt (QLineF's angle counter clockwise)
-    Result: Length from P1 and Pt, 60° (Resulting angle is clockwise)
+    Input:  Horizontal Line
+            QLine Angle (counter clockwise): 180.0°
+    Result: Length from P1 to Pt, 90° (resulting angle is clockwise)
+
+                                              Pt +
+                                        90°   |
+                                              |
+                    +----------Line-----------+
+                    P2                        P1
+
+    Input:  Horizontal Line
+            QLine Angle (counter clockwise): 0.0°
+    Result: Length from P1 to Pt, 60° (resulting angle is clockwise)
 
                     P1                        P2
                     +----------Line-----------+
-                     \
+                     \  60°
                       \
                        + Pt
 
-    Input:  Vertical Line (angle = 270.0°), Pt (QLineF's angle counter clockwise)
-    Result: Length from P1 and Pt, 30° (Resulting angle is clockwise)
+    Input:  Vertical Line
+            QLine Angle (counter clockwise): 270.0°
+    Result: Length from P1 to Pt, 30° (resulting angle is clockwise)
 
                     + P1
                    /|
                   / |
                  /  | Line
-            P2' +   |
+                /   |
+               /    |
+          P2' + 30° |
                     + P2
 */
 SPolarCoors ZS::Draw::getPolarCoors(const QLineF& i_line, const QPointF& i_pt)

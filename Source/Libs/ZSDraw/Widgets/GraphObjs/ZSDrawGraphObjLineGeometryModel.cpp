@@ -1258,7 +1258,7 @@ void CModelGraphObjLineGeometry::onDrawingSceneDrawingSizeChanged(const CDrawing
 //                }
 //                if (bContentChanged) {
 //                    QModelIndex modelIdxTL = index(0, EColumnXVal);
-//                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
+//                    QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
 //                    emit_dataChanged(modelIdxTL, modelIdxBR);
 //                }
 //            }
@@ -1318,7 +1318,7 @@ void CModelGraphObjLineGeometry::onGraphObjGeometryOnSceneChanged(CGraphObj* i_p
                 }
                 if (bContentChanged) {
                     QModelIndex modelIdxTL = index(0, EColumnXVal);
-                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
+                    QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
                     emit_dataChanged(modelIdxTL, modelIdxBR);
                 }
                 if (m_iContentChangedSignalBlockedCounter > 0) {

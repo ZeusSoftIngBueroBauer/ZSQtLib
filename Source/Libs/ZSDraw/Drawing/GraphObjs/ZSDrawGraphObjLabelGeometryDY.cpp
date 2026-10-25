@@ -33,6 +33,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -136,11 +137,13 @@ CGraphObjLabelGeometryDY::CGraphObjLabelGeometryDY(
     m_drawSettingsArrowHeads.setArrowHeadWidth(ELinePoint::End, EArrowHeadWidth::Thin);
     m_drawSettingsArrowHeads.setArrowHeadLength(ELinePoint::End, EArrowHeadLength::Short);
 
+    // Anchor0 and Anchor1 are the extension lines from the linked object to the dimension line ends.
     m_anchorLines.append(QLineF());
     m_anchorLines.append(QLineF());
+    // Anchor2 and Anchor3 are the dimension lines from the extension lines to the label.
     m_anchorLines.append(QLineF());
-
-} // ctor
+    m_anchorLines.append(QLineF());
+}
 
 //------------------------------------------------------------------------------
 CGraphObjLabelGeometryDY::~CGraphObjLabelGeometryDY()
@@ -156,12 +159,7 @@ CGraphObjLabelGeometryDY::~CGraphObjLabelGeometryDY()
         /* strAddInfo   */ "" );
 
     emit_aboutToBeDestroyed();
-
-    //m_drawSettingsArrowHeads;
-    //m_plgP1ArrowHead;
-    //m_plgP2ArrowHead;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -273,39 +271,43 @@ void CGraphObjLabelGeometryDY::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    //}
+    //CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
     if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine) {
         i_pPainter->save();
-        i_pPainter->setRenderHint(QPainter::Antialiasing);
+        i_pPainter->setRenderHints(s_painterRenderHints);
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
-        QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-        const QLineF& anchorLine = m_anchorLines[2];
-         if (!rctBounding.contains(anchorLine.p2())) {
-             if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
-                color.setAlpha(192);
-                pn.setColor(color);
-                #if 1
-                pn.setColor(Qt::red);
-                pn.setStyle(Qt::SolidLine);
-                pn.setWidth(2);
-                #endif
-                i_pPainter->setPen(pn);
-                QBrush brsh(pn.color());
-                i_pPainter->setBrush(brsh);
-                i_pPainter->setRenderHints(s_painterRenderHints);
-                i_pPainter->drawPolygon(m_plgP1ArrowHead);
-                i_pPainter->drawPolygon(m_plgP2ArrowHead);
-            }
+        QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
+        color.setAlpha(192);
+        pn.setColor(color);
+        #if 1
+        pn.setColor(Qt::red);
+        pn.setWidth(2);
+        #endif
+        i_pPainter->setPen(pn);
+        for (const QLineF& anchorLine : m_anchorLines) {
+            i_pPainter->drawLine(anchorLine);
         }
-
-       i_pPainter->restore();
+        QBrush brsh(pn.color());
+        i_pPainter->setBrush(brsh);
+        QLineF anchorLine = m_anchorLines[2];
+        if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
+            i_pPainter->drawPolygon(m_plgP1ArrowHead);
+        }
+        anchorLine = m_anchorLines[3];
+        if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
+            i_pPainter->drawPolygon(m_plgP2ArrowHead);
+        }
+        i_pPainter->restore();
     }
-} // paint
+}
 
 /*==============================================================================
 protected: // auxiliary overridable instance methods of base class CGraphObjLabel
@@ -323,6 +325,10 @@ void CGraphObjLabelGeometryDY::updatePosition()
         /* strObjName   */ path(),
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     QPointF ptSelPt1ScenePos =
         m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
@@ -366,6 +372,11 @@ void CGraphObjLabelGeometryDY::updatePosition()
     // label is called invoking updateAnchorLines.
 
     m_bUpdatePositionInProgress = false;
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -403,6 +414,10 @@ void CGraphObjLabelGeometryDY::updatePolarCoorsToLinkedSelPt()
         /* strObjName   */ path(),
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
@@ -431,13 +446,18 @@ void CGraphObjLabelGeometryDY::updatePolarCoorsToLinkedSelPt()
         Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
+        QString strRuntimeInfo = "AnchoredTo {" + m_selPtLinkedObject.toString() + "}" +
+            ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
 
     // Update coordinates of the anchor line.
     updateAnchorLines();
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -474,6 +494,10 @@ void CGraphObjLabelGeometryDY::updateAnchorLines()
         /* strObjName   */ path(),
         /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    }
+    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
@@ -514,6 +538,11 @@ void CGraphObjLabelGeometryDY::updateAnchorLines()
         /* drawSetings   */ m_drawSettingsArrowHeads,
         /* pplgLineStart */ &m_plgP1ArrowHead,
         /* pplgLineEnd   */ &m_plgP2ArrowHead);
+
+    refCountGuardTrace.decrementAndReleaseCounter();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    }
 }
 
 /*==============================================================================

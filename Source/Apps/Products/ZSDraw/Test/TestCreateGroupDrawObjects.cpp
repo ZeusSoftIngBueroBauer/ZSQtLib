@@ -2982,15 +2982,15 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         c_strGraphObjNameTriangle, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, true, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + c_strGraphObjNameTriangle + ".hideLabels",
-        /* strOperation    */ c_strGraphObjNameTriangle + ".hideLabels()",
+        /* strOperation    */ c_strGraphObjNameTriangle + ".hideTextLabels()",
         /* pGrpParent      */ pGrpModifyTriangle,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameTriangle},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameTriangle]},
@@ -3933,15 +3933,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsNotAnchoredModifica
     QPoint ptMousePos;
     int idxPt;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameConnectionLineCnctPt1CnctPt2},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineCnctPt1CnctPt2]},
@@ -5665,15 +5665,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToLinesModi
     QString strMethod;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Cncts.hideLabels()",
-        /* strOperation    */ "Cncts.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "Cncts.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
     strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameLine1);
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameLine1},
@@ -6915,15 +6915,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToRectsModi
     QString strMethod;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
 
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameRect1},
@@ -8042,13 +8042,13 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipsesM
     QString strMethod;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
         /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
 
@@ -9366,15 +9366,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToPolygonsM
     QString strMethod;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
     strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, c_strGraphObjNameStar1);
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameStar1},
@@ -10227,15 +10227,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToTextsModi
     QString strText;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+        /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameConnectionLineText1BottomCenterText2TopCenter},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineText1BottomCenterText2TopCenter]},
@@ -11046,15 +11046,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmapsMo
     QString strMethod;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     //pTestStep = new ZS::Test::CTestStep(
     //    /* pTest           */ this,
     //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-    //    /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+    //    /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
     //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+    //    /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
 
     //pTestStep->addDataRow({
     //    {"GraphObjName", c_strGraphObjNameRect1},
@@ -12173,15 +12173,15 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroupsMod
     QString strMethod;
     QString strMthArgs;
 
-    // Hide Labels
-    //------------
+    // Hide Text Labels
+    //-----------------
 
     //pTestStep = new ZS::Test::CTestStep(
     //    /* pTest           */ this,
     //    /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
-    //    /* strOperation    */ "CnctLines.hideLabels(" + CGraphObj::c_strLabelName + ")",
+    //    /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
     //    /* pGrpParent      */ pGrpModifyConnections,
-    //    /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+    //    /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
 
     //pTestStep->addDataRow({
     //    {"GraphObjName", c_strGraphObjNameRect1},

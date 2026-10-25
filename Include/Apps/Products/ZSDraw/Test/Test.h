@@ -526,7 +526,7 @@ protected slots:
     void doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepSetDrawSettings(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepShowTextLabels(ZS::Test::CTestStep* i_pTestStep);
-    void doTestStepHideLabels(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepHideTextLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
