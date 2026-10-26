@@ -175,9 +175,9 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameP1);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameP2);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameLength);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameDX);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameDY);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameLength);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
@@ -202,20 +202,20 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
                 EGraphObjTypeLabelGeometryLength, strLabelName,
                 ESelectionPointType::LineCenterPoint, 0);
         }
-        else if (strLabelName == c_strGeometryLabelNameAngle) {
-            bAdded = addGeometryLabel(
-                EGraphObjTypeLabelGeometryAngle, strLabelName,
-                ESelectionPointType::LineCenterPoint, 0);
-        }
         else if (strLabelName == c_strGeometryLabelNameDX) {
             bAdded = addGeometryLabel(
                 EGraphObjTypeLabelGeometryDX, strLabelName,
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                ESelectionPointType::LineCenterPoint, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameDY) {
             bAdded = addGeometryLabel(
                 EGraphObjTypeLabelGeometryDY, strLabelName,
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                ESelectionPointType::LineCenterPoint, 0);
+        }
+        else if (strLabelName == c_strGeometryLabelNameAngle) {
+            bAdded = addGeometryLabel(
+                EGraphObjTypeLabelGeometryAngle, strLabelName,
+                ESelectionPointType::LineCenterPoint, 0);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);

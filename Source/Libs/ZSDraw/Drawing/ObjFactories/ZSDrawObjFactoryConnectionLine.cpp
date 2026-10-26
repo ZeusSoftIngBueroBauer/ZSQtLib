@@ -400,19 +400,27 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
         }
         // Geometry Labels
         for (const SLabelAnchorDscr& labelDscr : arGeometryLabels) {
-            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_selPt.name())) {
+            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
-                    "Invalid geometry label name \"" + labelDscr.m_selPt.name() + "\".");
+                    "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
             }
             else {
+                if (labelDscr.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->setGeometryLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
+                }
+                else {
+                    pGraphObj->setGeometryLabelAnchorPoint(
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                }
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
-                    labelDscr.m_selPt.name(), labelDscr.m_polarCoorsToLinkedSelPt);
+                    labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
                 labelDscr.m_bIsVisible ?
-                    pGraphObj->showGeometryLabel(labelDscr.m_selPt.name()) :
-                    pGraphObj->hideGeometryLabel(labelDscr.m_selPt.name());
+                    pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
+                    pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
                 labelDscr.m_bShowAnchorLine ?
-                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_selPt.name()) :
-                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_selPt.name());
+                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
+                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
             }
         }
     }

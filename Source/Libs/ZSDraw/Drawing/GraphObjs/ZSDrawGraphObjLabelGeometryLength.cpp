@@ -287,10 +287,10 @@ void CGraphObjLabelGeometryLength::paint(
         QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
         color.setAlpha(192);
         pn.setColor(color);
-        #if 1
-        pn.setColor(Qt::red);
-        pn.setWidth(2);
-        #endif
+        //#if 1
+        //pn.setColor(Qt::red);
+        //pn.setWidth(2);
+        //#endif
         i_pPainter->setPen(pn);
         for (const QLineF& anchorLine : m_anchorLines) {
             i_pPainter->drawLine(anchorLine);

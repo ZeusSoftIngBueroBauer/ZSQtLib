@@ -3943,6 +3943,8 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
             const QString strLabelNameNew = createPolygonPointLabelName(idxPt);
             const QString strLabelNameOld = createPolygonPointLabelName(idxPt + m_idxsRemoved.second);
             SLabelAnchorDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
+            labelDscr.m_strKey = strLabelNameNew;
+            labelDscr.m_strText = strLabelNameNew;
             labelDscr.m_selPt.m_idxPt = idxPt;
             m_hshGeometryLabelDscrs[strLabelNameNew] = labelDscr;
             m_hshGeometryLabelDscrs.remove(strLabelNameOld);

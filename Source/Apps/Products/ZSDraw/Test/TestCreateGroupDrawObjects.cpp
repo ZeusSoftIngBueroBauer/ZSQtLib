@@ -8050,7 +8050,7 @@ void CTest::createTestGroupDrawStandardShapesConnectionPointsAnchoredToEllipsesM
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjName + ".hideLabels(" + CGraphObj::c_strLabelName + ")",
         /* strOperation    */ "CnctLines.hideTextLabels(" + CGraphObj::c_strLabelName + ")",
         /* pGrpParent      */ pGrpModifyConnections,
-        /* szDoTestStepFct */ SLOT(doTestStepHideLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)) );
 
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameEllipse1},
