@@ -3446,13 +3446,17 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
         QString strGraphObjName = dataRow["GraphObjName"].toString();
         QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
         QString strLabelName = dataRow["LabelName"].toString();
-        QPointF pos;
+        QPointF posToSet;
         if (dataRow.contains("setPos")) {
-            pos = dataRow["setPos"].toPointF();
+            posToSet = dataRow["setPos"].toPointF();
         }
         QString strExpectedText = dataRow["ExpectedText"].toString();
+        QPointF posExpected = posToSet;
+        if (dataRow.contains("ExpectedPos")) {
+            posExpected = dataRow["ExpectedPos"].toPointF();
+        }
         strlstExpectedValues.append(resultValuesForLabel(
-            strGraphObjName + "." + strLabelName, pos, strExpectedText));
+            strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
         CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showGeometryLabel(strLabelName);
@@ -3460,13 +3464,12 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getGeometryLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
-                if (!pos.isNull()) {
-                    pGraphicsItemLabel->setPos(pos);
-                    pos = pGraphicsItemLabel->pos();
+                if (!posToSet.isNull()) {
+                    pGraphicsItemLabel->setPos(posToSet);
                 }
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(resultValuesForLabel(
-                    pGraphObj->name() + "." + pGraphObjLabel->name(), pos, strText));
+                    pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");

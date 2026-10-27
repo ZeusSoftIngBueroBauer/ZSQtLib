@@ -3772,7 +3772,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
     if (m_idxsAdded.second > 0) {
         if (!m_strlstPredefinedTextLabelNames.contains(c_strLabelName)) {
             m_strlstPredefinedTextLabelNames.append(c_strLabelName);
-            addTextLabel(c_strLabelName, c_strLabelName, ESelectionPointType::LineCenterPoint, 0);
+            addTextLabel(c_strLabelName, c_strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         int iCountPrev = getNumberOfPredefinedPolygonPointLabelNames();
         for (int idxPt = iCountPrev; idxPt < iCountPrev + m_idxsAdded.second; ++idxPt) {
