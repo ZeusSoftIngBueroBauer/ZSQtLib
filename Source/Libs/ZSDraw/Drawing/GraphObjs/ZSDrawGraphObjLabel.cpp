@@ -1219,10 +1219,15 @@ void CGraphObjLabel::updatePosition()
         QString strRuntimeInfo = "Pos {" + qPoint2Str(anchorLineP2ScenePos) + "} px";
         mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
     }
-    setPos(anchorLineP2ScenePos);
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.
+    if (pos() != anchorLineP2ScenePos) {
+        QGraphicsItem_setPos(anchorLineP2ScenePos);
+    }
+    else {
+        updateAnchorLines();
+    }
 
     m_bUpdatePositionInProgress = false;
 

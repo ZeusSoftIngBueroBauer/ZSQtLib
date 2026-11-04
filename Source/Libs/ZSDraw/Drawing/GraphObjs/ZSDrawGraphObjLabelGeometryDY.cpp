@@ -380,10 +380,15 @@ void CGraphObjLabelGeometryDY::updatePosition()
     // Move text item so that its center point is at the line end point of the anchor line.
     QRectF rctBoundingThis = getBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
-    QGraphicsItem_setPos(anchorLineP2ScenePos);
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.
+    if (pos() != anchorLineP2ScenePos) {
+        QGraphicsItem_setPos(anchorLineP2ScenePos);
+    }
+    else {
+        updateAnchorLines();
+    }
 
     m_bUpdatePositionInProgress = false;
 

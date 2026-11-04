@@ -198,7 +198,7 @@ void CGraphObjLabelGeometryPosition::updatePosition()
         physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
             m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
     }
-    QString strText = physValPos.toString();
+    QString strText = physValPos.toString(false);
     // First set the text at the graphics item so that the bounding rectangle
     // needed in updatePosition includes the new text.
     if (QGraphicsSimpleTextItem::text() != strText) {

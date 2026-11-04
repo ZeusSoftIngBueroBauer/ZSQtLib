@@ -5473,6 +5473,24 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
             physValAngle = strAngle;
             pGraphObj->setRotationAngle(physValAngle);
         }
+        else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
+            double fWidth = i_pTestStep->getConfigValue("Width").toDouble();
+            if (i_pTestStep->hasConfigValue("Width.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Width.unit").toString();
+                unit = strUnit;
+            }
+            CPhysVal physValWidth(fWidth, unit);
+            pGraphObj->setWidth(physValWidth);
+        }
+        else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
+            double fHeight = i_pTestStep->getConfigValue("Height").toDouble();
+            if (i_pTestStep->hasConfigValue("Height.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Height.unit").toString();
+                unit = strUnit;
+            }
+            CPhysVal physValHeight(fHeight, unit);
+            pGraphObj->setHeight(physValHeight);
+        }
         else if (strMethod.compare("replace", Qt::CaseInsensitive) == 0) {
             int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
             QPointF pt = i_pTestStep->getConfigValue("point").toPointF();

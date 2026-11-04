@@ -147,6 +147,9 @@ protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {};
 public: // overridables of base class CGraphObj (text labels)
     QList<SGraphObjSelectionPoint> getPossibleTextLabelAnchorPoints(const QString& i_strName) const override;
+    bool textLabelHasDefaultValues(const QString& i_strName) const override;
+public: // overridables of base class CGraphObj (geometry labels)
+    bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

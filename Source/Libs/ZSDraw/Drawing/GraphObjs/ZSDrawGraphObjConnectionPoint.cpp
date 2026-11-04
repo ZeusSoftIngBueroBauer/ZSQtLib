@@ -1610,6 +1610,95 @@ QList<SGraphObjSelectionPoint> CGraphObjConnectionPoint::getPossibleTextLabelAnc
     return s_arSelPtsUserDefined;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjConnectionPoint::textLabelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshTextLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (isPredefinedTextLabelName(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
+        if (labelDscr.m_bIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strLabelName) {
+            if (labelDscr.m_strText != m_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj (geometry labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjConnectionPoint::geometryLabelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (m_strlstGeometryLabelNames.contains(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelAnchorDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        if (labelDscr.m_bIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strGeometryLabelNameCenter) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
 ==============================================================================*/

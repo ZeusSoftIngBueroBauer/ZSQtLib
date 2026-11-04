@@ -388,8 +388,7 @@ void CObjFactory::saveGraphObjTextLabels(
                 // the labels are stored as attributes and not as text elements.
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
-                SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
-                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, labelDscr.m_selPt.toString(false));
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString(true, ", "));
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isTextLabelVisible(strName)));
                 if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
@@ -481,8 +480,7 @@ void CObjFactory::saveGraphObjGeometryLabels(
             // the labels are stored as attributes and not as text elements.
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
-            SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, labelDscr.m_selPt.toString(false));
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameVisible, bool2Str(i_pGraphObj->isGeometryLabelVisible(strName)));
             if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
@@ -569,7 +567,9 @@ void CObjFactory::saveGraphObjConnectionPoints(
         // To keep the XML file as short as possible the properties of
         // the connection points are stored as attributes and not as text elements.
         SGraphObjSelectionPoint selPt = labelDscr.m_selPt;
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, selPt.toString(false));
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameKey, labelDscr.m_strKey);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameText, labelDscr.m_strText);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameSelPt, labelDscr.m_selPt.toString(false));
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
         if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
             i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));

@@ -379,10 +379,15 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     QPointF posTextItem(
         lineMoveVector.p2().x() - rctBoundingThis.width()/2.0,
         lineMoveVector.p2().y() - rctBoundingThis.height()/2.0);
-    QGraphicsItem_setPos(posTextItem);
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.
+    if (pos() != posTextItem) {
+        QGraphicsItem_setPos(posTextItem);
+    }
+    else {
+        updateAnchorLines();
+    }
 
     m_bUpdatePositionInProgress = false;
 
