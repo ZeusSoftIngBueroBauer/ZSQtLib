@@ -45,12 +45,12 @@ class QPainterPath;
 
 #if TEST_ALL == 0
 
-#define TEST_AUX_METHODS 0
+#define TEST_AUX_METHODS 1
 #define TEST_DRAWINGSIZE 0
-#define TEST_PIXELS_DRAWINGS 1
+#define TEST_PIXELS_DRAWINGS 0
 #define TEST_PIXELS_DRAWINGS_100x100 0
 #define TEST_PIXELS_DRAWINGS_101x101 0
-#define TEST_PIXELS_DRAWINGS_800x600 1
+#define TEST_PIXELS_DRAWINGS_800x600 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_0 0
@@ -447,7 +447,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateTop(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);

@@ -4641,7 +4641,7 @@ public: // overridables
     the graphical object type and the selection point.
 
     This method must be reimplemented by derived classes to ensure that labels
-    linked to the selection point are always at the same relative position
+    linked to the selection point are always at the same relative position,
     no matter how the object will be rotated.
 
     The default implementation calculates the polar coordinates for selection points
@@ -4655,7 +4655,7 @@ public: // overridables
     Example:
 
                        + Pt
-                      / Calculated Angle: 60°
+                      / Calculated Angle: 300°
                      /           TC
                  TL +------------x------------+ TR
                     |                         |
@@ -4676,7 +4676,7 @@ public: // overridables
                       TC x       x        x BC
                          |                |
                          |                |
-                Pt + 60° |                |
+                 Pt + 300°                |
                      \   |                |
                       TL +-------x--------+ BL
                                  LC
