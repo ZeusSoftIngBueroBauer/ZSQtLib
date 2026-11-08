@@ -398,49 +398,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the relative position in polar
-           coordinates (length in pixels, angle in degress) from the labels center
-           point and the selection point the label is linked to.
-
-    The position of the label, where the distance and angle both are zero,
-    depends on the type of label and the linked selection point.
-
-    @Note Text items are positioned relative to their left top corner wheras almost
-          all other items are positioned relative to the center point of their
-          bounding rectangles (for text items, the origin of the local coorrdinate
-          system is not the bounding rectangles center point). This has to be taken
-          into account when calculating the polar coordinates depending on the
-          position of the label.
-
-    For labels indicating the rotation angle, the polar coordinates are given
-    relative from the center of the label's bounding rectangle to the right
-    center selection point of the linked object's bounding rectangle.
-    The label is moved outside the bounding rectangle by half of the labels width.
-
-    Example for a rectangle (rotation angle = 0 °) and the label positioned
-    with PolarCoors (0.0 / 0°):
-
-        TL +----------x----------+ TR
-           |                     |
-           |                     |
-           |          x----------|0°
-           |                     |
-           |                     |
-        BL +----------x----------+ BR
-
-    Example for a rectangle (rotation angle = 90 °) and the label positioned
-    with PolarCoors (0.0 / 0°):
-
-        TL +--------x--------+ TR
-           |                 |
-           |                 |
-           |                 |
-           |        x--------|
-           |        |       ||
-           |        |      / |
-           |        |    /   |
-        BL +--------x<-------+ BR
-                   90°
+/*! @brief
 */
 void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -473,10 +431,10 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
         ptSelPt1ScenePos =
             m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
         ptSelPt2ScenePos =
             m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
     }
     else if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
         ptSelPt1ScenePos =
@@ -487,17 +445,18 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
                 ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt+1);
     }
 
+    SPolarCoors polarCoors = getPolarCoorsToSelectionPointFromSceneCoors();
     // Get the zero point for the polar coordinates
     // (center of label's bounding rectangle of the label at its initial position).
-    QPointF ptPolarCoorsOriginScenePos = ptSelPt2ScenePos;
+    //QPointF ptPolarCoorsOriginScenePos = ptSelPt2ScenePos;
 
-    QLineF lineBaseForPolarCoors = QLineF(ptPolarCoorsOriginScenePos, ptSelPt1ScenePos);
-    QLineF lineMoveVector(ptThisCenterScenePos, ptPolarCoorsOriginScenePos);
+    //QLineF lineBaseForPolarCoors = QLineF(ptPolarCoorsOriginScenePos, ptSelPt1ScenePos);
+    //QLineF lineMoveVector(ptThisCenterScenePos, ptPolarCoorsOriginScenePos);
 
-    m_polarCoorsToLinkedSelPt.m_fLength_px = lineMoveVector.length();
-    m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineMoveVector.angleTo(lineBaseForPolarCoors);
-    m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
+    //m_polarCoorsToLinkedSelPt.m_fLength_px = lineMoveVector.length();
+    //m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineMoveVector.angleTo(lineBaseForPolarCoors);
+    //m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
+    //    Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +

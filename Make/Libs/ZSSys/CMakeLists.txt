@@ -190,3 +190,16 @@ message(STATUS "")
 message(STATUS "<- ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "---------------------------------------------------------------------------------------------")
 message(STATUS "")
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    <QtCore/QObject>
+    <QtCore/QString>
+    <QtCore/QList>
+    <QtCore/QHash>
+    <QtCore/QMap>
+    <QtCore/QDateTime>
+    <QtCore/QMutex>
+    <vector>
+    <string>
+    <memory>
+)

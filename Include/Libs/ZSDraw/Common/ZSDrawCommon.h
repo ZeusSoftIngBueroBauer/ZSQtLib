@@ -1031,14 +1031,16 @@ public: // struct members
 /*! @brief Struct defining a line in polar coordinates (length and angle of a line).
 
     @note The angle is counted clockwise. (3 o'clock = 0°, 18 o'Clock = 90°)
-
-                 ----->+ Pt
-               /      / Clockwise counted angle: 300°
-              |      /
-         -----------+-------------
-              |           |
-               \         /
-                 -------
+s
+                          Pt
+                          +
+                   ----> /
+                 /      / Clockwise counted angle: 300°
+                |      /
+        P1 -----------+----------- P2
+                |           |
+                 \         /
+                   -------
 */
 struct ZSDRAWDLL_API SPolarCoors
 //******************************************************************************
@@ -1053,7 +1055,7 @@ public: // operators
     bool operator == (const SPolarCoors& i_other) const;
     bool operator != (const SPolarCoors& i_other) const;
 public: // struct methods
-    QString toString(bool i_bAddUnit = true, const QString& i_strSeparator = ",") const;
+    QString toString(bool i_bAddUnit = true, const QString& i_strSeparator = ", ") const;
 public: // struct members
     /*!< Length of the line in pixels. */
     double m_fLength_px = 0.0;

@@ -899,18 +899,46 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         /* szDoTestStepFct */ SLOT(doTestStepGetPolarCoors(ZS::Test::CTestStep*)) );
     SPolarCoors polarCoors;
     strlstExpectedValues.clear();
+
+    /*    Pt +
+             |
+        270° | 50
+             |
+          P1 +------Line-------+ P2 */
     pTestStep->addDataRow({
         {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
         {"Point", QPointF(100.0, 50.0)}
     });
     polarCoors = SPolarCoors(50.0, 270.0);
     strlstExpectedValues.append(polarCoors.toString(true, ", "));
+
+    /*               100
+          P1 +-----------------+ Pt
+               \
+                  \
+                    \
+         315°       Line
+                        \
+                          \
+                             \
+                               + P2 */
     pTestStep->addDataRow({
         {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
         {"Point", QPointF(200.0, 100.0)}
     });
-    polarCoors = SPolarCoors(100.0, 315.0);
+    polarCoors = SPolarCoors(100.0,315.0);
     strlstExpectedValues.append(polarCoors.toString(true, ", "));
+
+    /*               100
+          P1 +
+             | \
+             |   \
+             |      \
+             | 45°  Line
+             |          \
+             |            \
+             |               \
+          Pt |                 + P2 */
     pTestStep->addDataRow({
         {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
         {"Point", QPointF(100.0, 200.0)}
