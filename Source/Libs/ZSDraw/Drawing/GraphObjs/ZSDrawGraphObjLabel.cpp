@@ -1205,15 +1205,15 @@ void CGraphObjLabel::updatePosition()
     m_bUpdatePositionInProgress = true;
 
     // Get anchor line in scene coordinates.
-    QLineF anchorLine;
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        anchorLine = m_selPtLinkedObject.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
-    }
-    else {
-        anchorLine = m_selPtLinkedObject.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-            m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
-    }
+    //QLineF anchorLine;
+    //if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+    //    anchorLine = m_selPtLinkedObject.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+    //        m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
+    //}
+    //else {
+    //    anchorLine = m_selPtLinkedObject.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+    //        m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
+    //}
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.

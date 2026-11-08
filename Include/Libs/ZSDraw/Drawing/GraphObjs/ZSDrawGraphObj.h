@@ -696,8 +696,8 @@ public: // overridables
 public: // must overridables
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const;
+    //virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    //virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const;
 protected: // must overridables
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) = 0;
 protected: // overridables

@@ -2479,8 +2479,9 @@ double ZS::Draw::getEllipseCenterFocusDist( const QRectF& i_rct )
 QPointF ZS::Draw::getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
-    QPointF pt = i_lin.center();
+    QPointF pt;
     if (i_selPt == ESelectionPoint::Center) {
+        pt = i_lin.center();
     }
     else if (i_selPt == ESelectionPoint::TopLeft) {
         pt = i_lin.p1();
@@ -2492,11 +2493,19 @@ QPointF ZS::Draw::getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the coordinates of the given selection point.
+
+    @param [in] i_rct
+        Rectangle with the given selection point.
+    @param [in] i_selPt
+        Selection point at the rectangle whose coordinates have to be returned.
+*/
 QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
-    QPointF pt = i_rct.center();
+    QPointF pt;
     if (i_selPt == ESelectionPoint::Center) {
+        pt = i_rct.center();
     }
     else if (i_selPt == ESelectionPoint::TopLeft) {
         pt = i_rct.topLeft();
@@ -2527,6 +2536,54 @@ QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i
     }
     else if (i_selPt == ESelectionPoint::RotateBottom) {
         pt = QPointF(i_rct.center().x(), i_rct.bottom() + getSelectionPointRotateDistance());
+    }
+    return pt;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the coordinates of the given selection point.
+
+    @param [in] i_polygon
+        Polygon containing the shape point or line center point.
+    @param [in] i_selPtType
+        Type of the selection point. Only PolygonPoint or LineCenterPoint is allowed here.
+    @param [in] i_idxPtOrLine
+        Depending on the selection point type either the index of the
+        shape point (starting with index 0) or the index of the line segment
+        (also starting with index 0).
+        A polyline with 5 points has 4 line segments (L0 to L3).
+        A polygon with 5 points has 5 line segments (L0 to L4).
+
+         P0 +----L0----+ P1
+            |          L1
+            |          + P2
+            L4        /
+            |       L2
+            |       /
+         P4 +--L3--+ P3
+*/
+QPointF ZS::Draw::getSelectionPointCoors(
+    const QPolygonF& i_polygon, ESelectionPointType i_selPtType, int i_idxPtOrLine)
+//------------------------------------------------------------------------------
+{
+    QPointF pt;
+    if (i_selPtType == ESelectionPointType::PolygonPoint) {
+        if (!i_polygon.empty() && (i_idxPtOrLine < i_polygon.size())) {
+            pt = i_polygon[i_idxPtOrLine];
+        }
+    }
+    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
+        if (!i_polygon.empty() && (i_idxPtOrLine < i_polygon.size())) {
+            if (i_idxPtOrLine < (i_polygon.size()-1)) {
+                pt = QLineF(i_polygon[i_idxPtOrLine], i_polygon[i_idxPtOrLine+1]).center();
+            }
+            else {
+                pt = QLineF(i_polygon[i_idxPtOrLine], i_polygon[0]).center();
+            }
+        }
+    }
+    else {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
     return pt;
 }
@@ -2599,17 +2656,14 @@ QPointF ZS::Draw::getSelectionPointCoors(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns a line with the given length and angle whose start point is at
-           the start point of the passed line.
+/*! @brief Returns a line with the given length and angle starting at the passed point.
 
-    @param [in] i_fLength_px
-        Desired length of the resulting line.
-    @param [in] i_fAngle_degrees
-        Desired angle between the resulting line and the passed line.
+    @param [in] i_ptStart
+        Start point of the line to be returned.
+    @param [in] i_polarCoors
+        Desired length and angle of the resulting line.
         The angle must be passed clockwise counted as used by the graphics item
-        coordinate system but also with 0.0 degrees at 3 o'clock.
-    @param [in] i_baseLine
-        Line to which the resulting line should be calculated.
+        coordinate system with 0.0 degrees at 3 o'clock.
 
     @note In contrast to the graphics item coordinate system QLineF counts the
           angle counter clockwise with 0.0 degrees at 3 o'clock.
@@ -2619,7 +2673,7 @@ QPointF ZS::Draw::getSelectionPointCoors(
 
                             90°
                             P2
-                            +
+                            +       Angle is counter clockwise counted
                             |
                             |P1
             180° P2 +-------+-------+ P2 0.0°
@@ -2633,7 +2687,7 @@ QPointF ZS::Draw::getSelectionPointCoors(
           -------------------------------
 
                            270°
-                            +
+                            +       Angle is clockwise counted
                             |
                             |
                180° +-------+-------+ 0.0°
@@ -2645,172 +2699,138 @@ QPointF ZS::Draw::getSelectionPointCoors(
     @Examples
     ---------
 
-    Input: Horizontal Line (angle = 0.0°), Any Length, Angle = -90° (or +270°)
+    Input: Any Length, Angle = -90° (= +270°)
 
-                P2' +
+                  ptEnd
+                    +
                     |
          Calculated |
          Line       | -90°
-                    +------BaseLine-----------+
-                    P1                        P2
+                    +
+                  ptStart
 
-    Input: Horizontal Line (angle = 0.0°), Any Length, Angle = 60°
+    Input: Any Length, Angle = 60°
 
-                    P1                        P2
-                    +------BaseLine-----------+
+                  ptStart
+                    +
                      \
          Calculated   \   60°
          Line          \
                         \
-                         + P2'
-
-    Input: Vertical Line (angle = 270.0°), Any Length, Angle = 30°
-
-                    + P1
-                   /|
-                  / |
-      Calculated /  |
-      Line      /30°|
-               /    | BaseLine
-          P2' +     |
-                    + P2
+                         + ptEnd
 */
-QLineF ZS::Draw::getLineFromPolar(
-    double i_fLength_px, double i_fAngle_degrees, const QLineF& i_baseLine)
+QLineF ZS::Draw::getLineFromPolar(const QPointF& i_ptStart, const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
-    double fLineAngle_degrees = i_baseLine.angle();
-    double fPolarAngle_degrees = Math::toCounterClockWiseAngleDegree(i_fAngle_degrees);
-    double fAngle_degrees = fLineAngle_degrees + fPolarAngle_degrees;
-    QLineF line = QLineF::fromPolar(i_fLength_px, fAngle_degrees);
-    QPointF ptOffset = i_baseLine.p1();
-    line.translate(ptOffset);
+    double fAngle_degrees = Math::toCounterClockWiseAngleDegree(i_polarCoors.m_fAngle_degrees);
+    QLineF line = QLineF::fromPolar(i_polarCoors.m_fLength_px, fAngle_degrees);
+    line.translate(i_ptStart);
     return line;
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Calculates the length and angle (polar coordinates) for a given point
-           in relation to the start point of a line.
+           in relation to the given start (center) point.
 
-    @note The returned angle is clockwise counted whereas QLine::angle()
-          returns a counter clockwise counted angle.
-
-    To calculate the angle, the given line is rotated counter clockwise around
-    the starting point (P1) of the given line until the, maybe extended, line
-    passes through the given point Pt.
+    @note The returned angle is clockwise counted (see getLineFromPolar).
 
     @param [in] i_pt
-        Point to which the polar coordinates should be calculated.
-        The resulting polar coordinates are calculated relative to the start point (P1)
-        of the line. P1 may be considered the center point of the rotation circle.
+        Point for which the polar coordinates should be calculated.
 
-    @param [in] i_baseLine
-        Line which is used to calculate the distance and angle to the given point.
+    @param [in] i_ptCenter
+        Center point to which the polar coordinates have to be calculated.
 
-    @note see note at getLineFromPolar.
+    @note see getLineFromPolar.
 
     @Examples
     ---------
 
-    Input:  Horizontal Line
-            QLine Angle (counter clockwise): 0.0°
-    Result: Length from P1 to Pt, 270° (resulting angle is clockwise)
-
-                 Pt +
-                    |
-              270°  |
-                    +------BaseLine-----------+
-                    P1                        P2
-
-    Input:  Horizontal Line
-            QLine Angle (counter clockwise): 180.0°
-    Result: Length from P1 to Pt, 90° (resulting angle is clockwise)
-
-                                              Pt +
-                                        90°   |
-                                              |
-                    +------BaseLine-----------+
-                    P2                        P1
-
-    Input:  Horizontal Line
-            QLine Angle (counter clockwise): 0.0°
-    Result: Length from P1 to Pt, 60° (resulting angle is clockwise)
-
-                    P1                        P2
-                    +------BaseLine-----------+
-                     \  60°
-                      \
-                       + Pt
-
-    Input:  Vertical Line
-            QLine Angle (counter clockwise): 270.0°
-    Result: Length from P1 to Pt, 30° (resulting angle is clockwise)
-
-                    + P1
-                   /|
-                  / |
-                 /  | Line
-                /   |
-               /    |
-          P2' + 30° |
-                    + P2
+                                                               pt +
+                0°                                                | 270°
+    ptCenter +-----+ Pt   ptCenter               ptCenter         |
+                              +                     +             +
+                               \                   /           ptCenter
+                                \  60°            /  120°
+                                 \               /
+                                  + Pt       Pt +
 */
-SPolarCoors ZS::Draw::getPolarCoors(const QPointF& i_pt, const QLineF& i_baseLine)
+SPolarCoors ZS::Draw::getPolarCoors(const QPointF& i_pt, const QPointF& i_ptCenter)
 //------------------------------------------------------------------------------
 {
-    QLineF lineToPt(i_baseLine.p1(), i_pt);
-    double fAngle_degrees = i_baseLine.angleTo(lineToPt);
-    double fPolarAngle_degrees = Math::toCounterClockWiseAngleDegree(fAngle_degrees);
-    return SPolarCoors(lineToPt.length(), fPolarAngle_degrees);
+    QLineF lineToPt(i_ptCenter, i_pt);
+    double fAngle_degrees = lineToPt.angle();
+    fAngle_degrees = Math::toCounterClockWiseAngleDegree(fAngle_degrees);
+    return SPolarCoors(lineToPt.length(), fAngle_degrees);
 }
 
 //------------------------------------------------------------------------------
-SPolarCoors ZS::Draw::getPolarCoors(const QPointF& i_pt, QRectF i_rctBounding, ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
+/*! @brief Calculates the length and angle (polar coordinates) for a given point
+           in relation to the selection point at the given rectangle.
+
+    @note The returned angle is clockwise counted (see getLineFromPolar).
+
+    @param [in] i_pt
+        Point for which the polar coordinates should be calculated.
+    @param [in] i_rctBounding
+        Bounding rectangle containing the selection point.
+    @param [in] i_selPtType
+        Type of the selection point. Only BoundingRectangle is allowed here.
+    @param [in] i_selPt
+        Selection point at the bounding rectangle.
+
+    @note see getLineFromPolar.
+*/
+SPolarCoors ZS::Draw::getPolarCoors(
+    const QPointF& i_pt, const QRectF& i_rctBounding,
+    ESelectionPointType i_selPtType, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    QPointF ptSelPt = getSelectionPointCoors(i_rctBounding, i_selPt);
-    QPointF ptCenter = getSelectionPointCoors(i_rctBounding, ESelectionPoint::Center);
-    QLineF baseLine(ptSelPt, ptCenter);
-    return getPolarCoors(i_pt, baseLine);
+    QPointF ptCenter = getSelectionPointCoors(i_rctBounding, i_selPt);
+    return getPolarCoors(i_pt, ptCenter);
 }
 
 //------------------------------------------------------------------------------
-SPolarCoors ZS::Draw::getPolarCoors(const QPointF& i_pt, QPolygonF i_polygon, ESelectionPointType i_selPtType, int i_idxPt)
+/*! @brief Calculates the length and angle (polar coordinates) for a given point
+           in relation to the shape point or line center point of the given polygon.
+
+    @note The returned angle is clockwise counted (see getLineFromPolar).
+
+    @param [in] i_pt
+        Point for which the polar coordinates should be calculated.
+    @param [in] i_polygon
+        Polygon containing the shape point or line center point.
+    @param [in] i_selPtType
+        Type of the selection point. Only PolygonPoint or LineCenterPoint is allowed here.
+    @param [in] i_idxPtOrLine
+        Depending on the selection point type either the index of the
+        shape point (starting with index 0) or the index of the line segment
+        (also starting with index 0).
+        A polyline with 5 points has 4 line segments (L0 to L3).
+        A polygon with 5 points has 5 line segments (L0 to L4).
+
+         P0 +----L0----+ P1
+            |          L1
+            |          + P2
+            L4        /
+            |       L2
+            |       /
+         P4 +--L3--+ P3
+
+    @note see getLineFromPolar.
+*/
+SPolarCoors ZS::Draw::getPolarCoors(
+    const QPointF& i_pt, const QPolygonF& i_polygon,
+    ESelectionPointType i_selPtType, int i_idxPtOrLine)
 //------------------------------------------------------------------------------
 {
-    if ((i_selPtType != ESelectionPointType::LineCenterPoint) || (i_selPtType != ESelectionPointType::PolygonPoint)) {
+    if ((i_selPtType != ESelectionPointType::PolygonPoint) && (i_selPtType != ESelectionPointType::LineCenterPoint)) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    QPointF pt1;
-    QPointF pt2;
-     if (i_polygon.size() >= 2) {
-        if (i_selPtType == ESelectionPointType::PolygonPoint) {
-            if (i_idxPt == (i_polygon.size() - 1)) {
-                pt1 = i_polygon[i_idxPt];
-                pt2 = i_polygon[0];
-            }
-            else {
-                pt1 = i_polygon[i_idxPt];
-                pt2 = i_polygon[i_idxPt+1];
-            }
-        }
-        else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-            if (i_idxPt == (i_polygon.size() - 1)) {
-                pt1 = i_polygon[i_idxPt];
-                pt2 = i_polygon[0];
-            }
-            else {
-                pt1 = i_polygon[i_idxPt];
-                pt2 = i_polygon[i_idxPt+1];
-            }
-            pt2 = QLineF(pt1, pt2).center();
-        }
-    }
-    QLineF baseLine(pt1, pt2);
-    return getPolarCoors(i_pt, baseLine);
+    QPointF ptCenter = getSelectionPointCoors(i_polygon, i_selPtType, i_idxPtOrLine);
+    return getPolarCoors(i_pt, ptCenter);
 }
 
 //------------------------------------------------------------------------------

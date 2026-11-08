@@ -1109,10 +1109,9 @@ public: // struct members
          The position of the top left corner to the corresponding selection point.
          Width, height and angle are also linked to the center point of the bounding rectangle. */
     SGraphObjSelectionPoint m_selPt;
-    /*!< When modifying the shape of graphical objects the relative position of labels
-         linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+    /*!< When modifying the shape of graphical objects the relative position of labels linked
+         to the graphical objects should always be the same. This can be achieved by keeping
+         the distance and the angle to the selection point after moving the labels. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag indicating whether the anchored object is visible. */
     bool m_bIsVisible = false;

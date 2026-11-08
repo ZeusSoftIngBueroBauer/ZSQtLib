@@ -2736,19 +2736,19 @@ void CGraphObjConnectionPoint::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    QLineF anchorLine;
     CGraphObj* pGraphObjLinked = m_selPtLinkedObject.m_pGraphObj;
     if (pGraphObjLinked != nullptr) {
+        //QLineF anchorLine;
         m_bUpdatePositionInProgress = true;
         // Get anchor line in scene coordinates.
-        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-            anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-                m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
-        }
-        else {
-            anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
-                m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
-        }
+        //if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        //    anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+        //        m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
+        //}
+        //else {
+        //    anchorLine = pGraphObjLinked->getAnchorLineToSelectionPointFromPolarInSceneCoors(
+        //        m_polarCoorsToLinkedSelPt, m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
+        //}
 
         // The position of a QGraphicsTextItem is defined by its top left corner.
         // Move item so that its center point is at the line end point of the anchor line.

@@ -4634,58 +4634,49 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the polar coordinates in length and angle of the given point
-           to the selection point of the graphical object.
-
-    How the angle of anchor lines to selection points is interpreted depends on
-    the graphical object type and the selection point.
-
-    This method must be reimplemented by derived classes to ensure that labels
-    linked to the selection point are always at the same relative position,
-    no matter how the object will be rotated.
+/*! @brief Returns the polar coordinates (length and angle) of the given point
+           relative to the given selection point at the item's bounding rectangle.
 
     The default implementation calculates the polar coordinates for selection points
-    on the bounding rectangle of the item if the center point and all selection points
-    on the bounding rectangle are allowed.
+    on the bounding rectangle of the item assuming that all selection points at
+    the bounding rectangle are allowed.
 
-    @note This method is used to keep the relative position of labels to the
+    @note Polar coordinates are used to keep the relative position of labels to the
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
-
-    Example:
-
-                       + Pt
-                      / Calculated Angle: 300°
-                     /           TC
-                 TL +------------x------------+ TR
-                    |                         |
-                    |         Center          |
-                 LC x            x            x RC
-                    |                         |
-                    |                         |
-                 BL +------------x------------+ BR
-                                 BC
-
-          For example if the item would be rotated by 90°:
-                                RC
-                      TR +-------x--------+ BR
-                         |                |
-                         |                |
-                         |                |
-                         |    Center      |
-                      TC x       x        x BC
-                         |                |
-                         |                |
-                 Pt + 300°                |
-                     \   |                |
-                      TL +-------x--------+ BL
-                                 LC
 
     @param [in] i_pt
         Point in scene coordinates to which the polar coordinates from the
         given selection point have to be returned.
+    @param [in] i_selPtType
+        Type of the selection point. Only BoundingRectangle is allowed here.
     @param [in] i_selPt
         Selection point on the bounding rectangle.
+
+    Example:
+
+                       * Pt
+                      / Calculated Angle: 300°
+                     /
+                 TL +---------------------+ TR
+                    |                     |
+                    |       Center        |
+                    |          x          |
+                    |                     |
+                    |                     |
+                 BL +---------------------+ BR
+
+          If the item would be rotated by 270°:
+
+                    TR +----------------+ BR
+                       |                |
+                       |                |
+                       |    Center      |
+                       |       x        |
+                       |                |
+               Pt * 300°                |
+                   \   |                |
+                    TL +----------------+ BL
 */
 SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
     const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
@@ -4694,83 +4685,51 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    //CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
-    //CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
-    //CPhysValPoint physValPointP2 = physValRctBounding.center();
-    //CPhysValPoint physValPointP2(*m_pDrawingScene);
-    //if (i_selPt == ESelectionPoint::TopLeft) {
-    //    physValPointP2 = physValRctBounding.topRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::TopRight) {
-    //    physValPointP2 = physValRctBounding.topLeft();
-    //}
-    //else if (i_selPt == ESelectionPoint::BottomRight) {
-    //    physValPointP2 = physValRctBounding.bottomLeft();
-    //}
-    //else if (i_selPt == ESelectionPoint::BottomLeft) {
-    //    physValPointP2 = physValRctBounding.bottomRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::TopCenter) {
-    //    physValPointP2 = physValRctBounding.topRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::RightCenter) {
-    //    physValPointP2 = physValRctBounding.bottomRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::BottomCenter) {
-    //    physValPointP2 = physValRctBounding.bottomLeft();
-    //}
-    //else if (i_selPt == ESelectionPoint::LeftCenter) {
-    //    physValPointP2 = physValRctBounding.topLeft();
-    //}
-    //else /*if (i_selPt == ESelectionPoint::Center)*/ {
-    //    physValPointP2 = physValRctBounding.rightCenter();
-    //}
-    if (parentGroup() != nullptr) {
-        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
-        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
-    }
-    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
-    return ZS::Draw::getPolarCoors(lineSceneCoors, i_pt);
+    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_selPt);
+    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
 }
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the polar coordinates in length and angle of the given point
-           to the selection point of the graphical object.
+           relative to the given shape point or line center point of a poylgon
+           or polyline.
 
     How the angle of anchor lines to selection points is interpreted depends on
     the graphical object type and the selection point.
 
-    Example: Horizontal Line
+    @param [in] i_pt
+        Point in scene coordinates to which the polar coordinates from the
+        given selection point have to be returned.
+    @param [in] i_selPtType
+        Type of the selection point. Only PolygonPoint or LineCenterPoint is allowed here.
+    @param [in] i_idxPtOrLine
+        Depending on the selection point type either the index of the
+        shape point (starting with index 0) or the index of the line segment
+        (also starting with index 0).
+        A polyline with 5 points has 4 line segments (L0 to L3).
+        A polygon with 5 points has 5 line segments (L0 to L4).
 
-           + Pt
-          /
-         / Calculated Angle: 60°
-        +------------x------------+
-        P1         Center         P2
+         P0 +----L0----+ P1
+            |          L1
+            |          + P2
+            L4        /
+            |       L2
+            |       /
+         P4 +--L3--+ P3
 
     @note This method is used to keep the relative position of labels to the
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
-
-          For example if the line would be rotated by 180°:
-
-            P2         Center         P1
-            +------------x------------+
-                          Angle: 60° /
-                                    /
-                                Pt +
 */
 SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
+    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPtOrLine) const
 //------------------------------------------------------------------------------
 {
     if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-#pragma message(__TODO__"pure virtual")
-    SPolarCoors polarCoors;
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    return polarCoors;
+    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_idxPtOrLine);
+    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
 }
 
 //------------------------------------------------------------------------------
@@ -4806,53 +4765,53 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
        AnchorLine   +-----+
                    P1     P2
 */
-QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
-    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
-    CPhysValPoint physValPointP2(*m_pDrawingScene);
-    if (i_selPt == ESelectionPoint::TopLeft) {
-        physValPointP2 = physValRctBounding.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::TopRight) {
-        physValPointP2 = physValRctBounding.topLeft();
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        physValPointP2 = physValRctBounding.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::BottomLeft) {
-        physValPointP2 = physValRctBounding.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::TopCenter) {
-        physValPointP2 = physValRctBounding.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::RightCenter) {
-        physValPointP2 = physValRctBounding.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::BottomCenter) {
-        physValPointP2 = physValRctBounding.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::LeftCenter) {
-        physValPointP2 = physValRctBounding.topLeft();
-    }
-    else /*if (i_selPt == ESelectionPoint::Center)*/ {
-        physValPointP2 = physValRctBounding.rightCenter();
-    }
-    if (parentGroup() != nullptr) {
-        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
-        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
-    }
-    physValPointP1 = m_pDrawingScene->convert(physValPointP1, Units.Length.px);
-    physValPointP2 = m_pDrawingScene->convert(physValPointP2, Units.Length.px);
-    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
-    return ZS::Draw::getLineFromPolar(
-        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSceneCoors);
-}
+//QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+//    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
+//    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
+//    CPhysValPoint physValPointP2(*m_pDrawingScene);
+//    if (i_selPt == ESelectionPoint::TopLeft) {
+//        physValPointP2 = physValRctBounding.topRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::TopRight) {
+//        physValPointP2 = physValRctBounding.topLeft();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomRight) {
+//        physValPointP2 = physValRctBounding.bottomLeft();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomLeft) {
+//        physValPointP2 = physValRctBounding.bottomRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::TopCenter) {
+//        physValPointP2 = physValRctBounding.topRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::RightCenter) {
+//        physValPointP2 = physValRctBounding.bottomRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomCenter) {
+//        physValPointP2 = physValRctBounding.bottomLeft();
+//    }
+//    else if (i_selPt == ESelectionPoint::LeftCenter) {
+//        physValPointP2 = physValRctBounding.topLeft();
+//    }
+//    else /*if (i_selPt == ESelectionPoint::Center)*/ {
+//        physValPointP2 = physValRctBounding.rightCenter();
+//    }
+//    if (parentGroup() != nullptr) {
+//        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
+//        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
+//    }
+//    physValPointP1 = m_pDrawingScene->convert(physValPointP1, Units.Length.px);
+//    physValPointP2 = m_pDrawingScene->convert(physValPointP2, Units.Length.px);
+//    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
+//    return ZS::Draw::getLineFromPolar(
+//        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSceneCoors);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -4860,18 +4819,18 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
 
     See above for more details.
 */
-QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-#pragma message(__TODO__"pure virtual")
-    QLineF anchorLine;
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    return anchorLine;
-}
+//QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+//    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//#pragma message(__TODO__"pure virtual")
+//    QLineF anchorLine;
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    return anchorLine;
+//}
 
 /*==============================================================================
 protected: // overridables

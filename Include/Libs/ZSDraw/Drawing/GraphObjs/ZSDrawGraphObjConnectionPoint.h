@@ -220,8 +220,8 @@ protected: // instance members
     SGraphObjSelectionPoint m_selPtLinkedObject;
     /*!< When modifying the shape of graphical objects the relative position of labels
          linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+         This can only be achieved when keeping the distance and the angle to the selection point
+         after moving the labels. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
