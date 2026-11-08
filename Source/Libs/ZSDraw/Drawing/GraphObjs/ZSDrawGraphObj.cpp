@@ -4694,36 +4694,37 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
     if (i_selPtType != ESelectionPointType::BoundingRectangle) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
     }
-    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
-    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
-    CPhysValPoint physValPointP2(*m_pDrawingScene);
-    if (i_selPt == ESelectionPoint::TopLeft) {
-        physValPointP2 = physValRctBounding.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::TopRight) {
-        physValPointP2 = physValRctBounding.topLeft();
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        physValPointP2 = physValRctBounding.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::BottomLeft) {
-        physValPointP2 = physValRctBounding.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::TopCenter) {
-        physValPointP2 = physValRctBounding.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::RightCenter) {
-        physValPointP2 = physValRctBounding.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::BottomCenter) {
-        physValPointP2 = physValRctBounding.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::LeftCenter) {
-        physValPointP2 = physValRctBounding.topLeft();
-    }
-    else /*if (i_selPt == ESelectionPoint::Center)*/ {
-        physValPointP2 = physValRctBounding.rightCenter();
-    }
+    //CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
+    //CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
+    //CPhysValPoint physValPointP2 = physValRctBounding.center();
+    //CPhysValPoint physValPointP2(*m_pDrawingScene);
+    //if (i_selPt == ESelectionPoint::TopLeft) {
+    //    physValPointP2 = physValRctBounding.topRight();
+    //}
+    //else if (i_selPt == ESelectionPoint::TopRight) {
+    //    physValPointP2 = physValRctBounding.topLeft();
+    //}
+    //else if (i_selPt == ESelectionPoint::BottomRight) {
+    //    physValPointP2 = physValRctBounding.bottomLeft();
+    //}
+    //else if (i_selPt == ESelectionPoint::BottomLeft) {
+    //    physValPointP2 = physValRctBounding.bottomRight();
+    //}
+    //else if (i_selPt == ESelectionPoint::TopCenter) {
+    //    physValPointP2 = physValRctBounding.topRight();
+    //}
+    //else if (i_selPt == ESelectionPoint::RightCenter) {
+    //    physValPointP2 = physValRctBounding.bottomRight();
+    //}
+    //else if (i_selPt == ESelectionPoint::BottomCenter) {
+    //    physValPointP2 = physValRctBounding.bottomLeft();
+    //}
+    //else if (i_selPt == ESelectionPoint::LeftCenter) {
+    //    physValPointP2 = physValRctBounding.topLeft();
+    //}
+    //else /*if (i_selPt == ESelectionPoint::Center)*/ {
+    //    physValPointP2 = physValRctBounding.rightCenter();
+    //}
     if (parentGroup() != nullptr) {
         physValPointP1 = parentGroup()->mapToScene(physValPointP1);
         physValPointP2 = parentGroup()->mapToScene(physValPointP2);

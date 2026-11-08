@@ -138,8 +138,10 @@ ZSDRAWDLL_API double getEllipseCenterFocusDist(const QRectF& i_rct);
 ZSDRAWDLL_API QPointF getSelectionPointCoors(const QLineF& i_lin, ESelectionPoint i_selPt);
 ZSDRAWDLL_API QPointF getSelectionPointCoors(const QRectF& i_rct, ESelectionPoint i_selPt);
 ZSDRAWDLL_API QPointF getSelectionPointCoors(const QLineF& i_lin, const QRectF& i_rct, ESelectionPoint* o_pSelPt = nullptr);
-ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line);
-ZSDRAWDLL_API SPolarCoors getPolarCoors(const QLineF& i_line, const QPointF& i_pt);
+ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_baseLine);
+ZSDRAWDLL_API SPolarCoors getPolarCoors(const QPointF& i_pt, const QLineF& i_baseLine);
+ZSDRAWDLL_API SPolarCoors getPolarCoors(const QPointF& i_pt, QRectF i_rctBounding, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
+ZSDRAWDLL_API SPolarCoors getPolarCoors(const QPointF& i_pt, QPolygonF i_polygon, ESelectionPointType i_selPtType, int i_idxPt);
 ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px = 0.0, QPointF* o_pPtIntersection = nullptr);
 
 //ZSDRAWDLL_API QString qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );

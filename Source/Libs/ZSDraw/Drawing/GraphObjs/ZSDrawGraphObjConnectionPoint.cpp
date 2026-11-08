@@ -2718,12 +2718,7 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the position of the anchored item
-           and the coordinates (start and end point) of the anchor line.
-
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the item must be moved so that the relative position
-    (distance and angle) of the item to the linked selection point remains the same.
+/*! @brief 
 */
 void CGraphObjConnectionPoint::updatePosition()
 //------------------------------------------------------------------------------
@@ -2770,23 +2765,7 @@ void CGraphObjConnectionPoint::updatePosition()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the relative position in polar
-           coordinates (length in pixels, angle in degress) from the labels center
-           point and the selection point the label is linked to.
-
-    On moving the label the distance and the angle (polar coordinates) to the
-    selection point have to be updated and saved.
-
-    When positioniong labels the distance to selection point the label
-    is linked to should remain the same.
-    This is managed by defining the length and the angle to the line
-    the selection point is positioned.
-
-    Defining the length to the selection point with a relative size
-    as a scale factor will not lead to the desired result. If the
-    object of the selection point is resized the distance between the
-    label and the object may increase to an undesired value (far away
-    from the object or to close).
+/*! @brief 
 */
 void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -2826,11 +2805,7 @@ void CGraphObjConnectionPoint::updatePolarCoorsToLinkedSelPt()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the coordinates (start and end point)
-           of the anchor lines.
-
-    The anchor lines will be drawn to one of the selection points at the bounding rectangle
-    or to one of the polygon shape points of the linked graphical object.
+/*! @brief 
 */
 void CGraphObjConnectionPoint::updateAnchorLine()
 //------------------------------------------------------------------------------

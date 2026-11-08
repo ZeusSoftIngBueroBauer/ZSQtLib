@@ -1170,6 +1170,10 @@ protected: // auxiliary instance methods
 /*! @brief Internal auxiliary method to update the position of the label and the
            coordinates (start and end point) of the anchor lines.
 
+    If the geometry of the parent item changes (position moved or size changed or
+    any other geometry change) the item must be moved so that the relative position
+    (distance and angle) of the item to the linked selection point remains the same.
+
     The method is called for several reasons.
 
     - On changing the selection point the label is linked to.
@@ -1250,6 +1254,14 @@ void CGraphObjLabel::updatePosition()
 
     When changing the geometry or position of the linked objects, the distance vector,
     given in polar coordinates, to the linked selection point should remain the same.
+    This is managed by defining the length and the angle to the line
+    the selection point is positioned.
+
+    Defining the length to the selection point with a relative size
+    as a scale factor will not lead to the desired result. If the
+    object of the selection point is resized the distance between the
+    label and the object may increase to an undesired value (far away
+    from the object or to close).
 
     The position of the label, where the distance and angle both are zero,
     depends on the type of label and the linked selection point. This zero point
@@ -1264,8 +1276,70 @@ void CGraphObjLabel::updatePosition()
           into account when calculating the polar coordinates depending on the
           position of the label.
 
-    For a detailled information about the polar coordinates origin point
-    see implementation of the method in derived classes.
+    Examples:
+
+    - Distances:
+
+        For distance labels (length, width, height) the linked selection point is always
+        the center point of the line between the two shape points the label is linked to.
+
+        Example for a horizontal line:
+
+                        Label
+                           \
+                            \ Angle
+         P1 +----------------x----------------+ P2
+                          Center
+
+    - Angles:
+
+        For labels indicating the rotation angle, the polar coordinates are given
+        relative from the center of the label's bounding rectangle to the right
+        center selection point of the linked object's bounding rectangle.
+        The label is moved outside the bounding rectangle by half of the labels width.
+
+        Example:
+            Rectangle (rotation angle = 0 °)
+            Label positioned with PolarCoors (0.0 / 0°)
+            The start point of the line (P1) to calculate the polar coordinates
+            is the left center point of the bounding rectangle.
+
+            TL +----------x----------+ TR
+               |                     |
+               |          P2        P1
+               |          x--Line----0°
+               |                     |
+               |                     |
+            BL +----------x----------+ BR
+
+        Example:
+            Rectangle (rotation angle = 0 °)
+            Label positioned with PolarCoors (~10.0 / ~45°)
+            The start point of the line (P1) to calculate the polar coordinates
+            is the left center point of the bounding rectangle.
+
+            TL +----------x----------+ TR
+               |                     |
+               |          P2        P1
+               |          x--Line----|
+               |                     |\
+               |                     | 0°
+            BL +----------x----------+ BR
+
+        Example:
+            Rectangle (rotation angle = 90 °)
+            Label positioned with PolarCoors (0.0 / 0°)
+
+            TL +--------x--------+ TR
+               |                 |
+               |                 |
+               |        P2      P1
+               |        x--Line--|
+               |        |       ||
+               |        |      / |
+               |        |    /   |
+            BL +--------x<-------+ BR
+                       90°
 */
 void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------

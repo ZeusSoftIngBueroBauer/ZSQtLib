@@ -407,23 +407,7 @@ void CGraphObjLabelGeometryHeight::updatePosition()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the relative position in polar
-           coordinates (length in pixels, angle in degress) from the labels center
-           point and the selection point the label is linked to.
-
-    On moving the label the distance and the angle (polar coordinates) to the
-    selection point have to be updated and saved.
-
-    For Height labels the linked selection point is always the center point
-    of the two shape points the label is linked to.
-
-    Example for a horizontal line:
-
-                        Label
-                           \
-                            \ Angle
-         P1 +----------------x----------------+ P2
-                          Center
+/*! @brief 
 */
 void CGraphObjLabelGeometryHeight::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
