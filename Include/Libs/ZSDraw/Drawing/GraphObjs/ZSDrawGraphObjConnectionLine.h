@@ -106,7 +106,7 @@ public: // overridables of base class CGraphObj
     CPhysValPoint getPositionOfSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
     QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, int i_idxPt) const override;
 public: // must overridables of base class CGraphObj
-    SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const override;
+    //SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const override;
     //QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override;

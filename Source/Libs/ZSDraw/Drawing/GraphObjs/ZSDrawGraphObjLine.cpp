@@ -1034,7 +1034,7 @@ void CGraphObjLine::setRotationAngle(const CPhysVal& i_physValAngle)
 
     The return value will be in the range of values from 0.0 up to but not
     including 360.0.
-    
+
     @param [in] i_unit
         Unit in which the angle should be returned.
 
@@ -1229,21 +1229,21 @@ CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(
     return physValPoint;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Returns coordinates of selection point in scene coordinates.
-*/
-QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
-    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    QPointF ptScenePos;
-    QPointF ptPos = line().center();
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        ptScenePos = pGraphicsItem->mapToScene(ptPos);
-    }
-    return ptScenePos;
-}
+////------------------------------------------------------------------------------
+///*! @brief Returns coordinates of selection point in scene coordinates.
+//*/
+//QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
+//    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    QPointF ptScenePos;
+//    QPointF ptPos = line().center();
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr) {
+//        ptScenePos = pGraphicsItem->mapToScene(ptPos);
+//    }
+//    return ptScenePos;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in scene coordinates.
@@ -1281,6 +1281,48 @@ QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
+////------------------------------------------------------------------------------
+///*! @brief Returns the polar coordinates in length and angle of the given point
+//           to the selection point of the graphical object.
+//
+//    How the angle of anchor lines to selection points is interpreted depends on
+//    the graphical object type and the selection point.
+//
+//    For the graphical object Line only the Center point is allowed for this method.
+//
+//    Example: Horizontal Line
+//
+//                        + Pt
+//                       /
+//                      / Calculated Angle: 60°
+//        +------------x------------+
+//        P1         Center         P2
+//
+//    @note This method is used to keep the relative position of labels to the
+//          graphical object they are linked to if the linked object is resized,
+//          rotated or moved.
+//
+//          For example if the line would be rotated by 180°:
+//
+//            P2         Center         P1
+//            +------------x------------+
+//             Angle: 60° /
+//                       /
+//                   Pt +
+//*/
+//SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QLineF thisLine = line();
+//    thisLine.setP1(thisLine.center());
+//    QLineF thisLineSceneCoors(
+//        pGraphicsItemThis->mapToScene(thisLine.p1()),
+//        pGraphicsItemThis->mapToScene(thisLine.p2()));
+//    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
+//}
+
 //------------------------------------------------------------------------------
 /*! @brief Returns the polar coordinates in length and angle of the given point
            to the selection point of the graphical object.
@@ -1288,107 +1330,62 @@ public: // must overridables of base class CGraphObj
     How the angle of anchor lines to selection points is interpreted depends on
     the graphical object type and the selection point.
 
-    For the graphical object Line only the Center point is allowed for this method.
-
-    Example: Horizontal Line
-
-                        + Pt
-                       /
-                      / Calculated Angle: 60°
-        +------------x------------+
-        P1         Center         P2
+    For the graphical object Line only the shape points P1 and P2 and the
+    line center point of line segment 0 are allowed.
 
     @note This method is used to keep the relative position of labels to the
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
 
-          For example if the line would be rotated by 180°:
+    Example: Horizontal Line, Selection Point: P1
 
-            P2         Center         P1
-            +------------x------------+
-             Angle: 60° /
-                       /
-                   Pt +
+                                   * Pt
+                                  /
+                                 / Calculated Angle: 300° (clockwise counted, 0° at 3 o'clock)
+                                +------------x------------+
+                                P1         Center         P2
+
+    Example: Horizontal Line, Selection Point: P1, Line rotated by 180°
+
+      P2         Center         P1
+      +------------x------------+
+                               / Angle: 120°
+                              /
+                          Pt *
 */
-SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF thisLine = line();
-    thisLine.setP1(thisLine.center());
-    QLineF thisLineSceneCoors(
-        pGraphicsItemThis->mapToScene(thisLine.p1()),
-        pGraphicsItemThis->mapToScene(thisLine.p2()));
-    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the polar coordinates in length and angle of the given point
-           to the selection point of the graphical object.
-
-    How the angle of anchor lines to selection points is interpreted depends on
-    the graphical object type and the selection point.
-
-    For the graphical object Line only the shape points P1 and P2 are allowed for this method.
-
-    Example: Horizontal Line
-
-           + Pt
-          /
-         / Calculated Angle: 60°
-        +------------x------------+
-        P1         Center         P2
-
-    @note This method is used to keep the relative position of labels to the
-          graphical object they are linked to if the linked object is resized,
-          rotated or moved.
-
-          For example if the line would be rotated by 180°:
-
-            P2         Center         P1
-            +------------x------------+
-                          Angle: 60° /
-                                    /
-                                Pt +
-*/
-SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF thisLine = line();
-    QLineF thisLineSceneCoors;
-    if (i_selPtType == ESelectionPointType::PolygonPoint) {
-        if (i_idxPt < 0 || i_idxPt > 1) {
-            throw CException(
-                __FILE__, __LINE__, EResultArgOutOfRange,
-                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
-        }
-        if (i_idxPt == 0) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p2()));
-        }
-        else if (i_idxPt == 1) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p2()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p1()));
-        }
-    }
-    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-        if (i_idxPt != 0) {
-            throw CException(
-                __FILE__, __LINE__, EResultArgOutOfRange,
-                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
-        }
-        thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
-                                    pGraphicsItemThis->mapToScene(thisLine.p2()));
-        thisLineSceneCoors.setP1(thisLineSceneCoors.center());
-    }
-    else {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
-    }
-    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
-}
+//SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
+////------------------------------------------------------------------------------
+//{
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QLineF thisLine = line();
+//    QPointF ptSelPtInSceneCoors;
+//    if (i_selPtType == ESelectionPointType::PolygonPoint) {
+//        if (i_idxPt < 0 || i_idxPt > 1) {
+//            throw CException(
+//                __FILE__, __LINE__, EResultArgOutOfRange,
+//                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
+//        }
+//        if (i_idxPt == 0) {
+//            ptSelPtInSceneCoors = pGraphicsItemThis->mapToScene(thisLine.p1());
+//        }
+//        else if (i_idxPt == 1) {
+//            ptSelPtInSceneCoors = pGraphicsItemThis->mapToScene(thisLine.p2());
+//        }
+//    }
+//    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
+//        if (i_idxPt != 0) {
+//            throw CException(
+//                __FILE__, __LINE__, EResultArgOutOfRange,
+//                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
+//        }
+//        ptSelPtInSceneCoors = pGraphicsItemThis->mapToScene(thisLine.center());
+//    }
+//    else {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+//    }
+//    return ZS::Draw::getPolarCoors(i_pt, ptSelPtInSceneCoors);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -1572,7 +1569,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1583,7 +1580,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1594,7 +1591,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            if (labelDscr.m_selPt.m_idxPt != 1) {
+            if (labelDscr.m_selPt.m_idxPtOrLine != 1) {
                 bHasDefaultValues = false;
             }
         }
@@ -1639,7 +1636,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1647,7 +1644,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 1) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 1) {
                 bHasDefaultValues = false;
             }
         }
@@ -1655,7 +1652,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1663,7 +1660,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1671,23 +1668,23 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameDX) {
-            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameDY) {
-            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -2488,10 +2485,10 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
-        if (selPt.m_idxPt == 0) {
+        if (selPt.m_idxPtOrLine == 0) {
             setP1(physValPointParentSelPt);
         }
-        else if (selPt.m_idxPt == 1) {
+        else if (selPt.m_idxPtOrLine == 1) {
             setP2(physValPointParentSelPt);
         }
         connectGeometryOnSceneChangedSlotWithSelectionPoints();

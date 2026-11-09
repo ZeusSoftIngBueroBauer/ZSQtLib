@@ -314,148 +314,185 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief 
-*/
-void CGraphObjLabelGeometryLength::updatePosition()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
-        /* strAddInfo   */ "" );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
-    }
-    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
-
-    QPointF ptSelPt1ScenePos;
-    QPointF ptSelPt2ScenePos;
-
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt+1);
-    }
-
-    QLineF lineSelPtsSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValLength(lineSelPtsSceneCoors.length(), drawingSize.unit(), drawingSize.imageCoorsResolution());
-    physValLength.convertValue(drawingSize.unit());
-    QString strText = physValLength.toString(EUnitFind::None, PhysValSubStr::Val);
-    if (QGraphicsSimpleTextItem::text() != strText) {
-        QGraphicsSimpleTextItem::setText(strText);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-
-    // First set the text at the graphics item so that the
-    // bounding rectangle includes the new text.
-    m_bUpdatePositionInProgress = true;
-
-    // Get anchor line in scene coordinates.
-    // The start point of the anchor line should be the center point of the line
-    // for which the angle has to be indicated.
-    QLineF lineFPolarBase(lineSelPtsSceneCoors.center(), lineSelPtsSceneCoors.p2());
-    QLineF anchorLine = ZS::Draw::getLineFromPolar(
-        m_polarCoorsToLinkedSelPt.m_fLength_px,
-        m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
-        lineFPolarBase);
-
-    // The position of a QGraphicsTextItem is defined by its top left corner.
-    // Move text item so that its center point is at the line end point of the anchor line.
-    QRectF rctBoundingThis = getBoundingRect();
-    QPointF posTextItem = anchorLine.p2() - rctBoundingThis.center();
-
-    // Please note that on calling setPos the itemChange method of the
-    // label is called invoking updateAnchorLines.
-    if (pos() != posTextItem) {
-        QGraphicsItem_setPos(posTextItem);
-    }
-    else {
-        updateAnchorLines();
-    }
-
-    m_bUpdatePositionInProgress = false;
-
-    refCountGuardTrace.decrementAndReleaseCounter();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
-    }
-}
-
-//------------------------------------------------------------------------------
 /*! @brief
 */
-void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
+void CGraphObjLabelGeometryLength::updateText()
 //------------------------------------------------------------------------------
 {
-    // If the position is updated because the parent's geometry is changed,
-    // the relative distance in polar coordinates (length and angle) to the
-    // linked selection point must not be changed.
-    if (m_bPositionUpdateOnParentGeometryChanged) {
-        return;
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
-        /* strAddInfo   */ "" );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+        /* strMethod    */ "updateText",
+        /* strAddInfo   */ "");
+
+    QString strText;
+    if (m_selPtLinkedObject.m_pGraphObj == nullptr) {
+        strText = "?";
     }
-    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
-
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QRectF rctBoundingThis = getBoundingRect();
-    QPointF ptCenterScenePosThis = pGraphicsItemThis->mapToScene(rctBoundingThis.center());
-
-    QPointF ptSelPt1ScenePos;
-    QPointF ptSelPt2ScenePos;
-
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt+1);
+    else {
+        QPointF ptSelPt1ScenePos;
+        QPointF ptSelPt2ScenePos;
+        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
+            ptSelPt1ScenePos =
+                m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+                    ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine);
+            ptSelPt2ScenePos =
+                m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+                    ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine + 1);
+        }
+        QLineF lineSelPtsSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
+        const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+        CPhysVal physValLength(lineSelPtsSceneCoors.length(), drawingSize.unit(), drawingSize.imageCoorsResolution());
+        physValLength.convertValue(drawingSize.unit());
+        strText = physValLength.toString(EUnitFind::None, PhysValSubStr::Val);
     }
-
-    QLineF lineSelPtsSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
-    QPointF ptSelPtSceneCoors = lineSelPtsSceneCoors.center();
-
-    // The start point of the anchor line should be the center point of the line
-    // for which the length has to be indicated.
-    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
-
-    m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
-    m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
-    m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-        Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "AnchoredTo {" + m_selPtLinkedObject.toString() + "}" +
-            ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}";
-        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
-    }
-
-    // Update coordinates of the anchor line.
-    updateAnchorLines();
-
-    refCountGuardTrace.decrementAndReleaseCounter();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
-    }
+    setText(strText);
 }
+
+////------------------------------------------------------------------------------
+///*! @brief 
+//*/
+//void CGraphObjLabelGeometryLength::updatePosition()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "updatePosition",
+//        /* strAddInfo   */ "" );
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+//    }
+//    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
+//
+//    QPointF ptSelPt1ScenePos;
+//    QPointF ptSelPt2ScenePos;
+//
+//    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
+//        ptSelPt1ScenePos =
+//            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+//                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine);
+//        ptSelPt2ScenePos =
+//            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+//                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine+1);
+//    }
+//
+//    QLineF lineSelPtsSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
+//
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//    CPhysVal physValLength(lineSelPtsSceneCoors.length(), drawingSize.unit(), drawingSize.imageCoorsResolution());
+//    physValLength.convertValue(drawingSize.unit());
+//    QString strText = physValLength.toString(EUnitFind::None, PhysValSubStr::Val);
+//    if (QGraphicsSimpleTextItem::text() != strText) {
+//        QGraphicsSimpleTextItem::setText(strText);
+//        if (m_pTree != nullptr) {
+//            m_pTree->onTreeEntryChanged(this);
+//        }
+//    }
+//
+//    // First set the text at the graphics item so that the
+//    // bounding rectangle includes the new text.
+//    m_bUpdatePositionInProgress = true;
+//
+//    // Get anchor line in scene coordinates.
+//    // The start point of the anchor line should be the center point of the line
+//    // for which the angle has to be indicated.
+//    QLineF lineFPolarBase(lineSelPtsSceneCoors.center(), lineSelPtsSceneCoors.p2());
+//    QLineF anchorLine = ZS::Draw::getLineFromPolar(
+//        m_polarCoorsToLinkedSelPt.m_fLength_px,
+//        m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
+//        lineFPolarBase);
+//
+//    // The position of a QGraphicsTextItem is defined by its top left corner.
+//    // Move text item so that its center point is at the line end point of the anchor line.
+//    QRectF rctBoundingThis = getBoundingRect();
+//    QPointF posTextItem = anchorLine.p2() - rctBoundingThis.center();
+//
+//    // Please note that on calling setPos the itemChange method of the
+//    // label is called invoking updateAnchorLines.
+//    if (pos() != posTextItem) {
+//        QGraphicsItem_setPos(posTextItem);
+//    }
+//    else {
+//        updateAnchorLines();
+//    }
+//
+//    m_bUpdatePositionInProgress = false;
+//
+//    refCountGuardTrace.decrementAndReleaseCounter();
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief
+//*/
+//void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
+////------------------------------------------------------------------------------
+//{
+//    // If the position is updated because the parent's geometry is changed,
+//    // the relative distance in polar coordinates (length and angle) to the
+//    // linked selection point must not be changed.
+//    if (m_bPositionUpdateOnParentGeometryChanged) {
+//        return;
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
+//        /* strAddInfo   */ "" );
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+//    }
+//    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
+//
+//    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+//    QRectF rctBoundingThis = getBoundingRect();
+//    QPointF ptCenterScenePosThis = pGraphicsItemThis->mapToScene(rctBoundingThis.center());
+//
+//    QPointF ptSelPt1ScenePos;
+//    QPointF ptSelPt2ScenePos;
+//
+//    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
+//        ptSelPt1ScenePos =
+//            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+//                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine);
+//        ptSelPt2ScenePos =
+//            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+//                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine+1);
+//    }
+//
+//    QLineF lineSelPtsSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
+//    QPointF ptSelPtSceneCoors = lineSelPtsSceneCoors.center();
+//
+//    // The start point of the anchor line should be the center point of the line
+//    // for which the length has to be indicated.
+//    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
+//
+//    m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
+//    m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtsSceneCoors.angleTo(lineFromSelPtSceneCoors);
+//    m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
+//        Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
+//
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        QString strRuntimeInfo = "AnchoredTo {" + m_selPtLinkedObject.toString() + "}" +
+//            ", PolarCoors {" + m_polarCoorsToLinkedSelPt.toString() + "}";
+//        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+//    }
+//
+//    // Update coordinates of the anchor line.
+//    updateAnchorLines();
+//
+//    refCountGuardTrace.decrementAndReleaseCounter();
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+//    }
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to update the coordinates (start and end point)

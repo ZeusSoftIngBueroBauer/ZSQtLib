@@ -262,7 +262,7 @@ protected: // instance members
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
          to the linked selection point is changed if the position is updated because the parent's
          geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged = false;
+    //bool m_bPositionUpdateOnParentGeometryChanged = false;
     /*!< Counter to block debug trace outputs for connection lines. */
     int m_iTraceConnectionLinesBlockedCounter = 0;
 

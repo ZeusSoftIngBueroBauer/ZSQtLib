@@ -1027,7 +1027,7 @@ void CGraphObjSelectionPoint::updatePosition()
     }
     else {
         ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_selPt.m_selPtType, m_selPt.m_idxPt);
+            m_selPt.m_selPtType, m_selPt.m_idxPtOrLine);
     }
     setPos(ptSelScenePosParent);
 

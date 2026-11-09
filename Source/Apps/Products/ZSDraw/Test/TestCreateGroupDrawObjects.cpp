@@ -2505,14 +2505,14 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
 
     selPt.m_selPtType = ESelectionPointType::PolygonPoint;
     selPt.m_selPt = ESelectionPoint::PolygonPoint;
-    selPt.m_idxPt = 2;
+    selPt.m_idxPtOrLine = 2;
     physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
-    physValPoint = physValPolygonTriangleNew.at(selPt.m_idxPt);
+    physValPoint = physValPolygonTriangleNew.at(selPt.m_idxPtOrLine);
     physValPoint.setX(375.0);
-    physValPolygonTriangleNew.replace(selPt.m_idxPt, physValPoint);
+    physValPolygonTriangleNew.replace(selPt.m_idxPtOrLine, physValPoint);
     strObjName = c_strGraphObjNameTriangle;
     strMethod = "replace";
-    strMthArgs = QString::number(selPt.m_idxPt) + ", {" + physValPoint.toString() + "}";
+    strMthArgs = QString::number(selPt.m_idxPtOrLine) + ", {" + physValPoint.toString() + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -2572,9 +2572,9 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
 
     selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
     selPt.m_selPt = ESelectionPoint::LineCenterPoint;
-    selPt.m_idxPt = m_pPhysValPolygonTriangle->count() - 1;
+    selPt.m_idxPtOrLine = m_pPhysValPolygonTriangle->count() - 1;
     physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
-    physValPoint = physValPolygonTriangleNew.at(selPt.m_idxPt);
+    physValPoint = physValPolygonTriangleNew.at(selPt.m_idxPtOrLine);
     physValPoint.setX(300.0);
     physValPoint.setY(bYAxisTopDown ? 200.0 : fYAxisMaxVal - 200.0);
     physValPolygonTriangleNew.append(physValPoint);
@@ -2719,15 +2719,15 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
 
     selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
     selPt.m_selPt = ESelectionPoint::LineCenterPoint;
-    selPt.m_idxPt = 0;
+    selPt.m_idxPtOrLine = 0;
     physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
-    physValPoint = m_pPhysValPolygonTriangle->at(selPt.m_idxPt);
+    physValPoint = m_pPhysValPolygonTriangle->at(selPt.m_idxPtOrLine);
     physValPoint.setX(200.0);
     physValPoint.setY(bYAxisTopDown ? 270.0 : fYAxisMaxVal - 270.0);
-    physValPolygonTriangleNew.insert(selPt.m_idxPt+1, physValPoint);
+    physValPolygonTriangleNew.insert(selPt.m_idxPtOrLine+1, physValPoint);
     strObjName = c_strGraphObjNameTriangle;
     strMethod = "insert";
-    strMthArgs = QString::number(selPt.m_idxPt+1) + ", {" + physValPoint.toString() + "}";
+    strMthArgs = QString::number(selPt.m_idxPtOrLine+1) + ", {" + physValPoint.toString() + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -2809,9 +2809,9 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
 
     selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
     selPt.m_selPt = ESelectionPoint::LineCenterPoint;
-    selPt.m_idxPt = m_pPhysValPolygonTriangle->count() - 1;
+    selPt.m_idxPtOrLine = m_pPhysValPolygonTriangle->count() - 1;
     physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
-    physValPoint = physValPolygonTriangleNew.at(selPt.m_idxPt);
+    physValPoint = physValPolygonTriangleNew.at(selPt.m_idxPtOrLine);
     physValPoint.setX(350.0);
     physValPoint.setY(bYAxisTopDown ? 220.0 : fYAxisMaxVal - 220.0);
     strObjName = c_strGraphObjNameTriangle;
@@ -2902,7 +2902,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     iResultValuesPrecision = bUnitPixel ? 1 : drawingSize.metricImageCoorsDecimals();
     selPt.m_selPtType = ESelectionPointType::PolygonPoint;
     selPt.m_selPt = ESelectionPoint::PolygonPoint;
-    selPt.m_idxPt = m_pPhysValPolygonTriangle->count() - 1;
+    selPt.m_idxPtOrLine = m_pPhysValPolygonTriangle->count() - 1;
     physValPolygonTriangleNew = *m_pPhysValPolygonTriangle;
     physValPolygonTriangleNew.removeLast();
     strObjName = c_strGraphObjNameTriangle;

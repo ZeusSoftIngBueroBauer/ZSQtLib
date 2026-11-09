@@ -179,39 +179,33 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryPosition::updatePosition()
+void CGraphObjLabelGeometryPosition::updateText()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "updateText",
+        /* strAddInfo   */ "");
 
-    CPhysValPoint physValPos(*m_pDrawingScene);
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
-            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
+    QString strText;
+    if (m_selPtLinkedObject.m_pGraphObj == nullptr) {
+        strText = "?";
     }
     else {
-        physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
-            m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPt);
-    }
-    QString strText = physValPos.toString(false);
-    // First set the text at the graphics item so that the bounding rectangle
-    // needed in updatePosition includes the new text.
-    if (QGraphicsSimpleTextItem::text() != strText) {
-        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-            QString strRuntimeInfo = "Text: " + strText;
-            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+        CPhysValPoint physValPos(*m_pDrawingScene);
+        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
+            physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
+                m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
         }
-        QGraphicsSimpleTextItem::setText(strText);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
+        else {
+            physValPos = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPoint(
+                m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPtOrLine);
         }
+        strText = physValPos.toString(false);
     }
-    CGraphObjLabel::updatePosition();
+    setText(strText);
 }
 
 /*==============================================================================

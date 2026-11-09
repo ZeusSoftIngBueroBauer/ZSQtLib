@@ -1880,45 +1880,18 @@ public: // must overridables of base class CGraphObj
 
     For more details see base implementation in CGraphObj.
 */
-SPolarCoors CGraphObjPolygon::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPolygonF thisPolygon = polygon();
-    QPointF ptThisLineSceneCoorsP1;
-    QPointF ptThisLineSceneCoorsP2;
-    if (thisPolygon.size() >= 2) {
-        if (i_selPtType == ESelectionPointType::PolygonPoint) {
-            if (i_idxPt == (thisPolygon.size() - 1)) {
-                ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP2 = thisPolygon[0];
-            }
-            else {
-                ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP2 = thisPolygon[i_idxPt+1];
-            }
-        }
-        else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-            if (i_idxPt == (thisPolygon.size() - 1)) {
-                ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP2 = thisPolygon[0];
-            }
-            else {
-                ptThisLineSceneCoorsP1 = thisPolygon[i_idxPt];
-                ptThisLineSceneCoorsP2 = thisPolygon[i_idxPt+1];
-            }
-            ptThisLineSceneCoorsP1 = QLineF(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2).center();
-        }
-    }
-    ptThisLineSceneCoorsP1 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP1);
-    ptThisLineSceneCoorsP2 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP2);
-    QLineF thisLineSceneCoors(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2);
-    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
-}
+//SPolarCoors CGraphObjPolygon::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QPolygonF thisPolygonInSceneCoors = pGraphicsItemThis->mapToScene(polygon());
+//    QPointF ptSelPtInSceneCoors;
+//    return ZS::Draw::getPolarCoors(i_pt, thisPolygonInSceneCoors, i_selPtType, i_idxPt);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -2138,7 +2111,7 @@ bool CGraphObjPolygon::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -3269,8 +3242,8 @@ void CGraphObjPolygon::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSele
 
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
-        if (selPt.m_idxPt >= 0 && selPt.m_idxPt < polygon().size()) {
-            replace(selPt.m_idxPt, physValPointParentSelPt);
+        if (selPt.m_idxPtOrLine >= 0 && selPt.m_idxPtOrLine < polygon().size()) {
+            replace(selPt.m_idxPtOrLine, physValPointParentSelPt);
         }
     }
     else if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -3814,8 +3787,8 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsAdded()
                     if (    (labelDscr.m_selPt.m_selPtType == ESelectionPointType::PolygonPoint)
                         ||  (labelDscr.m_selPt.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
-                        if (labelDscr.m_selPt.m_idxPt >= m_idxsAdded.first) {
-                            labelDscr.m_selPt.m_idxPt += m_idxsAdded.second;
+                        if (labelDscr.m_selPt.m_idxPtOrLine >= m_idxsAdded.first) {
+                            labelDscr.m_selPt.m_idxPtOrLine += m_idxsAdded.second;
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
@@ -3894,7 +3867,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
             SLabelAnchorDscr labelDscr = m_hshTextLabelDscrs[strLabelNameOld];
             labelDscr.m_strKey = strLabelNameNew;
             labelDscr.m_strText = strLabelNameNew;
-            labelDscr.m_selPt.m_idxPt = idxPt;
+            labelDscr.m_selPt.m_idxPtOrLine = idxPt;
             m_hshTextLabelDscrs[strLabelNameNew] = labelDscr;
             m_hshTextLabelDscrs.remove(strLabelNameOld);
             int idxLabelName = m_strlstPredefinedTextLabelNames.indexOf(strLabelNameOld);
@@ -3918,8 +3891,8 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
                     if (    (labelDscr.m_selPt.m_selPtType == ESelectionPointType::PolygonPoint)
                         ||  (labelDscr.m_selPt.m_selPtType == ESelectionPointType::LineCenterPoint))
                     {
-                        if (labelDscr.m_selPt.m_idxPt >= m_idxsRemoved.first) {
-                            labelDscr.m_selPt.m_idxPt -= m_idxsRemoved.second;
+                        if (labelDscr.m_selPt.m_idxPtOrLine >= m_idxsRemoved.first) {
+                            labelDscr.m_selPt.m_idxPtOrLine -= m_idxsRemoved.second;
                         }
                     }
                     if (pGraphObjLabel != nullptr) {
@@ -3945,7 +3918,7 @@ void CGraphObjPolygon::updateLabelsOnPolygonPointsRemoved()
             SLabelAnchorDscr labelDscr = m_hshGeometryLabelDscrs[strLabelNameOld];
             labelDscr.m_strKey = strLabelNameNew;
             labelDscr.m_strText = strLabelNameNew;
-            labelDscr.m_selPt.m_idxPt = idxPt;
+            labelDscr.m_selPt.m_idxPtOrLine = idxPt;
             m_hshGeometryLabelDscrs[strLabelNameNew] = labelDscr;
             m_hshGeometryLabelDscrs.remove(strLabelNameOld);
             int idxLabelName = m_strlstGeometryLabelNames.indexOf(strLabelNameOld);

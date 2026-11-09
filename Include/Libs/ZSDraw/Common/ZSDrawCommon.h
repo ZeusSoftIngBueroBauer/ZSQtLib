@@ -929,10 +929,10 @@ public: // struct methods
 public: // ctors
     SGraphObjSelectionPoint();
     SGraphObjSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
+    SGraphObjSelectionPoint(ESelectionPointType i_selPtType, int i_idxPtOrLine);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPtOrLine);
     SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
 public: // operators
     SGraphObjSelectionPoint& operator = (const SGraphObjSelectionPoint& i_other);
@@ -962,7 +962,7 @@ public: // struct members
          is stored the selection point is assigned to. The first point has index 0.
          For selection points in the center of lines the line index is stored.
          The first line has index 0. */
-    int m_idxPt = -1;
+    int m_idxPtOrLine = -1;
 
 }; // struct SGraphObjSelectionPoint
 

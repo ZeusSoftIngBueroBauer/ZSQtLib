@@ -3142,8 +3142,7 @@ CPhysVal CGraphObj::getEffectiveRotationAngleOnScene(const ZS::PhysVal::CUnit& i
 //------------------------------------------------------------------------------
 {
     CPhysVal physValRotationAngle = m_physValRotationAngle;
-    if (parentGroup() != nullptr)
-    {
+    if (parentGroup() != nullptr) {
         physValRotationAngle += parentGroup()->getEffectiveRotationAngleOnScene(i_unit);
     }
     physValRotationAngle.convertValue(i_unit);
@@ -4678,16 +4677,16 @@ public: // overridables
                    \   |                |
                     TL +----------------+ BL
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_selPt);
-    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
-}
+//SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_selPt);
+//    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the polar coordinates in length and angle of the given point
@@ -4721,16 +4720,16 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPtOrLine) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_idxPtOrLine);
-    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
-}
+//SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPtOrLine) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_idxPtOrLine);
+//    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -5908,7 +5907,7 @@ void CGraphObj::setTextLabelAnchorPoint(
     bool bSelPtAllowed = false;
     QList<SGraphObjSelectionPoint> arSelPts = getPossibleTextLabelAnchorPoints(i_strName);
     for (const SGraphObjSelectionPoint& selPt : arSelPts) {
-        if (selPt.m_selPtType == i_selPtType && selPt.m_idxPt == i_idxPt) {
+        if (selPt.m_selPtType == i_selPtType && selPt.m_idxPtOrLine == i_idxPt) {
             bSelPtAllowed = true;
             break;
         }
@@ -5919,9 +5918,9 @@ void CGraphObj::setTextLabelAnchorPoint(
     }
 
     SLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
-    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPt != i_idxPt) {
+    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPtOrLine != i_idxPt) {
         labelDscr.m_selPt.m_selPtType = i_selPtType;
-        labelDscr.m_selPt.m_idxPt = i_idxPt;
+        labelDscr.m_selPt.m_idxPtOrLine = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpTextLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
@@ -6385,9 +6384,9 @@ void CGraphObj::setGeometryLabelAnchorPoint(
     }
 
     SLabelAnchorDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
-    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPt != i_idxPt) {
+    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPtOrLine != i_idxPt) {
         labelDscr.m_selPt.m_selPtType = i_selPtType;
-        labelDscr.m_selPt.m_idxPt = i_idxPt;
+        labelDscr.m_selPt.m_idxPtOrLine = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
@@ -8012,22 +8011,6 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 
     m_bForceConversionToSceneCoors = false;
 }
-
-////------------------------------------------------------------------------------
-//void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_pGraphObjParent->keyInTree();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::onGraphObjParentScenePosChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//}
 
 //------------------------------------------------------------------------------
 /*! @brief The slot method is called if the parent item of the item changes

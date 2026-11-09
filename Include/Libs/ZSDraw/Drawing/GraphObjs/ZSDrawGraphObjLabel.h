@@ -108,7 +108,7 @@ public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);
-    QString text() const;
+    //QString text() const;
 public: // instance methods
     void setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
     SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
@@ -147,6 +147,7 @@ public slots: // overridables of base class CGraphObj
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable auxiliary instance methods
+    virtual void updateText();
     virtual void updatePosition();
     virtual void updatePolarCoorsToLinkedSelPt();
     virtual void updateAnchorLines();
@@ -179,7 +180,7 @@ protected: // instance members
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
          to the linked selection point is changed if the position is updated because the parent's
          geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged = false;
+    //bool m_bPositionUpdateOnParentGeometryChanged = false;
 
 }; // class CGraphObjLabel
 

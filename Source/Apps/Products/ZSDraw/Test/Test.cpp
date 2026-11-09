@@ -872,20 +872,33 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
         /* pGrpParent      */ pGrpAuxMethods,
         /* szDoTestStepFct */ SLOT(doTestStepGetLineFromPolar(ZS::Test::CTestStep*)) );
     strlstExpectedValues.clear();
+
+    /*    P1 + (100/100)
+              \
+         100px \  45°
+                \
+                 \
+                  + P2 */
     pTestStep->addDataRow({
         {"Length", "100.0 px"},
         {"Angle", "45.0 " + QString(Math::c_chSymbolDegree)},
-        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
+        {"P1", QPointF(100.0, 100.0)},
         {"ResultValuesPrecision", iPrecision}
     });
     strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 100.0), QPointF(170.710678, 170.710678)), ", ", 'f', iPrecision));
+    /*           P2
+                 /
+           315° / 100px
+               /
+              /
+             + P1 */
     pTestStep->addDataRow({
         {"Length", "100.0 px"},
         {"Angle", "315.0 " + QString(Math::c_chSymbolDegree)},
-        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(100.0, 200.0))},
+        {"P1", QPointF(100.0, 100.0)},
         {"ResultValuesPrecision", iPrecision}
     });
-    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 100.0), QPointF(170.710678, 170.710678)), ", ", 'f', iPrecision));
+    strlstExpectedValues.append(qLine2Str(QLineF(QPointF(100.0, 100.0), QPointF(170.710678, 29.289322)), ", ", 'f', iPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // getPolarCoors
@@ -900,51 +913,30 @@ void CTest::createTestGroupAuxMethods(ZS::Test::CTestStepGroup* i_pTestStepGroup
     SPolarCoors polarCoors;
     strlstExpectedValues.clear();
 
-    /*    Pt +
+    /*    Pt *
              |
         270° | 50
              |
-          P1 +------Line-------+ P2 */
+             + PtCenter */
     pTestStep->addDataRow({
-        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 100.0))},
-        {"Point", QPointF(100.0, 50.0)}
+        {"PtCenter", QPointF(100.0, 150.0)},
+        {"Pt", QPointF(100.0, 100.0)}
     });
     polarCoors = SPolarCoors(50.0, 270.0);
     strlstExpectedValues.append(polarCoors.toString(true, ", "));
 
-    /*               100
-          P1 +-----------------+ Pt
-               \
-                  \
-                    \
-         315°       Line
-                        \
-                          \
-                             \
-                               + P2 */
+    /* PtCenter +
+                |
+             50 | 90°
+                |
+                * Pt */
     pTestStep->addDataRow({
-        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
-        {"Point", QPointF(200.0, 100.0)}
+        {"PtCenter", QPointF(100.0, 100.0)},
+        {"Pt", QPointF(100.0, 150.0)}
     });
-    polarCoors = SPolarCoors(100.0,315.0);
+    polarCoors = SPolarCoors(50.0, 90.0);
     strlstExpectedValues.append(polarCoors.toString(true, ", "));
 
-    /*               100
-          P1 +
-             | \
-             |   \
-             |      \
-             | 45°  Line
-             |          \
-             |            \
-             |               \
-          Pt |                 + P2 */
-    pTestStep->addDataRow({
-        {"Line", QLineF(QPointF(100.0, 100.0), QPointF(200.0, 200.0))},
-        {"Point", QPointF(100.0, 200.0)}
-    });
-    polarCoors = SPolarCoors(100.0, 45.0);
-    strlstExpectedValues.append(polarCoors.toString(true, ", "));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // getPerpendicularLine
@@ -1821,20 +1813,18 @@ void CTest::doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep)
 
     CPhysVal physValLength(Units.Length.px);
     CPhysVal physValAngle(Units.Angle.Degree);
-    QLineF line;
 
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
         physValLength = dataRow["Length"].toString();
         physValAngle = dataRow["Angle"].toString();
-        line = dataRow["Line"].toLineF();
+        QPointF p1 = dataRow["P1"].toPointF();
         int iPrecision = 1;
         if (dataRow.contains("ResultValuesPrecision")) {
             iPrecision = dataRow["ResultValuesPrecision"].toInt();
         }
-        double fLength_px = physValLength.getVal(Units.Length.px);
-        double fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
-        QLineF lineResult = ZS::Draw::getLineFromPolar(fLength_px, fAngle_degrees, line);
+        SPolarCoors polarCoors(physValLength.getVal(Units.Length.px), physValAngle.getVal(Units.Angle.Degree));
+        QLineF lineResult = ZS::Draw::getLineFromPolar(p1, polarCoors);
         strlstResultValues.append(qLine2Str(lineResult, ", ", 'f', iPrecision));
     }
     i_pTestStep->setResultValues(strlstResultValues);
@@ -1857,9 +1847,9 @@ void CTest::doTestStepGetPolarCoors(ZS::Test::CTestStep* i_pTestStep)
     QStringList strlstResultValues;
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow) {
         QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
-        QLineF line = dataRow["Line"].toLineF();
-        QPointF pt = dataRow["Point"].toPointF();
-        SPolarCoors polarCoors = ZS::Draw::getPolarCoors(line, pt);
+        QPointF ptCenter = dataRow["PtCenter"].toPointF();
+        QPointF pt = dataRow["Pt"].toPointF();
+        SPolarCoors polarCoors = ZS::Draw::getPolarCoors(pt, ptCenter);
         strlstResultValues.append(polarCoors.toString(true, ", "));
     }
     i_pTestStep->setResultValues(strlstResultValues);
@@ -3375,6 +3365,11 @@ void CTest::doTestStepShowTextLabels(ZS::Test::CTestStep* i_pTestStep)
         }
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
+        if (dataRow.contains("ExpectedPolarCoors")) {
+            strlstExpectedValues.append(
+                strGraphObjName + "." + strLabelName + ".polarCoors {" +
+                dataRow["ExpectedPolarCoors"].toString() + "}");
+        }
         if (pGraphObj != nullptr) {
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getTextLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
@@ -3384,7 +3379,7 @@ void CTest::doTestStepShowTextLabels(ZS::Test::CTestStep* i_pTestStep)
                         pGraphObj->setTextLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_selPt);
                     }
                     else {
-                        pGraphObj->setTextLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_idxPt);
+                        pGraphObj->setTextLabelAnchorPoint(strLabelName, selPt.m_selPtType, selPt.m_idxPtOrLine);
                     }
                 }
                 if (!posToSet.isNull()) {
@@ -3393,6 +3388,11 @@ void CTest::doTestStepShowTextLabels(ZS::Test::CTestStep* i_pTestStep)
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(resultValuesForLabel(
                     pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
+                if (dataRow.contains("ExpectedPolarCoors")) {
+                    strlstResultValues.append(
+                        pGraphObj->name() + "." + pGraphObjLabel->name() + ".polarCoors {" +
+                        pGraphObjLabel->polarCoorsToLinkedSelectionPoint().toString() + "}");
+                }
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
@@ -3485,6 +3485,11 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
         }
         strlstExpectedValues.append(resultValuesForLabel(
             strGraphObjName + "." + strLabelName, posExpected, strExpectedText));
+        if (dataRow.contains("ExpectedPolarCoors")) {
+            strlstExpectedValues.append(
+                strGraphObjName + "." + strLabelName + ".polarCoors {" +
+                dataRow["ExpectedPolarCoors"].toString() + "}");
+        }
         CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showGeometryLabel(strLabelName);
@@ -3498,6 +3503,11 @@ void CTest::doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(resultValuesForLabel(
                     pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
+                if (dataRow.contains("ExpectedPolarCoors")) {
+                    strlstResultValues.append(
+                        pGraphObj->name() + "." + pGraphObjLabel->name() + ".polarCoors {" +
+                        pGraphObjLabel->polarCoorsToLinkedSelectionPoint().toString() + "}");
+                }
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
@@ -7030,7 +7040,7 @@ QPointF CTest::getSelectionPointCoors(
         pt = getSelectionPointCoors(i_physValPolygon.physValBoundingRect(), i_selPt.m_selPt, i_dimensionUnit);
     }
     else if (i_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
-        CPhysValPoint physValPoint = i_physValPolygon.at(i_selPt.m_idxPt);
+        CPhysValPoint physValPoint = i_physValPolygon.at(i_selPt.m_idxPtOrLine);
         if (i_dimensionUnit == EScaleDimensionUnit::Pixels) {
             pt = m_pDrawingScene->convert(physValPoint, Units.Length.px).toQPointF();
         }
@@ -7039,9 +7049,9 @@ QPointF CTest::getSelectionPointCoors(
         }
     }
     else if (i_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        CPhysValPoint physValPointLineStart = i_physValPolygon.at(i_selPt.m_idxPt);
-        CPhysValPoint physValPointLineEnd = i_selPt.m_idxPt+1 >= i_physValPolygon.count() ?
-            i_physValPolygon.at(0) : i_physValPolygon.at(i_selPt.m_idxPt+1);
+        CPhysValPoint physValPointLineStart = i_physValPolygon.at(i_selPt.m_idxPtOrLine);
+        CPhysValPoint physValPointLineEnd = i_selPt.m_idxPtOrLine +1 >= i_physValPolygon.count() ?
+            i_physValPolygon.at(0) : i_physValPolygon.at(i_selPt.m_idxPtOrLine +1);
         CPhysValLine physValLine(physValPointLineStart, physValPointLineEnd);
         if (i_dimensionUnit == EScaleDimensionUnit::Pixels) {
             physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
@@ -7362,6 +7372,9 @@ QStringList CTest::resultValuesForGraphObj(
                     strlstResultValues += resultValuesForLabel(
                         i_pGraphObj->name() + "." + pGraphObjLabel->name(),
                         pGraphicsItem->pos(), pGraphObjLabel->text(), i_iPrecision);
+                    strlstResultValues.append(
+                        i_pGraphObj->name() + "." + pGraphObjLabel->name() + ".polarCoors {" +
+                        pGraphObjLabel->polarCoorsToLinkedSelectionPoint().toString() + "}");
                 }
             }
             strlstLabelNames = i_pGraphObj->getGeometryLabelNames();
@@ -7372,6 +7385,9 @@ QStringList CTest::resultValuesForGraphObj(
                     strlstResultValues += resultValuesForLabel(
                         i_pGraphObj->name() + "." + pGraphObjLabel->name(),
                         pGraphicsItem->pos(), pGraphObjLabel->text(), i_iPrecision);
+                    strlstResultValues.append(
+                        i_pGraphObj->name() + "." + pGraphObjLabel->name() + ".polarCoors {" +
+                        pGraphObjLabel->polarCoorsToLinkedSelectionPoint().toString() + "}");
                 }
             }
         }

@@ -29,9 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief 
@@ -62,8 +60,9 @@ public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
-    virtual void updatePosition() override;
-    virtual void updatePolarCoorsToLinkedSelPt() override;
+    virtual void updateText() override;
+    //virtual void updatePosition() override;
+    //virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
@@ -82,8 +81,6 @@ protected: // instance members
 
 }; // class CGraphObjLabelGeometryHeight
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjLabelGeometryHeight_h
