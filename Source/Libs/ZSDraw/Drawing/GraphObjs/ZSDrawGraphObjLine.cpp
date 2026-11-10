@@ -215,7 +215,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             bAdded = addGeometryLabel(
                 EGraphObjTypeLabelGeometryAngle, strLabelName,
-                ESelectionPointType::LineCenterPoint, 0);
+                ESelectionPointType::PolygonPoint, 1);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);
@@ -1044,7 +1044,9 @@ CPhysVal CGraphObjLine::rotationAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValLine physValLine = getLine();
-    return physValLine.angle();
+    CPhysVal physValAngle = physValLine.angle();
+    physValAngle.convertValue(i_unit);
+    return physValAngle;
 }
 
 /*==============================================================================

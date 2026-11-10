@@ -1028,6 +1028,51 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+QPointF CGraphObjLabel::getPositionOfLinkedSelectionPointInSceneCoors(
+    const SGraphObjSelectionPoint& i_selPt) const
+//------------------------------------------------------------------------------
+{
+    QPointF ptSelPtLinkedObjectSceneCoors;
+    if (i_selPt.m_pGraphObj != nullptr) {
+        if (i_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+            ptSelPtLinkedObjectSceneCoors =
+                i_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+                    i_selPt.m_selPtType, i_selPt.m_selPt);
+        }
+        else {
+            ptSelPtLinkedObjectSceneCoors =
+                i_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+                    i_selPt.m_selPtType, i_selPt.m_idxPtOrLine);
+        }
+    }
+    return ptSelPtLinkedObjectSceneCoors;
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjLabel::getEffectiveRotationAngleOfLinkedObjectInSceneCoors() const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physValAngle;
+    if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        if (m_selPtLinkedObject.m_pGraphObj->type() == EGraphObjTypeLine) {
+            CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_selPtLinkedObject.m_pGraphObj);
+            physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);
+            if (pGraphObjLine->parentGroup() != nullptr) {
+                physValAngle += pGraphObjLine->parentGroup()->getEffectiveRotationAngleOnScene();
+            }
+        }
+    }
+    else {
+        physValAngle += m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene();
+    }
+    return physValAngle;
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 /*! @brief Virtual method to update the text which has to be indicated by the label.
 
     The default implementation does nothing assuming that the text set by invoking
@@ -1088,33 +1133,15 @@ void CGraphObjLabel::updatePosition()
     CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
     if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
         m_bUpdatePositionInProgress = true;
-        QPointF ptSelPtLinkedObjectSceneCoors;
-        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-            ptSelPtLinkedObjectSceneCoors =
-                m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                    m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
-        }
-        else {
-            ptSelPtLinkedObjectSceneCoors =
-                m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                    m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPtOrLine);
-        }
-        double fAngleSceneCoors_degrees = m_polarCoorsToLinkedSelPt.m_fAngle_degrees;
-        // A line has to be treated in a special way as a line is not rotated around a center point.
-        // Lines have an angle in itself. If we would call getEffectiveRotationAngleOnScene on a line,
-        // the lines angle is not taken into account (the rotation angle of a line is alyways zero).
-        if (m_selPtLinkedObject.m_pGraphObj->type() == EGraphObjTypeLine) {
-            CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_selPtLinkedObject.m_pGraphObj);
-            fAngleSceneCoors_degrees += pGraphObjLine->rotationAngle(Units.Angle.Degree).getVal();
-            if (pGraphObjLine->parentGroup() != nullptr) {
-                fAngleSceneCoors_degrees +=
-                    pGraphObjLine->parentGroup()->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-            }
-        }
-        else {
-            fAngleSceneCoors_degrees +=
-                m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-        }
+        QPointF ptSelPtLinkedObjectSceneCoors = getPositionOfLinkedSelectionPointInSceneCoors(m_selPtLinkedObject);
+        // Lines have to be treated in a special way as a line is not rotated around a center point.
+        // Lines have an angle in itself. The line item's rotation angle (CGraphObj::m_physValRotationAngle) is 0.
+        // The angle of a line is defined by the end points of the line and returned as a result
+        // of calling CPhysValLine::angle(). This angle is not taken into account when invoking
+        // CGraphObj::getEffectiveRotationAngleOnScene().
+        CPhysVal physValAngleInSceneCoors = getEffectiveRotationAngleOfLinkedObjectInSceneCoors();
+        double fAngleSceneCoors_degrees = physValAngleInSceneCoors.getVal(Units.Angle.Degree)
+                                        + m_polarCoorsToLinkedSelPt.m_fAngle_degrees;
         SPolarCoors polarCoorsOnScene(m_polarCoorsToLinkedSelPt.m_fLength_px, fAngleSceneCoors_degrees);
         QLineF anchorLine = getLineFromPolar(ptSelPtLinkedObjectSceneCoors, polarCoorsOnScene);
         // The position of a QGraphicsTextItem is defined by its top left corner.
@@ -1193,18 +1220,7 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         QRectF rctBoundingThis = getBoundingRect();
         QPointF ptCenterThis = rctBoundingThis.center();
         QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
-
-        QPointF ptSelPtLinkedObjectSceneCoors;
-        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-            ptSelPtLinkedObjectSceneCoors =
-                m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                    m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
-        }
-        else {
-            ptSelPtLinkedObjectSceneCoors =
-                m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                    m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPtOrLine);
-        }
+        QPointF ptSelPtLinkedObjectSceneCoors = getPositionOfLinkedSelectionPointInSceneCoors(m_selPtLinkedObject);
         QLineF anchorLine(ptSelPtLinkedObjectSceneCoors, ptScenePosCenterThis);
         SPolarCoors polarCoorsOnScene(anchorLine.length(), Math::toCounterClockWiseAngleDegree(anchorLine.angle()));
         // The polar coors are stored as if the linked object is not rotated.
@@ -1212,18 +1228,21 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         // A line has to be treated in a special way as a line is not rotated around a center point.
         // Lines have an angle in itself. If we would call getEffectiveRotationAngleOnScene on a line,
         // the lines angle is not taken into account (the rotation angle of a line is alyways zero).
-        if (m_selPtLinkedObject.m_pGraphObj->type() == EGraphObjTypeLine) {
-            CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_selPtLinkedObject.m_pGraphObj);
-            polarCoorsOnScene.m_fAngle_degrees -= pGraphObjLine->rotationAngle(Units.Angle.Degree).getVal();
-            if (pGraphObjLine->parentGroup() != nullptr) {
-                polarCoorsOnScene.m_fAngle_degrees -=
-                    pGraphObjLine->parentGroup()->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-            }
-        }
-        else {
-            polarCoorsOnScene.m_fAngle_degrees -=
-                m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-        }
+        CPhysVal physValAngleInSceneCoors = getEffectiveRotationAngleOfLinkedObjectInSceneCoors();
+        double fAngleSceneCoors_degrees = physValAngleInSceneCoors.getVal(Units.Angle.Degree);
+        polarCoorsOnScene.m_fAngle_degrees -= fAngleSceneCoors_degrees;
+        //if (m_selPtLinkedObject.m_pGraphObj->type() == EGraphObjTypeLine) {
+        //    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_selPtLinkedObject.m_pGraphObj);
+        //    polarCoorsOnScene.m_fAngle_degrees -= pGraphObjLine->rotationAngle(Units.Angle.Degree).getVal();
+        //    if (pGraphObjLine->parentGroup() != nullptr) {
+        //        polarCoorsOnScene.m_fAngle_degrees -=
+        //            pGraphObjLine->parentGroup()->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
+        //    }
+        //}
+        //else {
+        //    polarCoorsOnScene.m_fAngle_degrees -=
+        //        m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
+        //}
         m_polarCoorsToLinkedSelPt = polarCoorsOnScene;
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
             QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
@@ -1266,22 +1285,11 @@ void CGraphObjLabel::updateAnchorLines()
     }
     CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
     if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
-        QPointF ptSelScenePosParent;
-        if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-            ptSelScenePosParent = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_selPt);
-        }
-        else {
-            ptSelScenePosParent = m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                m_selPtLinkedObject.m_selPtType, m_selPtLinkedObject.m_idxPtOrLine);
-        }
-
+        QPointF ptSelPtLinkedObjectSceneCoors = getPositionOfLinkedSelectionPointInSceneCoors(m_selPtLinkedObject);
         QRectF rctBoundingThis = getBoundingRect();
         QPointF ptCenterThis = rctBoundingThis.center();
-        QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
-
+        QLineF anchorLine(ptCenterThis, mapFromScene(ptSelPtLinkedObjectSceneCoors));
         QGraphicsItem_prepareGeometryChange();
-
         if (m_anchorLines.isEmpty()) {
             m_anchorLines.append(anchorLine);
         }

@@ -35,9 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsSimpleTextItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Class to indicate text labels.
@@ -146,6 +144,9 @@ public slots: // overridables of base class CGraphObj
     virtual void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // auxiliary instance methods
+    virtual QPointF getPositionOfLinkedSelectionPointInSceneCoors(const SGraphObjSelectionPoint& i_selPt) const;
+    virtual ZS::PhysVal::CPhysVal getEffectiveRotationAngleOfLinkedObjectInSceneCoors() const;
 protected: // overridable auxiliary instance methods
     virtual void updateText();
     virtual void updatePosition();
@@ -166,7 +167,9 @@ protected: // instance members
     /*!< When modifying the shape of graphical objects the relative position of labels
          linked to the graphical objects should always be the same.
          This can only be achieved when keeping the distance and the angle to the selection point
-         after moving the labels. */
+         after moving the labels. The polar coordinates are scene coordinates but the angle
+         is not changed if the linked object is rotated. The angle is stored as if the linked
+         object is not rotated. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
@@ -184,8 +187,6 @@ protected: // instance members
 
 }; // class CGraphObjLabel
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjLabel_h
