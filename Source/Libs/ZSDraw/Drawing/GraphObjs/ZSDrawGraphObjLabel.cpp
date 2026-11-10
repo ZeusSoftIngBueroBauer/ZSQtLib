@@ -1054,6 +1054,9 @@ CPhysVal CGraphObjLabel::getEffectiveRotationAngleOfLinkedObjectInSceneCoors() c
 {
     CPhysVal physValAngle;
     if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        // A line has to be treated in a special way as a line is not rotated around a center point.
+        // Lines have an angle in itself. If we would call getEffectiveRotationAngleOnScene on a line,
+        // the lines angle is not taken into account (the rotation angle of a line is alyways zero).
         if (m_selPtLinkedObject.m_pGraphObj->type() == EGraphObjTypeLine) {
             CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_selPtLinkedObject.m_pGraphObj);
             physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);
@@ -1061,9 +1064,9 @@ CPhysVal CGraphObjLabel::getEffectiveRotationAngleOfLinkedObjectInSceneCoors() c
                 physValAngle += pGraphObjLine->parentGroup()->getEffectiveRotationAngleOnScene();
             }
         }
-    }
-    else {
-        physValAngle += m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene();
+        else {
+            physValAngle = m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene();
+        }
     }
     return physValAngle;
 }
@@ -1225,24 +1228,9 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         SPolarCoors polarCoorsOnScene(anchorLine.length(), Math::toCounterClockWiseAngleDegree(anchorLine.angle()));
         // The polar coors are stored as if the linked object is not rotated.
         // If the object is rotated, the rotation angle need to be removed from the polar coors.
-        // A line has to be treated in a special way as a line is not rotated around a center point.
-        // Lines have an angle in itself. If we would call getEffectiveRotationAngleOnScene on a line,
-        // the lines angle is not taken into account (the rotation angle of a line is alyways zero).
         CPhysVal physValAngleInSceneCoors = getEffectiveRotationAngleOfLinkedObjectInSceneCoors();
         double fAngleSceneCoors_degrees = physValAngleInSceneCoors.getVal(Units.Angle.Degree);
         polarCoorsOnScene.m_fAngle_degrees -= fAngleSceneCoors_degrees;
-        //if (m_selPtLinkedObject.m_pGraphObj->type() == EGraphObjTypeLine) {
-        //    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_selPtLinkedObject.m_pGraphObj);
-        //    polarCoorsOnScene.m_fAngle_degrees -= pGraphObjLine->rotationAngle(Units.Angle.Degree).getVal();
-        //    if (pGraphObjLine->parentGroup() != nullptr) {
-        //        polarCoorsOnScene.m_fAngle_degrees -=
-        //            pGraphObjLine->parentGroup()->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-        //    }
-        //}
-        //else {
-        //    polarCoorsOnScene.m_fAngle_degrees -=
-        //        m_selPtLinkedObject.m_pGraphObj->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-        //}
         m_polarCoorsToLinkedSelPt = polarCoorsOnScene;
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
             QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
