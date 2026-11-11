@@ -1231,6 +1231,7 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         CPhysVal physValAngleInSceneCoors = getEffectiveRotationAngleOfLinkedObjectInSceneCoors();
         double fAngleSceneCoors_degrees = physValAngleInSceneCoors.getVal(Units.Angle.Degree);
         polarCoorsOnScene.m_fAngle_degrees -= fAngleSceneCoors_degrees;
+        polarCoorsOnScene.m_fAngle_degrees = Math::normalizeAngleInDegree(polarCoorsOnScene.m_fAngle_degrees);
         m_polarCoorsToLinkedSelPt = polarCoorsOnScene;
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
             QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +

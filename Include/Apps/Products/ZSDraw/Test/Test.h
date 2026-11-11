@@ -79,13 +79,14 @@ class QPainterPath;
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES_SINGLERECTANGLE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
@@ -416,8 +417,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesRectModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesEllipse(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesEllipseModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
