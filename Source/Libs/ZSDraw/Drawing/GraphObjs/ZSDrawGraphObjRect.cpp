@@ -162,19 +162,29 @@ CGraphObjRect::CGraphObjRect(CDrawingScene* i_pDrawingScene, const QString& i_st
     for (const QString& strLabelName : m_strlstPredefinedTextLabelNames) {
         bool bAdded = false;
         if (strLabelName == c_strGeometryLabelNameTopLeft) {
-            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft);
+            bAdded = addTextLabel(
+                strLabelName, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::TopLeft);
         }
         else if (strLabelName == c_strGeometryLabelNameTopRight) {
-            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight);
+            bAdded = addTextLabel(
+                strLabelName, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::TopRight);
         }
         else if (strLabelName == c_strGeometryLabelNameBottomRight) {
-            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight);
+            bAdded = addTextLabel(
+                strLabelName, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomRight);
         }
         else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
-            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft);
+            bAdded = addTextLabel(
+                strLabelName, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomLeft);
         }
         else {
-            bAdded = addTextLabel(strLabelName, strLabelName, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+            bAdded = addTextLabel(
+                strLabelName, strLabelName,
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add text label " + strLabelName);

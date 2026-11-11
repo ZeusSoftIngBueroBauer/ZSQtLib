@@ -79,21 +79,24 @@ class QPainterPath;
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES_SINGLERECTANGLE 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES_SINGLERECTANGLE 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES_SINGLEELLIPSE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS_SINGLETEXT 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS_SINGLEPIXMAP 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 0
@@ -181,18 +184,23 @@ class QPainterPath;
 
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLRECT 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_RECTANGLES_SINGLERECTANGLE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES_SINGLEELLIPSE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS_SINGLETEXT 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS_SINGLEPIXMAP 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_NOT_ANCHORED 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED 1
@@ -418,15 +426,13 @@ protected: // instance methods
     void createTestGroupAddStandardShapesLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesEllipse(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesEllipseModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesText(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesTextModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesTextsSingleTextModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonOpenArrow(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangle(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonTriangleModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesPolygonStar(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesPixmap(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesPixmapsSinglePixmapModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsNotAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsNotAnchoredModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
