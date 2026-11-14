@@ -5439,16 +5439,15 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         strObjName, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    sizeRectangle = QSizeF(100.0, 100.0);
+    m_ptPosRect1 = QPointF(300.0, 300.0);
     strMethod = "setPosition";
-    strMthArgs = qSize2Str(sizeRectangle);
+    strMthArgs = qPoint2Str(m_ptPosRect1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)));
-    m_ptPosRect1 = QPointF(300.0, 300.0);
     ptCenterRectangle = QPointF(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
     m_pPhysValRect1->setCenter(ptCenterRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
@@ -6678,7 +6677,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Show Text Labels
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "showTextLabel";
     strMthArgs = CGraphObj::c_strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -6687,20 +6685,62 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)) );
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strObjName), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = QPointF(m_ptPosEllipse1.x() - sizeLabel.width() / 2.0, m_ptPosEllipse1.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
-        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
+
+    strMethod = "changeLabelAnchorPoint";
+    selPtAnchor = SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+    strMthArgs = CGraphObj::c_strLabelName + ", {" + selPtAnchor.toString() + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel.setY(m_ptPosEllipse1.y() - m_rectEllipse1.height() / 2.0 - sizeLabel.height() / 2.0);
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"AnchorPoint", selPtAnchor.toString()},
+        {"ExpectedText", strObjName},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
+        });
+
+    strMethod = "moveTextLabel";
+    ptPosLabel.setY(250.0);
+    strMthArgs = CGraphObj::c_strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", strObjName},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        });
 
     // Show Geometry Labels
     //---------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "showGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
     pTestStep = new ZS::Test::CTestStep(
@@ -6709,20 +6749,23 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = QPointF(m_ptPosEllipse1.x() - sizeLabel.width() / 2.0, m_ptPosEllipse1.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
-        {"setPos", QPointF(280.0, 280.0)},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
 
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    //iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setWidth(100.0);
     strMethod = "setWidth";
@@ -6751,8 +6794,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     m_physValAngleEllipse1.setVal(45.0);
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleEllipse1.toString();
@@ -6777,8 +6818,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setHeight(100.0);
     strMethod = "setHeight";
@@ -6807,7 +6846,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Check Text Labels
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkTextLabel";
     strMthArgs = CGraphObj::c_strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -6821,15 +6859,14 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(332.7, 262.3)},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
     pTestStep = new ZS::Test::CTestStep(
@@ -6843,15 +6880,13 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(295.5, 301.9)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(286.3, 309.7)},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
 
     // setSize
     //--------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = QSizeF(150.0, 150.0);
     strMethod = "setSize";
     strMthArgs = qSize2Str(sizeEllipse);
@@ -6879,8 +6914,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setWidth(50.0);
     strMethod = "setWidth";
@@ -6909,8 +6942,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     m_physValAngleEllipse1.setVal(0.0);
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleEllipse1.toString();
@@ -6935,8 +6966,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setHeight(50.0);
     strMethod = "setHeight";
@@ -6965,7 +6994,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Check Text Labels
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkTextLabel";
     strMthArgs = CGraphObj::c_strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -6979,15 +7007,14 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(250.0, 217.7)},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
     pTestStep = new ZS::Test::CTestStep(
@@ -7001,8 +7028,8 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(295.5, 301.9)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(251.0, 259.7)},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
     // Save and Load File
@@ -7013,7 +7040,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Check Text Labels
     //------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkTextLabel";
     strMthArgs = CGraphObj::c_strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -7027,15 +7053,14 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(250.0, 217.7)},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
     pTestStep = new ZS::Test::CTestStep(
@@ -7049,9 +7074,71 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(295.5, 301.9)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(251.0, 259.7)},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
+
+    // Hide Text Labels
+    //---------------------
+
+    strMethod = "hideTextLabels";
+    strMthArgs = CGraphObj::c_strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
+        });
+
+    // Hide Geometry Labels
+    //---------------------
+
+    strMethod = "hideGeometryLabels";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepHideGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strGeometryLabelNameCenter + " not found"}
+        });
+
+    // Reset ellipse to original size and position
+    //----------------------------------------------
+
+    m_ptPosEllipse1 = QPointF(300.0, 300.0);
+    strMethod = "setPosition";
+    strMthArgs = qPoint2Str(m_ptPosEllipse1);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjEllipseByDirectMethodCalls(ZS::Test::CTestStep*)));
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_pPhysValRectEllipse1->setCenter(m_ptPosEllipse1);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Pos", m_ptPosEllipse1);
+    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForEllipse(
+        c_strGraphObjNameEllipse1, m_ptPosEllipse1, m_rectEllipse1, *m_pPhysValRectEllipse1, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     //------------------------------
     // ComplexGeometryLabels
@@ -7065,12 +7152,33 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Show Geometry Labels
     //---------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    strMethod = "showGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameCenter +
-        ", " + CGraphObj::c_strGeometryLabelNameWidth +
-        ", " + CGraphObj::c_strGeometryLabelNameHeight +
-        ", " + CGraphObj::c_strGeometryLabelNameAngle;
+    strMethod = "showGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameWidth;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpComplexGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValRectEllipse1->bottomCenter().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
+        {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
+        });
+
+    strMethod = "moveGeometryLabel";
+    ptPosLabel.setY(ptPosLabel.y() + sizeLabel.height());
+    strMthArgs = CGraphObj::c_strGeometryLabelNameWidth + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -7081,32 +7189,102 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"setPos", QPointF(290.0, 330.0)},
+        {"setPos", ptPosLabel},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()},
         });
+
+    strMethod = "showGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameHeight;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpComplexGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValRectEllipse1->rightCenter().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"setPos", QPointF(250.0, bYAxisTopDown ? 300.0 : 300.0)},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
+
+    strMethod = "moveGeometryLabel";
+    ptPosLabel.setX(ptPosLabel.x() + sizeLabel.width());
+    strMthArgs = CGraphObj::c_strGeometryLabelNameHeight + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpComplexGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        });
+
+    strMethod = "showGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameAngle;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpComplexGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("0.0 " + QString(Math::c_chSymbolDegree)), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValRectEllipse1->rightCenter().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"setPos", QPointF(350.0, 310.0)},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
+        });
+
+    strMethod = "moveGeometryLabel";
+    ptPosLabel.setX(ptPosLabel.x() + 50.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height());
+    strMthArgs = CGraphObj::c_strGeometryLabelNameAngle + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpComplexGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", m_physValAngleEllipse1.toString()},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
         });
 
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    //iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setWidth(100.0);
     strMethod = "setWidth";
@@ -7135,8 +7313,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     m_physValAngleEllipse1.setVal(45.0);
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleEllipse1.toString();
@@ -7161,8 +7337,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setHeight(100.0);
     strMethod = "setHeight";
@@ -7191,7 +7365,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameHeight +
@@ -7207,7 +7380,7 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(250.9, 351.4)},
+        {"ExpectedPos", QPointF(251.7, 356.3)},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
     pTestStep->addDataRow({
@@ -7215,23 +7388,21 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(243.9, 266.5)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(342.2, 353.5)},
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPos", QPointF(366.7, 358.1)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(374.8, 369.1)},
+        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
         });
 
     // setSize
     //--------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = QSizeF(150.0, 150.0);
     strMethod = "setSize";
     strMthArgs = qSize2Str(sizeEllipse);
@@ -7259,8 +7430,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setWidth(50.0);
     strMethod = "setWidth";
@@ -7289,8 +7458,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     m_physValAngleEllipse1.setVal(0.0);
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleEllipse1.toString();
@@ -7315,8 +7482,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeEllipse = m_pPhysValRectEllipse1->size().toQSizeF();
     sizeEllipse.setHeight(50.0);
     strMethod = "setHeight";
@@ -7345,7 +7510,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameHeight +
@@ -7361,7 +7525,7 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(250.9, 351.4)},
+        {"ExpectedPos", QPointF(266.0, 300.7)},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
     pTestStep->addDataRow({
@@ -7369,16 +7533,16 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(243.9, 266.5)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(303.0, 259.7)},
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPos", QPointF(366.7, 358.1)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(335.5, 243.7)},
+        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
         });
 
     // Save and Load File
@@ -7389,7 +7553,6 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameHeight +
@@ -7405,7 +7568,7 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(250.9, 351.4)},
+        {"ExpectedPos", QPointF(266.0, 300.7)},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
     pTestStep->addDataRow({
@@ -7413,16 +7576,16 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(243.9, 266.5)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(303.0, 259.7)},
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPos", QPointF(366.7, 358.1)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(335.5, 243.7)},
+        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
         });
 }
 
@@ -7515,8 +7678,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    //iResultValuesPrecision = 6;
     sizeText = m_pPhysValRectText1->size().toQSizeF();
     sizeText.setWidth(100.0);
     strMethod = "setWidth";
@@ -7545,8 +7706,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     m_physValAngleText1.setVal(45.0);
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleText1.toString();
@@ -7571,8 +7730,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeText = m_pPhysValRectText1->size().toQSizeF();
     sizeText.setHeight(100.0);
     strMethod = "setHeight";
@@ -7601,8 +7758,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setSize
     //--------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeText = QSizeF(150.0, 150.0);
     strMethod = "setSize";
     strMthArgs = qSize2Str(sizeText);
@@ -7630,8 +7785,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setWidth
     //---------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeText = m_pPhysValRectText1->size().toQSizeF();
     sizeText.setWidth(50.0);
     strMethod = "setWidth";
@@ -7660,8 +7813,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setRotationAngle
     //-----------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     m_physValAngleText1.setVal(0.0);
     strMethod = "setRotationAngle";
     strMthArgs = m_physValAngleText1.toString();
@@ -7686,8 +7837,6 @@ void CTest::createTestGroupAddStandardShapesTextsSingleTextModifications(
     // setHeight
     //----------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    iResultValuesPrecision = 6;
     sizeText = m_pPhysValRectText1->size().toQSizeF();
     sizeText.setHeight(50.0);
     strMethod = "setHeight";
@@ -7910,6 +8059,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
     int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
+    QFontMetricsF fontMetrics(m_pDrawingScene->font());
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -7926,19 +8076,22 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     QString strLabelName;
     QString strMethod;
     QString strMthArgs;
+
+    QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SGraphObjSelectionPoint selPtAnchor(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
 
     int idxPt;
     int iCount;
     CPhysValPoint physValPoint(*m_pDrawingScene);
 
-    strMethod = "addGraphObj";
+    strMethod = "DrawingScene.addGraphObj";
     strMthArgs = strObjName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " DrawingScene." + strMethod + "(" + strMthArgs + ")",
-        /* strOperation    */ "DrawingScene." + strMethod + "(" + strMthArgs + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjPolygon(ZS::Test::CTestStep*)));
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
@@ -7976,25 +8129,33 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     //-----------------
 
     strLabelName = CGraphObj::c_strLabelName;
-    sizeLabel = QSizeF(42.0, 16.0);  // Text: "Triangle"
-    ptPosLabel = QPointF(m_ptPosTriangle.x() - sizeLabel.width() / 2.0, m_ptPosTriangle.y() - sizeLabel.height() / 2.0);
+    strMethod = "showTextLabel";
+    strMthArgs = strLabelName + ", {" + selPtAnchor.toString() + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + ".showTextLabel(" + CGraphObj::c_strLabelName + ")",
-        /* strOperation    */ strObjName + ".showTextLabel(" + strLabelName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strObjName), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->center().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", ptPosLabel}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
     strMethod = "moveTextLabel";
-    ptPosLabel = QPointF(ptPosLabel.x(), ptPosLabel.y() - m_pPhysValPolygonTriangle->height().getVal(Units.Length.px) / 2.0 + sizeLabel.height() / 2.0);
-    strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
+    ptPosLabel.setY(ptPosLabel.y() - m_pPhysValPolygonTriangle->height().getVal(Units.Length.px) / 2.0 + sizeLabel.height() / 2.0);
+    strMthArgs = CGraphObj::c_strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8007,12 +8168,11 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"LabelName", strLabelName},
         {"setPos", ptPosLabel},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", ptPosLabel}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameP + "1";
-    sizeLabel = QSizeF(13.0, 16.0);  // Text: "P1"
-    ptPosLabel = QPointF(268.5, 292.0);
     strMethod = "showTextLabel";
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -8021,13 +8181,20 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)) );
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelName), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->at(0).toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", strLabelName},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
 
     strMethod = "moveTextLabel";
@@ -8046,12 +8213,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", strLabelName},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
     });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameP + "2";
-    sizeLabel = QSizeF(13.0, 16.0);  // Text: "P2"
-    ptPosLabel = QPointF(318.5, 292.0);
     strMethod = "showTextLabel";
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -8060,13 +8225,20 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)) );
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelName), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->at(1).toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", strLabelName},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
 
     strMethod = "moveTextLabel";
@@ -8085,15 +8257,13 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", strLabelName},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
     });
 
     // Show Geometry Labels
     //---------------------
 
     strLabelName = CGraphObj::c_strGeometryLabelNameCenter;
-    sizeLabel = QSizeF(42.0, 16.0);  // Text: "300, 275"
-    ptPosLabel = QPointF(m_ptPosTriangle.x() - sizeLabel.width()/2.0, m_ptPosTriangle.y() - sizeLabel.height()/2.0);
     strMethod = "showGeometryLabel";
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -8102,13 +8272,18 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = QPointF(m_ptPosTriangle.x() - sizeLabel.width() / 2.0, m_ptPosTriangle.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", m_pPhysValPolygonTriangle->center().toString(false)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
 
     strMethod = "moveGeometryLabel";
@@ -8129,6 +8304,50 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
     });
+
+    strLabelName = CGraphObj::c_strGeometryLabelNameP + "1";
+    strMethod = "showGeometryLabel";
+    strMthArgs = strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("275, 300"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->at(0).toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", strLabelName},
+        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
+        });
+
+    strMethod = "moveGeometryLabel";
+    ptPosLabel = QPointF(ptPosLabel.x(), ptPosLabel.y() + 2 * sizeLabel.height());
+    strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", strLabelName},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
+        });
 
     // Rotate
     //-------
@@ -8198,9 +8417,9 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8234,9 +8453,9 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8268,20 +8487,18 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         { 25.0, -87.5}
     });
     m_pPhysValPolygonTriangle->insert(idxPt, physValPoint);
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
         strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     // append()
     //---------
@@ -8307,19 +8524,17 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {-30.0, -62.5}
     });
     m_pPhysValPolygonTriangle->append(physValPoint);
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
         strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-    //iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     // removeLast
     //-------------
@@ -8375,8 +8590,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("count", iCount);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Count", iCount);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8406,7 +8621,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Width", m_pPhysValPolygonTriangle->width().getVal());
-    pTestStep->setConfigValue("Width.Unit", m_pPhysValPolygonTriangle->width().unit().unitName());
+    pTestStep->setConfigValue("Width.Unit", m_pPhysValPolygonTriangle->width().unit().symbol());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8417,7 +8632,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     //-------------
 
     strMethod = "setHeight";
-    m_pPhysValPolygonTriangle->setHeight(100);
+    m_pPhysValPolygonTriangle->setHeight(50);
     strMthArgs = m_pPhysValPolygonTriangle->height().toString();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -8425,18 +8640,18 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosTriangle = QPointF(325.0, 300.0);
+    m_ptPosTriangle = QPointF(350.0, 300.0);
     m_polygonTriangle = QPolygonF({
-        {-50.0,  50.0},
-        { 50.0,  50.0},
-        {  0.0, -50.0}
+        {-50.0,  25.0},
+        { 50.0,  25.0},
+        {  0.0, -25.0}
     });
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Height", m_pPhysValPolygonTriangle->height().getVal());
-    pTestStep->setConfigValue("Height.Unit", m_pPhysValPolygonTriangle->height().unit().unitName());
+    pTestStep->setConfigValue("Height.Unit", m_pPhysValPolygonTriangle->height().unit().symbol());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8446,9 +8661,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     // Check Text Labels
     //------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkTextLabel";
-    strMthArgs = CGraphObj::c_strLabelName;
+    strMthArgs = CGraphObj::c_strLabelName +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "1" +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "2";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8459,18 +8675,32 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
-        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(346.0, 292.0)},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedPos", QPointF(310.5, 235.5)},
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedPos", QPointF(310.5, 348.5)},
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
         });
 
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
+    strMthArgs = CGraphObj::c_strGeometryLabelNameP + "1";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8480,10 +8710,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
-        {"ExpectedPos", QPointF(288.0, 292.0)},
-        {"ExpectedText", m_pPhysValPolygonTriangle->center().toString(false)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedPos", QPointF(272.0, 242.0)},
+        {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
     });
 
     // Rotate
@@ -8514,9 +8744,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     // Check Text Labels
     //------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkTextLabel";
-    strMthArgs = CGraphObj::c_strLabelName;
+    strMthArgs = CGraphObj::c_strLabelName +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "1" +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "2";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8527,18 +8758,32 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
-        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(329.0, 275.0)},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedPos", QPointF(287.0, 325.0)},
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedPos", QPointF(400.0, 325.0)},
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
         });
 
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
+    strMthArgs = CGraphObj::c_strGeometryLabelNameP + "1";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8548,10 +8793,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
-        {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(295.5, 301.9)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedPos", QPointF(279.0, 349.0)},
+        {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
         });
 
     // Save and Load File
@@ -8562,9 +8807,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     // Check Text Labels
     //------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkTextLabel";
-    strMthArgs = CGraphObj::c_strLabelName;
+    strMthArgs = CGraphObj::c_strLabelName +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "1" +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "2";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8575,18 +8821,32 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
-        {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
-        {"setPos", QPointF(285.0, 250.0)},
         {"ExpectedText", strObjName},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", QPointF(329.0, 275.0)},
+        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedPos", QPointF(287.0, 325.0)},
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedPos", QPointF(400.0, 325.0)},
+        {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
         });
 
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameCenter;
+    strMthArgs = CGraphObj::c_strGeometryLabelNameP + "1";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -8596,10 +8856,95 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
-        {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(295.5, 301.9)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedPos", QPointF(279.0, 349.0)},
+        {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
+        });
+
+    // Reset polygon to original shape and position
+    //---------------------------------------------
+
+    strMethod = "setPolygon";
+    m_ptPosTriangle = QPointF(300.0, 275.0);
+    m_polygonTriangle = QPolygonF({
+        {-25.0,  25.0},
+        { 25.0,  25.0},
+        {  0.0, -25.0}
+        });
+    *m_pPhysValPolygonTriangle = QPolygonF({
+        {275.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0},
+        {325.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0},
+        {300.0, bYAxisTopDown ? 250.0 : fYAxisMaxVal - 250.0}
+        });
+    strMthInArgs = m_pPhysValPolygonTriangle->toString();
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep*)));
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("Method", strMethod);
+    pTestStep->setConfigValue("Points", m_pPhysValPolygonTriangle->toQPolygonF());
+    pTestStep->setConfigValue("Points.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForPolygon(
+        strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Hide Text Labels
+    //---------------------
+
+    strMethod = "hideTextLabel";
+    strMthArgs = CGraphObj::c_strLabelName +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "1" +
+        ", " + CGraphObj::c_strGeometryLabelNameP + "2";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strGeometryLabelNameP + "1" + " not found"}
+        });
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strGeometryLabelNameP + "2" + " not found"}
+        });
+
+    // Hide Geometry Labels
+    //---------------------
+
+    strMethod = "hideGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameP + "1";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
+        /* szDoTestStepFct */ SLOT(doTestStepHideGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strGeometryLabelNameP + "1" + " not found"}
         });
 
     //------------------------------
@@ -8615,8 +8960,6 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     //---------------------
 
     strLabelName = CGraphObj::c_strGeometryLabelNameWidth;
-    sizeLabel = QSizeF(12.0, 16.0);  // Text: "50"
-    ptPosLabel = QPointF(m_ptPosTriangle.x() - sizeLabel.width() / 2.0, m_ptPosTriangle.y() - sizeLabel.height() / 2.0);
     strMethod = "showGeometryLabel";
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -8625,17 +8968,24 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->bottomCenter().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
     strMethod = "moveGeometryLabel";
-    ptPosLabel = QPointF(ptPosLabel.x(), ptPosLabel.y() - m_pPhysValPolygonTriangle->height().getVal(Units.Length.px) / 2.0 - 2.0 * sizeLabel.height());
+    ptPosLabel = QPointF(ptPosLabel.x(), ptPosLabel.y() + sizeLabel.height());
     strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -8654,8 +9004,6 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameHeight;
-    sizeLabel = QSizeF(12.0, 16.0);  // Text: "50"
-    ptPosLabel = QPointF(m_ptPosTriangle.x() - sizeLabel.width() / 2.0, m_ptPosTriangle.y() - sizeLabel.height() / 2.0);
     strMethod = "showGeometryLabel";
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -8664,17 +9012,24 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->rightCenter().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
     strMethod = "moveGeometryLabel";
-    ptPosLabel = QPointF(ptPosLabel.x() - m_pPhysValPolygonTriangle->width().getVal(Units.Length.px) / 2.0 - 2.0 * sizeLabel.width(), ptPosLabel.y());
+    ptPosLabel = QPointF(ptPosLabel.x() + sizeLabel.width(), ptPosLabel.y());
     strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -8689,12 +9044,10 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
-    sizeLabel = QSizeF(23.0, 16.0);  // Text: "0°"
-    ptPosLabel = QPointF(313.5, 267.0);
     strMethod = "showGeometryLabel";
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -8703,17 +9056,24 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("0.0 "+ QString(Math::c_chSymbolDegree)), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = m_pPhysValPolygonTriangle->rightCenter().toQPointF(Units.Length.px);
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
     strMethod = "moveGeometryLabel";
-    ptPosLabel = QPointF(ptPosLabel.x() + sizeLabel.width() / 2.0, ptPosLabel.y());
+    ptPosLabel = QPointF(ptPosLabel.x() + sizeLabel.width() + 10, ptPosLabel.y() - sizeLabel.height());
     strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -8780,9 +9140,9 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8816,9 +9176,9 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8850,20 +9210,18 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         { 25.0, -87.5}
         });
     m_pPhysValPolygonTriangle->insert(idxPt, physValPoint);
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
         strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     // append()
     //---------
@@ -8889,19 +9247,17 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {-30.0, -62.5}
         });
     m_pPhysValPolygonTriangle->append(physValPoint);
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("point", physValPoint.toQPointF());
-    pTestStep->setConfigValue("point.unit", strUnit);
+    pTestStep->setConfigValue("Point", physValPoint.toQPointF());
+    pTestStep->setConfigValue("Point.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
         strObjName, m_ptPosTriangle, m_polygonTriangle, *m_pPhysValPolygonTriangle, false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
-    //iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     // removeLast
     //-------------
@@ -8957,8 +9313,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
-    pTestStep->setConfigValue("idxPt", idxPt);
-    pTestStep->setConfigValue("count", iCount);
+    pTestStep->setConfigValue("IdxPt", idxPt);
+    pTestStep->setConfigValue("Count", iCount);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8988,7 +9344,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Width", m_pPhysValPolygonTriangle->width().getVal());
-    pTestStep->setConfigValue("Width.Unit", m_pPhysValPolygonTriangle->width().unit().unitName());
+    pTestStep->setConfigValue("Width.Unit", m_pPhysValPolygonTriangle->width().unit().symbol());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -8999,7 +9355,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     //-------------
 
     strMethod = "setHeight";
-    m_pPhysValPolygonTriangle->setHeight(100);
+    m_pPhysValPolygonTriangle->setHeight(50);
     strMthArgs = m_pPhysValPolygonTriangle->height().toString();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -9007,18 +9363,18 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep*)));
-    m_ptPosTriangle = QPointF(325.0, 300.0);
+    m_ptPosTriangle = QPointF(350.0, 300.0);
     m_polygonTriangle = QPolygonF({
-        {-50.0,  50.0},
-        { 50.0,  50.0},
-        {  0.0, -50.0}
+        {-50.0,  25.0},
+        { 50.0,  25.0},
+        {  0.0, -25.0}
         });
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypePolygon));
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Height", m_pPhysValPolygonTriangle->height().getVal());
-    pTestStep->setConfigValue("Height.Unit", m_pPhysValPolygonTriangle->height().unit().unitName());
+    pTestStep->setConfigValue("Height.Unit", m_pPhysValPolygonTriangle->height().unit().symbol());
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForPolygon(
@@ -9028,7 +9384,6 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameHeight +
@@ -9043,7 +9398,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(398.0, 292.0)},
+        {"ExpectedPos", QPointF(300.0, 292.0)},
         {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
@@ -9051,17 +9406,17 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(316.0, 218.0)},
+        {"ExpectedPos", QPointF(344.0, 354.0)},
         {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(310.5, 353.5)},
+        {"ExpectedPos", QPointF(351.5, 375.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
         });
 
     // Rotate
@@ -9092,7 +9447,6 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameHeight +
@@ -9107,7 +9461,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(398.0, 292.0)},
+        {"ExpectedPos", QPointF(341.0, 333.0)},
         {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
@@ -9115,17 +9469,17 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(316.0, 218.0)},
+        {"ExpectedPos", QPointF(406.0, 292.0)},
         {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(310.5, 353.5)},
+        {"ExpectedPos", QPointF(421.5, 276.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
         });
 
     // Save and Load File
@@ -9136,7 +9490,6 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     // Check Geometry Labels
     //----------------------
 
-    iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameHeight +
@@ -9151,7 +9504,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(398.0, 292.0)},
+        {"ExpectedPos", QPointF(341.0, 333.0)},
         {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
@@ -9159,17 +9512,17 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(316.0, 218.0)},
+        {"ExpectedPos", QPointF(406.0, 292.0)},
         {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(310.5, 353.5)},
+        {"ExpectedPos", QPointF(421.5, 276.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
         });
 }
 
@@ -14784,7 +15137,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygonsMo
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_pPhysValPolygonStar1->center().toQPointF());
-    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("Pos.Unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[strObjName]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineStar1BottomCenterStar2TopCenter]},
@@ -14863,7 +15216,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygonsMo
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_pPhysValPolygonStar2->center().toQPointF());
-    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("Pos.Unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameStar2]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineStar1BottomCenterStar2TopCenter]},
@@ -14942,7 +15295,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygonsMo
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_pPhysValPolygonStar3->center().toQPointF());
-    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("Pos.Unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameStar3]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineStar3LeftCenterStar1RightCenter]},
@@ -15021,7 +15374,7 @@ void CTest::createTestGroupAddStandardShapesConnectionPointsAnchoredToPolygonsMo
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
     pTestStep->setConfigValue("Method", strMethod);
     pTestStep->setConfigValue("Pos", m_pPhysValPolygonStar4->center().toQPointF());
-    pTestStep->setConfigValue("Pos.unit", strUnit);
+    pTestStep->setConfigValue("Pos.Unit", strUnit);
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", QStringList{
         {m_hshGraphObjNameToKeys[c_strGraphObjNameStar4]},
         {m_hshGraphObjNameToKeys[c_strGraphObjNameConnectionLineStar2RightCenterStar4LeftCenter]},

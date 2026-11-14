@@ -205,12 +205,12 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
         else if (strLabelName == c_strGeometryLabelNameWidth) {
             bAdded = addGeometryLabel(
                 EGraphObjTypeLabelGeometryWidth, strLabelName,
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
             bAdded = addGeometryLabel(
                 EGraphObjTypeLabelGeometryHeight, strLabelName,
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             bAdded = addGeometryLabel(

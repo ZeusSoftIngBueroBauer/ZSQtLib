@@ -114,7 +114,8 @@ CGraphObjLabel::CGraphObjLabel(
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_selPtLinkedObject(i_selPt)
+    m_selPtLinkedObject(i_selPt),
+    m_drawSettingsArrowHeads(EGraphObjTypeLine)
 {
     createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Labels", ClassName());
 
@@ -607,16 +608,30 @@ QRectF CGraphObjLabel::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
     // If the object is selected and the anchor line is visible also this area need to be updated.
     if (isSelected() || m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBoundingAnchorLine = QRectF(
+                rctBoundingAnchorLine.left() - static_cast<double>(iPenWidth) / 2.0,
+                rctBoundingAnchorLine.top() - static_cast<double>(iPenWidth) / 2.0,
+                rctBoundingAnchorLine.width() + static_cast<double>(iPenWidth),
+                rctBoundingAnchorLine.height() + static_cast<double>(iPenWidth));
             rctBounding |= rctBoundingAnchorLine;
         }
     }
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
+    for (const QPolygonF& polygon : m_arrowHeads) {
+        QRectF rctBoundingArrowHead = polygon.boundingRect();
+        rctBoundingArrowHead = QRectF(
+            rctBoundingArrowHead.left() - static_cast<double>(iPenWidth) / 2.0,
+            rctBoundingArrowHead.top() - static_cast<double>(iPenWidth) / 2.0,
+            rctBoundingArrowHead.width() + static_cast<double>(iPenWidth),
+            rctBoundingArrowHead.height() + static_cast<double>(iPenWidth));
+        rctBounding |= rctBoundingArrowHead;
     }
     rctBounding = QRectF(
         rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
@@ -679,15 +694,17 @@ void CGraphObjLabel::paint(
         /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceDrawSettings(mthTracer, EMethodDir::Enter);
-        traceGraphObjStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceDrawSettings(mthTracer, EMethodDir::Enter);
+    //    traceGraphObjStates(mthTracer, EMethodDir::Enter);
+    //    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    //}
+    //CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
 
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
 
-    QRectF rct = getBoundingRect();
+    QRectF rctBounding = getBoundingRect();
 
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
@@ -701,44 +718,40 @@ void CGraphObjLabel::paint(
     pn.setStyle(Qt::DotLine);
     i_pPainter->setPen(pn);
     i_pPainter->setRenderHints(s_painterRenderHints);
-    i_pPainter->drawRect(rct);
+    i_pPainter->drawRect(rctBounding);
+
+    QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
+    color.setAlpha(192);
+    pn.setColor(color);
+    pn.setStyle(Qt::SolidLine);
+#if 0
+    pn.setColor(Qt::red);
+    pn.setWidth(2);
+#endif
+    i_pPainter->setPen(pn);
 
     // Draw anchor line to selection point of linked object if the label is hit,
     // hovered, selected or if the anchor line is set to be visible.
     // Use a different color if the line is hit, hovered or selected.
     if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine && !m_anchorLines.isEmpty()) {
-        QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         for (const QLineF& anchorLine : m_anchorLines) {
-            if (!rctBounding.contains(anchorLine.p2())) {
-                if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                    QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
-                    color.setAlpha(192);
-                    pn.setColor(color);
-                    #if 1
-                    pn.setColor(Qt::red);
-                    pn.setStyle(Qt::SolidLine);
-                    pn.setWidth(2);
-                    #endif
-                    i_pPainter->setPen(pn);
-                    i_pPainter->drawLine(anchorLine);
-                }
+            if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
+                i_pPainter->drawLine(anchorLine);
             }
-            //#pragma message(__TODO__"To be removed")
-            //break;
-            //#pragma message(__TODO__"To be removed")
+        }
+        i_pPainter->setBrush(Qt::black);
+        i_pPainter->setBrush(Qt::SolidPattern);
+        for (const QPolygonF& arrowHead : m_arrowHeads) {
+            i_pPainter->drawPolygon(arrowHead);
         }
     }
-
     i_pPainter->restore();
 
     QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
-
     styleOption.state &= ~QStyle::State_Selected;
     styleOption.state &= ~QStyle::State_HasFocus;
-
     QGraphicsSimpleTextItem::paint(i_pPainter, &styleOption, i_pWdgt);
-
-} // paint
+}
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem

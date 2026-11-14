@@ -5490,16 +5490,20 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
             pGraphObj->setType(EGraphObjTypePolyline);
         }
         if (strMethod.compare("setPolygon", Qt::CaseInsensitive) == 0) {
-            if (i_pTestStep->hasConfigValue("polygon")) {
-                CPhysValPolygon physValPolygon(*m_pDrawingScene);
-                //physValPolygon = i_pTestStep->getConfigValue("polygon").toPolygonF();
+            if (i_pTestStep->hasConfigValue("Points")) {
+                QPolygonF polygon = i_pTestStep->getConfigValue("Points").value<QPolygonF>();
+                if (i_pTestStep->hasConfigValue("Points.Unit")) {
+                    QString strUnit = i_pTestStep->getConfigValue("Points.Unit").toString();
+                    unit = strUnit;
+                }
+                CPhysValPolygon physValPolygon(*m_pDrawingScene, polygon, unit);
                 pGraphObj->setPolygon(physValPolygon);
             }
         }
         else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("Pos").toPointF();
-            if (i_pTestStep->hasConfigValue("Pos.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("Pos.unit").toString();
+            if (i_pTestStep->hasConfigValue("Pos.Unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Pos.Unit").toString();
                 unit = strUnit;
             }
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
@@ -5513,8 +5517,8 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
         }
         else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
             double fWidth = i_pTestStep->getConfigValue("Width").toDouble();
-            if (i_pTestStep->hasConfigValue("Width.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("Width.unit").toString();
+            if (i_pTestStep->hasConfigValue("Width.Unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Width.Unit").toString();
                 unit = strUnit;
             }
             CPhysVal physValWidth(fWidth, unit);
@@ -5522,46 +5526,46 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
         }
         else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
             double fHeight = i_pTestStep->getConfigValue("Height").toDouble();
-            if (i_pTestStep->hasConfigValue("Height.unit")) {
-                QString strUnit = i_pTestStep->getConfigValue("Height.unit").toString();
+            if (i_pTestStep->hasConfigValue("Height.Unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Height.Unit").toString();
                 unit = strUnit;
             }
             CPhysVal physValHeight(fHeight, unit);
             pGraphObj->setHeight(physValHeight);
         }
         else if (strMethod.compare("replace", Qt::CaseInsensitive) == 0) {
-            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
-            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            int idxPt = i_pTestStep->getConfigValue("IdxPt").toInt();
+            QPointF pt = i_pTestStep->getConfigValue("Point").toPointF();
             CUnit unit = m_pDrawingScene->drawingSize().unit();
-            if (i_pTestStep->hasConfigValue("point.unit")) {
-                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            if (i_pTestStep->hasConfigValue("Point.Unit")) {
+                unit = i_pTestStep->getConfigValue("Point.Unit").toString();
             }
             pGraphObj->replace(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
         }
         else if (strMethod.compare("append", Qt::CaseInsensitive) == 0) {
-            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            QPointF pt = i_pTestStep->getConfigValue("Point").toPointF();
             CUnit unit = m_pDrawingScene->drawingSize().unit();
-            if (i_pTestStep->hasConfigValue("point.unit")) {
-                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            if (i_pTestStep->hasConfigValue("Point.Unit")) {
+                unit = i_pTestStep->getConfigValue("Point.Unit").toString();
             }
             pGraphObj->append(CPhysValPoint(*m_pDrawingScene, pt, unit));
         }
         else if (strMethod.compare("insert", Qt::CaseInsensitive) == 0) {
-            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
-            QPointF pt = i_pTestStep->getConfigValue("point").toPointF();
+            int idxPt = i_pTestStep->getConfigValue("IdxPt").toInt();
+            QPointF pt = i_pTestStep->getConfigValue("Point").toPointF();
             CUnit unit = m_pDrawingScene->drawingSize().unit();
-            if (i_pTestStep->hasConfigValue("point.unit")) {
-                unit = i_pTestStep->getConfigValue("point.unit").toString();
+            if (i_pTestStep->hasConfigValue("Point.Unit")) {
+                unit = i_pTestStep->getConfigValue("Point.Unit").toString();
             }
             pGraphObj->insert(idxPt, CPhysValPoint(*m_pDrawingScene, pt, unit));
         }
         else if (strMethod.compare("remove", Qt::CaseInsensitive) == 0) {
-            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
-            int iCount = i_pTestStep->getConfigValue("count").toInt();
+            int idxPt = i_pTestStep->getConfigValue("IdxPt").toInt();
+            int iCount = i_pTestStep->getConfigValue("Count").toInt();
             pGraphObj->remove(idxPt, iCount);
         }
         else if (strMethod.compare("removeAt", Qt::CaseInsensitive) == 0) {
-            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            int idxPt = i_pTestStep->getConfigValue("IdxPt").toInt();
             pGraphObj->removeAt(idxPt);
         }
         else if (strMethod.compare("removeFirst", Qt::CaseInsensitive) == 0) {
@@ -5571,7 +5575,7 @@ void CTest::doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestS
             pGraphObj->removeLast();
         }
         else if (strMethod.compare("takeAt", Qt::CaseInsensitive) == 0) {
-            int idxPt = i_pTestStep->getConfigValue("idxPt").toInt();
+            int idxPt = i_pTestStep->getConfigValue("IdxPt").toInt();
             physValPointTaken = pGraphObj->takeAt(idxPt);
         }
         else if (strMethod.compare("takeFirst", Qt::CaseInsensitive) == 0) {

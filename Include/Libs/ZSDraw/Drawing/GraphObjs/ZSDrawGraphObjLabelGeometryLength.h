@@ -75,9 +75,6 @@ public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
-public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const override;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updateText() override;
     //virtual void updatePosition() override;
@@ -90,13 +87,6 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         const QString& i_strFilter = "") const override;
 protected: // class members
     static QPainter::RenderHints s_painterRenderHints;
-protected: // instance members
-    /*!< Draw settings used to draw the arrow heads at the ends of anchor line 2. */
-    CDrawSettings m_drawSettingsArrowHeads;
-    /*!< Polygon points for arrow head at P1 (line start) */
-    QPolygonF m_plgP1ArrowHead;
-    /*!< Polygon points for arrow head at P2 (line end) */
-    QPolygonF m_plgP2ArrowHead;
 
 }; // class CGraphObjLabelGeometryLength
 

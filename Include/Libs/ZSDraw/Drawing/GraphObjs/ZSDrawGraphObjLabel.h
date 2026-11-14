@@ -171,13 +171,18 @@ protected: // instance members
          is not changed if the linked object is rotated. The angle is stored as if the linked
          object is not rotated. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
-    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
+    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's
+         anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
     /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
          in local coordinates drawn from the label to the selection point(s) of the parent.
          The start point of the line at the label depend on the position of the label relative
          to the selection point(s) of the parent (see "updatePosition" for more details). */
     QList<QLineF> m_anchorLines;
+    /*!< Polygon points for arrow heads at line ends of the anchor lines. */
+    QList<QPolygonF> m_arrowHeads;
+    /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
+    CDrawSettings m_drawSettingsArrowHeads;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
     bool m_bUpdatePositionInProgress = false;
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)

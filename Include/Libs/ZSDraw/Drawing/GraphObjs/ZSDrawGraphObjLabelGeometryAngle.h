@@ -109,10 +109,6 @@ protected: // instance members
     /*!< Span of the pie  to draw the "anchor" line of the rotation angle.
          The span is equal to the rotation angle of the linked object. */
     double m_fPieSpanAngle_degrees = 0.0;
-    /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
-    CDrawSettings m_drawSettingsArrowHeads;
-    /*!< Polygon points for arrow head at P2 (line end) */
-    QPolygonF m_plgP2ArrowHead;
 
 }; // class CGraphObjLabelGeometryAngle
 
