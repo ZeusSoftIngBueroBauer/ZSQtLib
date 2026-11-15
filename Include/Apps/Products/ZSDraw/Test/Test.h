@@ -91,8 +91,8 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_ELLIPSES_SINGLEELLIPSE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_TEXTS_SINGLETEXT 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_TRIANGLE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_STAR 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_POLYGONS_OPEN_ARROW 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_PIXMAPS 0
@@ -107,10 +107,10 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ELLIPSES 0
@@ -452,8 +452,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupLinesBigPlusSignRotateTop(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -505,8 +504,7 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLinesBigPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
     void doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep);

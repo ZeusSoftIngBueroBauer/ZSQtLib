@@ -12946,7 +12946,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTe
 }
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -12985,6 +12985,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
     QStringList strlstExpectedValues;
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
     CPhysValRect physValRectTopGroupNew = *m_pPhysValRectTopGroup;
+    CPhysValRect physValRectBigPlusSignNew = *m_pPhysValRectBigPlusSign;
     CEnumSelectionPoint eSelPt;
     QPointF pt1SelPt;
     QPointF pt2SelPt;
@@ -13261,7 +13262,7 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Check Geometry Labels
-    //---------------------
+    //----------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -13281,57 +13282,6 @@ void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignRotateParent(Z
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleBigPlusSign.toString()},
     });
-}
-
-//------------------------------------------------------------------------------
-void CTest::createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupDrawStandardShapesGroupLinesBigPlusSignModfications",
-        /* strAddInfo   */ strMthInArgs );
-
-    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
-    QString strGraphObjTypeGroup = graphObjType2Str(EGraphObjTypeGroup);
-    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-
-    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unit = drawingSize.unit();
-    QString strUnit = unit.symbol();
-    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
-    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
-
-    /*-----------------------------------------------------------------------
-    Pixels Drawing:
-        Size: 800 * 600 Pixels
-    Metrics Drawing:
-        Size: 800 * 600 mm
-        ScreenPixelResolution: 1.0 px/mm
-        Decimals: 2
-    -----------------------------------------------------------------------*/
-
-    ZS::Test::CTestStep* pTestStep = nullptr;
-    QStringList strlstExpectedValues;
-    QStringList strlstGraphObjsKeyInTreeGetResultValues;
-    CPhysValRect physValRectTopGroupNew = *m_pPhysValRectTopGroup;
-    CPhysValRect physValRectBigPlusSignNew = *m_pPhysValRectBigPlusSign;
-    CEnumSelectionPoint eSelPt;
-    QPointF pt1SelPt;
-    QPointF pt2SelPt;
-
-    ZS::Test::CTestStepGroup* pGrpModifyBigPlusSign = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify " + c_strGraphObjNameBigPlusSign,
-        /* pTSGrpParent */ i_pTestStepGroupParent );
 
     // Ungroup BigPlusSign
     //----------------------
