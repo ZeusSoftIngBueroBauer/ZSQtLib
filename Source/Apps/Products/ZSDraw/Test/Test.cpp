@@ -7413,7 +7413,7 @@ QStringList CTest::resultValuesForLine(
             strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
             strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
             strGraphObjName + ".line {" + qLine2Str(i_lineItemCoors) + "} px",
-            strGraphObjName + ".center {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
+            strGraphObjName + ".center {" + i_physValLine.center().toString(false) + "} " + i_physValLine.unit().symbol(),
             strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
             strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "}",
             strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()

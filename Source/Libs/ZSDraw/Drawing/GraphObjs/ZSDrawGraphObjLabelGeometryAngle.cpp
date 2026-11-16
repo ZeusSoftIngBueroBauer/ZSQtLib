@@ -271,13 +271,11 @@ void CGraphObjLabelGeometryAngle::paint(
         // The startAngle and spanAngle must be specified in 1/16th of a degree.
         // The painter counts angles counter clockwise whereas the graphics system
         // counts angles clockwise. Correct the angles before drawing the pies.
-        #if 1
+        #if 0
         i_pPainter->setPen(Qt::red);
         #endif
         if ((fabs(m_rectPie.width()) >= 20.0) || (fabs(m_rectPie.height()) >= 20.0)) {
-            double fPieStartAngle_degrees = Math::toCounterClockWiseAngleDegree(m_fPieStartAngle_degrees);
-            double fPieSpanAngle_degrees = -m_fPieSpanAngle_degrees;
-            i_pPainter->drawPie(m_rectPie, 16.0 * fPieStartAngle_degrees, 16.0 * fPieSpanAngle_degrees);
+            i_pPainter->drawPie(m_rectPie, 16.0 * m_fPieStartAngle_degrees, 16.0 * m_fPieSpanAngle_degrees);
         }
         i_pPainter->restore();
     }
@@ -375,14 +373,14 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         // of 0° in the coordinate system of the linked object's parent.
         QLineF anchorLine0InSceneCoors = getLineFromPolar(
             ptCenterLinkedObjectSceneCoors,
-            SPolarCoors(fDistanceToLinkedObjectCenter, fAngleSceneCoors_degrees));
+            SPolarCoors(fDistanceToLinkedObjectCenter, fAngleSceneCoors_degrees - fAngle_degrees));
 
         // Anchor1 is the end boundary of the angular dimensionang at the angle to be indicated.
         // The boundary line starts in the center of the linked object with the rotation angle
         // of the linked object in the coordinate system of the linked object's parent.
         QLineF anchorLine1InSceneCoors = getLineFromPolar(
             ptCenterLinkedObjectSceneCoors, 
-            SPolarCoors(fDistanceToLinkedObjectCenter, fAngleSceneCoors_degrees + fAngle_degrees));
+            SPolarCoors(fDistanceToLinkedObjectCenter, fAngleSceneCoors_degrees));
 
         m_anchorLines[0] = QLineF(mapFromScene(anchorLine0InSceneCoors.p1()), mapFromScene(anchorLine0InSceneCoors.p2()));
         m_anchorLines[1] = QLineF(mapFromScene(anchorLine1InSceneCoors.p1()), mapFromScene(anchorLine1InSceneCoors.p2()));
@@ -395,19 +393,8 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
 
         // The angle returned by QLineF is counter-clockwise with 0° at 3 o'clock.
         // The graphics scene uses clockwise angles with 0° at 3 o'clock.
-        m_fPieStartAngle_degrees = fAngleSceneCoors_degrees - fAngle_degrees;
-        m_fPieSpanAngle_degrees = fAngle_degrees;
-        // The scenes rotation angle of the parent group of the linked object must be subtracted
-        // to get the start point of the pie and the span has to be corrected correspondingly.
-        //CGraphObjGroup* pGraphObjParentGroup = m_selPtLinkedObject.m_pGraphObj->parentGroup();
-        //if (pGraphObjParentGroup != nullptr) {
-        //    double fParentGroupSceneRotationAngle_degrees =
-        //        pGraphObjParentGroup->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-        //    m_fPieStartAngle_degrees = fParentGroupSceneRotationAngle_degrees;
-        //    m_fPieStartAngle_degrees = Math::normalizeAngleInDegree(m_fPieStartAngle_degrees);
-        //    m_fPieSpanAngle_degrees -= fParentGroupSceneRotationAngle_degrees;
-        //    m_fPieSpanAngle_degrees = Math::normalizeAngleInDegree(m_fPieSpanAngle_degrees);
-        //}
+        m_fPieStartAngle_degrees = Math::toCounterClockWiseAngleDegree(fAngleSceneCoors_degrees - fAngle_degrees);
+        m_fPieSpanAngle_degrees = -fAngle_degrees;
 
         QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
             m_anchorLines[1], m_anchorLines[1].p2(), 10.0);
