@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -644,6 +645,17 @@ void CPhysValLine::setCenter(const CPhysValPoint& i_physValPointCenter)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the angle of the line in Degrees.
+
+    @param [in] i_fAngle_degree
+*/
+void CPhysValLine::setAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    setAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree));
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the angle of the line in the given unit.
 
     The center point and the length of the line remains unchanged.
@@ -669,6 +681,9 @@ void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
     //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
     //    physValAngle.setVal(fAngle_degree);
     //}
+    // The line may already be rotated and has a current rotation angle.
+    // The new rotation angle is applied by rotating P1 and P2 around the center
+    // of the line with the new angle.
     double fAngleClockwise_degree = physValAngle.getVal(Units.Angle.Degree);
     double fAngleCounterClockwise_degree = Math::toCounterClockWiseAngleDegree(fAngleClockwise_degree);
     double fAngleCounterClockwise_rad = Math::degree2Rad(fAngleCounterClockwise_degree);

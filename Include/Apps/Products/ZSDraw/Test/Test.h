@@ -63,7 +63,7 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 0
 #define TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALPOLYGON 0
 #define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
-#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
+#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
 #define TEST_METRICS_DRAWINGS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
@@ -81,7 +81,6 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CROSS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 0
@@ -109,9 +108,9 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES 0
@@ -121,9 +120,8 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
 
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CROSS 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 0
@@ -147,7 +145,7 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
 
@@ -189,7 +187,6 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CROSS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 1
@@ -217,7 +214,7 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSS 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 1
@@ -231,7 +228,6 @@ class QPainterPath;
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CROSS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_BIGPLUSSIGN 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES_CHECKMARK 1
@@ -255,7 +251,7 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSS 1
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
 
@@ -391,6 +387,8 @@ public: // type definition and constants
     const QString c_strGraphObjNameConnectionLineText3LeftCenterText2RightCenter = "CnctLine-Text-3-LeftCenter-1-Text-2-RightCenter-1";
     // Groups
     //-------
+    const QString c_strGraphObjNameGroup1 = "Group-1";
+    const QString c_strGraphObjNameGroup2 = "Group-2";
     const QString c_strGraphObjNameTopGroup = "Top";
     const QString c_strGraphObjNameSmallPlusSign = "SmallPlusSign";
     const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
@@ -457,8 +455,9 @@ protected: // instance methods
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToBitmapsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesConnectionPointsAnchoredToGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddStandardShapesGroupLinesSmallPlusSignResize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -509,6 +508,7 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesConnectionPointsAnchoredToBitmapsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesConnectionPointsAnchoredToGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawStandardShapesGroupLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -882,6 +882,14 @@ protected: // instance members
 
     // Groups
     //-------
+    // Group-1
+    QPointF m_ptPosGroup1;
+    QSizeF m_sizeGroup1;
+    ZS::Draw::CPhysValRect* m_pPhysValRectGroup1 = nullptr;
+    // Group-2
+    QPointF m_ptPosGroup2;
+    QSizeF m_sizeGroup2;
+    ZS::Draw::CPhysValRect* m_pPhysValRectGroup2 = nullptr;
     // Lines-SmallPlusSign
     QPointF m_ptPosSmallPlusSign;
     QSizeF m_sizeSmallPlusSign;

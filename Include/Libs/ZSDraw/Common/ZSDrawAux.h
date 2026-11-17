@@ -114,6 +114,7 @@ ZSDRAWDLL_API QPointF getCornerPoint(const QPointF& i_ptCenter, const QSizeF& i_
 ZSDRAWDLL_API double getAngleRad(const QPointF& i_pt1, const QPointF& i_pt2);
 ZSDRAWDLL_API double getAngleDegree(const QPointF& i_pt1, const QPointF& i_pt2);
 ZSDRAWDLL_API QPointF rotatePoint(const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad);
+ZSDRAWDLL_API QLineF rotateLine(const QPointF& i_ptCenter, const QLineF& i_line, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF rotateRect(const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF rotatePolygon(const QPointF& i_ptCenter, const QPolygonF& i_plg, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF normalizePolygon(const QPolygonF& i_plg, int i_iPrecision = 0);

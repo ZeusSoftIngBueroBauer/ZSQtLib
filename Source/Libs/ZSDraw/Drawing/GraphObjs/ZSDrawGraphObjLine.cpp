@@ -1030,6 +1030,15 @@ void CGraphObjLine::setRotationAngle(const CPhysVal& i_physValAngle)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+CPhysVal CGraphObjLine::rotationAngle() const
+//------------------------------------------------------------------------------
+{
+    return rotationAngle(Units.Angle.Degree);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the item's angle in the given unit.
 
     The return value will be in the range of values from 0.0 up to but not
@@ -2525,7 +2534,41 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged(
 
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-        setLineOrig(line());
+        QLineF lineOrig = line();
+        #if 0
+        // If the parent group was rotated, the original line, given in local coordinates,
+        // need to be rotated so that the relative rotation angle on the screen remain the same.
+        // Note: The line does not store the rotation angle in the member m_physValRotationAngle but
+        //       the angle is set and calculated in class CPhysValLine.
+        if (i_pGraphObjGroupPrev != nullptr) {
+            CPhysVal physValRotationAngleParentGroup = i_pGraphObjGroupPrev->rotationAngle();
+            if (i_pGraphObjGroupNew == nullptr) {
+                physValRotationAngleParentGroup =
+                    i_pGraphObjGroupPrev->mapRotationAngleToScene(physValRotationAngleParentGroup);
+            }
+            else {
+                physValRotationAngleParentGroup =
+                    i_pGraphObjGroupPrev->mapRotationAngleTo(physValRotationAngleParentGroup, i_pGraphObjGroupNew);
+            }
+            double fAngleClockwise_degree = physValRotationAngleParentGroup.getVal();
+            if (fAngleClockwise_degree != 0.0) {
+                double fAngleCounterClockwise_degree = Math::toCounterClockWiseAngleDegree(fAngleClockwise_degree);
+                double fAngleCounterClockwise_rad = Math::degree2Rad(fAngleCounterClockwise_degree);
+                QPointF ptLineOrigCenter = lineOrig.center();
+                lineOrig = rotateLine(ptLineOrigCenter, lineOrig, fAngleCounterClockwise_rad);
+            }
+        }
+        // Set the line in local coordinate system.
+        // Also note that itemChange must not overwrite the current values (refCountGuard).
+        {
+            CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+            CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+            setLineOrig(lineOrig);
+            QGraphicsLineItem_setLine(lineOrig);
+        }
+        #else
+        setLineOrig(lineOrig);
+        #endif
         CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
         setPhysValLineOrig(physValLine);
         physValLine = getPhysValLineScaled(m_physValLineOrig);
@@ -2738,10 +2781,11 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
-    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
-    if (fRotationAngle_degree != 0.0) {
-        pVThis->QGraphicsItem_setRotation(0.0);
-    }
+    //double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    //double fRotationAngle_degree = pGraphicsItemThis->rotation();
+    //if (fRotationAngle_degree != 0.0) {
+    //    pVThis->QGraphicsItem_setRotation(0.0);
+    //}
     CPhysValPoint physValPointP1(*m_pDrawingScene);
     CPhysValPoint physValPointP2(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
@@ -2761,9 +2805,9 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
         QPointF p2 = pGraphicsItemThis->mapToScene(i_lineOrig.p2());
         physValPointP2 = m_pDrawingScene->convert(p2);
     }
-    if (fRotationAngle_degree != 0.0) {
-        pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
-    }
+    //if (fRotationAngle_degree != 0.0) {
+    //    pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
+    //}
 
     CPhysValLine physValLine(physValPointP1, physValPointP2);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -3061,10 +3105,19 @@ void CGraphObjLine::traceThisPositionInfo(
             + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
             + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "GraphicsLineItem {";
+    i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
+        strRuntimeInfo += ". Line Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

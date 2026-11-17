@@ -124,6 +124,7 @@ public: // instance methods
     void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
     void setCenter(const QPointF& i_pCenter);
     void setCenter(const CPhysValPoint& i_physValPointCenter);
+    void setAngle(double i_fAngle_degree);
     void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
 public: // instance methods (to convert the values into another unit)
     QLineF toQLineF() const;

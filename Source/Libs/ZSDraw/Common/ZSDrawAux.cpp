@@ -2163,90 +2163,100 @@ double ZS::Draw::getAngleDegree(const QPointF& i_pt1, const QPointF& i_pt2)
 QPointF ZS::Draw::rotatePoint(const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad)
 //------------------------------------------------------------------------------
 {
-    QPointF ptRes = i_pt;
+    QPointF ptRotated = i_pt;
     if (i_fAngle_rad != 0.0) {
         double fRadius_px = QLineF(i_ptCenter, i_pt).length();
         double fAnglePt_rad = getAngleRad(i_ptCenter, i_pt);
         double fAngleRes_rad = fAnglePt_rad + i_fAngle_rad;
-        ptRes.setX(i_ptCenter.x() + fRadius_px * cos(fAngleRes_rad));
-        ptRes.setY(i_ptCenter.y() - fRadius_px * sin(fAngleRes_rad));
+        ptRotated.setX(i_ptCenter.x() + fRadius_px * cos(fAngleRes_rad));
+        ptRotated.setY(i_ptCenter.y() - fRadius_px * sin(fAngleRes_rad));
     }
-    return ptRes;
+    return ptRotated;
+}
+
+//------------------------------------------------------------------------------
+QLineF ZS::Draw::rotateLine(const QPointF& i_ptCenter, const QLineF& i_line, double i_fAngle_rad)
+//------------------------------------------------------------------------------
+{
+    QLineF lineRotated;
+    lineRotated.setP1(rotatePoint(i_ptCenter, i_line.p1(), i_fAngle_rad));
+    lineRotated.setP2(rotatePoint(i_ptCenter, i_line.p2(), i_fAngle_rad));
+    return lineRotated;
 }
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::rotateRect(const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad)
 //------------------------------------------------------------------------------
 {
-    QPolygonF polygonRect;
-    polygonRect.resize(4);
-    polygonRect[0] = rotatePoint(i_ptCenter, i_rct.topLeft(), i_fAngle_rad);
-    polygonRect[1] = rotatePoint(i_ptCenter, i_rct.topRight(), i_fAngle_rad);
-    polygonRect[2] = rotatePoint(i_ptCenter, i_rct.bottomRight(), i_fAngle_rad);
-    polygonRect[3] = rotatePoint(i_ptCenter, i_rct.bottomLeft(), i_fAngle_rad);
-    return polygonRect;
+    QPolygonF polygonRectRotated;
+    polygonRectRotated.resize(4);
+    polygonRectRotated[0] = rotatePoint(i_ptCenter, i_rct.topLeft(), i_fAngle_rad);
+    polygonRectRotated[1] = rotatePoint(i_ptCenter, i_rct.topRight(), i_fAngle_rad);
+    polygonRectRotated[2] = rotatePoint(i_ptCenter, i_rct.bottomRight(), i_fAngle_rad);
+    polygonRectRotated[3] = rotatePoint(i_ptCenter, i_rct.bottomLeft(), i_fAngle_rad);
+    return polygonRectRotated;
 }
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::rotatePolygon(const QPointF& i_ptCenter, const QPolygonF& i_polygon, double i_fAngle_rad)
 //------------------------------------------------------------------------------
 {
-    QPolygonF polygon;
+    QPolygonF polygonRotated;
     if (i_polygon.size() > 0) {
-        polygon.resize(i_polygon.size());
+        polygonRotated.resize(i_polygon.size());
         for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
             if (i_fAngle_rad != 0.0) {
-                polygon[idxPt] = rotatePoint(i_ptCenter, i_polygon[idxPt], i_fAngle_rad);
+                polygonRotated[idxPt] = rotatePoint(i_ptCenter, i_polygon[idxPt], i_fAngle_rad);
             }
             else {
-                polygon[idxPt] = i_polygon[idxPt];
+                polygonRotated[idxPt] = i_polygon[idxPt];
             }
         }
     }
-    return polygon;
+    return polygonRotated;
 }
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::normalizePolygon(const QPolygonF& i_plg, int i_iPrecision)
 //------------------------------------------------------------------------------
 {
-    QPolygonF plg = i_plg;
+    QPolygonF plgNormalized = i_plg;
 
     // Remove "identical" points:
-    if (plg.size() > 2) {
+    if (plgNormalized.size() > 2) {
         QPointF pt1;
         QPointF pt2;
         QString strPt1;
         QString strPt2;
 
-        for (int idxPt = plg.size()-1; idxPt >= 2; idxPt--) {
-            QPointF pt1 = plg[idxPt];
-            QPointF pt2 = plg[idxPt-1];
+        for (int idxPt = plgNormalized.size()-1; idxPt >= 2; idxPt--) {
+            QPointF pt1 = plgNormalized[idxPt];
+            QPointF pt2 = plgNormalized[idxPt-1];
             QString strPt1 = qPoint2Str(pt1, ",", 'f', 0);
             QString strPt2 = qPoint2Str(pt2, ",", 'f', 0);
             if (strPt1 == strPt2) {
-                plg.remove(idxPt);
+                plgNormalized.remove(idxPt);
             }
         }
     }
 
     // Remove points on direct lines between two neighbor points:
-    if (plg.size() > 2) {
+    if (plgNormalized.size() > 2) {
         bool bPtRemoved = true;
         while (bPtRemoved) {
             bPtRemoved = false;
-            for (int idxPt = plg.size()-1; idxPt >= 2; idxPt--) {
-                QLineF ln = QLineF( plg[idxPt], plg[idxPt-2] );
-                QPointF ptCheck = plg[idxPt-1];
+            for (int idxPt = plgNormalized.size()-1; idxPt >= 2; idxPt--) {
+                QLineF ln = QLineF( plgNormalized[idxPt], plgNormalized[idxPt-2] );
+                QPointF ptCheck = plgNormalized[idxPt-1];
                 if (isLineHit(ln, ptCheck, i_iPrecision, nullptr)) {
-                    plg.remove(idxPt-1);
+                    plgNormalized.remove(idxPt-1);
                     bPtRemoved = true;
                     break;
                 }
             }
         }
     }
-    return plg;
+    return plgNormalized;
 
 } // normalizePolygon
 
