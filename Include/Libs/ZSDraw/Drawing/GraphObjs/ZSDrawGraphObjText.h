@@ -210,6 +210,9 @@ protected: // auxiliary instance methods (method tracing)
     QPointF QGraphicsTextItem_setPos(const QPointF& i_pos);
     double QGraphicsTextItem_setTextWidth(double i_fWidth_px);
     Qt::TextInteractionFlags QGraphicsTextItem_setTextInteractionFlags(Qt::TextInteractionFlags i_flags);
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

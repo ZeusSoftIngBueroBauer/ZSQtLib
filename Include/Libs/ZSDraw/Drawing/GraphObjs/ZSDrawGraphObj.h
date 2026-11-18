@@ -869,6 +869,9 @@ protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setSelected(bool i_bSelected);
 protected: // overridable auxiliary instance methods (method tracing)
     ZS::System::CTrcAdminObj* selectTraceAdminObj(QGraphicsItem::GraphicsItemChange i_change);
+protected: // must overridables (method tracing)
+    virtual QRectF boundingRectInternal() const = 0;
+    virtual QRectF getBoundingRectInternal() const = 0;
 public: // overridable auxiliary instance methods (method tracing)
     virtual void traceConstraintSizes(
         ZS::System::CMethodTracer& i_mthTracer,

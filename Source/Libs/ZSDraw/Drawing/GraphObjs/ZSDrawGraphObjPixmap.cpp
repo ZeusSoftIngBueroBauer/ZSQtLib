@@ -151,8 +151,6 @@ CGraphObjPixmap::CGraphObjPixmap(CDrawingScene* i_pDrawingScene, const QString& 
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rctBounding = QGraphicsPixmapItem::boundingRect();
-
     m_strlstPredefinedTextLabelNames.append(c_strLabelName);
     m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameTopLeft);
     m_strlstPredefinedTextLabelNames.append(c_strGeometryLabelNameTopRight);
@@ -1327,10 +1325,11 @@ QRectF CGraphObjPixmap::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(m_rectScaled) + "}");
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
-    return m_rectScaled;
+    return rctBounding;
 }
 
 //------------------------------------------------------------------------------
@@ -1692,17 +1691,7 @@ QRectF CGraphObjPixmap::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsPixmapItem::boundingRect();
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.width() + static_cast<double>(iPenWidth),
-        rctBounding.height() + static_cast<double>(iPenWidth));
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -2919,6 +2908,34 @@ void CGraphObjPixmap::QGraphicsItem_prepareGeometryChange()
         /* strAddInfo   */ "" );
 
     prepareGeometryChange();
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjPixmap::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = QGraphicsPixmapItem::boundingRect();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjPixmap::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    return m_rectScaled;
 }
 
 /*==============================================================================

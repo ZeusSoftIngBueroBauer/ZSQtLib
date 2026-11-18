@@ -568,8 +568,7 @@ QRectF CGraphObjLabel::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -606,38 +605,7 @@ QRectF CGraphObjLabel::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    // If the object is selected and the anchor line is visible also this area need to be updated.
-    if (isSelected() || m_bShowAnchorLine) {
-        for (const QLineF& anchorLine : m_anchorLines) {
-            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
-            rctBoundingAnchorLine = QRectF(
-                rctBoundingAnchorLine.left() - static_cast<double>(iPenWidth) / 2.0,
-                rctBoundingAnchorLine.top() - static_cast<double>(iPenWidth) / 2.0,
-                rctBoundingAnchorLine.width() + static_cast<double>(iPenWidth),
-                rctBoundingAnchorLine.height() + static_cast<double>(iPenWidth));
-            rctBounding |= rctBoundingAnchorLine;
-        }
-    }
-    for (const QPolygonF& polygon : m_arrowHeads) {
-        QRectF rctBoundingArrowHead = polygon.boundingRect();
-        rctBoundingArrowHead = QRectF(
-            rctBoundingArrowHead.left() - static_cast<double>(iPenWidth) / 2.0,
-            rctBoundingArrowHead.top() - static_cast<double>(iPenWidth) / 2.0,
-            rctBoundingArrowHead.width() + static_cast<double>(iPenWidth),
-            rctBoundingArrowHead.height() + static_cast<double>(iPenWidth));
-        rctBounding |= rctBoundingArrowHead;
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.width() + static_cast<double>(iPenWidth),
-        rctBounding.height() + static_cast<double>(iPenWidth));
+    QRectF rctBounding = CGraphObjLabel::boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -1327,6 +1295,55 @@ void CGraphObjLabel::QGraphicsItem_prepareGeometryChange()
         /* strAddInfo   */ "" );
 
     prepareGeometryChange();
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjLabel::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    // If the object is selected and the anchor line is visible also this area need to be updated.
+    if (isSelected() || m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBoundingAnchorLine = QRectF(
+                rctBoundingAnchorLine.left() - static_cast<double>(iPenWidth) / 2.0,
+                rctBoundingAnchorLine.top() - static_cast<double>(iPenWidth) / 2.0,
+                rctBoundingAnchorLine.width() + static_cast<double>(iPenWidth),
+                rctBoundingAnchorLine.height() + static_cast<double>(iPenWidth));
+            rctBounding |= rctBoundingAnchorLine;
+        }
+    }
+    for (const QPolygonF& polygon : m_arrowHeads) {
+        QRectF rctBoundingArrowHead = polygon.boundingRect();
+        rctBoundingArrowHead = QRectF(
+            rctBoundingArrowHead.left() - static_cast<double>(iPenWidth) / 2.0,
+            rctBoundingArrowHead.top() - static_cast<double>(iPenWidth) / 2.0,
+            rctBoundingArrowHead.width() + static_cast<double>(iPenWidth),
+            rctBoundingArrowHead.height() + static_cast<double>(iPenWidth));
+        rctBounding |= rctBoundingArrowHead;
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjLabel::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsSimpleTextItem::boundingRect();
 }
 
 /*==============================================================================

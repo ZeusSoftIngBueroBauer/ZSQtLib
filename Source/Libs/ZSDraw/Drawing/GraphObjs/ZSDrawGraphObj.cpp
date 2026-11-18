@@ -2753,7 +2753,7 @@ QRectF CGraphObj::getBoundingRect() const
 #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 
-    QRectF rctBounding;
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -9927,12 +9927,8 @@ void CGraphObj::traceThisPositionInfo(
     }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
-        QPointF ptPos = pGraphicsItemThis->pos();
-        QPointF ptScenePos = pGraphicsItemThis->scenePos();
-        double fRotation_degree = pGraphicsItemThis->rotation();
-        double fScale = pGraphicsItemThis->scale();
-        QRectF rectBounding = getBoundingRect();
-        QPointF ptCenterPos = rectBounding.center();
+        QRectF rctBounding = getBoundingRectInternal();
+        QPointF ptCenterPos = rctBounding.center();
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -9942,7 +9938,9 @@ void CGraphObj::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += ". BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+            strRuntimeInfo += ". BoundingRect Local {" + qRect2Str(rctBounding) + "}" +
+                ", Center {" + qPoint2Str(ptCenterPos) + "}" +
+                ", Scene {" + qRect2Str(pGraphicsItemThis->mapToScene(rctBounding).boundingRect()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -9959,21 +9957,28 @@ void CGraphObj::traceThisPositionInfo(
         else strRuntimeInfo = " . ";
         strRuntimeInfo += "GraphicsItem {";
         i_mthTracer.trace(strRuntimeInfo);
+            rctBounding = boundingRectInternal();
+            ptCenterPos = rctBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += ". Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+            strRuntimeInfo += ". Pos {" + qPoint2Str(pGraphicsItemThis->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemThis->scenePos()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += ". BoundingRect {" + qRect2Str(pGraphicsItemThis->boundingRect()) + "}";
+            strRuntimeInfo += ". BoundingRect Local {" + qRect2Str(rctBounding) + "}" +
+                ", Center {" + qPoint2Str(ptCenterPos) + "}" +
+                ", Scene {" + qRect2Str(pGraphicsItemThis->mapToScene(rctBounding).boundingRect()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += ". Rotation: " + QString::number(fRotation_degree) + QString(Math::c_chSymbolDegree) +
-                ", Scale: " + QString::number(fScale);
+            strRuntimeInfo += ". Transform {Scale: " + QString::number(pGraphicsItemThis->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemThis->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemThis->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemThis->transform()).join(", ") + "}}";
             i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -9992,43 +9997,74 @@ void CGraphObj::traceParentGroupPositionInfo(
         return;
     }
     QGraphicsItem* pGraphicsItemGroupParent = dynamic_cast<QGraphicsItemGroup*>(m_pGraphObjGroupParent);
-    //CGraphObjGroup* pGraphObjGroupParent = parentGroup();
     QString strRuntimeInfo;
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-    else strRuntimeInfo = "   ";
-    strRuntimeInfo += "ParentGroup: " + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->path());
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "ParentGroup " + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->path()) + " {";
     if (pGraphicsItemGroupParent == nullptr && m_pGraphObjGroupParent != nullptr) {
         strRuntimeInfo += ", !! ParentGraphicsItem: null !!";
     }
     i_mthTracer.trace(strRuntimeInfo);
-    if (pGraphicsItemGroupParent != nullptr || m_pGraphObjGroupParent != nullptr) {
+    if ((pGraphicsItemGroupParent != nullptr) && (m_pGraphObjGroupParent != nullptr)) {
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " . ParentTransform PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
-            ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . GraphObj {";
         i_mthTracer.trace(strRuntimeInfo);
-        QPointF ptPos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->pos();
-        QPointF ptScenePos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->scenePos();
-        QRectF rectBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRect();
-        QPointF ptCenterPos = rectBounding.center();
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
+                ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            QRectF rctBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRectInternal();
+            QPointF ptCenterPos = rctBounding.center();
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . PhysValRect {" + m_pGraphObjGroupParent->getRect().toString() + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . BoundingRect {" + qRect2Str(rctBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " . Parent PhysValRect {" + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->getRect().toString()) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . }";
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " .. BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . GraphicsItem {";
         i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . Pos {" + qPoint2Str(pGraphicsItemGroupParent->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemGroupParent->scenePos()) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . Transform {Scale: " + QString::number(pGraphicsItemGroupParent->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemGroupParent->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemGroupParent->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemGroupParent->transform()).join(", ") + "}}";
+            i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " .. ItemPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . }";
         i_mthTracer.trace(strRuntimeInfo);
     }
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }
 
 //------------------------------------------------------------------------------

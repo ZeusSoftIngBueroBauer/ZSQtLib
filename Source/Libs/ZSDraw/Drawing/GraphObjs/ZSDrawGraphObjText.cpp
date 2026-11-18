@@ -1814,10 +1814,11 @@ QRectF CGraphObjText::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(m_rectScaled) + "}");
     }
-    return m_rectScaled;
+    return getBoundingRectInternal();
 }
 
 //------------------------------------------------------------------------------
@@ -2182,14 +2183,7 @@ QRectF CGraphObjText::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = getBoundingRect();
-    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
-        // Half pen width of the selection rectangle would be enough.
-        // But the whole pen width is also not a bad choice.
-        rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
-    }
-
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -3545,6 +3539,30 @@ Qt::TextInteractionFlags CGraphObjText::QGraphicsTextItem_setTextInteractionFlag
         mthTracer.setMethodReturn("Prev: " + qTextInteractionFlags2Str(flagsPrev));
     }
     return flagsPrev;
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjText::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRectInternal();
+    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
+        // Half pen width of the selection rectangle would be enough.
+        // But the whole pen width is also not a bad choice.
+        rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjText::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    return m_rectScaled;
 }
 
 /*==============================================================================

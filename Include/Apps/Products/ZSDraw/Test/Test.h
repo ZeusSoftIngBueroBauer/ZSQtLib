@@ -113,7 +113,8 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES_CROSSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ELLIPSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_TEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
@@ -464,6 +465,7 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupLinesCheckmarkModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupRectsCrosses(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupEllipsesCrosses(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);

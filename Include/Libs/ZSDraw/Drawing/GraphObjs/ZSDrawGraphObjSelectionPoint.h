@@ -35,9 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsLineItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Selection points of graphical objects.
@@ -106,6 +104,9 @@ protected slots: // overridables of base class CGraphObj
     void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
 protected: // auxiliary instance methods
     void updatePosition();
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 protected: // class members
     /*!< Default radius to be used for painting the selection points. */
     static double s_fDefaultWidth_px;
@@ -126,8 +127,6 @@ protected: // instance members
 
 }; // class CGraphObjSelectionPoint
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjSelectionPoint_h

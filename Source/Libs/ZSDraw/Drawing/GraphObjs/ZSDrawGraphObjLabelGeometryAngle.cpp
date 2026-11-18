@@ -218,19 +218,7 @@ QRectF CGraphObjLabelGeometryAngle::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = CGraphObjLabel::boundingRect();
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    QRectF rctPie = m_rectPie;
-    rctPie = QRectF(
-        rctPie.left() - static_cast<double>(iPenWidth)/2.0,
-        rctPie.top() - static_cast<double>(iPenWidth)/2.0,
-        rctPie.width() + static_cast<double>(iPenWidth),
-        rctPie.height() + static_cast<double>(iPenWidth));
-    rctBounding |= rctPie;
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -409,6 +397,29 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceThisPositionInfo(mthTracer, EMethodDir::Leave);
     }
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjLabelGeometryAngle::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = CGraphObjLabel::boundingRect();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    QRectF rctPie = m_rectPie;
+    rctPie = QRectF(
+        rctPie.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctPie.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctPie.width() + static_cast<double>(iPenWidth),
+        rctPie.height() + static_cast<double>(iPenWidth));
+    rctBounding |= rctPie;
+    return rctBounding;
 }
 
 /*==============================================================================

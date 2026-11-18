@@ -36,9 +36,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsPolygonItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CGraphObjConnectionPoint;
 
@@ -166,6 +164,10 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValPolygon setPhysValPolygonScaledAndRotated(const CPhysValPolygon& i_physValPolygon);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
+public: // overridable auxiliary instance methods (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
@@ -215,8 +217,6 @@ protected: // instance members
 
 }; // class CGraphObjConnectionLine
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjConnectionLine_h

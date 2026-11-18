@@ -35,9 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsTextItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CGraphicsTextItem : public QGraphicsTextItem
@@ -146,8 +144,6 @@ protected: // instance members (method tracing)
     ZS::System::CTrcAdminObj* m_pTrcAdminObjInputMethodEvents;
 };
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphicsTextItem_h

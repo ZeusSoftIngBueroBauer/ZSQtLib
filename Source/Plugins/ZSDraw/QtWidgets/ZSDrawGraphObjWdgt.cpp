@@ -219,28 +219,8 @@ public: // overridables of base class QGraphicsProxyWidget
 QRectF CGraphObjWdgt::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    QRectF rctBounding = QGraphicsProxyWidget::boundingRect();
-
-    CGraphObjSelectionPoint* pGraphObjSelPt;
-    QRectF                   rctSelPt;
-    QPolygonF                plgSelPt;
-    CEnumSelectionPoint      selPt;
-
-    for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
-    {
-        pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
-
-        if( pGraphObjSelPt != nullptr )
-        {
-            rctSelPt = pGraphObjSelPt->boundingRect();
-            plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
-            rctBounding |= plgSelPt.boundingRect();
-        }
-    }
-
-    return rctBounding;
-
-} // boundingRect
+    return boundingRectInternal();
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjWdgt::paint(
@@ -857,3 +837,40 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
     return valChanged;
 
 } // itemChange
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjWdgt::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = QGraphicsProxyWidget::boundingRect();
+
+    CGraphObjSelectionPoint* pGraphObjSelPt;
+    QRectF                   rctSelPt;
+    QPolygonF                plgSelPt;
+    CEnumSelectionPoint      selPt;
+
+    for (selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++)
+    {
+        pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
+
+        if (pGraphObjSelPt != nullptr)
+        {
+            rctSelPt = pGraphObjSelPt->boundingRect();
+            plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
+            rctBounding |= plgSelPt.boundingRect();
+        }
+    }
+
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjWdgt::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    return boundingRectInternal();
+}

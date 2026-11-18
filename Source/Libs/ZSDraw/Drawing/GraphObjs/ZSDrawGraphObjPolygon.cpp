@@ -1653,10 +1653,7 @@ QRectF CGraphObjPolygon::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
-
-    // Points in local coordinates.
-    QPolygonF polygon = this->polygon();
-    QRectF rctBounding = polygon.boundingRect();
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -2178,28 +2175,7 @@ QRectF CGraphObjPolygon::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsPolygonItem::boundingRect();
-    // The QGraphicsPolygonItem::boundingRect call above returns strange, odd values.
-    QPolygonF polygon = this->polygon();
-    if (!polygon.isEmpty()) {
-        rctBounding = polygon.boundingRect();
-    }
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.width() + static_cast<double>(iPenWidth),
-        rctBounding.height() + static_cast<double>(iPenWidth));
-    if (!m_plgLineStartArrowHead.isEmpty()) {
-        rctBounding |= m_plgLineStartArrowHead.boundingRect();
-    }
-    if (!m_plgLineEndArrowHead.isEmpty()) {
-        rctBounding |= m_plgLineEndArrowHead.boundingRect();
-    }
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -4083,6 +4059,47 @@ void CGraphObjPolygon::QGraphicsItem_prepareGeometryChange()
         /* strAddInfo   */ "" );
 
     prepareGeometryChange();
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjPolygon::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = QGraphicsPolygonItem::boundingRect();
+    // The QGraphicsPolygonItem::boundingRect call above returns strange, odd values.
+    QPolygonF polygon = this->polygon();
+    if (!polygon.isEmpty()) {
+        rctBounding = polygon.boundingRect();
+    }
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
+    if (!m_plgLineStartArrowHead.isEmpty()) {
+        rctBounding |= m_plgLineStartArrowHead.boundingRect();
+    }
+    if (!m_plgLineEndArrowHead.isEmpty()) {
+        rctBounding |= m_plgLineEndArrowHead.boundingRect();
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjPolygon::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    // Points in local coordinates.
+    QPolygonF polygon = this->polygon();
+    return polygon.boundingRect();
 }
 
 /*==============================================================================

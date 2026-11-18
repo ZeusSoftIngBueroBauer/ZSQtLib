@@ -91,6 +91,8 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     //virtual void updatePosition() override;
     //virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

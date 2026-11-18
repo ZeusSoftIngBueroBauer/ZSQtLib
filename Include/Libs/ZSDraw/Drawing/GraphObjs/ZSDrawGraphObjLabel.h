@@ -154,6 +154,9 @@ protected: // overridable auxiliary instance methods
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

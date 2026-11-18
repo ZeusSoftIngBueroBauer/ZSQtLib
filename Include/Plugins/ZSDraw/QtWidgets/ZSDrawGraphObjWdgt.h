@@ -95,6 +95,9 @@ protected: // overridables of base class QGraphicsItem, overriding implementatio
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem, overriding implementation of QGraphicsProxyWidget
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 
 }; // class CGraphObjWdgt
 
