@@ -2038,11 +2038,13 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
     bool bSelectedChanged = false;
     bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
+    bool bTracePositionInfo = false;
 
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
             if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                bTracePositionInfo = true;
                 tracePositionInfo(mthTracer, EMethodDir::Enter);
             }
             bGeometryChanged = true;
@@ -2050,15 +2052,27 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         }
     }
     else if (i_change == ItemParentHasChanged) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            bTracePositionInfo = true;
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
         }
         bTreeEntryChanged = true;
     }
+    else if (i_change == ItemPositionChange) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strRuntimeInfo = "Current Pos {" + qPoint2Str(pGraphicsItemThis->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemThis->scenePos()) + "}";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::None, ELogDetailLevel::None);
+        }
+    }
     else if (i_change == ItemPositionHasChanged) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            bTracePositionInfo = true;
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                tracePositionInfo(mthTracer, EMethodDir::Enter);
-            }
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
@@ -2070,8 +2084,18 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         }
         bTreeEntryChanged = true;
     }
-    else if (i_change == ItemRotationHasChanged) {
+    else if ((i_change == ItemRotationChange) || (i_change == ItemTransformChange)) {
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strRuntimeInfo = "Current Transform {Scale: " + QString::number(pGraphicsItemThis->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemThis->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemThis->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemThis->transform()).join(", ") + "}}";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::None, ELogDetailLevel::None);
+        }
+    }
+    else if ((i_change == ItemRotationHasChanged) || (i_change == ItemTransformHasChanged)) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            bTracePositionInfo = true;
             tracePositionInfo(mthTracer, EMethodDir::Enter);
         }
         bGeometryChanged = true;
@@ -2106,10 +2130,17 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         bTreeEntryChanged = true;
     }
 
-    if (bGeometryChanged) {
-        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    valChanged = QGraphicsItem::itemChange(i_change, i_value);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+        if (bTracePositionInfo) {
             tracePositionInfo(mthTracer, EMethodDir::Leave);
         }
+    }
+
+    if (bGeometryChanged) {
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
@@ -2122,12 +2153,6 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         m_pTree->onTreeEntryChanged(this);
     }
 
-    valChanged = QGraphicsItem::itemChange(i_change, i_value);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
-        traceGraphObjStates(mthTracer, EMethodDir::Leave);
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
@@ -2372,6 +2397,27 @@ void CGraphObjEllipse::updateTransformedCoorsOnParentChanged(
 
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
+        if (i_pGraphObjGroupPrev != nullptr) {
+            // Qt's internal implementation of QGraphicsItem::setParentItem/removeFromGroup may
+            // have compensated for the previous parent group's rotation by directly modifying
+            // the item's transformation matrix instead of its rotation angle. If this is the
+            // case the matrix must be decomposed to extract the rotation angle. The matrix is
+            // then reset to identity and the extracted angle is added to the item's rotation
+            // angle instead so that rotation is consistently handled via "setRotation" and not
+            // via the transformation matrix.
+            QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+            QTransform transform = pGraphicsItemThis->transform();
+            if (!transform.isIdentity()) {
+                // For a pure rotation matrix m11 = cos(angle) and m12 = sin(angle)
+                // (Qt rotates clockwise for positive angles).
+                double fAngle_rad = qAtan2(transform.m12(), transform.m11());
+                double fAngle_degree = qRadiansToDegrees(fAngle_rad);
+                pGraphicsItemThis->setTransform(QTransform());
+                fAngle_degree += pGraphicsItemThis->rotation();
+                QGraphicsItem_setRotation(Math::normalizeAngleInDegree(fAngle_degree));
+            }
+        }
+
         setRectOrig(rect());
         CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
         setPhysValRectOrig(physValRect);
@@ -2490,7 +2536,7 @@ QRectF CGraphObjEllipse::getRectScaled(const QRectF& i_rectOrig) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qRect2Str(i_rectOrig) + "}";
+        strMthInArgs = "RectOrig {" + qRect2Str(i_rectOrig) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2526,7 +2572,7 @@ CPhysValRect CGraphObjEllipse::getPhysValRectOrig(const QRectF& i_rectOrig) cons
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qRect2Str(i_rectOrig) + "}";
+        strMthInArgs = "RectOrig {" + qRect2Str(i_rectOrig) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2538,8 +2584,9 @@ CPhysValRect CGraphObjEllipse::getPhysValRectOrig(const QRectF& i_rectOrig) cons
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     CGraphObjEllipse* pVThis = const_cast<CGraphObjEllipse*>(this);
     double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    double fGraphicsItemRotationAngle_degree = 0.0;
     if (fRotationAngle_degree != 0.0) {
-        pVThis->QGraphicsItem_setRotation(0.0);
+        fGraphicsItemRotationAngle_degree = pVThis->QGraphicsItem_setRotation(0.0);
     }
     CPhysValPoint physValPointCenter(*m_pDrawingScene);
     CPhysValSize physValSize(*m_pDrawingScene);
@@ -2558,7 +2605,7 @@ CPhysValRect CGraphObjEllipse::getPhysValRectOrig(const QRectF& i_rectOrig) cons
         physValSize = m_pDrawingScene->convert(i_rectOrig.size());
     }
     if (fRotationAngle_degree != 0.0) {
-        pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
+        pVThis->QGraphicsItem_setRotation(fGraphicsItemRotationAngle_degree);
     }
 
     CPhysValRect physValRect(*m_pDrawingScene);
@@ -2589,7 +2636,7 @@ CPhysValRect CGraphObjEllipse::getPhysValRectScaled(const CPhysValRect& i_physVa
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValRectOrig.toString() + "} " + i_physValRectOrig.unit().symbol();
+        strMthInArgs = "RectOrig {" + i_physValRectOrig.toString() + "} " + i_physValRectOrig.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

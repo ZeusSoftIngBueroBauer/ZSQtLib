@@ -1305,7 +1305,7 @@ protected: // must overridables of base class CGraphObj (method tracing)
 QRectF CGraphObjLabel::boundingRectInternal() const
 //------------------------------------------------------------------------------
 {
-    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    QRectF rctBounding = getBoundingRectInternal();
     int iPenWidth = m_drawSettings.penWidth();
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         iPenWidth += 3; // see paint method

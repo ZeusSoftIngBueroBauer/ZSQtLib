@@ -543,7 +543,6 @@ public: // instance methods
 public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
-    void onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     virtual CGraphObj* linkedObject() const;
     virtual QString pathNameOfLinkedObject() const;
@@ -808,6 +807,7 @@ public: // instance methods
     int blockItemChangeUpdatePhysValCoors(bool i_bBlock);
     int setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
+    virtual void changeParent(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     virtual void initParentTransform();
     virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     virtual void updateTransformedCoorsOnParentGeometryChanged();
@@ -984,9 +984,9 @@ protected: // instance members
     QVector<double> m_arfZValues;
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
-    /*!< Current parent group of the item. Updated by the slot "onParentGroupChanged". Keeping this
-         pointer allows to access the previous parent group if the object is reparented to retrieve
-         and update (move) transformation parameters from the previous to the new parent group. */
+    /*!< Current parent group of the item. Updated by "changeParent".
+         Keeping this pointer allows to access the previous parent group if the object is reparented to
+         retrieve and update (move) transformation parameters from the previous to the new parent group. */
     CGraphObjGroup* m_pGraphObjGroupParent = nullptr;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated

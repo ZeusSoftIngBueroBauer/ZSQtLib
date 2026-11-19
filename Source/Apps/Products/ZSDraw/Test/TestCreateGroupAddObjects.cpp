@@ -19444,27 +19444,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Line3: TopLeftBottomRight
-    /*
-    Expected:
-    ---------
-    Line-3.pos {400.0, 300.0} px
-    Line-3.boundingRect {0.0, -50.0, 0.0, 100.0} px
-    Line-3.line {0.0, -50.0, 0.0, 50.0} px
-    Line-3.center {400, 300} px
-    Line-3.getLine {400, 250, 400, 350} px
-    Line-3.getLength {100 px}
-    Line-3.rotationAngle: 90.0 °
-
-    Result:
-    ---------
-    Line-3.pos {400.0, 300.0} px !!
- !! Line-3.boundingRect {-35.4, -35.4, 70.7, 70.7} px !!
- !! Line-3.line {-35.4, -35.4, 35.4, 35.4} px !!
-    Line-3.center {400, 300} px !!
-    Line-3.getLine {400, 250, 400, 350} px !!
-    Line-3.getLength {100 px} !!
-    Line-3.rotationAngle: 90.0 ° !!
-    */
     m_pPhysValLine3->setP1(m_pPhysValRectGroup2->topLeft());
     m_pPhysValLine3->setP2(m_pPhysValRectGroup2->bottomRight());
     m_ptPosLine3 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
@@ -19473,29 +19452,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    /*
-    Expected:
-    ---------
-    Line-4.pos {400.0, 300.0} px
-    Line-4.boundingRect {-50.0, 0.0, 100.0, 0.0} px
-    Line-4.line {-50.0, 0.0, 50.0, 0.0} px
-    Line-4.center {400, 300} px
-    Line-4.getLine {350, 300, 450, 300} px
-    Line-4.getLength {100 px}
-    Line-4.rotationAngle: 0.0 °
-    Line-4.isSelected: false
-
-    Result:
-    ---------
-    Line-4.pos {400.0, 300.0} px !!
- !! Line-4.boundingRect {-35.4, 35.4, 70.7, -70.7} px !!
- !! Line-4.line {-35.4, 35.4, 35.4, -35.4} px !!
-    Line-4.center {400, 300} px !!
-    Line-4.getLine {350, 300, 450, 300} px !!
-    Line-4.getLength {100 px} !!
-    Line-4.rotationAngle: 0.0 ° !!
-    Line-4.isSelected: false
-    */
     m_pPhysValLine4->setP1(m_pPhysValRectGroup2->bottomLeft());
     m_pPhysValLine4->setP2(m_pPhysValRectGroup2->topRight());
     m_ptPosLine4 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
@@ -19529,21 +19485,21 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
     strlstExpectedValues.clear();
-    // Group2 (Values remain unchanged)
-    //m_pPhysValRectGroup2->setHeight(m_pPhysValLine3->dy());
-    //m_pPhysValRectGroup2->setWidth(m_pPhysValLine3->dx());
-    //m_pPhysValRectGroup2->setCenter(m_pPhysValLine3->center());
-    //m_sizeGroup2 = m_pPhysValRectGroup2->size().toQSizeF(Units.Length.px);
-    //m_ptPosGroup2 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
+    // Group2
+    m_pPhysValRectGroup2->setSize(QSizeF(100.0, 100.0));
+    m_pPhysValRectGroup2->setCenter(m_pPhysValLine3->center());
+    m_pPhysValRectGroup2->setAngle(0.0);
+    m_sizeGroup2 = m_pPhysValRectGroup2->size().toQSizeF(Units.Length.px);
+    m_ptPosGroup2 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup2, *m_pPhysValRectGroup2, false));
     // Line3: TopLeftBottomRight
-    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0), Units.Length.px));
+    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
     m_ptPosLine3 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0), Units.Length.px));
+    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
     m_ptPosLine4 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine4, m_ptPosLine4, m_lineLine4, *m_pPhysValLine4, false));
@@ -24143,8 +24099,8 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameRect1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValRect1->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(20.0, 100.0), Units.Length.px));
-    m_pPhysValRect1->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 300.0), Units.Length.px));
+    m_pPhysValRect1->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(20.0, 100.0), drawingSize.unit()));
+    m_pPhysValRect1->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 300.0), drawingSize.unit()));
     m_ptPosRect1 = m_pPhysValRect1->center().toQPointF(Units.Length.px);
     m_rectRect1.setTopLeft(m_pPhysValRect1->topLeft().toQPointF(Units.Length.px) - m_ptPosRect1);
     m_rectRect1.setBottomRight(m_pPhysValRect1->bottomRight().toQPointF(Units.Length.px) - m_ptPosRect1);
@@ -24171,8 +24127,8 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameRect2;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValRect2->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(100.0, 20.0), Units.Length.px));
-    m_pPhysValRect2->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 300.0), Units.Length.px));
+    m_pPhysValRect2->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(100.0, 20.0), drawingSize.unit()));
+    m_pPhysValRect2->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 300.0), drawingSize.unit()));
     m_ptPosRect2 = m_pPhysValRect2->center().toQPointF(Units.Length.px);
     m_rectRect2.setTopLeft(m_pPhysValRect2->topLeft().toQPointF(Units.Length.px) - m_ptPosRect2);
     m_rectRect2.setBottomRight(m_pPhysValRect2->bottomRight().toQPointF(Units.Length.px) - m_ptPosRect2);
@@ -24219,14 +24175,14 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup1, *m_pPhysValRectGroup1, false, iResultValuesPrecision));
     // Rect1: Vertical
-    m_pPhysValRect1->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValRect1->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), drawingSize.unit()));
     m_ptPosRect1 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     m_rectRect1 = m_pPhysValRect1->toQRectF(Units.Length.px);
     m_rectRect1.moveCenter(QPointF(0.0, 0.0));
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect1, m_ptPosRect1, m_rectRect1, *m_pPhysValRect1, false, iResultValuesPrecision));
     // Rect2: Horizontal
-    m_pPhysValRect2->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValRect2->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), drawingSize.unit()));
     m_ptPosRect2 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     m_rectRect2 = m_pPhysValRect2->toQRectF(Units.Length.px);
     m_rectRect2.moveCenter(QPointF(0.0, 0.0));
@@ -24448,8 +24404,8 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameRect3;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValRect3->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(20.0, 100.0), Units.Length.px));
-    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), Units.Length.px));
+    m_pPhysValRect3->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(20.0, 100.0), drawingSize.unit()));
+    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), drawingSize.unit()));
     m_ptPosRect3 = m_pPhysValRect3->center().toQPointF(Units.Length.px);
     m_rectRect3.setTopLeft(m_pPhysValRect3->topLeft().toQPointF(Units.Length.px) - m_ptPosRect3);
     m_rectRect3.setBottomRight(m_pPhysValRect3->bottomRight().toQPointF(Units.Length.px) - m_ptPosRect3);
@@ -24476,8 +24432,8 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameRect4;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValRect4->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(100.0, 20.0), Units.Length.px));
-    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), Units.Length.px));
+    m_pPhysValRect4->setSize(CPhysValSize(*m_pDrawingScene, QSizeF(100.0, 20.0), drawingSize.unit()));
+    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), drawingSize.unit()));
     m_ptPosRect4 = m_pPhysValRect4->center().toQPointF(Units.Length.px);
     m_rectRect4.setTopLeft(m_pPhysValRect4->topLeft().toQPointF(Units.Length.px) - m_ptPosRect4);
     m_rectRect4.setBottomRight(m_pPhysValRect4->bottomRight().toQPointF(Units.Length.px) - m_ptPosRect4);
@@ -24758,8 +24714,8 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     // Group2
-    CPhysValSize physValSizeGroup2(*m_pDrawingScene, QSizeF(84.852814, 84.852814), Units.Length.px);
-    CPhysValPoint physValPointCenterGroup2(*m_pDrawingScene, Units.Length.px);
+    CPhysValSize physValSizeGroup2(*m_pDrawingScene, QSizeF(84.852814, 84.852814), drawingSize.unit());
+    CPhysValPoint physValPointCenterGroup2(*m_pDrawingScene, drawingSize.unit());
     physValPointCenterGroup2.setX(physValSizeGroup2.width() / 2.0);
     physValPointCenterGroup2.setY(physValSizeGroup2.height() / 2.0);
     m_pPhysValRectGroup2->setSize(physValSizeGroup2);
@@ -24810,12 +24766,12 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Rect3: TopLeftBottomRight
-    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), Units.Length.px));
+    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), drawingSize.unit()));
     m_ptPosRect3 = m_pPhysValRect3->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect3, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, false));
     // Rect4: BottomLeftTopRight
-    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), Units.Length.px));
+    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), drawingSize.unit()));
     m_ptPosRect4 = m_pPhysValRect4->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect4, m_ptPosRect4, m_rectRect4, *m_pPhysValRect4, false));
@@ -24949,13 +24905,13 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Rect3: TopLeftBottomRight
-    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), Units.Length.px));
+    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), drawingSize.unit()));
     m_pPhysValRect3->setAngle(0.0);
     m_ptPosRect3 = m_pPhysValRect3->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect3, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, false));
     // Rect4: BottomLeftTopRight
-    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), Units.Length.px));
+    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(400.0, 300.0), drawingSize.unit()));
     m_pPhysValRect4->setAngle(0.0);
     m_ptPosRect4 = m_pPhysValRect4->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForRect(
@@ -24997,14 +24953,14 @@ void CTest::createTestGroupAddStandardShapesGroupRects(ZS::Test::CTestStepGroup*
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup2, *m_pPhysValRectGroup2, false, iResultValuesPrecision));
     // Rect3: TopLeftBottomRight
-    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValRect3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), drawingSize.unit()));
     m_ptPosRect3 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     m_rectRect3 = m_pPhysValRect3->toQRectF(Units.Length.px);
     m_rectRect3.moveCenter(QPointF(0.0, 0.0));
     strlstExpectedValues.append(resultValuesForRect(
         c_strGraphObjNameRect3, m_ptPosRect3, m_rectRect3, *m_pPhysValRect3, false, iResultValuesPrecision));
     // Rect4: BottomLeftTopRight
-    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValRect4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), drawingSize.unit()));
     m_ptPosRect4 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     m_rectRect4 = m_pPhysValRect4->toQRectF(Units.Length.px);
     m_rectRect4.moveCenter(QPointF(0.0, 0.0));

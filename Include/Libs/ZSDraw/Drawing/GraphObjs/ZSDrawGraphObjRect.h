@@ -159,8 +159,8 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // must overridables of base class CGraphObj (method tracing)
-    virtual QRectF boundingRectInternal() const override;
-    virtual QRectF getBoundingRectInternal() const override;
+    QRectF boundingRectInternal() const override;
+    QRectF getBoundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

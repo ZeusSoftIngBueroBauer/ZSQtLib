@@ -396,7 +396,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
                 const QGraphicsEllipseItem* pGraphicsItemThis = dynamic_cast<const QGraphicsEllipseItem*>(this);
                 // Check whether a connection point has been hit.
                 QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
-                CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(ptScenePos);
+                CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->connectionPointAt(ptScenePos);
                 if (pGraphObjCnctPtHit != nullptr) {
                     QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
                     cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
@@ -1010,7 +1010,7 @@ protected: // must overridables of base class CGraphObj (method tracing)
 QRectF CGraphObjSelectionPoint::boundingRectInternal() const
 //------------------------------------------------------------------------------
 {
-    QRectF rctBounding = QGraphicsEllipseItem::boundingRect();
+    QRectF rctBounding = getBoundingRectInternal();
     int iPenWidth = m_drawSettings.penWidth();
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         iPenWidth += 3; // see paint method

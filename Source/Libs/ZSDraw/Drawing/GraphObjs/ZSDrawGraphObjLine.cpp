@@ -2254,6 +2254,13 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         updateLineEndArrowHeadPolygons();
         bTreeEntryChanged = true;
     }
+    else if (i_change == ItemPositionChange) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strRuntimeInfo = "Current Pos {" + qPoint2Str(pGraphicsItemThis->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemThis->scenePos()) + "}";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::None, ELogDetailLevel::None);
+        }
+    }
     else if (i_change == ItemPositionHasChanged) {
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             bTracePositionInfo = true;
@@ -2272,22 +2279,22 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         updateLineEndArrowHeadPolygons();
         bTreeEntryChanged = true;
     }
-    else if (i_change == ItemRotationHasChanged) {
+    else if ((i_change == ItemRotationChange) || (i_change == ItemTransformChange)) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strRuntimeInfo = "Current Transform {Scale: " + QString::number(pGraphicsItemThis->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemThis->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemThis->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemThis->transform()).join(", ") + "}}";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::None, ELogDetailLevel::None);
+        }
+    }
+    else if ((i_change == ItemRotationHasChanged) || (i_change == ItemTransformHasChanged)) {
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             bTracePositionInfo = true;
             tracePositionInfo(mthTracer, EMethodDir::Enter);
         }
         bGeometryChanged = true;
         bTreeEntryChanged = true;
-    }
-    else if (i_change == ItemTransformChange) {
-        bTracePositionInfo = false;
-    }
-    else if (i_change == ItemTransformHasChanged) {
-        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            bTracePositionInfo = true;
-            tracePositionInfo(mthTracer, EMethodDir::Enter);
-        }
     }
     else if (i_change == ItemSelectedHasChanged) {
         //QGraphicsItem_prepareGeometryChange();
@@ -2498,7 +2505,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
 }
 
 /*==============================================================================
-protected: // overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -2526,31 +2533,34 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged(
     {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
         CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-        //QGraphicsItem_setRotation(0.0);
+        if (i_pGraphObjGroupPrev != nullptr) {
+            // When changing the parent of the line item, the transformation matrix should be reset but
+            // not inherited from the the parent. E.g. if the parent was rotated, the line item would
+            // inherit the rotation angle as a matrix transformation. This is not desired for lines.
+            QGraphicsLineItem* pGraphicsItemThis = dynamic_cast<QGraphicsLineItem*>(this);
+
+            // Determine the coordinates of a transformed line within the scene
+            QLineF lineOrig = line();
+            QLineF transformedLineInScene(
+                pGraphicsItemThis->mapToScene(lineOrig.p1()),
+                pGraphicsItemThis->mapToScene(lineOrig.p2()));
+
+            // Reset transformation (rotation, scaling, arbitrary matrix)
+            pGraphicsItemThis->setRotation(0.0);
+            pGraphicsItemThis->setScale(1.0);
+            pGraphicsItemThis->setTransform(QTransform()); // setzt eine evtl. zusätzlich gesetzte Matrix zurück
+
+            // Convert the transformed line back into local coordinates
+            // (now without rotation/scaling, but pos() remains as it is)
+            QLineF newLocalLine(
+                pGraphicsItemThis->mapFromScene(transformedLineInScene.p1()),
+                pGraphicsItemThis->mapFromScene(transformedLineInScene.p2()));
+
+            // Set the new "straight" line.
+            pGraphicsItemThis->setLine(newLocalLine);
+        }
+
         QLineF lineOrig = line();
-        // If the parent group was rotated, the original line, given in local coordinates,
-        // need to be rotated so that the relative rotation angle on the screen remain the same.
-        // Note: The line does not store the rotation angle in the member m_physValRotationAngle but
-        //       the angle is set and calculated in class CPhysValLine.
-        //if (i_pGraphObjGroupPrev != nullptr) {
-        //    CPhysVal physValRotationAngleParentGroup = i_pGraphObjGroupPrev->rotationAngle();
-        //    if (i_pGraphObjGroupNew == nullptr) {
-        //        physValRotationAngleParentGroup =
-        //            i_pGraphObjGroupPrev->mapRotationAngleToScene(physValRotationAngleParentGroup);
-        //    }
-        //    else {
-        //        physValRotationAngleParentGroup =
-        //            i_pGraphObjGroupPrev->mapRotationAngleTo(physValRotationAngleParentGroup, i_pGraphObjGroupNew);
-        //    }
-        //    double fAngleClockwise_degree = physValRotationAngleParentGroup.getVal();
-        //    if (fAngleClockwise_degree != 0.0) {
-        //        double fAngleCounterClockwise_degree = Math::toCounterClockWiseAngleDegree(fAngleClockwise_degree);
-        //        double fAngleCounterClockwise_rad = Math::degree2Rad(fAngleCounterClockwise_degree);
-        //        QPointF ptLineOrigCenter = lineOrig.center();
-        //        lineOrig = rotateLine(ptLineOrigCenter, lineOrig, fAngleCounterClockwise_rad);
-        //    }
-        //}
-        //// Set the line in local coordinate system.
         setLineOrig(lineOrig);
         //QGraphicsLineItem_setLine(lineOrig);
         CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
@@ -2718,7 +2728,7 @@ QLineF CGraphObjLine::getLineScaled(const QLineF& i_lineOrig) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ItemCoors {" + qLine2Str(i_lineOrig) + "}";
+        strMthInArgs = "LineOrig {" + qLine2Str(i_lineOrig) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2755,7 +2765,7 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ItemCoors {" + qLine2Str(i_lineOrig) + "}";
+        strMthInArgs = "LineOrig {" + qLine2Str(i_lineOrig) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2766,11 +2776,11 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
-    //double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
-    //double fRotationAngle_degree = pGraphicsItemThis->rotation();
-    //if (fRotationAngle_degree != 0.0) {
-    //    pVThis->QGraphicsItem_setRotation(0.0);
-    //}
+    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    double fGraphicsItemRotationAngle_degree = 0.0;
+    if (fRotationAngle_degree != 0.0) {
+        fGraphicsItemRotationAngle_degree = pVThis->QGraphicsItem_setRotation(0.0);
+    }
     CPhysValPoint physValPointP1(*m_pDrawingScene);
     CPhysValPoint physValPointP2(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
@@ -2790,9 +2800,9 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
         QPointF p2 = pGraphicsItemThis->mapToScene(i_lineOrig.p2());
         physValPointP2 = m_pDrawingScene->convert(p2);
     }
-    //if (fRotationAngle_degree != 0.0) {
-    //    pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
-    //}
+    if (fRotationAngle_degree != 0.0) {
+        pVThis->QGraphicsItem_setRotation(fGraphicsItemRotationAngle_degree);
+    }
 
     CPhysValLine physValLine(physValPointP1, physValPointP2);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2820,7 +2830,7 @@ CPhysValLine CGraphObjLine::getPhysValLineScaled(const CPhysValLine& i_physValLi
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValLineOrig.toString() + "} " + i_physValLineOrig.unit().symbol();
+        strMthInArgs = "LineOrig {" + i_physValLineOrig.toString() + "} " + i_physValLineOrig.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3069,7 +3079,7 @@ protected: // must overridables of base class CGraphObj (method tracing)
 QRectF CGraphObjLine::boundingRectInternal() const
 //------------------------------------------------------------------------------
 {
-    QRectF rctBounding = QGraphicsLineItem::boundingRect();
+    QRectF rctBounding = getBoundingRectInternal();
     int iPenWidth = m_drawSettings.penWidth();
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
         iPenWidth += 3; // see paint method
@@ -3131,14 +3141,15 @@ void CGraphObjLine::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
-            + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
-            + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol() +
+            ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol() +
+            ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";
     strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
     else strRuntimeInfo = " . ";

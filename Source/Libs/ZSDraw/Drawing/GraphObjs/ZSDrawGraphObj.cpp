@@ -636,83 +636,6 @@ CGraphObjGroup* CGraphObj::parentGroup() const
     return dynamic_cast<CGraphObjGroup*>(m_pParentBranch);
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Informs the object that the parent item of the item has been changed
-           to another parent item.
-
-    The method connects the slot onParentGroupGeometryOnSceneChanged to the
-    geometryOnSceneChanged signal of the parent item. If the item already had
-    a parent the signal/slot connection to the previous parent is removed.
-
-    The itemChange method of QGraphicsItem with ItemParentHasChanged cannot be used
-    for this as item has already been removed for the previous parent if the itemChange
-    method is called.
-
-    Items need to inform e.g. their labels about the geometry changes of the items
-    the labels are linked to. For this the item emits the geometryOnSceneChanged
-    signal if the geometry of the item changes.
-
-    If the item belongs to a group and the group changes its geometry on the scene,
-    also the child items geometry on the scene is changed and all labels linked to
-    the items must update their geometry information and their position on the scene.
-    The default implementation of the onParentGroupGeometryOnSceneChanged slot
-    emits the geometryOnSceneChanged signal to update the labels.
-
-    When resizing a group all children of the group should be resized and positioned so
-    that they keep their relative positions and sizes within the group. If the item
-    is added to a new group the current rectangle of the parent group is stored as
-    the original group rectangle.
-    If the item is removed from a group (but not added to a new group) the original
-    parent group rectangle is invalidated.
-    This allows the default implementation of onParentGroupGeometryOnSceneChanged
-    to calculate the current scale factor of the parent group.
-
-    @param [in] i_pGraphObjGroupPrev
-        Pointer to group the item will be removed from or nullptr, if the item don't
-        belong to a group yet.
-    @param [in] i_pGraphObjGroupNew
-        Pointer to group the item will be added to or nullptr, if the item will just
-        be removed from the current group but not added to another group.
-*/
-void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
-            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onParentGroupChanged",
-        /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
-    }
-
-    {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
-
-        if (i_pGraphObjGroupPrev != nullptr) {
-            QObject::disconnect(
-                i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
-        }
-        if (i_pGraphObjGroupNew != nullptr) {
-            QObject::connect(
-                i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
-        }
-        m_pGraphObjGroupParent = i_pGraphObjGroupNew;
-        initParentTransform();
-        updateTransformedCoorsOnParentChanged(i_pGraphObjGroupPrev, i_pGraphObjGroupNew);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
-    }
-}
-
 /*==============================================================================
 protected: // overridables of base class CIdxTreeEntry
 ==============================================================================*/
@@ -8403,8 +8326,87 @@ int CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
 }
 
 /*==============================================================================
-protected: // overridables
+public: // overridables
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Informs the object that the parent item of the item has been changed
+           to another parent item.
+
+    The method connects the slot onParentGroupGeometryOnSceneChanged to the
+    geometryOnSceneChanged signal of the parent item. If the item already had
+    a parent the signal/slot connection to the previous parent is removed.
+
+    The itemChange method of QGraphicsItem with ItemParentHasChanged cannot be used
+    for this as item has already been removed for the previous parent if the itemChange
+    method is called.
+
+    Items need to inform e.g. their labels about the geometry changes of the items
+    the labels are linked to. For this the item emits the geometryOnSceneChanged
+    signal if the geometry of the item changes.
+
+    If the item belongs to a group and the group changes its geometry on the scene,
+    also the child items geometry on the scene is changed and all labels linked to
+    the items must update their geometry information and their position on the scene.
+    The default implementation of the onParentGroupGeometryOnSceneChanged slot
+    emits the geometryOnSceneChanged signal to update the labels.
+
+    When resizing a group all children of the group should be resized and positioned so
+    that they keep their relative positions and sizes within the group. If the item
+    is added to a new group the current rectangle of the parent group is stored as
+    the original group rectangle.
+    If the item is removed from a group (but not added to a new group) the original
+    parent group rectangle is invalidated.
+    This allows the default implementation of onParentGroupGeometryOnSceneChanged
+    to calculate the current scale factor of the parent group.
+
+    @param [in] i_pGraphObjGroupPrev
+        Pointer to group the item will be removed from or nullptr, if the item don't
+        belong to a group yet.
+    @param [in] i_pGraphObjGroupNew
+        Pointer to group the item will be added to or nullptr, if the item will just
+        be removed from the current group but not added to another group.
+*/
+void CGraphObj::changeParent(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
+            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::changeParent",
+        /* strAddInfo   */ strMthInArgs);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
+
+    {
+        CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
+
+        if (i_pGraphObjGroupPrev != nullptr) {
+            QObject::disconnect(
+                i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
+        }
+        if (i_pGraphObjGroupNew != nullptr) {
+            QObject::connect(
+                i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
+        }
+        m_pGraphObjGroupParent = i_pGraphObjGroupNew;
+
+        initParentTransform();
+        updateTransformedCoorsOnParentChanged(i_pGraphObjGroupPrev, i_pGraphObjGroupNew);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Initializes (resets) the items scale transformation parameters within its parent.
@@ -8414,7 +8416,7 @@ protected: // overridables
     is stored as the original position (relative to the origin (center point) of the
     parents bounding). The group scale parameters are reset to 1.0.
 
-    Called by the onParentGroupChanged method if the parent is going to been changed.
+    Called by the changeParent method if the parent is going to been changed.
 
     This method is also called by the parent group if the bounding rectangle
     of the parent group is changed on adding childs or resizing the parent
