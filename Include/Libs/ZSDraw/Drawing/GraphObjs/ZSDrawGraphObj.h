@@ -445,6 +445,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObj"; }
+public: // class methods
+    static QString createPolygonPointLabelName(int i_idxPt);
+    static bool isPolygonPointLabelName(const QString& i_strLabelName);
+    static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 protected: // ctor
     CGraphObj(
         CDrawingScene* i_pDrawingScene,

@@ -54,9 +54,7 @@ public: // class methods
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
 public: // class methods
-    static QString createPolygonPointLabelName(int i_idxPt);
-    static bool isPolygonPointLabelName(const QString& i_strLabelName);
-    static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
+    static QList<EGraphObjType> typesConnectionLinesCanBeConnectedWith();
 public: // ctors and dtor
     CGraphObjConnectionLine(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionLine();

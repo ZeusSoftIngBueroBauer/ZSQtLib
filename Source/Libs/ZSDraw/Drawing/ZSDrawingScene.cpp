@@ -1251,51 +1251,65 @@ CGraphObj* CDrawingScene::getGraphObj(const QString& i_strKeyInTree)
     @return Pointer to graphics item if there is an item at the given position,
             nullptr otherwise.
 */
-QGraphicsItem* CDrawingScene::graphicsItemAt(const QPointF& i_ptScenePos)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCursor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "graphicsItemAt",
-        /* strAddInfo   */ strMthInArgs );
+//QGraphicsItem* CDrawingScene::graphicsItemAt(const QPointF& i_ptScenePos)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjCursor,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "graphicsItemAt",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QGraphicsItem* pGraphicsItem = nullptr;
+//    QPointF ptTL(i_ptScenePos.x() - m_fHitTolerance_px, i_ptScenePos.x() - m_fHitTolerance_px);
+//    QPointF ptBR(i_ptScenePos.x() + m_fHitTolerance_px, i_ptScenePos.x() + m_fHitTolerance_px);
+//    QRectF rect(ptTL, ptBR);
+//    QList<QGraphicsItem*> arpGraphicsItems = items(rect);
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+//    }
+//    if (!arpGraphicsItems.isEmpty()) {
+//        pGraphicsItem = arpGraphicsItems[0];
+//    }
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        mthTracer.setMethodReturn(QString(pGraphicsItem == nullptr ? "null" : "Item"));
+//    }
+//    return pGraphicsItem;
+//}
 
-    QGraphicsItem* pGraphicsItem = nullptr;
-    QPointF ptTL(i_ptScenePos.x() - m_fHitTolerance_px, i_ptScenePos.x() - m_fHitTolerance_px);
-    QPointF ptBR(i_ptScenePos.x() + m_fHitTolerance_px, i_ptScenePos.x() + m_fHitTolerance_px);
-    QRectF rect(ptTL, ptBR);
-    QList<QGraphicsItem*> arpGraphicsItems = items(rect);
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
-    }
-    if (!arpGraphicsItems.isEmpty()) {
-        pGraphicsItem = arpGraphicsItems[0];
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString(pGraphicsItem == nullptr ? "null" : "Item"));
-    }
-    return pGraphicsItem;
-}
-
 //------------------------------------------------------------------------------
-/*! Returns the graph object at the given scene position or nullptr, if there
-    is no graph object at the given position.
+/*! Returns a list of graphical objects at the given scene position.
 
     The given scene position will be expanded to a rectangle with width and
     height of twice the configured hit tolerance.
 
-    Selection points will be ignored.
+    If the passed filter is empty, selection points will be ignored.
 
-    @param i_ptScenePos [in] Scene coordinates to be checked.
+    @param i_ptScenePos [in]
+        Scene coordinates to be checked. Will be extended to a retangle
+        with width and height of twice the configured hit tolerance.
+
+    @param i_arTypesFilter [in]
+        List of graphic types to be used for filtering the resulting list of objects.
+        If the list is empty, the list and the comparison operator are ignored and
+        all objects at the given coordinate are returned (excluding selection points).
+
+    @param i_eFilterComparison [in]
+        Specifies how to apply the list of types in the filter.
+        Equal .... Include only the types in the filter list.
+        Unequal .. Exclude the types in the filter list.
 
     @return Pointer to connection point if there is a connection point at
             the given position, nullptr otherwise.
 */
-CGraphObj* CDrawingScene::graphObjAt(const QPointF& i_ptScenePos)
+QList<CGraphObj*> CDrawingScene::graphObjsAt(
+    const QPointF& i_ptScenePos,
+    const QList<EGraphObjType>& i_arTypesFilter,
+    ZS::System::EComparisonOperator i_eFilterComparison)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1305,28 +1319,66 @@ CGraphObj* CDrawingScene::graphObjAt(const QPointF& i_ptScenePos)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "graphObjAt",
+        /* strMethod    */ "graphObjsAt",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObj* pGraphObj = nullptr;
+    QList<CGraphObj*> arpGraphObjs;
     QPointF ptTL(i_ptScenePos.x() - m_fHitTolerance_px, i_ptScenePos.y() - m_fHitTolerance_px);
     QPointF ptBR(i_ptScenePos.x() + m_fHitTolerance_px, i_ptScenePos.y() + m_fHitTolerance_px);
     QRectF rect(ptTL, ptBR);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        mthTracer.trace("-+ QGraphicsScene::items(" + qRect2Str(rect) + ")");
+    }
     QList<QGraphicsItem*> arpGraphicsItems = items(rect);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+        traceItems(mthTracer, EMethodDir::Leave, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
     }
-    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
-        CGraphObj* pGraphObjTmp = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if ((pGraphObjTmp != nullptr) && !pGraphObjTmp->isSelectionPoint()) {
-            pGraphObj = pGraphObjTmp;
-            break;
+
+    if (i_arTypesFilter.isEmpty()) {
+        for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+            CGraphObj* pGraphObjTmp = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if ((pGraphObjTmp != nullptr) && !pGraphObjTmp->isSelectionPoint()) {
+                arpGraphObjs.append(pGraphObjTmp);
+            }
         }
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString(pGraphObj == nullptr ? "null" : pGraphObj->path()));
+    else if (i_eFilterComparison == EComparisonOperator::Equal) {
+        for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+            CGraphObj* pGraphObjTmp = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if (pGraphObjTmp != nullptr) {
+                if (i_arTypesFilter.contains(pGraphObjTmp->type())) {
+                    arpGraphObjs.append(pGraphObjTmp);
+                }
+            }
+        }
     }
-    return pGraphObj;
+    else if (i_eFilterComparison == EComparisonOperator::Unequal) {
+        for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+            CGraphObj* pGraphObjTmp = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if (pGraphObjTmp != nullptr) {
+                if (!i_arTypesFilter.contains(pGraphObjTmp->type())) {
+                    arpGraphObjs.append(pGraphObjTmp);
+                }
+            }
+        }
+    }
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthRet = "[" + QString::number(arpGraphObjs.size()) + "]";
+        if (!arpGraphObjs.isEmpty()) {
+            strMthRet += "(";
+            for (CGraphObj* pGraphObj : arpGraphObjs) {
+                if (pGraphObj != nullptr) {
+                    if (!strMthRet.endsWith("(")) strMthRet += ", ";
+                    strMthRet += pGraphObj->path();
+                }
+            }
+            strMthRet += ")";
+        }
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return arpGraphObjs;
 }
 
 //------------------------------------------------------------------------------
@@ -1355,12 +1407,15 @@ CGraphObjConnectionPoint* CDrawingScene::connectionPointAt(const QPointF& i_ptSc
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-    QPointF ptTL(i_ptScenePos.x() - m_fHitTolerance_px, i_ptScenePos.x() - m_fHitTolerance_px);
-    QPointF ptBR(i_ptScenePos.x() + m_fHitTolerance_px, i_ptScenePos.x() + m_fHitTolerance_px);
+    QPointF ptTL(i_ptScenePos.x() - m_fHitTolerance_px, i_ptScenePos.y() - m_fHitTolerance_px);
+    QPointF ptBR(i_ptScenePos.x() + m_fHitTolerance_px, i_ptScenePos.y() + m_fHitTolerance_px);
     QRectF rect(ptTL, ptBR);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        mthTracer.trace("-+ QGraphicsScene::items(" + qRect2Str(rect) + ")");
+    }
     QList<QGraphicsItem*> arpGraphicsItems = items(rect);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceItems(mthTracer, EMethodDir::Enter, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
+        traceItems(mthTracer, EMethodDir::Leave, arpGraphicsItems, "StackingOrder|Pos|BoundingRect");
     }
     for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
         if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
@@ -3746,7 +3801,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     if (pGraphObjCnctPtHit == nullptr) {
                         // If a connection line should be linked to an object, a connection point has
                         // to be created if a selection point has been hit.
-                        CGraphObj* pGraphObjHit = graphObjAt(i_pEv->scenePos());
+                        QList<CGraphObj*> arpGraphObjsHit = graphObjsAt(
+                            i_pEv->scenePos(), CGraphObjConnectionLine::typesConnectionLinesCanBeConnectedWith());
+                        CGraphObj* pGraphObjHit = arpGraphObjsHit.isEmpty() ? nullptr : arpGraphObjsHit[0];
                         QGraphicsItem* pGraphicsItemHit = dynamic_cast<QGraphicsItem*>(pGraphObjHit);
                         if (pGraphicsItemHit != nullptr) {
                             QPointF ptPos = pGraphicsItemHit->mapFromScene(i_pEv->scenePos());

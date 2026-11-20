@@ -51,10 +51,6 @@ public: // class methods
     static QPainter::RenderHints painterRenderHints();
     static void setPainterRenderHints(QPainter::RenderHints i_renderHints);
     static void resetPainterRenderHints();
-public: // class methods
-    static QString createPolygonPointLabelName(int i_idxPt);
-    static bool isPolygonPointLabelName(const QString& i_strLabelName);
-    static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 public: // ctors
     CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType i_type, const QString& i_strObjName = "");
 public: // dtor

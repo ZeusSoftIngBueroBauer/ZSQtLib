@@ -108,50 +108,6 @@ void CGraphObjPolygon::resetPainterRenderHints()
 }
 
 /*==============================================================================
-public: // class methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString CGraphObjPolygon::createPolygonPointLabelName(int i_idxPt)
-//------------------------------------------------------------------------------
-{
-    return c_strGeometryLabelNameP + QString::number(i_idxPt+1);
-}
-
-//------------------------------------------------------------------------------
-bool CGraphObjPolygon::isPolygonPointLabelName(const QString& i_strLabelName)
-//------------------------------------------------------------------------------
-{
-    bool bIs = false;
-    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
-        QString strIndex = i_strLabelName.mid(1);
-        bool bIsValidIndex = false;
-        strIndex.toInt(&bIsValidIndex);
-        if (bIsValidIndex) {
-            bIs = true;
-        }
-    }
-    return bIs;
-}
-
-//------------------------------------------------------------------------------
-int CGraphObjPolygon::extractIndexFromPolygonPointLabelName(const QString& i_strLabelName)
-//------------------------------------------------------------------------------
-{
-    int idxPt = -1;
-    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
-        QString strIndex = i_strLabelName.mid(1);
-        bool bIsValidIndex = false;
-        int idxPtTmp = strIndex.toInt(&bIsValidIndex);
-        // The label name for the polygon point at index 0 is P1.
-        if (bIsValidIndex && idxPtTmp > 0) {
-            idxPt = idxPtTmp - 1;
-        }
-    }
-    return idxPt;
-}
-
-/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 

@@ -113,43 +113,23 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CGraphObjConnectionLine::createPolygonPointLabelName(int i_idxPt)
+/*! \brief Return the list of graphical object types with which a connection line
+           can be connected.
+*/
+QList<EGraphObjType> CGraphObjConnectionLine::typesConnectionLinesCanBeConnectedWith()
 //------------------------------------------------------------------------------
 {
-    return c_strGeometryLabelNameP + QString::number(i_idxPt+1);
-}
-
-//------------------------------------------------------------------------------
-bool CGraphObjConnectionLine::isPolygonPointLabelName(const QString& i_strLabelName)
-//------------------------------------------------------------------------------
-{
-    bool bIs = false;
-    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
-        QString strIndex = i_strLabelName.mid(1);
-        bool bIsValidIndex = false;
-        strIndex.toInt(&bIsValidIndex);
-        if (bIsValidIndex) {
-            bIs = true;
-        }
-    }
-    return bIs;
-}
-
-//------------------------------------------------------------------------------
-int CGraphObjConnectionLine::extractIndexFromPolygonPointLabelName(const QString& i_strLabelName)
-//------------------------------------------------------------------------------
-{
-    int idxPt = -1;
-    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
-        QString strIndex = i_strLabelName.mid(1);
-        bool bIsValidIndex = false;
-        int idxPtTmp = strIndex.toInt(&bIsValidIndex);
-        // The label name for the polygon point at index 0 is P1.
-        if (bIsValidIndex && idxPtTmp > 0) {
-            idxPt = idxPtTmp - 1;
-        }
-    }
-    return idxPt;
+    const QList<EGraphObjType> s_arTypesToInclude({
+        EGraphObjTypeLine,
+        EGraphObjTypeRect,
+        EGraphObjTypeEllipse,
+        EGraphObjTypePolygon,
+        EGraphObjTypePolyline,
+        EGraphObjTypeText,
+        EGraphObjTypePixmap,
+        EGraphObjTypeGroup
+        });
+    return s_arTypesToInclude;
 }
 
 /*==============================================================================
@@ -1192,6 +1172,22 @@ QCursor CGraphObjConnectionLine::getProposedCursor(const QPointF& i_pt) const
                 QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
                 cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
             }
+            else {
+                // If a connection line should be linked to an object, a connection point has
+                // to be created if a selection point has been hit.
+                QList<CGraphObj*> arpGraphObjsHit = m_pDrawingScene->graphObjsAt(
+                    ptScenePos, CGraphObjConnectionLine::typesConnectionLinesCanBeConnectedWith());
+                CGraphObj* pGraphObjHit = arpGraphObjsHit.isEmpty() ? nullptr : arpGraphObjsHit[0];
+                QGraphicsItem* pGraphicsItemHit = dynamic_cast<QGraphicsItem*>(pGraphObjHit);
+                if (pGraphicsItemHit != nullptr) {
+                    QPointF ptPos = pGraphicsItemHit->mapFromScene(ptScenePos);
+                    SGraphObjHitInfo hitInfo = pGraphObjHit->getSelectionPointHitInfo(ptPos);
+                    if (hitInfo.isSelectionPointHit()) {
+                        QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                        cursor = QCursor(pxmCursor, 0, pxmCursor.height() - 1);
+                    }
+                }
+            }
         }
         else {
             CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
@@ -2140,7 +2136,9 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
         if (pGraphObjCnctPtHit == nullptr) {
             // If a connection line should be linked to an object, a connection point has
             // to be created if a selection point has been hit.
-            CGraphObj* pGraphObjHit = m_pDrawingScene->graphObjAt(i_pEv->scenePos());
+            QList<CGraphObj*> arpGraphObjsHit = m_pDrawingScene->graphObjsAt(
+                i_pEv->scenePos(), CGraphObjConnectionLine::typesConnectionLinesCanBeConnectedWith());
+            CGraphObj* pGraphObjHit = arpGraphObjsHit.isEmpty() ? nullptr : arpGraphObjsHit[0];
             QGraphicsItem* pGraphicsItemHit = dynamic_cast<QGraphicsItem*>(pGraphObjHit);
             if (pGraphicsItemHit != nullptr) {
                 QPointF ptPos = pGraphicsItemHit->mapFromScene(i_pEv->scenePos());

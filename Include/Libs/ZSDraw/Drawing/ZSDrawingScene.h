@@ -148,8 +148,14 @@ public: // instance methods
     void deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall = true);
     QGraphicsItem* getGraphicsItem(const QString& i_strKeyInTree);
     CGraphObj* getGraphObj(const QString& i_strKeyInTree);
-    QGraphicsItem* graphicsItemAt(const QPointF& i_ptScenePos);
-    CGraphObj* graphObjAt(const QPointF& i_ptScenePos);
+    //QGraphicsItem* graphicsItemsAt(
+    //    const QPointF& i_ptScenePos,
+    //    const QList<EGraphObjType>& i_arTypesFilter,
+    //    ZS::System::EComparisonOperator i_eFilterComparison = ZS::System::EComparisonOperator::Equal);
+    QList<CGraphObj*> graphObjsAt(
+        const QPointF& i_ptScenePos,
+        const QList<EGraphObjType>& i_arTypesFilter = QList<EGraphObjType>(),
+        ZS::System::EComparisonOperator i_eFilterComparison = ZS::System::EComparisonOperator::Equal);
     CGraphObjConnectionPoint* connectionPointAt(const QPointF& i_ptScenePos);
 public: // instance methods (replacing methods of QGraphicScene)
     void removeItem(QGraphicsItem* i_pGraphicsItem);
