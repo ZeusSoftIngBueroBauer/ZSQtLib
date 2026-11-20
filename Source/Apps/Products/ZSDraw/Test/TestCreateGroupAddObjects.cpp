@@ -685,13 +685,15 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
         /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)));
     pTestStep->setExpectedValue("");
 
+#if TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSSES == 1
+
     initInstCounts();
     initObjectCoors();
 
     createTestGroupAddStandardShapesGroupLines(pGrpGroupsLines);
     createTestStepSaveLoadFile(pGrpGroupsLines);
 
-#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES
+#endif
 
     // SmallPlusSign
     //--------------
@@ -820,6 +822,7 @@ void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestSt
     createTestStepSaveLoadFile(pGrpGroupsCheckmark);
 
 #endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK
+#endif // TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES
 
     // Rectangles
     //-----------
@@ -20994,6 +20997,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     // Show Geometry Labels Vertical Line
     //-----------------------------------
 
+    strObjName = c_strGraphObjNameBigPlusSignVerticalLine;
     strMethod = "showGeometryLabel";
     strMthArgs = CGraphObj::c_strGeometryLabelNameAngle;
     pTestStep = new ZS::Test::CTestStep(
@@ -21015,6 +21019,26 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         {"ExpectedText", m_pPhysValLineBigPlusSignVerticalLine->angle().toString()},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
+        });
+
+    ptPosLabel.setX(ptPosLabel.x() - 25);
+    ptPosLabel.setY(ptPosLabel.y() - 25);
+    strMethod = "moveGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameAngle + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", strObjName},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(104.988, 205.321).toString()}
         });
 
     // Show Text Labels Horizontal Line
@@ -21067,6 +21091,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     // Show Geometry Labels Horizontal Line
     //-------------------------------------
 
+    strObjName = c_strGraphObjNameBigPlusSignHorizontalLine;
     strMethod = "showGeometryLabel";
     strMthArgs = CGraphObj::c_strGeometryLabelNameAngle;
     pTestStep = new ZS::Test::CTestStep(
@@ -21088,6 +21113,26 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         {"ExpectedText", m_pPhysValLineBigPlusSignHorizontalLine->angle().toString()},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
+        });
+
+    ptPosLabel.setX(ptPosLabel.x() - 15);
+    ptPosLabel.setY(ptPosLabel.y() - 15);
+    strMethod = "moveGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameAngle + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", strObjName},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(104.988, 205.321).toString()}
         });
 
     // Ungroup BigPlusSign
@@ -21165,23 +21210,77 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
     strlstExpectedValues.clear();
     // Group BigPlusSign
+    m_pPhysValRectBigPlusSign->setSize(QSizeF(f100MulSqrt2 / 2.0, f100MulSqrt2 / 2.0));
+    m_pPhysValRectBigPlusSign->setCenter(QPointF(300.0, 300.0));
+    m_pPhysValRectBigPlusSign->setAngle(0.0);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2 / 2.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0,f100MulSqrt2 / 2.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
     m_ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, bYAxisTopDown ? 50.0 : 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, bYAxisTopDown ? 50.0 : 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2 / 2.0, f100MulSqrt2 / 2.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Hide Text Labels
+    //---------------------
+
+    strObjName = c_strGraphObjNameBigPlusSignVerticalLine;
+    strMethod = "hideTextLabels";
+    strMthArgs = CGraphObj::c_strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
+        });
+
+    strObjName = c_strGraphObjNameBigPlusSignHorizontalLine;
+    strMethod = "hideTextLabels";
+    strMthArgs = CGraphObj::c_strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
+        });
+
+    strObjName = c_strGraphObjNameBigPlusSign;
+    strMethod = "hideTextLabels";
+    strMthArgs = CGraphObj::c_strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", CGraphObj::c_strLabelName},
+        {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
+        });
 
     // Resize BigPlusSign
     //-------------------
@@ -21200,21 +21299,21 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     pTestStep->setConfigValue("Size.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group PlusSigns
-    m_ptPosBigPlusSign = QPointF(335.4, 335.4);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    m_ptPosBigPlusSign = m_pPhysValRectBigPlusSign->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(100.0, -50.0), QPointF(-100.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(200.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-100.0, 0.0), QPointF(100.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(200.0, 50.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-100.0, -50.0), QPointF(100.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(200.0, 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21249,12 +21348,12 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Check Geometry Labels
+    // Show Geometry Labels
     //---------------------
 
-    strMethod = "checkGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameTopLeft +
-        ", " + CGraphObj::c_strGeometryLabelNameWidth +
+    strObjName = c_strGraphObjNameBigPlusSign;
+    strMethod = "showGeometryLabels";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
         ", " + CGraphObj::c_strGeometryLabelNameAngle;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -21262,14 +21361,6 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameBigPlusSign},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->topLeft().toString(false)},
-        {"ExpectedPos", QPointF(431.2, 269.0)},
-        {"ExpectedPolarCoors", SPolarCoors(23.7697, 247.751).toString()}
-    });
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameBigPlusSign},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
