@@ -19841,6 +19841,8 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
     QString strObjName;
     QString strMethod;
+    QString strLabelName;
+    QString strLabelText;
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
@@ -20623,6 +20625,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     // Check Geometry Labels Big Plus Sign
     //------------------------------------
 
+    strObjName = c_strGraphObjNameBigPlusSign;
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameTopLeft +
         ", " + CGraphObj::c_strGeometryLabelNameWidth +
@@ -20691,11 +20694,9 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // Horizontal Line
-    QPointF ptP1BigPlusSignHorizontalLine(250.0, bYAxisTopDown ? 300.0 : 300.0);
-    QPointF ptP2BigPlusSignHorizontalLine(350.0, bYAxisTopDown ? 300.0 : 300.0);
     m_ptPosBigPlusSignHorizontalLine = QPointF(300.0, 300.0);
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(ptP1BigPlusSignHorizontalLine);
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(ptP2BigPlusSignHorizontalLine);
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(250.0, bYAxisTopDown ? 300.0 : 300.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(350.0, bYAxisTopDown ? 300.0 : 300.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -20748,6 +20749,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     // Show Text Labels BigPlusSign
     //-----------------------------
 
+    strObjName = c_strGraphObjNameBigPlusSign;
     strMethod = "showTextLabel";
     strMthArgs = CGraphObj::c_strLabelName;
     pTestStep = new ZS::Test::CTestStep(
@@ -21021,8 +21023,8 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
-    ptPosLabel.setX(ptPosLabel.x() - 25);
-    ptPosLabel.setY(ptPosLabel.y() - 25);
+    ptPosLabel.setX(ptPosLabel.x() + 10);
+    ptPosLabel.setY(ptPosLabel.y() - 10);
     strMethod = "moveGeometryLabel";
     strMthArgs = CGraphObj::c_strGeometryLabelNameAngle + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
@@ -21036,7 +21038,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"setPos", ptPosLabel},
-        {"ExpectedText", strObjName},
+        {"ExpectedText", m_pPhysValLineBigPlusSignVerticalLine->angle().toString()},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(104.988, 205.321).toString()}
         });
@@ -21130,7 +21132,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"setPos", ptPosLabel},
-        {"ExpectedText", strObjName},
+        {"ExpectedText", m_pPhysValLineBigPlusSignHorizontalLine->angle().toString()},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(104.988, 205.321).toString()}
         });
@@ -21266,22 +21268,6 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
         });
 
-    strObjName = c_strGraphObjNameBigPlusSign;
-    strMethod = "hideTextLabels";
-    strMthArgs = CGraphObj::c_strLabelName;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
-        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
-        /* pGrpParent      */ pGrpModifyBigPlusSign,
-        /* szDoTestStepFct */ SLOT(doTestStepHideTextLabels(ZS::Test::CTestStep*)));
-    pTestStep->addDataRow({
-        {"GraphObjName", strObjName},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
-        {"LabelName", CGraphObj::c_strLabelName},
-        {"ExpectedValue", strObjName + "." + CGraphObj::c_strLabelName + " not found"}
-        });
-
     // Resize BigPlusSign
     //-------------------
 
@@ -21353,30 +21339,94 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
 
     strObjName = c_strGraphObjNameBigPlusSign;
     strMethod = "showGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameWidth +
-        ", " + CGraphObj::c_strGeometryLabelNameAngle;
+    strLabelName = CGraphObj::c_strGeometryLabelNameWidth;
+    strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    strLabelText = m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    ptPosLabel = m_pPhysValRectBigPlusSign->bottomCenter().toQPointF(Units.Length.px);
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = QPointF(ptPosLabel.x() - sizeLabel.width() / 2.0, ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameBigPlusSign},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(269.2, 294.4)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", strLabelName},
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
+
+    ptPosLabel.setX(ptPosLabel.x() - 15);
+    ptPosLabel.setY(ptPosLabel.y() - 15);
+    strMethod = "moveGeometryLabel";
+    strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", strLabelName},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(104.988, 205.321).toString()}
+        });
+
+    strMethod = "showGeometryLabels";
+    strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
+    strMthArgs = strLabelName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    strLabelText = m_physValAngleBigPlusSign.toString();
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
+    sizeLabel = rctBoundingLabel.size();
+    ptPosLabel = m_pPhysValRectBigPlusSign->rightCenter().toQPointF(Units.Length.px);
+    // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
+    // Move item so that its center point is at the line end point of the anchor line.
+    ptPosLabel = QPointF(ptPosLabel.x() - sizeLabel.width() / 2.0, ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", c_strGraphObjNameBigPlusSign},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedText", m_physValAngleBigPlusSign.toString()},
-        {"ExpectedPos", QPointF(270.2, 441.9)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
+        {"LabelName", strLabelName},
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
+
+    ptPosLabel.setX(ptPosLabel.x() + 15);
+    ptPosLabel.setY(ptPosLabel.y() + 25);
+    strMethod = "moveGeometryLabel";
+    strMthArgs = CGraphObj::c_strGeometryLabelNameAngle + ", {" + qPoint2Str(ptPosLabel) + "}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    pTestStep->addDataRow({
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
+        {"LabelName", strLabelName},
+        {"setPos", ptPosLabel},
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", SPolarCoors(104.988, 205.321).toString()}
+        });
 
     // Rotate BigPlusSign
     //-------------------
@@ -21424,21 +21474,21 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     pTestStep->setConfigValue("Size.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group BigPlusSign
-    m_ptPosBigPlusSign = bYAxisTopDown ? QPointF(383.7, 322.4) : QPointF(287.1, 348.3);
+    m_ptPosBigPlusSign = bYAxisTopDown ? QPointF(412.9, 301.7) : QPointF(287.1, 348.3);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -100.0), QPointF(0.0, 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 200.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(100.0, bYAxisTopDown ? 200.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(100.0, -100.0), QPointF(-100.0, 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(200.0, bYAxisTopDown ? 0.0 : 200.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 200.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-100.0, 0.0), QPointF(100.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 100.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(200.0, 100.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-100.0, -100.0), QPointF(100.0, 100.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(200.0, 200.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21461,21 +21511,21 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     pTestStep->setConfigValue("Size.unit", unit.symbol());
     strlstExpectedValues.clear();
     // Group BigPlusSigns
-    m_ptPosBigPlusSign = QPointF(348.3, 383.7);
+    m_ptPosBigPlusSign = QPointF(377.6, 362.9);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(50.0, -50.0), QPointF(-50.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, -50.0), QPointF(50.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21688,16 +21738,16 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(f100MulSqrt2 / 2.0, -50.0), QPointF(-f100MulSqrt2 / 2.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, 0.0), QPointF(f100MulSqrt2 / 2.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, 50.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, -50.0), QPointF(f100MulSqrt2 / 2.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21738,16 +21788,16 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -106.065), QPointF(0.0, 106.065));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 0.0 : 212.13));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 212.13 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(f100MulSqrt2 / 2.0, -106.065), QPointF(-f100MulSqrt2 / 2.0, 106.065));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2, bYAxisTopDown ? 0.0 : 212.13));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 212.13 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, 0.0), QPointF(f100MulSqrt2 / 2.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 106.065));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, 106.065));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, -106.065), QPointF(f100MulSqrt2 / 2.0, 106.065));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, 2*106.065));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21787,16 +21837,16 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(50.0, -50.0), QPointF(-50.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, -50.0), QPointF(50.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21876,16 +21926,16 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(f100MulSqrt2 / 2.0, -50.0), QPointF(-f100MulSqrt2 / 2.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, 0.0), QPointF(f100MulSqrt2 / 2.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, 50.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, -50.0), QPointF(f100MulSqrt2 / 2.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21926,16 +21976,16 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -f100MulSqrt2 / 2.0), QPointF(0.0, f100MulSqrt2 / 2.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? 0.0 : f100MulSqrt2));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(f100MulSqrt2 / 2.0, bYAxisTopDown ? f100MulSqrt2 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(f100MulSqrt2 / 2.0, -f100MulSqrt2 / 2.0), QPointF(-f100MulSqrt2 / 2.0, f100MulSqrt2 / 2.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(f100MulSqrt2, bYAxisTopDown ? 0.0 : f100MulSqrt2));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? f100MulSqrt2 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, 0.0), QPointF(f100MulSqrt2 / 2.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, f100MulSqrt2 / 2.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, f100MulSqrt2 / 2.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-f100MulSqrt2 / 2.0, -f100MulSqrt2 / 2.0), QPointF(f100MulSqrt2 / 2.0, f100MulSqrt2 / 2.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(f100MulSqrt2, f100MulSqrt2));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -21976,16 +22026,16 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     strlstExpectedValues.append(resultValuesForGroup(
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // BigPlusSign-VerticalLine
-    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(50.0, -50.0), QPointF(-50.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // BigPlusSign-HorizontalLine
-    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, -50.0), QPointF(50.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 100.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -22066,17 +22116,15 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // Vertical Line
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // Horizontal Line
-    ptP1BigPlusSignHorizontalLine = QPointF(0.0, bYAxisTopDown ? 50.0 : 50.0);
-    ptP2BigPlusSignHorizontalLine = QPointF(100.0, bYAxisTopDown ? 50.0 : 50.0);
     m_ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(ptP1BigPlusSignHorizontalLine);
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(ptP2BigPlusSignHorizontalLine);
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -22211,15 +22259,21 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign, false));
     // Vertical Line
     m_ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
-    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, bYAxisTopDown ? 0.0 : 100.0));
-    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, bYAxisTopDown ? 100.0 : 0.0));
+/*
+!! BigPlusSign-VerticalLine.getLine {100, 0, 0, 100} px !!
+*/
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(100.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(0.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
         m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine, false));
     // Horizontal Line
     m_ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
-    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, bYAxisTopDown ? 50.0 : 50.0));
-    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, bYAxisTopDown ? 50.0 : 50.0));
+/*
+!! BigPlusSign-HorizontalLine.getLine {0, 0, 100, 100} px !!
+*/
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, bYAxisTopDown ? 0.0 : 100.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, bYAxisTopDown ? 100.0 : 0.0));
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine, false));
@@ -22228,10 +22282,9 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
     // Check Geometry Labels
     //---------------------
 
+    strObjName = c_strGraphObjNameBigPlusSign;
     strMethod = "checkGeometryLabels";
-    strMthArgs = CGraphObj::c_strGeometryLabelNameTopLeft +
-        ", " + CGraphObj::c_strGeometryLabelNameWidth +
-        ", " + CGraphObj::c_strGeometryLabelNameAngle;
+    strMthArgs = CGraphObj::c_strGeometryLabelNameAngle;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -22239,24 +22292,8 @@ void CTest::createTestGroupAddStandardShapesGroupLinesBigPlusSignModifications(Z
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
     pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameBigPlusSign},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->topLeft().toString(false)},
-        {"ExpectedPos", QPointF(218.3, 362.6)},
-        {"ExpectedPolarCoors", SPolarCoors(23.7697, 247.751).toString()}
-        });
-    pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameBigPlusSign},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
-        {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(356.0, 280.5)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
-        });
-    pTestStep->addDataRow({
-        {"GraphObjName", c_strGraphObjNameBigPlusSign},
-        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]},
+        {"GraphObjName", strObjName},
+        {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleBigPlusSign.toString()},
         {"ExpectedPos", QPointF(254.1, 222.9)},
