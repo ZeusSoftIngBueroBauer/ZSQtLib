@@ -564,13 +564,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpPixelsDrawing800x600px, drawingSize, gridSettings);
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES == 1
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600pxObjectCoordinates);
-#endif // TEST_PIXELS_DRAWINGS_OJBECT_COORDINATES
+#endif // TEST_PIXELS_DRAWINGS_OBJECT_COORDINATES
 
 #if TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
@@ -651,13 +651,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600mm, drawingSize, gridSettings);
 
-#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES == 1
+#if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OBJECT_COORDINATES == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OJBECT_COORDINATES
+#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OBJECT_COORDINATES
 
 #if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
@@ -724,13 +724,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600mm, drawingSize, gridSettings);
 
-#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES == 1
+#if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OBJECT_COORDINATES == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OJBECT_COORDINATES
+#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OBJECT_COORDINATES
 
 #if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS == 1
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(

@@ -249,9 +249,9 @@ void CGraphObjLabelGeometryWidth::updateText()
         }
         QLineF lineSelPtsSceneCoors(ptSelPtLeftScenePos, ptSelPtRightScenePos);
         const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-        CPhysVal physValWidth(lineSelPtsSceneCoors.length(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-        physValWidth.convertValue(drawingSize.unit());
-        strText = physValWidth.toString(EUnitFind::None, PhysValSubStr::Val);
+        CPhysValLine physValLine(*m_pDrawingScene, lineSelPtsSceneCoors, Units.Length.px);
+        physValLine = m_pDrawingScene->convert(physValLine);
+        strText = physValLine.length().toString(EUnitFind::None, PhysValSubStr::Val);
     }
     setText(strText);
 }

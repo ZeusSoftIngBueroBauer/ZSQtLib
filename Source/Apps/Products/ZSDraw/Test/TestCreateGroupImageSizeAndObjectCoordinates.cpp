@@ -68,10 +68,10 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValShapes(
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValShapeTransformations",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT == 1
     createTestGroupObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes);
 #endif
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALPOLYGON == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALPOLYGON == 1
     createTestGroupObjectCoordinatesTransformPhysValPolygon(pGrpPhysValShapes);
 #endif
 }
@@ -126,7 +126,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
     CPhysVal physValAngleCorrected(0.0, Units.Angle.Degree, 0.1);
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_0 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_0 == 1
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_0_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -1739,13 +1739,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_0 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_0 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 90.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_90 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_90 == 1
 
     physValAngle.setVal(90.0);
     physValAngleCorrected.setVal(0.0);
@@ -3085,13 +3085,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_90 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_90 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 180.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_180 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_180 == 1
 
     physValAngle.setVal(180.0);
     physValAngleCorrected.setVal(0.0);
@@ -4430,13 +4430,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_180 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_180 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 270.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_270 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_270 == 1
 
     physValAngle.setVal(270.0);
     physValAngleCorrected.setVal(0.0);
@@ -5779,13 +5779,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_270 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_270 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 30.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_30 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_30 == 1
 
     physValAngle.setVal(30.0);
     physValAngleCorrected.setVal(210.0);
@@ -7122,13 +7122,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_30 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_30 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 120.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_120 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_120 == 1
 
     physValAngle.setVal(120.0);
     physValAngleCorrected.setVal(210.0);
@@ -8459,13 +8459,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_120 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_120 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 210.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_210 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_210 == 1
 
     physValAngle.setVal(210.0);
     physValAngleCorrected.setVal(210.0);
@@ -9795,13 +9795,13 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_210 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_210 == 1
 
     //--------------------------------------------------------------------------
     // Rotation Angle: 300.0°
     //--------------------------------------------------------------------------
 
-#if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 == 1
+#if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_300 == 1
 
     physValAngle.setVal(300.0);
     physValAngleCorrected.setVal(210.0);
@@ -11131,7 +11131,7 @@ void CTest::createTestGroupObjectCoordinatesTransformPhysValRect(
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-#endif // #if TEST_PIXELS_DRAWINGS_800x600_OJBECT_COORDINATES_PHYSVALRECT_ANGLE_300 == 1
+#endif // #if TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_300 == 1
 }
 
 //------------------------------------------------------------------------------

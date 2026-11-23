@@ -232,9 +232,9 @@ void CGraphObjLabelGeometryDX::updateText()
                 m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
                     ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPtOrLine + 1);
         }
-        QLineF lineSelPtSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
+        QLineF lineSelPtsSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
         const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-        CPhysValLine physValLine(*m_pDrawingScene, lineSelPtSceneCoors, Units.Length.px);
+        CPhysValLine physValLine(*m_pDrawingScene, lineSelPtsSceneCoors, Units.Length.px);
         physValLine = m_pDrawingScene->convert(physValLine);
         strText = physValLine.dx().toString(EUnitFind::None, PhysValSubStr::Val);
     }

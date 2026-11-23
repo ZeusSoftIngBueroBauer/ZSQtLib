@@ -248,9 +248,9 @@ void CGraphObjLabelGeometryHeight::updateText()
         }
         QLineF lineSelPtsSceneCoors(ptSelPtTopScenePos, ptSelPtBottomScenePos);
         const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-        CPhysVal physValHeight(lineSelPtsSceneCoors.length(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-        physValHeight.convertValue(drawingSize.unit());
-        strText = physValHeight.toString(EUnitFind::None, PhysValSubStr::Val);
+        CPhysValLine physValLine(*m_pDrawingScene, lineSelPtsSceneCoors, Units.Length.px);
+        physValLine = m_pDrawingScene->convert(physValLine);
+        strText = physValLine.length().toString(EUnitFind::None, PhysValSubStr::Val);
     }
     setText(strText);
 }

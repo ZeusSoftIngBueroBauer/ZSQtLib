@@ -3144,23 +3144,30 @@ QString ZS::System::qPenStyle2Str( const Qt::PenStyle& i_penStyle )
 QString ZS::System::qPoint2Str( const QPoint& i_pt, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_pt.x()) + i_strSeparator + QString::number(i_pt.y());
+    QString strX = QString::number(i_pt.x());
+    QString strY = QString::number(i_pt.y());
+    if (strX == "-0") strX = "0";
+    if (strY == "-0") strY = "0";
+    return strX + i_strSeparator + strY;
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::qPoint2Str( const QPointF& i_pt, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
-    QString str;
+    QString strX;
+    QString strY;
     if (i_bRound2Nearest && i_iPrecision > 0) {
-        str = QString::number(Math::round2Nearest(i_pt.x(),i_iPrecision), i_cF, i_iPrecision) + i_strSeparator
-            + QString::number(Math::round2Nearest(i_pt.y(),i_iPrecision), i_cF, i_iPrecision);
+        strX = QString::number(Math::round2Nearest(i_pt.x(),i_iPrecision), i_cF, i_iPrecision);
+        strY = QString::number(Math::round2Nearest(i_pt.y(),i_iPrecision), i_cF, i_iPrecision);
     }
     else {
-        str = QString::number(i_pt.x(), i_cF, i_iPrecision) + i_strSeparator
-            + QString::number(i_pt.y(), i_cF, i_iPrecision);
+        strX = QString::number(i_pt.x(), i_cF, i_iPrecision);
+        strY = QString::number(i_pt.y(), i_cF, i_iPrecision);
     }
-    return str;
+    if (strX == "-0") strX = "0";
+    if (strY == "-0") strY = "0";
+    return strX + i_strSeparator + strY;
 }
 
 //------------------------------------------------------------------------------
@@ -3217,23 +3224,30 @@ QPointF ZS::System::str2QPointF( const QString& i_str, bool* o_pbConverted, cons
 QString ZS::System::qSize2Str( const QSize& i_size, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_size.width()) + i_strSeparator + QString::number(i_size.height());
+    QString strX = QString::number(i_size.width());
+    QString strY = QString::number(i_size.height());
+    if (strX == "-0") strX = "0";
+    if (strY == "-0") strY = "0";
+    return strX + i_strSeparator + strY;
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::qSize2Str( const QSizeF& i_size, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
-    QString str;
+    QString strX;
+    QString strY;
     if (i_bRound2Nearest && i_iPrecision > 0) {
-        str = QString::number(Math::round2Nearest(i_size.width(),i_iPrecision), i_cF, i_iPrecision) + i_strSeparator
-            + QString::number(Math::round2Nearest(i_size.height(),i_iPrecision), i_cF, i_iPrecision);
+        strX = QString::number(Math::round2Nearest(i_size.width(), i_iPrecision), i_cF, i_iPrecision);
+        strY = QString::number(Math::round2Nearest(i_size.height(), i_iPrecision), i_cF, i_iPrecision);
     }
     else {
-        str = QString::number(i_size.width(), i_cF, i_iPrecision) + i_strSeparator
-            + QString::number(i_size.height(), i_cF, i_iPrecision);
+        strX = QString::number(i_size.width(), i_cF, i_iPrecision);
+        strY = QString::number(i_size.height(), i_cF, i_iPrecision);
     }
-    return str;
+    if (strX == "-0") strX = "0";
+    if (strY == "-0") strY = "0";
+    return strX + i_strSeparator + strY;
 }
 
 //------------------------------------------------------------------------------
