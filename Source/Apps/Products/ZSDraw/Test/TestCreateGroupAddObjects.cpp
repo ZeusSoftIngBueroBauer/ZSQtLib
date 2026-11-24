@@ -1118,10 +1118,13 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
+    QString strLabelName;
+    QString strLabelText;
 
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SPolarCoors polarCoorsLabel;
     QLineF lineFInSceneCoors;
 
     strObjName = "DrawingScene";
@@ -1301,7 +1304,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "300, 300" : "300.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -1344,7 +1348,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("250, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "250, 300" : "250.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -1388,7 +1393,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("350, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "350, 300" : "350.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.

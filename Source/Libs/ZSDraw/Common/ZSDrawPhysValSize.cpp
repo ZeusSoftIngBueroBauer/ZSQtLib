@@ -57,16 +57,16 @@ CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene) :
 {
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical size on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
-    m_size()
-{
-}
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical size on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_unit),
+//    m_size()
+//{
+//}
 
 //------------------------------------------------------------------------------
 CPhysValSize::CPhysValSize(
@@ -84,9 +84,14 @@ CPhysValSize::CPhysValSize(
     double i_fWidth, double i_fHeight,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_size(i_fWidth, i_fHeight)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +99,7 @@ CPhysValSize::CPhysValSize(
     const CDrawingScene& i_drawingScene,
     const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_physValWidth.unit()),
+    CPhysValShape(i_drawingScene),
     m_size(i_physValWidth.getVal(), i_physValHeight.getVal())
 {
     if (i_physValWidth.unit() != i_physValHeight.unit()) {
@@ -102,6 +107,11 @@ CPhysValSize::CPhysValSize(
     }
     if (i_physValWidth.getRes() != i_physValHeight.getRes()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValWidth.unit() != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_physValWidth.unit();
+        *this = m_pDrawingScene->convert(*this);
     }
 }
 
@@ -121,9 +131,14 @@ CPhysValSize::CPhysValSize(
     const QSizeF& i_size,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_size(i_size)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 /*==============================================================================
@@ -193,7 +208,7 @@ CPhysValSize& CPhysValSize::operator = ( const QString& i_strValOther )
     CPhysVal physValHeight(m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
     physValWidth = strlst[0];
     physValHeight = strlst[1];
-    m_unit = physValWidth.unit();
+    physValWidth.convertValue(m_unit);
     physValHeight.convertValue(m_unit);
     m_size.setWidth(physValWidth.getVal());
     m_size.setHeight(physValHeight.getVal());

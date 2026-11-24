@@ -57,16 +57,16 @@ CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene) :
 {
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical point on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
-    m_pt()
-{
-}
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical point on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_unit),
+//    m_pt()
+//{
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief
@@ -98,9 +98,14 @@ CPhysValPoint::CPhysValPoint(
     double i_fX, double i_fY,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_pt(i_fX, i_fY)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -133,9 +138,14 @@ CPhysValPoint::CPhysValPoint(
     const QPointF& i_pt,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_pt(i_pt)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -143,7 +153,7 @@ CPhysValPoint::CPhysValPoint(
     const CDrawingScene& i_drawingScene,
     const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_physValX.unit()),
+    CPhysValShape(i_drawingScene),
     m_pt(i_physValX.getVal(), i_physValY.getVal())
 {
     if (i_physValX.unit() != i_physValY.unit()) {
@@ -151,6 +161,11 @@ CPhysValPoint::CPhysValPoint(
     }
     if (i_physValX.getRes() != i_physValY.getRes()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValX.unit() != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_physValX.unit();
+        *this = m_pDrawingScene->convert(*this);
     }
 }
 
@@ -174,7 +189,6 @@ public: // dtor
 CPhysValPoint::~CPhysValPoint()
 //------------------------------------------------------------------------------
 {
-    //m_pt;
 }
 
 /*==============================================================================
@@ -221,7 +235,7 @@ CPhysValPoint& CPhysValPoint::operator = ( const QString& i_strValOther )
     CPhysVal physValY(m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
     physValX = strlst[0];
     physValY = strlst[1];
-    m_unit = physValX.unit();
+    physValX.convertValue(m_unit);
     physValY.convertValue(m_unit);
     m_pt.setX(physValX.getVal());
     m_pt.setY(physValY.getVal());
@@ -403,7 +417,12 @@ void CPhysValPoint::setY( double i_fY )
 void CPhysValPoint::setY( const CPhysVal& i_physValY )
 //------------------------------------------------------------------------------
 {
-    m_pt.setY(i_physValY.getVal(m_unit));
+    m_pt = toQPointF(i_physValY.unit());
+    m_pt.setY(i_physValY.getVal());
+    if (m_unit != i_physValY.unit()) {
+        m_unit = i_physValY.unit();
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 /*==============================================================================

@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValShape.h"
 #include "QtCore/qsize.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Corresponds to QSizeF but providing a physical unit and a resolution.
@@ -54,7 +52,7 @@ public: // class methods
     static QString ClassName() { return "CPhysValSize"; }
 public: // ctors
     CPhysValSize(const CDrawingScene& i_drawingScene);
-    CPhysValSize(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    //CPhysValSize(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
     CPhysValSize(
         const CDrawingScene& i_drawingScene,
         double i_fWidth, double i_fHeight);
@@ -102,13 +100,11 @@ public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
     QSizeF toQSizeF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // instance members
-    /*!< The size in width and height in the unit 'm_unit'. */
+    /*!< The size in width and height stored in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QSizeF m_size;
 
 }; // class CPhysValSize
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValSize_h

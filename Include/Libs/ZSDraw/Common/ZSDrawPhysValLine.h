@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "QtCore/qline.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a line on the drawing scene.
@@ -52,7 +50,7 @@ public: // class methods
     static QString ClassName() { return "CPhysValLine"; }
 public: // ctors
     CPhysValLine(const CDrawingScene& i_drawingScene);
-    CPhysValLine(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    //CPhysValLine(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
     CPhysValLine(
         const CDrawingScene& i_drawingScene,
         double i_fX1, double i_fY1, double i_fX2, double i_fY2);
@@ -130,13 +128,11 @@ public: // instance methods (to convert the values into another unit)
     QLineF toQLineF() const;
     QLineF toQLineF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // instance members
-    /*!< Values of the line stored in "m_unit". */
+    /*!< The line coordinates stored in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QLineF m_line;
 
 }; // class CPhysValLine
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValLine_h

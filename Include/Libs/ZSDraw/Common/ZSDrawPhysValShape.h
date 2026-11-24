@@ -34,9 +34,7 @@ may result in using the software modules.
 class QPainter;
 class QRectF;
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CDrawingScene;
 class CDrawSettings;
@@ -53,11 +51,12 @@ public: // class methods
     static QString ClassName() { return "CPhysValShape"; }
 public: // ctors
     CPhysValShape(const CDrawingScene& i_drawingScene);
-    CPhysValShape(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
 public: // copy ctor
     CPhysValShape(const CPhysValShape& i_physValShapeOther);
 public: // dtor
     virtual ~CPhysValShape();
+//protected:
+//    CPhysValShape(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
 public: // must overridable operators
     virtual CPhysValShape& operator = (const CPhysValShape& i_physValShapeOther) = 0;
 public: // must overridable operators
@@ -81,23 +80,23 @@ protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;
     /*!< To speed up code and to improve readability a flag is set to define the YAxisScaleOrientation. */
-    bool m_bYAxisTopDown;
+    bool m_bYAxisTopDown = true;
     ///*!< Mathematic component to calculate the division lines of the X-Scale.
     //     Also used to convert pixel values into metric values and vice versa. */
     //const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsX;
     ///*!< Mathematic component to calculate the division lines of the Y-Scale.
     //     Also used to convert pixel values into metric values and vice versa. */
     //const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsY;
-    /*!< Unit (either metric or pixels) in which the coordinates are stored. */
+    /*!< Unit of the drawing scene (either metric or pixels) in which the coordinates are stored.
+         Set when creating a physical shape instance and cannot be changed.
+         The coordinates of the derived shape classes are stored in this unit. */
     ZS::PhysVal::CUnit m_unit;
     /*!< PhysVal shapes may be added to the drawing scene to be drawn in the background or foreground.
          If added to the drawing scene the index in the list of shapes is set here. Otherwise the index is -1. */
-    int m_idxInDrawingScene;
+    int m_idxInDrawingScene = -1;
 
 }; // class CPhysValShape
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValShape_h

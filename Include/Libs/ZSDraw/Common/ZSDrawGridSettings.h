@@ -39,9 +39,7 @@ class QSettings;
 class QXmlStreamReader;
 class QXmlStreamWriter;
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CDrawGridSettings
@@ -106,8 +104,6 @@ protected: // instance members
 
 }; // class CDrawGridSettings
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GridSettings_h

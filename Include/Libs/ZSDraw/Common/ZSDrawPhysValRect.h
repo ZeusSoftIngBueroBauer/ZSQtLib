@@ -33,9 +33,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "QtCore/qrect.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a rectangle on the drawing scene.
@@ -56,7 +54,7 @@ public: // class methods
     static QString ClassName() { return "CPhysValRect"; }
 public: // ctors
     CPhysValRect(const CDrawingScene& i_drawingScene);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    //CPhysValRect(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect);
     CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(
@@ -144,9 +142,9 @@ protected: // overridables
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
 protected: // instance members
-    /*!< The rectangles center coordinates in the unit 'm_unit'. */
+    /*!< The rectangles center coordinates stored in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QPointF m_ptCenter;
-    /*!< The rectangles width and height in the unit 'm_unit'. */
+    /*!< The rectangles width and height stored in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QSizeF m_size;
     /*!< The rotation angle (counted clockwise). */
     ZS::PhysVal::CPhysVal m_physValAngle;
@@ -161,8 +159,6 @@ protected: // instance members
 
 }; // class CPhysValRect
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValRect_h

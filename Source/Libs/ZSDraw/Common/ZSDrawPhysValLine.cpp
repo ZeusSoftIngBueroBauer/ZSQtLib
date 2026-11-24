@@ -58,16 +58,16 @@ CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene) :
 {
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical line on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
-    m_line()
-{
-}
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical line on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_unit),
+//    m_line()
+//{
+//}
 
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(
@@ -85,9 +85,14 @@ CPhysValLine::CPhysValLine(
     double i_fX1, double i_fY1, double i_fX2, double i_fY2,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_line(i_fX1, i_fY1, i_fX2, i_fY2)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -106,9 +111,14 @@ CPhysValLine::CPhysValLine(
     const QPointF& i_p1, const QPointF& i_p2,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_line(i_p1, i_p2)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -127,9 +137,14 @@ CPhysValLine::CPhysValLine(
     const QLineF& i_line,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_line(i_line)
 {
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 /*==============================================================================
@@ -139,7 +154,7 @@ public: // ctors
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_physValP1.drawingScene(), i_physValP1.unit()),
+    CPhysValShape(i_physValP1.drawingScene()),
     m_line(i_physValP1.toQPointF(), i_physValP2.toQPointF())
 {
     if (&i_physValP1.drawingScene() != &i_physValP2.drawingScene()) {
@@ -150,6 +165,11 @@ CPhysValLine::CPhysValLine(const CPhysValPoint& i_physValP1, const CPhysValPoint
     }
     if (i_physValP1.resolution() != i_physValP2.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValP1.unit() != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_physValP1.unit();
+        *this = m_pDrawingScene->convert(*this);
     }
 }
 
@@ -412,23 +432,42 @@ CPhysValPoint CPhysValLine::center() const
 
     The angles are measured clockwise around the z-Axis through point P1.
 
-    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
-    correspondingly.
+    For metric dimension, if the yScaleAxisOrientation is from BottomToTop,
+    the angle must be corrected. In this case the QLineF coordinates are
+    not provided in pixels but in metric unit and greater values correspond
+    to lower pixel values.
+
+    YScale: TopDown (pixels or mm)
+
+                100
+        100   P1 +        QLine(100/100, 100/200)       -> Angle = 270° (counter clockwise counted)
+                 |
+                 | 90 °   PhysValLine(100/100, 100/200) -> Angle = 90° (clockwise counted)
+        200   P2 +
+
+    YScale: BottomUp (Metric only)
+
+                100
+        200   P1 +        QLine(100/200, 100/100)       -> Angle = 90° (counter clockwise counted)
+                 |
+                 | 90 °   PhysValLine(100/100, 100/200) -> Angle = 90° (clockwise counted)
+        100   P2 +
 */
 CPhysVal CPhysValLine::angle() const
 //------------------------------------------------------------------------------
 {
-    // QLineF::angle returns the angle counter-clockwise which is in contrast to
-    // the QGraphicsItem::rotationAngle. This will be corrected here.
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    double fAngleCounterClockwise_degree = m_line.angle();
-    double fAngleClockwise_degree = Math::toClockWiseAngleDegree(fAngleCounterClockwise_degree);
-    CPhysVal physValAngle(fAngleClockwise_degree, Units.Angle.Degree, 0.1);
-    //if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
-    //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-    //    physValAngle.setVal(fAngle_degree);
-    //}
-    return physValAngle;
+    double fAngleClockwise_degree = 0.0;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        // QLineF::angle returns the angle counter-clockwise which is in contrast to
+        // the QGraphicsItem::rotationAngle. This will be corrected here.
+        double fAngleCounterClockwise_degree = m_line.angle();
+        fAngleClockwise_degree = Math::toClockWiseAngleDegree(fAngleCounterClockwise_degree);
+    }
+    else {
+        fAngleClockwise_degree = m_line.angle();
+    }
+    return CPhysVal(fAngleClockwise_degree, Units.Angle.Degree, 0.1);
 }
 
 //------------------------------------------------------------------------------
@@ -472,7 +511,8 @@ void CPhysValLine::setP1( const QPointF& i_p1 )
 void CPhysValLine::setP1( const CPhysValPoint& i_physValP1 )
 //------------------------------------------------------------------------------
 {
-    m_line.setP1(QPointF(i_physValP1.x().getVal(m_unit), i_physValP1.y().getVal(m_unit)));
+    CPhysValPoint physValP1 = m_pDrawingScene->convert(i_physValP1, m_unit);
+    m_line.setP1(physValP1.toQPointF());
 }
 
 //------------------------------------------------------------------------------
@@ -486,7 +526,8 @@ void CPhysValLine::setP2( const QPointF& i_p2 )
 void CPhysValLine::setP2( const CPhysValPoint& i_physValP2 )
 //------------------------------------------------------------------------------
 {
-    m_line.setP2(QPointF(i_physValP2.x().getVal(m_unit), i_physValP2.y().getVal(m_unit)));
+    CPhysValPoint physValP2 = m_pDrawingScene->convert(i_physValP2, m_unit);
+    m_line.setP2(physValP2.toQPointF());
 }
 
 //------------------------------------------------------------------------------
@@ -495,7 +536,10 @@ void CPhysValLine::setLine(
 //------------------------------------------------------------------------------
 {
     m_line.setLine(i_fX1, i_fY1, i_fX2, i_fY2);
-    m_unit = i_unit;
+    if (m_unit != i_unit) {
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -503,7 +547,10 @@ void CPhysValLine::setLine(const QLineF& i_line, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     m_line = i_line;
-    m_unit = i_unit;
+    if (m_unit != i_unit) {
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -512,7 +559,10 @@ void CPhysValLine::setPoints(
 //------------------------------------------------------------------------------
 {
     m_line.setPoints(i_p1, i_p2);
-    m_unit = i_unit;
+    if (m_unit != i_unit) {
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -527,7 +577,10 @@ void CPhysValLine::setPoints(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_line.setPoints(i_physValP1.toQPointF(), i_physValP2.toQPointF());
-    m_unit = i_physValP1.unit();
+    if (m_unit != i_physValP1.unit()) {
+        m_unit = i_physValP1.unit();
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -637,9 +690,10 @@ void CPhysValLine::setCenter(const QPointF& i_pCenter)
 void CPhysValLine::setCenter(const CPhysValPoint& i_physValPointCenter)
 //------------------------------------------------------------------------------
 {
-    double fCenterX = i_physValPointCenter.x().getVal(m_unit);
+    CPhysValPoint physValPtCenter = m_pDrawingScene->convert(i_physValPointCenter, m_unit);
+    double fCenterX = physValPtCenter.x().getVal();
     double fdx = fCenterX - m_line.center().x();
-    double fCenterY = i_physValPointCenter.y().getVal(m_unit);
+    double fCenterY = physValPtCenter.y().getVal();
     double fdy = fCenterY - m_line.center().y();
     m_line.translate(fdx, fdy);
 }
@@ -663,8 +717,26 @@ void CPhysValLine::setAngle(double i_fAngle_degree)
 
     The angles are measured clockwise around the z-Axis through point P1.
 
-    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
-    correspondingly.
+    For metric dimension, if the yScaleAxisOrientation is from BottomToTop,
+    the angle must be corrected. In this case the QLineF coordinates are
+    not provided in pixels but in metric unit and greater values correspond
+    to lower pixel values.
+
+    YScale: TopDown (pixels or mm)
+
+                100
+        100   P1 +        QLine(100/100, 100/200)       -> Angle = 270° (counter clockwise counted)
+                 |
+                 | 90 °   PhysValLine(100/100, 100/200) -> Angle = 90° (clockwise counted)
+        200   P2 +
+
+    YScale: BottomUp (Metric only)
+
+                100
+        200   P1 +        QLine(100/200, 100/100)       -> Angle = 90° (counter clockwise counted)
+                 |
+                 | 90 °   PhysValLine(100/100, 100/200) -> Angle = 90° (clockwise counted)
+        100   P2 +
 
     @param [in] i_physValAngle
         Angle to be set.
@@ -672,27 +744,22 @@ void CPhysValLine::setAngle(double i_fAngle_degree)
 void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
-    // QLineF::angle returns the angle counter-clockwise which is in contrast to
-    // the QGraphicsItem::rotationAngle. This will be corrected here.
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QPointF ptCenter = m_line.center();
-    CPhysVal physValAngle = i_physValAngle;
-    //if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
-    //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-    //    physValAngle.setVal(fAngle_degree);
-    //}
-    // The line may already be rotated and has a current rotation angle.
-    // The new rotation angle is applied by rotating P1 and P2 around the center
-    // of the line with the new angle.
-    double fAngleClockwise_degree = physValAngle.getVal(Units.Angle.Degree);
+    double fRadius = m_line.length() / 2.0;
+    double fAngleClockwise_degree = i_physValAngle.getVal(Units.Angle.Degree);
     double fAngleCounterClockwise_degree = Math::toCounterClockWiseAngleDegree(fAngleClockwise_degree);
     double fAngleCounterClockwise_rad = Math::degree2Rad(fAngleCounterClockwise_degree);
-    //double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
-    double fRadius = m_line.length() / 2.0;
     double dx = fRadius * cos(fAngleCounterClockwise_rad);
     double dy = fRadius * sin(fAngleCounterClockwise_rad);
-    m_line.setP1(ptCenter + QPointF(-dx, dy));
-    m_line.setP2(ptCenter + QPointF(dx, -dy));
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        m_line.setP1(ptCenter + QPointF(-dx, dy));
+        m_line.setP2(ptCenter + QPointF(dx, -dy));
+    }
+    else {
+        m_line.setP1(ptCenter + QPointF(-dx, -dy));
+        m_line.setP2(ptCenter + QPointF(dx, dy));
+    }
     //if (m_line.center() != ptCenter) {
     //    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     //}

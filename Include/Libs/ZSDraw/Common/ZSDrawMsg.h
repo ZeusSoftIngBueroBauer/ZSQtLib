@@ -37,9 +37,7 @@ may result in using the software modules.
 global type definitions and constants
 *******************************************************************************/
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 enum EMsgType {
     EMsgTypeMin               = (ZS::System::EBaseMsgTypeMax+1),
@@ -73,8 +71,6 @@ protected: // instance members
     QString m_strKeyInTree;
 };
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // ZSDraw_Msg_h

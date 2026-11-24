@@ -66,21 +66,21 @@ CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, bool i_bIs
 {
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical polygon on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, const CUnit& i_unit, bool i_bIsClosedPolygon) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
-    m_bIsClosedPolygon(i_bIsClosedPolygon),
-    m_ptCenterOrig(),
-    m_sizeOrig(),
-    m_polygonOrig(),
-    m_polygonScaledAndRotated(),
-    m_physValRectScaledAndRotated(i_drawingScene, i_unit)
-{
-}
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical polygon on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, const CUnit& i_unit, bool i_bIsClosedPolygon) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_unit),
+//    m_bIsClosedPolygon(i_bIsClosedPolygon),
+//    m_ptCenterOrig(),
+//    m_sizeOrig(),
+//    m_polygonOrig(),
+//    m_polygonScaledAndRotated(),
+//    m_physValRectScaledAndRotated(i_drawingScene, i_unit)
+//{
+//}
 
 //------------------------------------------------------------------------------
 CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, bool i_bIsClosedPolygon) :
@@ -104,18 +104,23 @@ CPhysValPolygon::CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF 
 CPhysValPolygon::CPhysValPolygon(
     const CDrawingScene& i_drawingScene, QPolygonF i_polygon, const CUnit& i_unit, bool i_bIsClosedPolygon) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_bIsClosedPolygon(i_bIsClosedPolygon),
     m_sizeOrig(),
     m_polygonOrig(std::move(i_polygon)),
     m_polygonScaledAndRotated(),
-    m_physValRectScaledAndRotated(i_drawingScene, i_unit)
+    m_physValRectScaledAndRotated(i_drawingScene)
 {
     m_physValRectScaledAndRotated.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
     m_physValRectScaledAndRotated.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     m_ptCenterOrig = m_physValRectScaledAndRotated.center().toQPointF();
     m_sizeOrig = m_physValRectScaledAndRotated.size().toQSizeF();
     m_polygonScaledAndRotated = m_polygonOrig;
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
 }
 
 /*==============================================================================
@@ -1357,7 +1362,7 @@ void CPhysValPolygon::updateOriginalPolygon()
             m_polygonOrig[idxPt] = ZS::Draw::rotatePoint(ptCenterModified, m_polygonScaledAndRotated[idxPt], -fAngle_rad);
         }
     }
-    m_physValRectScaledAndRotated = CPhysValRect(*m_pDrawingScene, m_unit);
+    m_physValRectScaledAndRotated = CPhysValRect(*m_pDrawingScene);
     m_physValRectScaledAndRotated.setSize(CPhysValSize(*m_pDrawingScene, m_polygonOrig.boundingRect().size(), m_unit));
     m_physValRectScaledAndRotated.setCenter(CPhysValPoint(*m_pDrawingScene, m_polygonOrig.boundingRect().center(), m_unit));
     // Calculate the offset error by rotating one of the original points

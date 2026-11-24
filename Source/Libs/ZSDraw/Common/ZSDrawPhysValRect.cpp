@@ -67,21 +67,21 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
     initSelectionPoints();
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical rectangle on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
-    m_ptCenter(),
-    m_size(0.0, 0.0),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValRectSelectionPoints(),
-    m_arbRectSelectionPointsCalculated()
-{
-    initSelectionPoints();
-}
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical rectangle on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_unit),
+//    m_ptCenter(),
+//    m_size(0.0, 0.0),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValRectSelectionPoints(),
+//    m_arbRectSelectionPointsCalculated()
+//{
+//    initSelectionPoints();
+//}
 
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(
@@ -112,7 +112,7 @@ CPhysValRect::CPhysValRect(
     const QRectF& i_rect,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_ptCenter(i_rect.center()),
     m_size(i_rect.width(), i_rect.height()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
@@ -130,6 +130,11 @@ CPhysValRect::CPhysValRect(
     }
     if (!m_bYAxisTopDown) {
         m_ptCenter.setY(i_rect.topLeft().y() - i_rect.size().height()/2.0);
+    }
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
     }
     initSelectionPoints();
 }
@@ -168,7 +173,7 @@ CPhysValRect::CPhysValRect(
     const QPointF& i_ptTL, const QPointF& i_ptBR,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
     m_size(i_ptBR.x() - i_ptTL.x(), fabs(i_ptBR.y() - i_ptTL.y())),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
@@ -187,6 +192,11 @@ CPhysValRect::CPhysValRect(
         if (i_ptTL.y() < i_ptBR.y()) {
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
         }
+    }
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
     }
     initSelectionPoints();
 }
@@ -225,7 +235,7 @@ CPhysValRect::CPhysValRect(
     const QPointF& i_ptTL, const QSizeF& i_size,
     const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_unit),
+    CPhysValShape(i_drawingScene),
     m_ptCenter(),
     m_size(i_size),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
@@ -245,6 +255,11 @@ CPhysValRect::CPhysValRect(
     else {
         m_ptCenter.setY(i_ptTL.y() - i_size.height()/2.0);
     }
+    if (i_unit != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_unit;
+        *this = m_pDrawingScene->convert(*this);
+    }
     initSelectionPoints();
 }
 
@@ -257,7 +272,7 @@ CPhysValRect::CPhysValRect(
     const CPhysValPoint& i_physValTopLeft,
     const CPhysValPoint& i_physValBottomRight) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.unit()),
+    CPhysValShape(i_physValTopLeft.drawingScene()),
     m_ptCenter(QLineF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).center()),
     m_size(fabs(i_physValTopLeft.x().getVal() - i_physValBottomRight.x().getVal()),
            fabs(i_physValTopLeft.y().getVal() - i_physValBottomRight.y().getVal())),
@@ -284,6 +299,11 @@ CPhysValRect::CPhysValRect(
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
         }
     }
+    if (i_physValTopLeft.unit() != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_physValTopLeft.unit();
+        *this = m_pDrawingScene->convert(*this);
+    }
     initSelectionPoints();
 }
 
@@ -292,7 +312,7 @@ CPhysValRect::CPhysValRect(
     const CPhysValPoint& i_physValTopLeft,
     const CPhysValSize& i_physValSize) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.unit()),
+    CPhysValShape(i_physValTopLeft.drawingScene()),
     m_ptCenter(),
     m_size(i_physValSize.toQSizeF()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
@@ -321,6 +341,11 @@ CPhysValRect::CPhysValRect(
     else {
         m_ptCenter.setY(i_physValTopLeft.y().getVal() - i_physValSize.height().getVal()/2.0);
     }
+    if (i_physValTopLeft.unit() != m_unit) {
+        // Convert from passed unit into unit of drawing scene:
+        m_unit = i_physValTopLeft.unit();
+        *this = m_pDrawingScene->convert(*this);
+    }
     initSelectionPoints();
 }
 
@@ -348,11 +373,6 @@ public: // dtor
 CPhysValRect::~CPhysValRect()
 //------------------------------------------------------------------------------
 {
-    //m_ptCenter;
-    //m_size;
-    //m_physValAngle;
-    //m_arphysValRectSelectionPoints;
-    //m_arbRectSelectionPointsCalculated;
 }
 
 /*==============================================================================

@@ -29,9 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a polygon on the drawing scene.
@@ -60,7 +58,7 @@ public: // class methods
     static QString ClassName() { return "CPhysValPolygon"; }
 public: // ctors
     CPhysValPolygon(const CDrawingScene& i_drawingScene, bool i_bIsClosedPolygon = true);
-    CPhysValPolygon(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
+    //CPhysValPolygon(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
     CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, bool i_bIsClosedPolygon = true);
     CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
 public: // copy ctor
@@ -149,13 +147,16 @@ protected: // instance members
     /*!< true, if the polygon should be closed by drawing a line from the last point
          to the first point, false otherwise. */
     bool m_bIsClosedPolygon;
-    /*!< Original center point of the unscaled and unrotated polygon. */
+    /*!< Original center point of the unscaled and unrotated polygon
+         stored in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QPointF m_ptCenterOrig;
-    /*!< Original size of the unscaled and unrotated polygon. */
+    /*!< Original size of the unscaled and unrotated polygon
+         stored in the unit of the drawing scene(see CPhysValShape::m_unit). */
     QSizeF m_sizeOrig;
-    /*!< Original points of the unscaled and unrotated polygon stored in "m_unit". */
+    /*!< Original points of the unscaled and unrotated polygon stored
+         in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QPolygonF m_polygonOrig;
-    /*!< Resized and rotated polygon stored in "m_unit".
+    /*!< Resized and rotated polygon stored in the unit of the drawing scene (see CPhysValShape::m_unit).
          Calculated from the original polygon points applying the scale factor and rotationg angle
          as defined by the resized and rotated rectangle around the polygon. */
     QPolygonF m_polygonScaledAndRotated;
@@ -168,8 +169,6 @@ protected: // instance members
 
 }; // class CPhysValPolygon
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValPolygon_h

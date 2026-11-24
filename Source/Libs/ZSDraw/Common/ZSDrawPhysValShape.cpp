@@ -51,21 +51,7 @@ CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(&i_drawingScene),
     m_bYAxisTopDown(i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
-    m_unit(i_drawingScene.drawingSize().unit()),
-    m_idxInDrawingScene(-1)
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical shape on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_bYAxisTopDown(!Units.Length.isMetricUnit(i_unit) || i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
-    m_unit(i_unit),
-    m_idxInDrawingScene(-1)
+    m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
@@ -74,8 +60,7 @@ CPhysValShape::CPhysValShape(const CPhysValShape& i_physValShapeOther) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(i_physValShapeOther.m_pDrawingScene),
     m_bYAxisTopDown(i_physValShapeOther.m_bYAxisTopDown),
-    m_unit(i_physValShapeOther.m_unit),
-    m_idxInDrawingScene(-1)
+    m_unit(i_physValShapeOther.m_unit)
 {
 }
 
@@ -83,11 +68,28 @@ CPhysValShape::CPhysValShape(const CPhysValShape& i_physValShapeOther) :
 CPhysValShape::~CPhysValShape()
 //------------------------------------------------------------------------------
 {
-    m_pDrawingScene = nullptr;
-    m_bYAxisTopDown = false;
-    //m_unit;
-    m_idxInDrawingScene = 0;
 }
+
+///*==============================================================================
+//protected: // ctor
+//==============================================================================*/
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical shape on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//
+//    @note This method is for internal use by the derived shape classes to
+//          convert values, not provided in the unit of the drawing scene,
+//          into the unit of the drawing scene.
+//*/
+//CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    m_pDrawingScene(&i_drawingScene),
+//    m_bYAxisTopDown(!Units.Length.isMetricUnit(i_unit) || i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
+//    m_unit(i_unit),
+//    m_idxInDrawingScene(-1)
+//{
+//}
 
 /*==============================================================================
 public: // operators

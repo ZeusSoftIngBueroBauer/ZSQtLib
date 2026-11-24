@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValShape.h"
 #include "QtCore/qpoint.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a point on the drawing scene.
@@ -52,7 +50,7 @@ public: // class methods
     static QString ClassName() { return "CPhysValPoint"; }
 public: // ctors
     CPhysValPoint(const CDrawingScene& i_drawingScene);
-    CPhysValPoint(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    //CPhysValPoint(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint(
         const CDrawingScene& i_drawingScene,
         double i_fX, double i_fY);
@@ -100,13 +98,11 @@ public: // instance methods (to convert the values into another unit)
     QPointF toQPointF() const;
     QPointF toQPointF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // instance members
-    /*!< The point coordinates stored in the unit 'm_unit'. */
+    /*!< The point coordinates stored in the unit of the drawing scene (see CPhysValShape::m_unit). */
     QPointF m_pt;
 
 }; // class CPhysValPoint
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValPoint_h
