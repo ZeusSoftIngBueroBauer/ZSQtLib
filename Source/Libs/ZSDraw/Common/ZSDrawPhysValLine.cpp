@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -412,23 +412,42 @@ CPhysValPoint CPhysValLine::center() const
 
     The angles are measured clockwise around the z-Axis through point P1.
 
-    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
-    correspondingly.
+    For metric dimension, if the yScaleAxisOrientation is from BottomToTop,
+    the angle must be corrected. In this case the QLineF coordinates are
+    not provided in pixels but in metric unit and greater values correspond
+    to lower pixel values.
+
+    YScale: TopDown (pixels or mm)
+
+                100
+        100   P1 +        QLine(100/100, 100/200)       -> Angle = 270� (counter clockwise counted)
+                 |
+                 | 90 �   PhysValLine(100/100, 100/200) -> Angle = 90� (clockwise counted)
+        200   P2 +
+
+    YScale: BottomUp (Metric only)
+
+                100
+        200   P1 +        QLine(100/200, 100/100)       -> Angle = 90� (counter clockwise counted)
+                 |
+                 | 90 �   PhysValLine(100/100, 100/200) -> Angle = 90� (clockwise counted)
+        100   P2 +
 */
 CPhysVal CPhysValLine::angle() const
 //------------------------------------------------------------------------------
 {
-    // QLineF::angle returns the angle counter-clockwise which is in contrast to
-    // the QGraphicsItem::rotationAngle. This will be corrected here.
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    double fAngleCounterClockwise_degree = m_line.angle();
-    double fAngleClockwise_degree = Math::toClockWiseAngleDegree(fAngleCounterClockwise_degree);
-    CPhysVal physValAngle(fAngleClockwise_degree, Units.Angle.Degree, 0.1);
-    //if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
-    //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-    //    physValAngle.setVal(fAngle_degree);
-    //}
-    return physValAngle;
+    double fAngleClockwise_degree = 0.0;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        // QLineF::angle returns the angle counter-clockwise which is in contrast to
+        // the QGraphicsItem::rotationAngle. This will be corrected here.
+        double fAngleCounterClockwise_degree = m_line.angle();
+        fAngleClockwise_degree = Math::toClockWiseAngleDegree(fAngleCounterClockwise_degree);
+    }
+    else {
+        fAngleClockwise_degree = m_line.angle();
+    }
+    return CPhysVal(fAngleClockwise_degree, Units.Angle.Degree, 0.1);
 }
 
 //------------------------------------------------------------------------------
@@ -663,8 +682,26 @@ void CPhysValLine::setAngle(double i_fAngle_degree)
 
     The angles are measured clockwise around the z-Axis through point P1.
 
-    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
-    correspondingly.
+    For metric dimension, if the yScaleAxisOrientation is from BottomToTop,
+    the angle must be corrected. In this case the QLineF coordinates are
+    not provided in pixels but in metric unit and greater values correspond
+    to lower pixel values.
+
+    YScale: TopDown (pixels or mm)
+
+                100
+        100   P1 +        QLine(100/100, 100/200)       -> Angle = 270� (counter clockwise counted)
+                 |
+                 | 90 �   PhysValLine(100/100, 100/200) -> Angle = 90� (clockwise counted)
+        200   P2 +
+
+    YScale: BottomUp (Metric only)
+
+                100
+        200   P1 +        QLine(100/200, 100/100)       -> Angle = 90� (counter clockwise counted)
+                 |
+                 | 90 �   PhysValLine(100/100, 100/200) -> Angle = 90� (clockwise counted)
+        100   P2 +
 
     @param [in] i_physValAngle
         Angle to be set.
@@ -672,27 +709,24 @@ void CPhysValLine::setAngle(double i_fAngle_degree)
 void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
-    // QLineF::angle returns the angle counter-clockwise which is in contrast to
-    // the QGraphicsItem::rotationAngle. This will be corrected here.
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QPointF ptCenter = m_line.center();
-    CPhysVal physValAngle = i_physValAngle;
-    //if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
-    //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-    //    physValAngle.setVal(fAngle_degree);
-    //}
-    // The line may already be rotated and has a current rotation angle.
-    // The new rotation angle is applied by rotating P1 and P2 around the center
-    // of the line with the new angle.
-    double fAngleClockwise_degree = physValAngle.getVal(Units.Angle.Degree);
+    double fRadius = m_line.length() / 2.0;
+    double fAngleClockwise_degree = i_physValAngle.getVal(Units.Angle.Degree);
     double fAngleCounterClockwise_degree = Math::toCounterClockWiseAngleDegree(fAngleClockwise_degree);
     double fAngleCounterClockwise_rad = Math::degree2Rad(fAngleCounterClockwise_degree);
-    //double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
-    double fRadius = m_line.length() / 2.0;
     double dx = fRadius * cos(fAngleCounterClockwise_rad);
     double dy = fRadius * sin(fAngleCounterClockwise_rad);
     m_line.setP1(ptCenter + QPointF(-dx, dy));
     m_line.setP2(ptCenter + QPointF(dx, -dy));
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        m_line.setP1(ptCenter + QPointF(-dx, dy));
+        m_line.setP2(ptCenter + QPointF(dx, -dy));
+    }
+    else {
+        m_line.setP1(ptCenter + QPointF(-dx, -dy));
+        m_line.setP2(ptCenter + QPointF(dx, dy));
+    }
     //if (m_line.center() != ptCenter) {
     //    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     //}

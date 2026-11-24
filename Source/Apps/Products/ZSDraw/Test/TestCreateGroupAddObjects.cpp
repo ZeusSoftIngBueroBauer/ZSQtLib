@@ -1118,10 +1118,12 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
+    QString strLabelText;
 
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SPolarCoors polarCoorsLabel;
     QLineF lineFInSceneCoors;
 
     strObjName = "DrawingScene";
@@ -1301,7 +1303,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "300, 300" : "300.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -1344,7 +1347,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("250, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "250, 300" : "250.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -1388,7 +1392,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("350, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "350, 300" : "350.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -1500,28 +1505,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(266.3, 304.7) : bYAxisTopDown ? QPointF(257.3, 304.7) : QPointF(257.3, 304.7);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(266.3, 304.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(202.6, 241.1) : bYAxisTopDown ? QPointF(193.6, 241.1) : QPointF(193.6, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(202.6, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(329.9, 368.4) : bYAxisTopDown ? QPointF(320.9, 368.4) : QPointF(320.9, 368.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(329.9, 368.4)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
         });
 
@@ -1601,28 +1609,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(261.0, 292.0) : bYAxisTopDown ? QPointF(252.0, 292.0) : QPointF(252.0, 292.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(261.0, 292.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(261.0, 202.0) : bYAxisTopDown ? QPointF(252.0, 202.0) : QPointF(252.0, 202.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(261.0, 202.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(261.0, 382.0) : bYAxisTopDown ? QPointF(252.0, 382.0) : QPointF(252.0, 382.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(261.0, 382.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
     });
 
@@ -1752,28 +1763,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(291.7, 279.3) : bYAxisTopDown ? QPointF(282.7, 279.3) : QPointF(282.7, 279.3);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(291.7, 279.3)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(355.4, 342.9) : bYAxisTopDown ? QPointF(346.4, 342.9) : QPointF(346.4, 342.9);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(355.4, 342.9)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(228.1, 215.6) : bYAxisTopDown ? QPointF(219.1, 215.6) : QPointF(219.1, 215.6);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(228.1, 215.6)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
     });
 
@@ -1878,28 +1892,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(291.7, 304.7) : bYAxisTopDown ? QPointF(282.7, 304.7) : QPointF(282.7, 304.7);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(291.7, 304.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(228.1, 368.4) : bYAxisTopDown ? QPointF(219.1, 368.4) : QPointF(219.1, 368.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(228.1, 368.4)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(355.4, 241.1) : bYAxisTopDown ? QPointF(346.4, 241.1) : QPointF(346.4, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(355.4, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
     });
 
@@ -1984,30 +2001,33 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(291.7, 304.7) : bYAxisTopDown ? QPointF(270.0, 310.0) : QPointF(282.7, 304.7);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(279.0, 310.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        });
+    ptPosLabel = bUnitPixel ? QPointF(228.1, 368.4) : bYAxisTopDown ? QPointF(180.0, 310.0) : QPointF(219.1, 368.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(189.0, 310.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
-    });
+        });
+    ptPosLabel = bUnitPixel ? QPointF(355.4, 241.1) : bYAxisTopDown ? QPointF(360.0, 310.0) : QPointF(346.4, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(369.0, 310.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
-    });
+        });
 
     // setRotationAngle(45)
     //---------------------
@@ -2085,28 +2105,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(266.3, 304.7) : bYAxisTopDown ? QPointF(257.3, 304.7) : QPointF(257.3, 304.7);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(266.3, 304.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(202.6, 241.1) : bYAxisTopDown ? QPointF(193.6, 241.1) : QPointF(193.6, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(202.6, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(329.9, 368.4) : bYAxisTopDown ? QPointF(320.9, 368.4) : QPointF(320.9, 368.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(329.9, 368.4)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
     });
 
@@ -2166,30 +2189,33 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(266.3, 304.7) : bYAxisTopDown ? QPointF(257.3, 304.7) : QPointF(257.3, 304.7);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(266.3, 304.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        });
+    ptPosLabel = bUnitPixel ? QPointF(202.6, 241.1) : bYAxisTopDown ? QPointF(193.6, 241.1) : QPointF(193.6, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(202.6, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
-    });
+        });
+    ptPosLabel = bUnitPixel ? QPointF(329.9, 368.4) : bYAxisTopDown ? QPointF(320.9, 368.4) : QPointF(320.9, 368.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(329.9, 368.4)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
-    });
+        });
 
     // setLength(200)
     //---------------
@@ -2269,28 +2295,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(301.6, 340.1) : bYAxisTopDown ? QPointF(292.6, 340.1) : QPointF(292.6, 340.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(301.6, 340.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(202.6, 241.1) : bYAxisTopDown ? QPointF(193.6, 241.1) : QPointF(193.6, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(202.6, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(400.6, 439.1) : bYAxisTopDown ? QPointF(391.6, 439.1) : QPointF(391.6, 439.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(400.6, 439.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
     });
 
@@ -2350,28 +2379,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(301.6, 340.1) : bYAxisTopDown ? QPointF(292.6, 340.1) : QPointF(292.6, 340.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(301.6, 340.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(202.6, 241.1) : bYAxisTopDown ? QPointF(193.6, 241.1) : QPointF(193.6, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(202.6, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(400.6, 439.1) : bYAxisTopDown ? QPointF(391.6, 439.1) : QPointF(391.6, 439.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(400.6, 439.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
         });
 
@@ -2453,28 +2485,31 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(266.3, 304.7) : bYAxisTopDown ? QPointF(257.3, 304.7) : QPointF(257.3, 304.7);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(266.3, 304.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(202.6, 241.1) : bYAxisTopDown ? QPointF(193.6, 241.1) : QPointF(193.6, 241.1);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(202.6, 241.1)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(329.9, 368.4) : bYAxisTopDown ? QPointF(320.9, 368.4) : QPointF(320.9, 368.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(329.9, 368.4)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
     });
 
@@ -2519,6 +2554,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(32.9997, 269.999) : SPolarCoors(33.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -2526,14 +2562,15 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", strObjName},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(32.9997, 269.999).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
     });
 
     // Move Geometry Label
     //----------------------
 
     strMethod = "moveGeometryLabel";
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "300, 300" : "300.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -2545,6 +2582,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.0003, 90.0006) : SPolarCoors(40.0, 90.0001);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -2552,7 +2590,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(31.0003, 90.0006).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
     });
 
     // setRotationAngle(0)
@@ -2593,13 +2631,14 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(32.9997, 269.999) : SPolarCoors(33.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"ExpectedText", strObjName},
         {"ExpectedPos", QPointF(283.5, 259.0)},
-        {"ExpectedPolarCoors", SPolarCoors(32.9997, 269.999).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
     });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -2631,30 +2670,36 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 323.0) : bYAxisTopDown ? QPointF(270.0, 332.0) : QPointF(270.0, 332.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.0003, 90.0006) : SPolarCoors(40.0, 90.0001);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(279.0, 323.0)},
-        {"ExpectedPolarCoors", SPolarCoors(31.0003, 90.0006).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
     });
+    ptPosLabel = bUnitPixel ? QPointF(189.0, 310.0) : bYAxisTopDown ? QPointF(180.0, 310.0) : QPointF(180.0, 310.0);
+    polarCoorsLabel = SPolarCoors(43.8634, 155.772);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(189.0, 310.0)},
-        {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(369.0, 310.0) : bYAxisTopDown ? QPointF(360.0, 310.0) : QPointF(360.0, 310.0);
+    polarCoorsLabel = SPolarCoors(43.8634, 24.2277);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(369.0, 310.0)},
-        {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // Save and Load File
     //--------------------
@@ -2674,13 +2719,14 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(32.9997, 269.999) : SPolarCoors(33.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"ExpectedText", strObjName},
         {"ExpectedPos", QPointF(283.5, 259.0)},
-        {"ExpectedPolarCoors", SPolarCoors(32.9997, 269.999).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -2712,29 +2758,35 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 323.0) : bYAxisTopDown ? QPointF(270.0, 332.0) : QPointF(270.0, 332.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.0003, 90.0006) : SPolarCoors(40.0, 90.0001);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValLine1->center().toString(false)},
-        {"ExpectedPos", QPointF(279.0, 323.0)},
-        {"ExpectedPolarCoors", SPolarCoors(31.0003, 90.0006).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(189.0, 310.0) : bYAxisTopDown ? QPointF(180.0, 310.0) : QPointF(180.0, 310.0);
+    polarCoorsLabel = SPolarCoors(43.8634, 155.772);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP1},
         {"ExpectedText", m_pPhysValLine1->p1().toString(false)},
-        {"ExpectedPos", QPointF(189.0, 310.0)},
-        {"ExpectedPolarCoors", SPolarCoors(43.8634, 155.772).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(369.0, 310.0) : bYAxisTopDown ? QPointF(360.0, 310.0) : QPointF(360.0, 310.0);
+    polarCoorsLabel = SPolarCoors(43.8634, 24.2277);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP2},
         {"ExpectedText", m_pPhysValLine1->p2().toString(false)},
-        {"ExpectedPos", QPointF(369.0, 310.0)},
-        {"ExpectedPolarCoors", SPolarCoors(43.8634, 24.2277).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Hide Text Labels
@@ -2821,7 +2873,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("100"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "100" : "100.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -2844,6 +2897,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -2851,7 +2905,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
     });
 
     strMethod = "showGeometryLabel";
@@ -2862,7 +2916,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("100"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "100" : "100.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -2903,7 +2958,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("0"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "0" : "0.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -2926,6 +2982,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -2933,7 +2990,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
     });
 
     strMethod = "showGeometryLabel";
@@ -3017,38 +3074,46 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(303.0, 280.0) : QPointF(298.5, 280.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(17.0, 270.0) : SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(303.0, 280.0)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(281.3, 304.7) : QPointF(276.8, 304.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 90.0) : SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(281.3, 304.7)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(239.6, 237.6) : bYAxisTopDown ? QPointF(238.2, 240.7) : QPointF(235.7, 240.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(239.6, 237.6)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(348.4, 332.3) : QPointF(348.4, 332.3);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(28.0179, 325.176) : SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(348.4, 332.3)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // setRotationAngle(90)
     //---------------------
@@ -3089,38 +3154,46 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(308.0, 292.0) : QPointF(303.5, 292.0);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(308.0, 292.0)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 292.0) : QPointF(274.5, 292.0);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(279.0, 292.0)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(291.0, 215.0) : bYAxisTopDown ? QPointF(286.5, 219.5) : QPointF(284.0, 219.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(291.0, 215.0)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = QPointF(301.5, 365.0);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(301.5, 365.0)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // setRotationAngle(135)
     //----------------------
@@ -3133,7 +3206,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3158,7 +3231,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3183,7 +3256,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3211,38 +3284,46 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 304.0) : QPointF(274.5, 304.0);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(279.0, 304.0)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(304.2, 279.3) : QPointF(299.7, 279.3);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(304.2, 279.3)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(345.9, 346.4) : bYAxisTopDown ? QPointF(338.3, 343.3) : QPointF(340.8, 343.3);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(345.9, 346.4)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = QPointF(219.6, 251.7);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(219.6, 251.7)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // setRotationAngle(270)
     //----------------------
@@ -3255,7 +3336,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3280,7 +3361,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3308,38 +3389,46 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 280.0) : QPointF(274.5, 280.0);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(279.0, 280.0)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(306.7, 304.7) : QPointF(302.2, 304.7);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(306.7, 304.7)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(237.1, 346.4) : bYAxisTopDown ? QPointF(235.7, 343.3) : QPointF(238.2, 343.3);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(237.1, 346.4)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = QPointF(322.8, 229.1);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(322.8, 229.1)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // setRotationAngle(360)
     //----------------------
@@ -3352,7 +3441,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3380,38 +3469,46 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(291.0, 275.0) : QPointF(286.5, 275.0);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(291.0, 275.0)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(291.0, 310.0) : QPointF(286.5, 310.0);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(291.0, 310.0)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(220.0, 292.0) : QPointF(220.0, 292.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(220.0, 292.0)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = QPointF(361.5, 276.0);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(361.5, 276.0)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // setRotationAngle(45)
     //---------------------
@@ -3424,7 +3521,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3449,7 +3546,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     m_ptPosLine1 = m_pPhysValLine1->center().toQPointF(Units.Length.px);
     lineFInSceneCoors = m_pPhysValLine1->toQLineF(Units.Length.px);
     m_lineLine1 = lineFInSceneCoors.translated(-lineFInSceneCoors.center());
@@ -3478,39 +3575,47 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(338.4, 315.3) : QPointF(333.9, 315.3);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(338.4, 315.3)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(313.6, 340.1) : QPointF(309.1, 340.1);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(313.6, 340.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(271.9, 272.9) : bYAxisTopDown ? QPointF(270.6, 276.1) : QPointF(268.1, 276.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(271.9, 272.9)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = QPointF(419.1, 403.0);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(419.1, 403.0)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // Save and Load File
     //--------------------
@@ -3531,37 +3636,45 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(338.4, 315.3) : QPointF(333.9, 315.3);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(338.4, 315.3)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(313.6, 340.1) : QPointF(309.1, 340.1);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(313.6, 340.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(271.9, 272.9) : bYAxisTopDown ? QPointF(270.6, 276.1) : QPointF(268.1, 276.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(271.9, 272.9)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = QPointF(419.1, 403.0);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(419.1, 403.0)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setLength(100)
@@ -3575,7 +3688,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     m_ptPosLine1 = m_pPhysValLine1->center().toQPointF(Units.Length.px);
     lineFInSceneCoors = m_pPhysValLine1->toQLineF(Units.Length.px);
     m_lineLine1 = lineFInSceneCoors.translated(-lineFInSceneCoors.center());
@@ -3605,37 +3718,45 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(303.0, 280.0) : QPointF(298.5, 280.0);
+    polarCoorsLabel = SPolarCoors(17.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(303.0, 280.0)},
-        {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(281.3, 304.7) : QPointF(276.8, 304.7);
+    polarCoorsLabel = SPolarCoors(18.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(281.3, 304.7)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(239.6, 237.6) : bYAxisTopDown ? QPointF(238.2, 240.7) : QPointF(235.7, 240.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(77.0, 180.0) : SPolarCoors(72.5, 180.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(239.6, 237.6)},
-        {"ExpectedPolarCoors", SPolarCoors(77.0, 180.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = QPointF(348.4, 332.3);
+    polarCoorsLabel = SPolarCoors(28.0179, 325.176);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(348.4, 332.3)},
-        {"ExpectedPolarCoors", SPolarCoors(28.0179, 325.176).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setRotationAngle(90)
@@ -3649,7 +3770,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLineByDirectMethodCalls(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -3675,6 +3796,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(44.7771, 240.572) : SPolarCoors(48.7468, 243.172);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -3682,8 +3804,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(44.7771, 240.572).toString()}
-    });
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     strMethod = "moveGeometryLabel";
     ptPosLabel = QPointF(320.0, 220.0);
@@ -3694,6 +3816,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(75.5846, 197.715) : SPolarCoors(77.073, 200.904);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -3701,8 +3824,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(75.5846, 197.715).toString()}
-    });
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     strMethod = "moveGeometryLabel";
     ptPosLabel = QPointF(260.0, 290.0);
@@ -3713,6 +3836,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.0648, 93.692) : bYAxisTopDown ? SPolarCoors(26.5754, 94.3161) : SPolarCoors(24.0832, 94.7637);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -3720,8 +3844,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(31.0648, 93.692).toString()}
-    });
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     strMethod = "moveGeometryLabel";
     ptPosLabel = QPointF(260.0, 360.0);
@@ -3732,6 +3856,7 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.2131, 54.7833) : SPolarCoors(31.213, 54.7825);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -3739,8 +3864,8 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(31.2131, 54.7833).toString()}
-    });
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // setRotationAngle(0)
     //----------------------
@@ -3780,44 +3905,55 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
-        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(269.0, 253.0) : QPointF(264.5, 248.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(44.7771, 240.572) : SPolarCoors(48.7468, 243.172);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(269.0, 253.0)},
-        {"ExpectedPolarCoors", SPolarCoors(44.7771, 240.572).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(219.0, 269.0) : QPointF(214.5, 264.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(75.5846, 197.715) : SPolarCoors(77.073, 200.904);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(219.0, 269.0)},
-        {"ExpectedPolarCoors", SPolarCoors(75.5846, 197.715).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = bUnitPixel ? QPointF(295.0, 323.0) : bYAxisTopDown ? QPointF(290.5, 318.5) : QPointF(290.5, 316.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.0648, 93.692) : bYAxisTopDown ? SPolarCoors(26.5754, 94.3161) : SPolarCoors(24.0832, 94.7637);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(295.0, 323.0)},
-        {"ExpectedPolarCoors", SPolarCoors(31.0648, 93.692).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
+    ptPosLabel = QPointF(356.5, 317.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.2131, 54.7833) : SPolarCoors(31.213, 54.7825);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(356.5, 317.5)},
-        {"ExpectedPolarCoors", SPolarCoors(31.2131, 54.7833).toString()}
-    });
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
+        });
 
     // Save and Load File
     //--------------------
 
     createTestStepSaveLoadFile(pGrpComplexGeometryLabels, 2);
+
+    // Check Geometry Labels
+    //----------------------
 
     strMethod = "checkGeometryLabels";
     strMthArgs = CGraphObj::c_strGeometryLabelNameLength +
@@ -3830,37 +3966,45 @@ void CTest::createTestGroupAddStandardShapesLinesSingleLineModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(269.0, 253.0) : QPointF(264.5, 248.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(44.7771, 240.572) : SPolarCoors(48.7468, 243.172);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameLength},
         {"ExpectedText", m_pPhysValLine1->length().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(269.0, 253.0)},
-        {"ExpectedPolarCoors", SPolarCoors(44.7771, 240.572).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(219.0, 269.0) : QPointF(214.5, 264.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(75.5846, 197.715) : SPolarCoors(77.073, 200.904);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDX},
         {"ExpectedText", m_pPhysValLine1->dx().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(219.0, 269.0)},
-        {"ExpectedPolarCoors", SPolarCoors(75.5846, 197.715).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(295.0, 323.0) : bYAxisTopDown ? QPointF(290.5, 318.5) : QPointF(290.5, 316.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.0648, 93.692) : bYAxisTopDown ? SPolarCoors(26.5754, 94.3161) : SPolarCoors(24.0832, 94.7637);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameDY},
         {"ExpectedText", m_pPhysValLine1->dy().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(295.0, 323.0)},
-        {"ExpectedPolarCoors", SPolarCoors(31.0648, 93.692).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = QPointF(356.5, 317.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(31.2131, 54.7833) : SPolarCoors(31.213, 54.7825);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_pPhysValLine1->angle().toString()},
-        {"ExpectedPos", QPointF(356.5, 317.5)},
-        {"ExpectedPolarCoors", SPolarCoors(31.2131, 54.7833).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 }
 
@@ -4368,6 +4512,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
     QString strObjName = c_strGraphObjNameRect1;
     QString strMethod;
     QString strMthArgs;
+    QString strLabelText;
 
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
@@ -4385,7 +4530,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjRect(ZS::Test::CTestStep*)));
-    strMthArgs = c_strGraphObjNameRect1;
+    strObjName = c_strGraphObjNameRect1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosRect1 = QPointF(300.0, 300.0);
     QPointF ptCenterRectangle(300.0, bYAxisTopDown ? 300.0 : fYAxisMaxVal - 300.0);
@@ -4488,7 +4633,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "300, 300" : "300.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -4557,7 +4703,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(292.2, 262.3);
+    ptPosLabel = QPointF(312.7, 262.3);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4579,7 +4725,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 280.7);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 280.7) : QPointF(281.3, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4769,7 +4915,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(262.5, 250.0);
+    ptPosLabel = QPointF(283.0, 250.0);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4791,7 +4937,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(279.0, 276.0);
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 276.0) : QPointF(270.0, 276.0);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4818,7 +4964,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(262.5, 250.0);
+    ptPosLabel = QPointF(283.0, 250.0);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4840,7 +4986,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(279.0, 276.0);
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 276.0) : QPointF(270.0, 276.0);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4886,7 +5032,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(292.2, 262.3);
+    ptPosLabel = QPointF(312.7, 262.3);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4908,7 +5054,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 280.7);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 280.7) : QPointF(281.3, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4935,7 +5081,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(292.2, 262.3);
+    ptPosLabel = QPointF(312.7, 262.3);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -4957,7 +5103,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 280.7);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 280.7) : QPointF(281.3, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5035,7 +5181,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(327.6, 297.7);
+    ptPosLabel = bYAxisTopDown ? QPointF(348.1, 297.7) : QPointF(418.8, 226.9);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5057,7 +5203,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 351.4);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 351.4) : bYAxisTopDown ? QPointF(281.3, 351.4) : QPointF(352.0, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5084,7 +5230,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(327.6, 297.7);
+    ptPosLabel = bYAxisTopDown ? QPointF(348.1, 297.7) : QPointF(418.8, 226.9);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5106,7 +5252,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 351.4);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 351.4) : bYAxisTopDown ? QPointF(281.3, 351.4) : QPointF(352.0, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5155,7 +5301,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(309.9, 280.0);
+    ptPosLabel = bYAxisTopDown ? QPointF(330.4, 280.0) : QPointF(365.7, 244.6);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5177,7 +5323,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 316.0);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 316.0) : bYAxisTopDown ? QPointF(281.3, 316.0) : QPointF(316.7, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5204,7 +5350,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(309.9, 280.0);
+    ptPosLabel = bYAxisTopDown ? QPointF(330.4, 280.0) : QPointF(365.7, 244.6);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5226,7 +5372,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 316.0);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 316.0) : bYAxisTopDown ? QPointF(281.3, 316.0) : QPointF(316.7, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5304,7 +5450,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(274.5, 244.6);
+    ptPosLabel = bYAxisTopDown ? QPointF(295.0, 244.6) : QPointF(259.7, 280.0);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5326,7 +5472,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 245.3);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 245.3) : bYAxisTopDown ? QPointF(281.3, 245.3) : QPointF(246.0, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5353,7 +5499,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(274.5, 244.6);
+    ptPosLabel = bYAxisTopDown ? QPointF(295.0, 244.6) : QPointF(259.7, 280.0);
     polarCoorsLabel = SPolarCoors(8.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5375,7 +5521,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(290.3, 245.3);
+    ptPosLabel = bUnitPixel ? QPointF(290.3, 245.3) : bYAxisTopDown ? QPointF(281.3, 245.3) : QPointF(246.0, 280.7);
     polarCoorsLabel = SPolarCoors(16.0, 270.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
@@ -5422,7 +5568,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    polarCoorsLabel = SPolarCoors(52.5012, 270.387);
+    polarCoorsLabel = bYAxisTopDown ? SPolarCoors(32.002, 270.636) : SPolarCoors(75.9061, 242.542);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -5445,7 +5591,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    polarCoorsLabel = SPolarCoors(13.355, 0.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(13.355, 0.0) : bYAxisTopDown ? SPolarCoors(16.1048, 326.024) : SPolarCoors(49.5115, 243.619);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -5491,8 +5637,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(262.9, 179.1);
-    polarCoorsLabel = SPolarCoors(52.5012, 270.387);
+    ptPosLabel = bYAxisTopDown ? QPointF(283.4, 199.6) : QPointF(212.6, 199.6);
+    polarCoorsLabel = bYAxisTopDown ? SPolarCoors(32.002, 270.636) : SPolarCoors(75.9061, 242.542);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -5513,8 +5659,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(292.4, 256.6);
-    polarCoorsLabel = SPolarCoors(13.355, 0.0);
+    ptPosLabel = bUnitPixel ? QPointF(292.4, 256.6) : bYAxisTopDown ? QPointF(283.4, 247.6) : QPointF(212.6, 247.6);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(13.355, 0.0) : bYAxisTopDown ? SPolarCoors(16.1048, 326.024) : SPolarCoors(49.5115, 243.619);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -5540,8 +5686,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(262.9, 179.1);
-    polarCoorsLabel = SPolarCoors(52.5012, 270.387);
+    ptPosLabel = bYAxisTopDown ? QPointF(283.4, 199.6) : QPointF(212.6, 199.6);
+    polarCoorsLabel = bYAxisTopDown ? SPolarCoors(32.002, 270.636) : SPolarCoors(75.9061, 242.542);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -5562,8 +5708,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    ptPosLabel = QPointF(292.4, 256.6);
-    polarCoorsLabel = SPolarCoors(13.355, 0.0);
+    ptPosLabel = bUnitPixel ? QPointF(292.4, 256.6) : bYAxisTopDown ? QPointF(283.4, 247.6) : QPointF(212.6, 247.6);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(13.355, 0.0) : bYAxisTopDown ? SPolarCoors(16.1048, 326.024) : SPolarCoors(49.5115, 243.619);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -5621,7 +5767,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjRectByDirectMethodCalls(ZS::Test::CTestStep*)));
-    m_ptPosRect1 = QPointF(bYAxisTopDown ? 325.0 : 335.4, bYAxisTopDown ? 289.6 : 300.0);
+    m_ptPosRect1 = bYAxisTopDown ? QPointF(325.0, 289.6) : QPointF(289.6, 275.0);
     m_rectRect1 = QRectF(QPointF(-sizeRectangle.width() / 2.0, -sizeRectangle.height() / 2.0), sizeRectangle);
     m_pPhysValRect1->setSize(sizeRectangle);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
@@ -5679,7 +5825,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("100"), fontMetrics.height());
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -5690,7 +5837,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -5709,7 +5856,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"setPos", ptPosLabel},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
@@ -5722,7 +5869,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("100"), fontMetrics.height());
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -5733,7 +5881,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -5747,14 +5895,15 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"setPos", ptPosLabel},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strMethod = "showGeometryLabel";
@@ -5765,7 +5914,8 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("0.0 " + QString(Math::c_chSymbolDegree)), fontMetrics.height());
+    strLabelText = m_physValAngleText1.toString();
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -5776,7 +5926,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedText", m_physValAngleText1.toString()},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -5796,7 +5946,7 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_physValAngleText1.toString()},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
         });
@@ -5838,29 +5988,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(244.3, 338.7) : QPointF(239.8, 338.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(244.3, 338.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(339.1, 340.1) : QPointF(340.9, 346.4);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(339.1, 340.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(367.5, 351.4) : QPointF(367.5, 351.4);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(367.5, 351.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setRotationAngle(90)
@@ -6044,29 +6202,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(291.0, 358.0) : QPointF(286.5, 358.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(291.0, 358.0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(359.0, 292.0) : QPointF(363.5, 292.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(359.0, 292.0)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(388.5, 276.0) : QPointF(388.5, 276.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", "0.0 " + QString(Math::c_chSymbolDegree)},
-        {"ExpectedPos", QPointF(388.5, 276.0)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -6087,29 +6253,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(291.0, 358.0) : QPointF(286.5, 358.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(291.0, 358.0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(359.0, 292.0) : QPointF(363.5, 292.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(359.0, 292.0)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(388.5, 276.0) : QPointF(388.5, 276.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", "0.0 " + QString(Math::c_chSymbolDegree)},
-        {"ExpectedPos", QPointF(388.5, 276.0)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setRotationAngle(45)
@@ -6149,29 +6323,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(244.3, 338.7) : QPointF(239.8, 338.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(244.3, 338.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(339.1, 340.1) : QPointF(340.9, 346.4);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(339.1, 340.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(367.5, 351.4) : QPointF(367.5, 351.4);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(367.5, 351.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -6192,29 +6374,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(244.3, 338.7) : QPointF(239.8, 338.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(244.3, 338.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(339.1, 340.1) : QPointF(340.9, 346.4);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(339.1, 340.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(367.5, 351.4) : QPointF(367.5, 351.4);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(367.5, 351.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setWidth
@@ -6286,29 +6476,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(209.0, 444.7) : bYAxisTopDown ? QPointF(204.5, 444.7) : QPointF(275.2, 374.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(209.0, 444.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(374.4, 446.1) : bYAxisTopDown ? QPointF(376.3, 452.5) : QPointF(447.0, 381.8);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(374.4, 446.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(402.9, 457.5) : QPointF(473.6, 386.8);
+    polarCoorsLabel = SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(402.9, 457.5)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -6329,29 +6527,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(209.0, 444.7) : bYAxisTopDown ? QPointF(204.5, 444.7) : QPointF(275.2, 374.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(209.0, 444.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(374.4, 446.1) : bYAxisTopDown ? QPointF(376.3, 452.5) : QPointF(447.0, 381.8);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(374.4, 446.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(402.9, 457.5) : QPointF(473.6, 386.8);
+    polarCoorsLabel = SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(402.9, 457.5)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setSize
@@ -6394,29 +6600,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(226.7, 391.7) : bYAxisTopDown ? QPointF(222.2, 391.7) : QPointF(257.5, 356.3);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(226.7, 391.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(356.8, 393.1) : bYAxisTopDown ? QPointF(358.6, 399.5) : QPointF(394.0, 364.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(356.8, 393.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(385.2, 404.4) : QPointF(420.6, 369.1);
+    polarCoorsLabel = SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(385.2, 404.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -6437,29 +6651,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(226.7, 391.7) : bYAxisTopDown ? QPointF(222.2, 391.7) : QPointF(257.5, 356.3);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(226.7, 391.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(356.8, 393.1) : bYAxisTopDown ? QPointF(358.6, 399.5) : QPointF(394.0, 364.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(356.8, 393.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(385.2, 404.4) : QPointF(420.6, 369.1);
+    polarCoorsLabel = SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(385.2, 404.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setWidth
@@ -6531,29 +6753,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(265.0, 285.6) : bYAxisTopDown ? QPointF(260.5, 285.6) : QPointF(225.2, 321.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(265.0, 285.6)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(324.4, 287.1) : bYAxisTopDown ? QPointF(326.3, 293.4) : QPointF(290.9, 328.8);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(324.4, 287.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(349.8, 298.4) : QPointF(314.5, 333.7);
+    polarCoorsLabel = SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(349.8, 298.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -6574,29 +6804,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(265.0, 285.6) : bYAxisTopDown ? QPointF(260.5, 285.6) : QPointF(225.2, 321.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", QString::number(m_pPhysValRect1->width().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(265.0, 285.6)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(324.4, 287.1) : bYAxisTopDown ? QPointF(326.3, 293.4) : QPointF(290.9, 328.8);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(18.0, 0.0) : SPolarCoors(27.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedText", QString::number(m_pPhysValRect1->height().getVal(), 'f', 0)},
-        {"ExpectedPos", QPointF(324.4, 287.1)},
-        {"ExpectedPolarCoors", SPolarCoors(18.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(349.8, 298.4) : QPointF(314.5, 333.7);
+    polarCoorsLabel = SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleRect1.toString()},
-        {"ExpectedPos", QPointF(349.8, 298.4)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setRotationAngle(90)
@@ -6635,14 +6873,16 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(62.4448, 282.349) : bYAxisTopDown ? SPolarCoors(66.8477, 281.525) : SPolarCoors(103.227, 257.695);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"setPos", ptPosLabel},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPolarCoors", SPolarCoors(62.4448, 282.349).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strMethod = "moveGeometryLabel";
@@ -6654,14 +6894,16 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(63.4437, 166.324) : bYAxisTopDown ? SPolarCoors(62.5325, 170.334) : SPolarCoors(100.134, 194.372);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"setPos", ptPosLabel},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPolarCoors", SPolarCoors(63.4437, 166.324).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strMethod = "moveGeometryLabel";
@@ -6673,14 +6915,15 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(67.0608, 285.885) : bYAxisTopDown ? SPolarCoors(67.0609, 285.885) : SPolarCoors(101.292, 260.338);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"setPos", ptPosLabel},
-        {"ExpectedPos", ptPosLabel},
         {"ExpectedText", m_pPhysValRect1->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(67.0608, 285.885).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setRotationAngle(0)
@@ -6720,29 +6963,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(307.4, 220.6) : bYAxisTopDown ? QPointF(302.9, 216.1) : QPointF(232.1, 216.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(62.4448, 282.349) : bYAxisTopDown ? SPolarCoors(66.8477, 281.525) : SPolarCoors(103.227, 257.695);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(307.4, 220.6)},
-        {"ExpectedText", m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPolarCoors", SPolarCoors(62.4448, 282.349).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(257.4, 271.6) : bYAxisTopDown ? QPointF(252.9, 267.1) : QPointF(182.1, 267.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(63.4437, 166.324) : bYAxisTopDown ? SPolarCoors(62.5325, 170.334) : SPolarCoors(100.134, 194.372);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(257.4, 271.6)},
-        {"ExpectedText", m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPolarCoors", SPolarCoors(63.4437, 166.324).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(331.9, 192.1) : QPointF(261.1, 192.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(67.0608, 285.885) : bYAxisTopDown ? SPolarCoors(67.0609, 285.885) : SPolarCoors(101.292, 260.338);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(331.9, 192.1)},
         {"ExpectedText", m_pPhysValRect1->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(67.0608, 285.885).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -6763,29 +7014,37 @@ void CTest::createTestGroupAddStandardShapesRectanglesSingleRectModifications(ZS
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(307.4, 220.6) : bYAxisTopDown ? QPointF(302.9, 216.1) : QPointF(232.1, 216.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(62.4448, 282.349) : bYAxisTopDown ? SPolarCoors(66.8477, 281.525) : SPolarCoors(103.227, 257.695);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(307.4, 220.6)},
-        {"ExpectedText", m_pPhysValRect1->width().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPolarCoors", SPolarCoors(62.4448, 282.349).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(257.4, 271.6) : bYAxisTopDown ? QPointF(252.9, 267.1) : QPointF(182.1, 267.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(63.4437, 166.324) : bYAxisTopDown ? SPolarCoors(62.5325, 170.334) : SPolarCoors(100.134, 194.372);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(257.4, 271.6)},
-        {"ExpectedText", m_pPhysValRect1->height().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPolarCoors", SPolarCoors(63.4437, 166.324).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(331.9, 192.1) : QPointF(261.1, 192.1);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(67.0608, 285.885) : bYAxisTopDown ? SPolarCoors(67.0609, 285.885) : SPolarCoors(101.292, 260.338);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(331.9, 192.1)},
         {"ExpectedText", m_pPhysValRect1->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(67.0608, 285.885).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 }
 
@@ -6832,10 +7091,13 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
+    QString strLabelText;
 
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SPolarCoors polarCoorsLabel;
+
     SGraphObjSelectionPoint selPtAnchor(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
 
     strObjName = "DrawingScene";
@@ -6948,7 +7210,8 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "300, 300" : "300.0, 300.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -7053,13 +7316,14 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(332.7, 262.3) : bYAxisTopDown ? QPointF(332.7, 262.3) : QPointF(368.1, 226.9);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", QPointF(332.7, 262.3)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
@@ -7074,12 +7338,13 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(286.3, 309.7) : bYAxisTopDown ? QPointF(277.3, 309.7) : QPointF(312.7, 274.3);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(286.3, 309.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
 
@@ -7201,13 +7466,14 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(250.0, 217.7) : bYAxisTopDown ? QPointF(250.0, 217.7) : QPointF(320.7, 247.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", QPointF(250.0, 217.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
@@ -7222,12 +7488,13 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(251.0, 259.7) : bYAxisTopDown ? QPointF(242.0, 259.7) : QPointF(312.7, 289.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(251.0, 259.7)},
+        {"ExpectedPos", QPointF(ptPosLabel)},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
@@ -7247,13 +7514,14 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(250.0, 217.7) : bYAxisTopDown ? QPointF(250.0, 217.7) : QPointF(320.7, 247.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"AnchorPoint", SGraphObjSelectionPoint(nullptr, ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter).toString()},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", QPointF(250.0, 217.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
 
@@ -7268,12 +7536,13 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(251.0, 259.7) : bYAxisTopDown ? QPointF(242.0, 259.7) : QPointF(312.7, 289.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameCenter},
         {"ExpectedText", m_pPhysValRectEllipse1->center().toString(false)},
-        {"ExpectedPos", QPointF(251.0, 259.7)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
@@ -7359,7 +7628,8 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "50" : "50.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -7402,7 +7672,8 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    strLabelText = bUnitPixel ? "50" : "50.0";
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -7427,6 +7698,7 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -7434,7 +7706,7 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strMethod = "showGeometryLabel";
@@ -7574,29 +7846,35 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(251.7, 356.3) : bYAxisTopDown ? QPointF(247.2, 356.3) : QPointF(282.5, 321.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(251.7, 356.3)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(342.2, 353.5) : bYAxisTopDown ? QPointF(344.0, 359.9) : QPointF(379.4, 324.5);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(342.2, 353.5)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(374.8, 369.1) : bYAxisTopDown ? QPointF(374.8, 369.1) : QPointF(410.2, 333.7);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPos", QPointF(374.8, 369.1)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // setSize
@@ -7719,29 +7997,35 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(266.0, 300.7) : bYAxisTopDown ? QPointF(261.5, 300.7) : QPointF(332.2, 330.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(266.0, 300.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(303.0, 259.7) : bYAxisTopDown ? QPointF(307.5, 259.7) : QPointF(378.2, 289.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(303.0, 259.7)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(335.5, 243.7) : bYAxisTopDown ? QPointF(335.5, 243.7) : QPointF(406.2, 273.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPos", QPointF(335.5, 243.7)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -7762,29 +8046,35 @@ void CTest::createTestGroupAddStandardShapesEllipsesSingleEllipseModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(266.0, 300.7) : bYAxisTopDown ? QPointF(261.5, 300.7) : QPointF(332.2, 330.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(16.0, 90.0) : SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->width().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(266.0, 300.7)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(303.0, 259.7) : bYAxisTopDown ? QPointF(307.5, 259.7) : QPointF(378.2, 289.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
         {"ExpectedText", QString::number(m_pPhysValRectEllipse1->height().getVal(), 'f', iResultValuesPrecision)},
-        {"ExpectedPos", QPointF(303.0, 259.7)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(335.5, 243.7) : bYAxisTopDown ? QPointF(335.5, 243.7) : QPointF(406.2, 273.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(52.4976, 342.255) : SPolarCoors(52.4976, 342.255);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleEllipse1.toString()},
-        {"ExpectedPos", QPointF(335.5, 243.7)},
-        {"ExpectedPolarCoors", SPolarCoors(52.4976, 342.255).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 }
 
@@ -8284,12 +8574,14 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
     QStringList strlstExpectedValues;
     QString strObjName;
     QString strLabelName;
+    QString strLabelText;
     QString strMethod;
     QString strMthArgs;
 
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SPolarCoors polarCoorsLabel;
 
     int idxPt;
     int iCount;
@@ -8487,7 +8779,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->center().toString(false);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -8496,7 +8789,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->center().toString(false)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
     });
@@ -8515,7 +8808,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValPolygonTriangle->center().toString(false)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
     });
@@ -8529,7 +8822,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("275, 300"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->at(0).toString(false);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -8540,7 +8834,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -8559,7 +8853,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
         });
@@ -8855,7 +9149,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    m_ptPosTriangle = QPointF(350.0, 300.0);
+    m_ptPosTriangle = bYAxisTopDown ? QPointF(350.0, 300.0) : QPointF(300.0, 300.0);
     m_polygonTriangle = QPolygonF({
         {-50.0,  25.0},
         { 50.0,  25.0},
@@ -8886,28 +9180,31 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bYAxisTopDown ? QPointF(346.0, 292.0) : QPointF(296.0, 292.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", QPointF(346.0, 292.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(310.5, 235.5) : QPointF(260.5, 235.5);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "1"},
-        {"ExpectedPos", QPointF(310.5, 235.5)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(310.5, 348.5) : QPointF(260.5, 348.5);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "2"},
-        {"ExpectedPos", QPointF(310.5, 348.5)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
         });
 
@@ -8922,12 +9219,13 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
+    ptPosLabel = bUnitPixel ? QPointF(272.0, 242.0) : bYAxisTopDown ? QPointF(263.0, 242.0) : QPointF(213.0, 242.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
-        {"ExpectedPos", QPointF(272.0, 242.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
     });
 
@@ -8969,28 +9267,31 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bYAxisTopDown ? QPointF(329.0, 275.0) : QPointF(279.0, 275.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", QPointF(329.0, 275.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(287.0, 325.0) : QPointF(237.0, 325.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "1"},
-        {"ExpectedPos", QPointF(287.0, 325.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(400.0, 325.0) : QPointF(350.0, 325.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "2"},
-        {"ExpectedPos", QPointF(400.0, 325.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
         });
 
@@ -9005,12 +9306,13 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 349.0) : bYAxisTopDown ? QPointF(270.0, 349.0) : QPointF(220.0, 349.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
-        {"ExpectedPos", QPointF(279.0, 349.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
         });
 
@@ -9032,28 +9334,31 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bYAxisTopDown ? QPointF(329.0, 275.0) : QPointF(279.0, 275.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strLabelName},
         {"ExpectedText", strObjName},
-        {"ExpectedPos", QPointF(329.0, 275.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(17.0, 270.0).toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(287.0, 325.0) : QPointF(237.0, 325.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "1"},
-        {"ExpectedPos", QPointF(287.0, 325.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(10.3078, 129.094).toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(400.0, 325.0) : QPointF(350.0, 325.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "2"},
         {"ExpectedText", CGraphObj::c_strGeometryLabelNameP + "2"},
-        {"ExpectedPos", QPointF(400.0, 325.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(10.3078, 50.9061).toString()}
         });
 
@@ -9068,12 +9373,13 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(279.0, 349.0) : bYAxisTopDown ? QPointF(270.0, 349.0) : QPointF(220.0, 349.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
-        {"ExpectedPos", QPointF(279.0, 349.0)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
         });
 
@@ -9168,7 +9474,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
 
     ZS::Test::CTestStepGroup* pGrpComplexGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " TextAndPositionGeometryLabels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ComplexGeometryLabels",
         /* pTSGrpParent */ i_pTestStepGroupParent);
 
     // Show Geometry Labels
@@ -9183,7 +9489,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -9194,7 +9501,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -9213,7 +9520,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
         });
@@ -9227,7 +9534,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -9238,7 +9546,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -9252,14 +9560,15 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
@@ -9271,7 +9580,8 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("0.0 "+ QString(Math::c_chSymbolDegree)), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->angle().toString();
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -9282,7 +9592,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -9301,7 +9611,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel}
         });
 
@@ -9578,7 +9888,7 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjPolylineByDirectMethodCalls(ZS::Test::CTestStep*)));
-    m_ptPosTriangle = QPointF(350.0, 300.0);
+    m_ptPosTriangle = bYAxisTopDown ? QPointF(350.0, 300.0) : QPointF(300.0, 300.0);
     m_polygonTriangle = QPolygonF({
         {-50.0,  25.0},
         { 50.0,  25.0},
@@ -9609,29 +9919,37 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(300.0, 292.0) : bYAxisTopDown ? QPointF(295.5, 292.0) : QPointF(245.5, 292.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(300.0, 292.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(344.0, 354.0) : bYAxisTopDown ? QPointF(339.5, 363.0) : QPointF(289.5, 363.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(344.0, 354.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(351.5, 375.0) : QPointF(301.5, 375.0);
+    polarCoorsLabel = SPolarCoors(36.6742, 334.134);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(351.5, 375.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Rotate
@@ -9672,29 +9990,37 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(341.0, 333.0) : bYAxisTopDown ? QPointF(336.5, 333.0) : QPointF(286.5, 333.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(341.0, 333.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(406.0, 292.0) : bYAxisTopDown ? QPointF(410.5, 292.0) : QPointF(360.5, 292.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(406.0, 292.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(421.5, 276.0) : QPointF(371.5, 276.0);
+    polarCoorsLabel = SPolarCoors(36.6742, 334.134);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(421.5, 276.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Save and Load File
@@ -9715,29 +10041,37 @@ void CTest::createTestGroupAddStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(341.0, 333.0) : bYAxisTopDown ? QPointF(336.5, 333.0) : QPointF(286.5, 333.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(341.0, 333.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(406.0, 292.0) : bYAxisTopDown ? QPointF(410.5, 292.0) : QPointF(360.5, 292.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(406.0, 292.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = bYAxisTopDown ? QPointF(421.5, 276.0) : QPointF(371.5, 276.0);
+    polarCoorsLabel = SPolarCoors(36.6742, 334.134);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(421.5, 276.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 }
 
@@ -22561,6 +22895,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
+    QString strLabelText;
 
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
@@ -23742,7 +24077,8 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)) );
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("250, 250"), fontMetrics.height());
+    strLabelText = m_pPhysValRectBigPlusSign->topLeft().toString(false);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     ptPosLabel = m_pPhysValRectBigPlusSign->topLeft().toQPointF(Units.Length.px);
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
@@ -23765,7 +24101,8 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val)), fontMetrics.height());
+    strLabelText = m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     ptPosLabel = m_pPhysValRectBigPlusSign->bottomCenter().toQPointF(Units.Length.px);
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
@@ -23775,7 +24112,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -23795,7 +24132,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"setPos", ptPosLabel},
-        {"ExpectedText", m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(28.2839, 90.0005).toString()}
         });
@@ -23808,7 +24145,8 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(m_physValAngleBigPlusSign.toString()), fontMetrics.height());
+    strLabelText = m_physValAngleBigPlusSign.toString();
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     ptPosLabel = m_pPhysValRectBigPlusSign->rightCenter().toQPointF(Units.Length.px);
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
@@ -23818,7 +24156,7 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedText", m_physValAngleBigPlusSign.toString()},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -23873,28 +24211,31 @@ void CTest::createTestGroupAddStandardShapesGroupLinesPlusSignsModifications(ZS:
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyPlusSigns,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(288.3, 216.5) : QPointF(279.3, 216.5);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
         {"ExpectedText", m_pPhysValRectBigPlusSign->topLeft().toString(false)},
-        {"ExpectedPos", QPointF(288.3, 216.5)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
+    ptPosLabel = bUnitPixel ? QPointF(232.1, 308.3) : QPointF(227.6, 308.3);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
         {"ExpectedText", m_pPhysValRectBigPlusSign->width().toString(EUnitFind::None, PhysValSubStr::Val)},
-        {"ExpectedPos", QPointF(232.1, 308.3)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(28.2839, 90.0005).toString()}
         });
+    ptPosLabel = QPointF(304.4, 312.4);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
         {"ExpectedText", m_physValAngleBigPlusSign.toString()},
-        {"ExpectedPos", QPointF(304.4, 312.4)},
+        {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
 
@@ -25599,7 +25940,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -25650,7 +25990,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -25701,7 +26040,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -25785,7 +26123,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -25870,7 +26207,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -26021,7 +26357,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
@@ -26133,7 +26468,6 @@ void CTest::createTestGroupAddStandardShapesGroupRectsCrossesModifications(ZS::T
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpModifyGroupCrosses,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroupByDirectMethodCalls(ZS::Test::CTestStep*)) );
-    iResultValuesPrecision = 6;
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GroupName", strObjName);
     pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
