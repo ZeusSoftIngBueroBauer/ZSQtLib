@@ -445,6 +445,10 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObj"; }
+public: // class methods
+    static QString createPolygonPointLabelName(int i_idxPt);
+    static bool isPolygonPointLabelName(const QString& i_strLabelName);
+    static int extractIndexFromPolygonPointLabelName(const QString& i_strLabelName);
 protected: // ctor
     CGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -543,7 +547,6 @@ public: // instance methods
 public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
-    void onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     virtual CGraphObj* linkedObject() const;
     virtual QString pathNameOfLinkedObject() const;
@@ -694,10 +697,10 @@ public: // overridables
     virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
     virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPointType i_selPtType, int i_idxPt) const;
 public: // must overridables
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const;
+    //virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    //virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const;
+    //virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const;
+    //virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const;
 protected: // must overridables
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) = 0;
 protected: // overridables
@@ -808,6 +811,7 @@ public: // instance methods
     int blockItemChangeUpdatePhysValCoors(bool i_bBlock);
     int setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
+    virtual void changeParent(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     virtual void initParentTransform();
     virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     virtual void updateTransformedCoorsOnParentGeometryChanged();
@@ -869,6 +873,9 @@ protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setSelected(bool i_bSelected);
 protected: // overridable auxiliary instance methods (method tracing)
     ZS::System::CTrcAdminObj* selectTraceAdminObj(QGraphicsItem::GraphicsItemChange i_change);
+protected: // must overridables (method tracing)
+    virtual QRectF boundingRectInternal() const = 0;
+    virtual QRectF getBoundingRectInternal() const = 0;
 public: // overridable auxiliary instance methods (method tracing)
     virtual void traceConstraintSizes(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -981,9 +988,9 @@ protected: // instance members
     QVector<double> m_arfZValues;
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
-    /*!< Current parent group of the item. Updated by the slot "onParentGroupChanged". Keeping this
-         pointer allows to access the previous parent group if the object is reparented to retrieve
-         and update (move) transformation parameters from the previous to the new parent group. */
+    /*!< Current parent group of the item. Updated by "changeParent".
+         Keeping this pointer allows to access the previous parent group if the object is reparented to
+         retrieve and update (move) transformation parameters from the previous to the new parent group. */
     CGraphObjGroup* m_pGraphObjGroupParent = nullptr;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated

@@ -215,7 +215,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             bAdded = addGeometryLabel(
                 EGraphObjTypeLabelGeometryAngle, strLabelName,
-                ESelectionPointType::LineCenterPoint, 0);
+                ESelectionPointType::PolygonPoint, 1);
         }
         if (!bAdded) {
             throw CException(__FILE__, __LINE__, EResultInternalProgramError, "Could not add geometry label " + strLabelName);
@@ -1030,11 +1030,20 @@ void CGraphObjLine::setRotationAngle(const CPhysVal& i_physValAngle)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief 
+*/
+CPhysVal CGraphObjLine::rotationAngle() const
+//------------------------------------------------------------------------------
+{
+    return rotationAngle(Units.Angle.Degree);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the item's angle in the given unit.
 
     The return value will be in the range of values from 0.0 up to but not
     including 360.0.
-    
+
     @param [in] i_unit
         Unit in which the angle should be returned.
 
@@ -1044,7 +1053,9 @@ CPhysVal CGraphObjLine::rotationAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValLine physValLine = getLine();
-    return physValLine.angle();
+    CPhysVal physValAngle = physValLine.angle();
+    physValAngle.convertValue(i_unit);
+    return physValAngle;
 }
 
 /*==============================================================================
@@ -1063,18 +1074,7 @@ QRectF CGraphObjLine::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
-
-    QLineF lineF = line(); // in local coordinates
-    QRectF rctBounding(lineF.p1(), lineF.p2());
-    // Width and height should never be less than 0.0.
-    if (rctBounding.width() < 0.0) {
-        rctBounding.moveLeft(rctBounding.left() + rctBounding.width());
-        rctBounding.setWidth(-rctBounding.width());
-    }
-    if (rctBounding.height() < 0.0) {
-        rctBounding.moveTop(rctBounding.top() + rctBounding.height());
-        rctBounding.setHeight(-rctBounding.height());
-    }
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -1229,21 +1229,21 @@ CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(
     return physValPoint;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Returns coordinates of selection point in scene coordinates.
-*/
-QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
-    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    QPointF ptScenePos;
-    QPointF ptPos = line().center();
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        ptScenePos = pGraphicsItem->mapToScene(ptPos);
-    }
-    return ptScenePos;
-}
+////------------------------------------------------------------------------------
+///*! @brief Returns coordinates of selection point in scene coordinates.
+//*/
+//QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
+//    ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    QPointF ptScenePos;
+//    QPointF ptPos = line().center();
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr) {
+//        ptScenePos = pGraphicsItem->mapToScene(ptPos);
+//    }
+//    return ptScenePos;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in scene coordinates.
@@ -1281,6 +1281,48 @@ QPointF CGraphObjLine::getPositionOfSelectionPointInSceneCoors(
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
+////------------------------------------------------------------------------------
+///*! @brief Returns the polar coordinates in length and angle of the given point
+//           to the selection point of the graphical object.
+//
+//    How the angle of anchor lines to selection points is interpreted depends on
+//    the graphical object type and the selection point.
+//
+//    For the graphical object Line only the Center point is allowed for this method.
+//
+//    Example: Horizontal Line
+//
+//                        + Pt
+//                       /
+//                      / Calculated Angle: 60°
+//        +------------x------------+
+//        P1         Center         P2
+//
+//    @note This method is used to keep the relative position of labels to the
+//          graphical object they are linked to if the linked object is resized,
+//          rotated or moved.
+//
+//          For example if the line would be rotated by 180°:
+//
+//            P2         Center         P1
+//            +------------x------------+
+//             Angle: 60° /
+//                       /
+//                   Pt +
+//*/
+//SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QLineF thisLine = line();
+//    thisLine.setP1(thisLine.center());
+//    QLineF thisLineSceneCoors(
+//        pGraphicsItemThis->mapToScene(thisLine.p1()),
+//        pGraphicsItemThis->mapToScene(thisLine.p2()));
+//    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
+//}
+
 //------------------------------------------------------------------------------
 /*! @brief Returns the polar coordinates in length and angle of the given point
            to the selection point of the graphical object.
@@ -1288,107 +1330,62 @@ public: // must overridables of base class CGraphObj
     How the angle of anchor lines to selection points is interpreted depends on
     the graphical object type and the selection point.
 
-    For the graphical object Line only the Center point is allowed for this method.
-
-    Example: Horizontal Line
-
-                        + Pt
-                       /
-                      / Calculated Angle: 60°
-        +------------x------------+
-        P1         Center         P2
+    For the graphical object Line only the shape points P1 and P2 and the
+    line center point of line segment 0 are allowed.
 
     @note This method is used to keep the relative position of labels to the
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
 
-          For example if the line would be rotated by 180°:
+    Example: Horizontal Line, Selection Point: P1
 
-            P2         Center         P1
-            +------------x------------+
-             Angle: 60° /
-                       /
-                   Pt +
+                                   * Pt
+                                  /
+                                 / Calculated Angle: 300° (clockwise counted, 0° at 3 o'clock)
+                                +------------x------------+
+                                P1         Center         P2
+
+    Example: Horizontal Line, Selection Point: P1, Line rotated by 180°
+
+      P2         Center         P1
+      +------------x------------+
+                               / Angle: 120°
+                              /
+                          Pt *
 */
-SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF thisLine = line();
-    thisLine.setP1(thisLine.center());
-    QLineF thisLineSceneCoors(
-        pGraphicsItemThis->mapToScene(thisLine.p1()),
-        pGraphicsItemThis->mapToScene(thisLine.p2()));
-    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the polar coordinates in length and angle of the given point
-           to the selection point of the graphical object.
-
-    How the angle of anchor lines to selection points is interpreted depends on
-    the graphical object type and the selection point.
-
-    For the graphical object Line only the shape points P1 and P2 are allowed for this method.
-
-    Example: Horizontal Line
-
-           + Pt
-          /
-         / Calculated Angle: 60°
-        +------------x------------+
-        P1         Center         P2
-
-    @note This method is used to keep the relative position of labels to the
-          graphical object they are linked to if the linked object is resized,
-          rotated or moved.
-
-          For example if the line would be rotated by 180°:
-
-            P2         Center         P1
-            +------------x------------+
-                          Angle: 60° /
-                                    /
-                                Pt +
-*/
-SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF thisLine = line();
-    QLineF thisLineSceneCoors;
-    if (i_selPtType == ESelectionPointType::PolygonPoint) {
-        if (i_idxPt < 0 || i_idxPt > 1) {
-            throw CException(
-                __FILE__, __LINE__, EResultArgOutOfRange,
-                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
-        }
-        if (i_idxPt == 0) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p2()));
-        }
-        else if (i_idxPt == 1) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p2()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p1()));
-        }
-    }
-    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-        if (i_idxPt != 0) {
-            throw CException(
-                __FILE__, __LINE__, EResultArgOutOfRange,
-                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
-        }
-        thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
-                                    pGraphicsItemThis->mapToScene(thisLine.p2()));
-        thisLineSceneCoors.setP1(thisLineSceneCoors.center());
-    }
-    else {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
-    }
-    return ZS::Draw::getPolarCoors(thisLineSceneCoors, i_pt);
-}
+//SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
+////------------------------------------------------------------------------------
+//{
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QLineF thisLine = line();
+//    QPointF ptSelPtInSceneCoors;
+//    if (i_selPtType == ESelectionPointType::PolygonPoint) {
+//        if (i_idxPt < 0 || i_idxPt > 1) {
+//            throw CException(
+//                __FILE__, __LINE__, EResultArgOutOfRange,
+//                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
+//        }
+//        if (i_idxPt == 0) {
+//            ptSelPtInSceneCoors = pGraphicsItemThis->mapToScene(thisLine.p1());
+//        }
+//        else if (i_idxPt == 1) {
+//            ptSelPtInSceneCoors = pGraphicsItemThis->mapToScene(thisLine.p2());
+//        }
+//    }
+//    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
+//        if (i_idxPt != 0) {
+//            throw CException(
+//                __FILE__, __LINE__, EResultArgOutOfRange,
+//                keyInTree() + ": IdxPt: " + QString::number(i_idxPt));
+//        }
+//        ptSelPtInSceneCoors = pGraphicsItemThis->mapToScene(thisLine.center());
+//    }
+//    else {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+//    }
+//    return ZS::Draw::getPolarCoors(i_pt, ptSelPtInSceneCoors);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -1398,17 +1395,17 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(
 
     For more details see base implementation in CGraphObj.
 */
-QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF thisLine = line();
-    QLineF thisLineSceneCoors(pGraphicsItemThis->mapToScene(thisLine.center()),
-                              pGraphicsItemThis->mapToScene(thisLine.p2()));
-    return ZS::Draw::getLineFromPolar(
-        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, thisLineSceneCoors);
-}
+//QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+//    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QLineF thisLine = line();
+//    QLineF thisLineSceneCoors(pGraphicsItemThis->mapToScene(thisLine.center()),
+//                              pGraphicsItemThis->mapToScene(thisLine.p2()));
+//    return ZS::Draw::getLineFromPolar(
+//        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, thisLineSceneCoors);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -1416,42 +1413,42 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
 
     For more details see base implementation in CGraphObj.
 */
-QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QLineF thisLine = line();
-    QLineF thisLineSceneCoors;
-    if (i_selPtType == ESelectionPointType::PolygonPoint) {
-        if (i_idxPt == 0) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p2()));
-        }
-        else if (i_idxPt == 1) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p2()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p1()));
-        }
-        else {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
-        }
-    }
-    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
-        if (i_idxPt == 0) {
-            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
-                                        pGraphicsItemThis->mapToScene(thisLine.p2()));
-            thisLineSceneCoors.setP1(thisLineSceneCoors.center());
-        }
-        else {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
-        }
-    }
-    else {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
-    }
-    return ZS::Draw::getLineFromPolar(
-        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, thisLineSceneCoors);
-}
+//QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+//    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
+////------------------------------------------------------------------------------
+//{
+//    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+//    QLineF thisLine = line();
+//    QLineF thisLineSceneCoors;
+//    if (i_selPtType == ESelectionPointType::PolygonPoint) {
+//        if (i_idxPt == 0) {
+//            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
+//                                        pGraphicsItemThis->mapToScene(thisLine.p2()));
+//        }
+//        else if (i_idxPt == 1) {
+//            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p2()),
+//                                        pGraphicsItemThis->mapToScene(thisLine.p1()));
+//        }
+//        else {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+//        }
+//    }
+//    else if (i_selPtType == ESelectionPointType::LineCenterPoint) {
+//        if (i_idxPt == 0) {
+//            thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
+//                                        pGraphicsItemThis->mapToScene(thisLine.p2()));
+//            thisLineSceneCoors.setP1(thisLineSceneCoors.center());
+//        }
+//        else {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+//        }
+//    }
+//    else {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, keyInTree());
+//    }
+//    return ZS::Draw::getLineFromPolar(
+//        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, thisLineSceneCoors);
+//}
 
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
@@ -1572,7 +1569,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1583,7 +1580,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1594,7 +1591,7 @@ bool CGraphObjLine::textLabelHasDefaultValues(const QString& i_strName) const
             else if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            if (labelDscr.m_selPt.m_idxPt != 1) {
+            if (labelDscr.m_selPt.m_idxPtOrLine != 1) {
                 bHasDefaultValues = false;
             }
         }
@@ -1639,7 +1636,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1647,7 +1644,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::PolygonPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 1) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 1) {
                 bHasDefaultValues = false;
             }
         }
@@ -1655,7 +1652,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1663,7 +1660,7 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1671,23 +1668,23 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
             if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_idxPt != 0) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameDX) {
-            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
         else if (i_strName == c_strGeometryLabelNameDY) {
-            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::BoundingRectangle) {
+            if (labelDscr.m_selPt.m_selPtType != ESelectionPointType::LineCenterPoint) {
                 bHasDefaultValues = false;
             }
-            else if (labelDscr.m_selPt.m_selPt != ESelectionPoint::Center) {
+            else if (labelDscr.m_selPt.m_idxPtOrLine != 0) {
                 bHasDefaultValues = false;
             }
         }
@@ -1712,23 +1709,7 @@ QRectF CGraphObjLine::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsLineItem::boundingRect();
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.width() + static_cast<double>(iPenWidth),
-        rctBounding.height() + static_cast<double>(iPenWidth));
-    if (!m_plgP1ArrowHead.isEmpty()) {
-        rctBounding |= m_plgP1ArrowHead.boundingRect();
-    }
-    if (!m_plgP2ArrowHead.isEmpty()) {
-        rctBounding |= m_plgP2ArrowHead.boundingRect();
-    }
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -2249,11 +2230,13 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     bool bSelectedChanged = false;
     bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
+    bool bTracePositionInfo = false;
 
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
             if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+                bTracePositionInfo = true;
                 tracePositionInfo(mthTracer, EMethodDir::Enter);
             }
             updateLineEndArrowHeadPolygons();
@@ -2262,16 +2245,28 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         }
     }
     else if (i_change == ItemParentHasChanged) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            bTracePositionInfo = true;
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
         }
         updateLineEndArrowHeadPolygons();
         bTreeEntryChanged = true;
     }
+    else if (i_change == ItemPositionChange) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strRuntimeInfo = "Current Pos {" + qPoint2Str(pGraphicsItemThis->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemThis->scenePos()) + "}";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::None, ELogDetailLevel::None);
+        }
+    }
     else if (i_change == ItemPositionHasChanged) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            bTracePositionInfo = true;
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-                tracePositionInfo(mthTracer, EMethodDir::Enter);
-            }
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
@@ -2284,8 +2279,18 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         updateLineEndArrowHeadPolygons();
         bTreeEntryChanged = true;
     }
-    else if (i_change == ItemRotationHasChanged) {
+    else if ((i_change == ItemRotationChange) || (i_change == ItemTransformChange)) {
         if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            QString strRuntimeInfo = "Current Transform {Scale: " + QString::number(pGraphicsItemThis->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemThis->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemThis->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemThis->transform()).join(", ") + "}}";
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::None, ELogDetailLevel::None);
+        }
+    }
+    else if ((i_change == ItemRotationHasChanged) || (i_change == ItemTransformHasChanged)) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+            bTracePositionInfo = true;
             tracePositionInfo(mthTracer, EMethodDir::Enter);
         }
         bGeometryChanged = true;
@@ -2320,10 +2325,17 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
 
-    if (bGeometryChanged) {
-        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    valChanged = QGraphicsItem::itemChange(i_change, i_value);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
+        traceGraphObjStates(mthTracer, EMethodDir::Leave);
+        if (bTracePositionInfo) {
             tracePositionInfo(mthTracer, EMethodDir::Leave);
         }
+    }
+
+    if (bGeometryChanged) {
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
@@ -2336,12 +2348,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         m_pTree->onTreeEntryChanged(this);
     }
 
-    valChanged = QGraphicsItem::itemChange(i_change, i_value);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceGraphicsItemStates(mthTracer, EMethodDir::Leave, "Common");
-        traceGraphObjStates(mthTracer, EMethodDir::Leave);
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
@@ -2488,10 +2494,10 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->selectionPointAtLinkedObject();
     if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
         disconnectGeometryOnSceneChangedSlotFromSelectionPoints();
-        if (selPt.m_idxPt == 0) {
+        if (selPt.m_idxPtOrLine == 0) {
             setP1(physValPointParentSelPt);
         }
-        else if (selPt.m_idxPt == 1) {
+        else if (selPt.m_idxPtOrLine == 1) {
             setP2(physValPointParentSelPt);
         }
         connectGeometryOnSceneChangedSlotWithSelectionPoints();
@@ -2499,7 +2505,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
 }
 
 /*==============================================================================
-protected: // overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -2524,9 +2530,39 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged(
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
-    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+    {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+        CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-        setLineOrig(line());
+        if (i_pGraphObjGroupPrev != nullptr) {
+            // When changing the parent of the line item, the transformation matrix should be reset but
+            // not inherited from the the parent. E.g. if the parent was rotated, the line item would
+            // inherit the rotation angle as a matrix transformation. This is not desired for lines.
+            QGraphicsLineItem* pGraphicsItemThis = dynamic_cast<QGraphicsLineItem*>(this);
+
+            // Determine the coordinates of a transformed line within the scene
+            QLineF lineOrig = line();
+            QLineF transformedLineInScene(
+                pGraphicsItemThis->mapToScene(lineOrig.p1()),
+                pGraphicsItemThis->mapToScene(lineOrig.p2()));
+
+            // Reset transformation (rotation, scaling, arbitrary matrix)
+            pGraphicsItemThis->setRotation(0.0);
+            pGraphicsItemThis->setScale(1.0);
+            pGraphicsItemThis->setTransform(QTransform()); // setzt eine evtl. zusätzlich gesetzte Matrix zurück
+
+            // Convert the transformed line back into local coordinates
+            // (now without rotation/scaling, but pos() remains as it is)
+            QLineF newLocalLine(
+                pGraphicsItemThis->mapFromScene(transformedLineInScene.p1()),
+                pGraphicsItemThis->mapFromScene(transformedLineInScene.p2()));
+
+            // Set the new "straight" line.
+            pGraphicsItemThis->setLine(newLocalLine);
+        }
+
+        QLineF lineOrig = line();
+        setLineOrig(lineOrig);
+        //QGraphicsLineItem_setLine(lineOrig);
         CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
         setPhysValLineOrig(physValLine);
         physValLine = getPhysValLineScaled(m_physValLineOrig);
@@ -2555,6 +2591,7 @@ void CGraphObjLine::updateTransformedCoorsOnParentGeometryChanged()
         tracePositionInfo(mthTracer, EMethodDir::Enter);
     }
 
+    // ItemChange will be called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
         setLineOrig(line());
@@ -2691,7 +2728,7 @@ QLineF CGraphObjLine::getLineScaled(const QLineF& i_lineOrig) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ItemCoors {" + qLine2Str(i_lineOrig) + "}";
+        strMthInArgs = "LineOrig {" + qLine2Str(i_lineOrig) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2728,7 +2765,7 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ItemCoors {" + qLine2Str(i_lineOrig) + "}";
+        strMthInArgs = "LineOrig {" + qLine2Str(i_lineOrig) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2740,8 +2777,9 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     CGraphObjLine* pVThis = const_cast<CGraphObjLine*>(this);
     double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    double fGraphicsItemRotationAngle_degree = 0.0;
     if (fRotationAngle_degree != 0.0) {
-        pVThis->QGraphicsItem_setRotation(0.0);
+        fGraphicsItemRotationAngle_degree = pVThis->QGraphicsItem_setRotation(0.0);
     }
     CPhysValPoint physValPointP1(*m_pDrawingScene);
     CPhysValPoint physValPointP2(*m_pDrawingScene);
@@ -2763,7 +2801,7 @@ CPhysValLine CGraphObjLine::getPhysValLineOrig(const QLineF& i_lineOrig) const
         physValPointP2 = m_pDrawingScene->convert(p2);
     }
     if (fRotationAngle_degree != 0.0) {
-        pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
+        pVThis->QGraphicsItem_setRotation(fGraphicsItemRotationAngle_degree);
     }
 
     CPhysValLine physValLine(physValPointP1, physValPointP2);
@@ -2792,7 +2830,7 @@ CPhysValLine CGraphObjLine::getPhysValLineScaled(const CPhysValLine& i_physValLi
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValLineOrig.toString() + "} " + i_physValLineOrig.unit().symbol();
+        strMthInArgs = "LineOrig {" + i_physValLineOrig.toString() + "} " + i_physValLineOrig.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3034,6 +3072,51 @@ void CGraphObjLine::QGraphicsItem_prepareGeometryChange()
 }
 
 /*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjLine::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRectInternal();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
+    if (!m_plgP1ArrowHead.isEmpty()) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
+    }
+    if (!m_plgP2ArrowHead.isEmpty()) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjLine::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QLineF lineF = line(); // in local coordinates
+    QRectF rctBounding(lineF.p1(), lineF.p2());
+    // Width and height should never be less than 0.0.
+    if (rctBounding.width() < 0.0) {
+        rctBounding.moveLeft(rctBounding.left() + rctBounding.width());
+        rctBounding.setWidth(-rctBounding.width());
+    }
+    if (rctBounding.height() < 0.0) {
+        rctBounding.moveTop(rctBounding.top() + rctBounding.height());
+        rctBounding.setHeight(-rctBounding.height());
+    }
+    return rctBounding;
+}
+
+/*==============================================================================
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
 ==============================================================================*/
 
@@ -3058,14 +3141,24 @@ void CGraphObjLine::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
-            + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
-            + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol() +
+            ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol() +
+            ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
         i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "GraphicsLineItem {";
+    i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
+        strRuntimeInfo += ". Line Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

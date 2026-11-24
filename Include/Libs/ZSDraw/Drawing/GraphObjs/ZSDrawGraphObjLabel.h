@@ -35,9 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsSimpleTextItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Class to indicate text labels.
@@ -108,7 +106,7 @@ public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText(const QString& i_strText);
-    QString text() const;
+    //QString text() const;
 public: // instance methods
     void setLinkedObjectSelectionPoint(const SGraphObjSelectionPoint& i_selPt);
     SGraphObjSelectionPoint selectionPointAtLinkedObject() const;
@@ -146,12 +144,19 @@ public slots: // overridables of base class CGraphObj
     virtual void onLinkedObjectZValueChanged(CGraphObj* i_pGraphObjLinked);
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // auxiliary instance methods
+    virtual QPointF getPositionOfLinkedSelectionPointInSceneCoors(const SGraphObjSelectionPoint& i_selPt) const;
+    virtual ZS::PhysVal::CPhysVal getEffectiveRotationAngleOfLinkedObjectInSceneCoors() const;
 protected: // overridable auxiliary instance methods
+    virtual void updateText();
     virtual void updatePosition();
     virtual void updatePolarCoorsToLinkedSelPt();
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -164,27 +169,32 @@ protected: // instance members
     SGraphObjSelectionPoint m_selPtLinkedObject;
     /*!< When modifying the shape of graphical objects the relative position of labels
          linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+         This can only be achieved when keeping the distance and the angle to the selection point
+         after moving the labels. The polar coordinates are scene coordinates but the angle
+         is not changed if the linked object is rotated. The angle is stored as if the linked
+         object is not rotated. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
-    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
+    /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's
+         anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
     /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
          in local coordinates drawn from the label to the selection point(s) of the parent.
          The start point of the line at the label depend on the position of the label relative
          to the selection point(s) of the parent (see "updatePosition" for more details). */
     QList<QLineF> m_anchorLines;
+    /*!< Polygon points for arrow heads at line ends of the anchor lines. */
+    QList<QPolygonF> m_arrowHeads;
+    /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
+    CDrawSettings m_drawSettingsArrowHeads;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
     bool m_bUpdatePositionInProgress = false;
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
          to the linked selection point is changed if the position is updated because the parent's
          geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged = false;
+    //bool m_bPositionUpdateOnParentGeometryChanged = false;
 
 }; // class CGraphObjLabel
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjLabel_h

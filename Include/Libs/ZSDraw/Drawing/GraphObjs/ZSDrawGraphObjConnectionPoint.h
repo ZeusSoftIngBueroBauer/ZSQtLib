@@ -35,9 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsEllipseItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CGraphObjConnectionLine;
 
@@ -191,6 +189,9 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -220,8 +221,8 @@ protected: // instance members
     SGraphObjSelectionPoint m_selPtLinkedObject;
     /*!< When modifying the shape of graphical objects the relative position of labels
          linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+         This can only be achieved when keeping the distance and the angle to the selection point
+         after moving the labels. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag to indicate whether the anchor line (line from anchored object to the parent's anchor point) should be visible. */
     bool m_bShowAnchorLine = false;
@@ -262,14 +263,12 @@ protected: // instance members
     /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
          to the linked selection point is changed if the position is updated because the parent's
          geometry is changed. */
-    bool m_bPositionUpdateOnParentGeometryChanged = false;
+    //bool m_bPositionUpdateOnParentGeometryChanged = false;
     /*!< Counter to block debug trace outputs for connection lines. */
     int m_iTraceConnectionLinesBlockedCounter = 0;
 
 }; // class CGraphObjConnectionPoint
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjConnectionPoint_h

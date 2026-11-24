@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -420,11 +421,13 @@ CPhysVal CPhysValLine::angle() const
     // QLineF::angle returns the angle counter-clockwise which is in contrast to
     // the QGraphicsItem::rotationAngle. This will be corrected here.
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValAngle(m_line.angle(), Units.Angle.Degree, 0.1);
-    if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
-        double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-        physValAngle.setVal(fAngle_degree);
-    }
+    double fAngleCounterClockwise_degree = m_line.angle();
+    double fAngleClockwise_degree = Math::toClockWiseAngleDegree(fAngleCounterClockwise_degree);
+    CPhysVal physValAngle(fAngleClockwise_degree, Units.Angle.Degree, 0.1);
+    //if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
+    //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
+    //    physValAngle.setVal(fAngle_degree);
+    //}
     return physValAngle;
 }
 
@@ -642,6 +645,17 @@ void CPhysValLine::setCenter(const CPhysValPoint& i_physValPointCenter)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the angle of the line in Degrees.
+
+    @param [in] i_fAngle_degree
+*/
+void CPhysValLine::setAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    setAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree));
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the angle of the line in the given unit.
 
     The center point and the length of the line remains unchanged.
@@ -663,14 +677,20 @@ void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QPointF ptCenter = m_line.center();
     CPhysVal physValAngle = i_physValAngle;
-    if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
-        double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-        physValAngle.setVal(fAngle_degree);
-    }
-    double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
+    //if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
+    //    double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
+    //    physValAngle.setVal(fAngle_degree);
+    //}
+    // The line may already be rotated and has a current rotation angle.
+    // The new rotation angle is applied by rotating P1 and P2 around the center
+    // of the line with the new angle.
+    double fAngleClockwise_degree = physValAngle.getVal(Units.Angle.Degree);
+    double fAngleCounterClockwise_degree = Math::toCounterClockWiseAngleDegree(fAngleClockwise_degree);
+    double fAngleCounterClockwise_rad = Math::degree2Rad(fAngleCounterClockwise_degree);
+    //double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
     double fRadius = m_line.length() / 2.0;
-    double dx = fRadius * cos(fAngle_rad);
-    double dy = fRadius * sin(fAngle_rad);
+    double dx = fRadius * cos(fAngleCounterClockwise_rad);
+    double dy = fRadius * sin(fAngleCounterClockwise_rad);
     m_line.setP1(ptCenter + QPointF(-dx, dy));
     m_line.setP2(ptCenter + QPointF(dx, -dy));
     //if (m_line.center() != ptCenter) {

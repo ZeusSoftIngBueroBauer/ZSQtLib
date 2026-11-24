@@ -60,7 +60,7 @@ CDlgTest::CDlgTest(
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wflags ) :
 //------------------------------------------------------------------------------
-    QDialog(i_pWdgtParent,i_wflags),
+    QDialog(i_pWdgtParent, i_wflags),
     m_strSettingsKey(),
     m_pLytMain(nullptr),
     m_pWdgtTest(nullptr)

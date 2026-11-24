@@ -400,7 +400,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 }
                 else {
                     pGraphObj->addTextLabel(
-                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
             }
             else {
@@ -411,7 +411,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 }
                 else {
                     pGraphObj->setTextLabelAnchorPoint(
-                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
             }
             pGraphObj->setTextLabelPolarCoorsToLinkedSelectionPoint(
@@ -435,7 +435,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 }
                 else {
                     pGraphObj->setGeometryLabelAnchorPoint(
-                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
@@ -459,7 +459,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 }
                 else {
                     pGraphObj->addConnectionPoint(
-                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
                 pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);

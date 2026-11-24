@@ -411,7 +411,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
                 }
                 else {
                     pGraphObj->addTextLabel(
-                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
             }
             else {
@@ -422,7 +422,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
                 }
                 else {
                     pGraphObj->setTextLabelAnchorPoint(
-                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
             }
             pGraphObj->setTextLabelPolarCoorsToLinkedSelectionPoint(
@@ -446,7 +446,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
                 }
                 else {
                     pGraphObj->setGeometryLabelAnchorPoint(
-                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                        labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
                 pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
@@ -468,7 +468,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
                     pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_selPt);
                 }
                 else {
-                    pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPt);
+                    pGraphObj->addConnectionPoint(labelDscr.m_strKey, labelDscr.m_selPt.m_selPtType, labelDscr.m_selPt.m_idxPtOrLine);
                 }
                 pGraphObj->setConnectionPointPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);

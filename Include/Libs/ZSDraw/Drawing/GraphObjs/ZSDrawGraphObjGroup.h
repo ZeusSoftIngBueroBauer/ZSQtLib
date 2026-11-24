@@ -37,9 +37,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsItemGroup>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Container for graphics items that treats a group of items as a single item.
@@ -266,6 +264,9 @@ protected: // auxiliary instance methods (method tracing)
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // auxiliary instance methods (method tracing)
     void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+public: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 public: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -330,8 +331,6 @@ protected: // instance members
 
 }; // class CGraphObjGroup
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjGroup_h

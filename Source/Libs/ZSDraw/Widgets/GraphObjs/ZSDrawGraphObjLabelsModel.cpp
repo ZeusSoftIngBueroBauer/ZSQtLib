@@ -422,7 +422,7 @@ void CModelGraphObjLabels::acceptChanges()
                     else {
                         m_pGraphObj->addTextLabel(
                             labelSettings.m_strNameCurr, labelSettings.m_strText,
-                            labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_idxPt);
+                            labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_idxPtOrLine);
                     }
                     m_arLabelSettings[labelSettings.m_iRowIdx].m_strNameOrig = labelSettings.m_strNameCurr;
                 }
@@ -434,7 +434,7 @@ void CModelGraphObjLabels::acceptChanges()
                     }
                     else {
                         m_pGraphObj->setTextLabelAnchorPoint(
-                            labelSettings.m_strNameCurr, labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_idxPt);
+                            labelSettings.m_strNameCurr, labelSettings.m_selPt.m_selPtType, labelSettings.m_selPt.m_idxPtOrLine);
                     }
                 }
                 labelSettings.m_bVisible ?
@@ -803,11 +803,11 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                         }
                         else if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
                             // Convert P0 to P1 and so on ...
-                            varData = "P" + QString::number(labelSettings.m_selPt.m_idxPt + 1);
+                            varData = "P" + QString::number(labelSettings.m_selPt.m_idxPtOrLine + 1);
                         }
                         else if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
                             // Convert L0 to L1 and so on ...
-                            varData = "L" + QString::number(labelSettings.m_selPt.m_idxPt + 1);
+                            varData = "L" + QString::number(labelSettings.m_selPt.m_idxPtOrLine + 1);
                         }
                     }
                     else if (i_iRole == Qt::AccessibleTextRole) {
@@ -825,11 +825,11 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                             }
                             else if (selPt.m_selPtType == ESelectionPointType::PolygonPoint) {
                                 // Convert P0 to P1 and so on ...
-                                arItems.append(SComboBoxItem("P" + QString::number(selPt.m_idxPt + 1)));
+                                arItems.append(SComboBoxItem("P" + QString::number(selPt.m_idxPtOrLine + 1)));
                             }
                             else if (selPt.m_selPtType == ESelectionPointType::LineCenterPoint) {
                                 // Convert L0 to L1 and so on ...
-                                arItems.append(SComboBoxItem("L" + QString::number(selPt.m_idxPt + 1)));
+                                arItems.append(SComboBoxItem("L" + QString::number(selPt.m_idxPtOrLine + 1)));
                             }
                         }
                         varData.setValue(arItems);
@@ -973,13 +973,13 @@ bool CModelGraphObjLabels::setData(
                             QString strShapePoint = i_varData.toString().remove("P");
                             // Convert P1 to P0 and so on ...
                             labelSettings.m_selPt.m_selPtType = ESelectionPointType::PolygonPoint;
-                            labelSettings.m_selPt.m_idxPt = strShapePoint.toInt() - 1;
+                            labelSettings.m_selPt.m_idxPtOrLine = strShapePoint.toInt() - 1;
                         }
                         else if (strData.startsWith("L")) {
                             QString strShapePoint = i_varData.toString().remove("L");
                             // Convert P1 to P0 and so on ...
                             labelSettings.m_selPt.m_selPtType = ESelectionPointType::LineCenterPoint;
-                            labelSettings.m_selPt.m_idxPt = strShapePoint.toInt() - 1;
+                            labelSettings.m_selPt.m_idxPtOrLine = strShapePoint.toInt() - 1;
                         }
                         bDataSet = true;
                     }

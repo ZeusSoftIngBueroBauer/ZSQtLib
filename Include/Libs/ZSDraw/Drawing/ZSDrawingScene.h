@@ -148,9 +148,15 @@ public: // instance methods
     void deleteGraphObj(CGraphObj* i_pGraphObj, bool i_bQueuedCall = true);
     QGraphicsItem* getGraphicsItem(const QString& i_strKeyInTree);
     CGraphObj* getGraphObj(const QString& i_strKeyInTree);
-    QGraphicsItem* getGraphicsItem(const QPointF& i_ptScenePos);
-    CGraphObj* getGraphObj(const QPointF& i_ptScenePos);
-    CGraphObjConnectionPoint* getConnectionPoint(const QPointF& i_ptScenePos);
+    //QGraphicsItem* graphicsItemsAt(
+    //    const QPointF& i_ptScenePos,
+    //    const QList<EGraphObjType>& i_arTypesFilter,
+    //    ZS::System::EComparisonOperator i_eFilterComparison = ZS::System::EComparisonOperator::Equal);
+    QList<CGraphObj*> graphObjsAt(
+        const QPointF& i_ptScenePos,
+        const QList<EGraphObjType>& i_arTypesFilter = QList<EGraphObjType>(),
+        ZS::System::EComparisonOperator i_eFilterComparison = ZS::System::EComparisonOperator::Equal);
+    CGraphObjConnectionPoint* connectionPointAt(const QPointF& i_ptScenePos);
 public: // instance methods (replacing methods of QGraphicScene)
     void removeItem(QGraphicsItem* i_pGraphicsItem);
 public: // instance methods
@@ -335,63 +341,63 @@ protected: // instance members
          settings from the temporary buffer.
          For the first change to be cached the temporary buffer will be allocated.
          After updating the changes the temporary buffer will be deleted. */
-    CDrawSettings* m_pDrawSettingsTmp;
+    CDrawSettings* m_pDrawSettingsTmp = nullptr;
     /*!< The drawing scene knows two modes: Edit and View. In edit mode the drawing may be
          modified by adding and removing objects and by editing their shapes. In view mode
          editing the drawing is rejecting. */
-    ZS::System::CEnumMode m_mode;
-    //CEnumEditTool m_editTool;
-    //CEnumEditMode m_editMode;
-    //CEnumEditResizeMode m_editResizeMode;
+    ZS::System::CEnumMode m_mode = ZS::System::EMode::Undefined;
+    //CEnumEditTool m_editTool = EEditTool::None;
+    //CEnumEditMode m_editMode = EEditMode::None;
+    //CEnumEditResizeMode m_editResizeMode = EEditResizeMode::None;
     /*!< Corresponds to the selected drawing tool. */
-    CObjFactory* m_pObjFactory;
+    CObjFactory* m_pObjFactory = nullptr;
     /*!< Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    //QGraphicsItem* m_pGraphicsItemCreating;
+    //QGraphicsItem* m_pGraphicsItemCreating = nullptr;
     /*! Points to the object currently beeing created by mouse events.
         If an obect is under construction the mouse grabber item is a selection point
         and mouse release events should not invalidate the mouse grabber item but
         the selection point should be kept as the mouse grabber item. */
-    CGraphObj* m_pGraphObjUnderConstruction;
+    CGraphObj* m_pGraphObjUnderConstruction = nullptr;
     /*! Points to the object which should be set as the mouse grabber after dispatching
         events to an item. Needed as mouse release events will reset the mouse grabber item
         but when creating objects a selection point must be the mouse grabber. */
-    CGraphObj* m_pGraphObjMouseGrabber;
+    CGraphObj* m_pGraphObjMouseGrabber = nullptr;
     /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    //QGraphicsItem* m_pGraphicsItemAddingShapePoints;
+    //QGraphicsItem* m_pGraphicsItemAddingShapePoints = nullptr;
     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    //CGraphObj* m_pGraphObjAddingShapePoints;
+    //CGraphObj* m_pGraphObjAddingShapePoints = nullptr;
     /*!< The graphical objects are added to the index tree. */
-    ZS::System::CIdxTree* m_pGraphObjsIdxTree;
-    //ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
-    //QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;
-    //QList<QGraphicsItem*> m_arpGraphicsItemsBroughtToFront;
+    ZS::System::CIdxTree* m_pGraphObjsIdxTree = nullptr;
+    //ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard = nullptr;
+    //QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents = nullptr;
+    //QList<QGraphicsItem*> m_arpGraphicsItemsBroughtToFront = nullptr;
     /*!< Hit tolerance to be used by the graphical objects to check whether a certain shape point has been hit.
          Currently initialised with 3.0 pixels. But might become a changeable property in the future. */
-    double m_fHitTolerance_px;
+    double m_fHitTolerance_px = 3.0;
     /*!< Stores the position on the drawing scene of a mouse press event.
         Used to setup and resize the rectangle area to select a group of objects. */
     QPointF m_ptMouseEvScenePosOnMousePressEvent;
     /*!< If the user clicks on an empty area and moves the mouse a selection area is created
          which is a graphics rectangle item. */
-    QGraphicsRectItem* m_pGraphicsItemSelectionArea;
+    QGraphicsRectItem* m_pGraphicsItemSelectionArea = nullptr;
     /*!< List with physical shapes to be drawing in the background or foreground layer of the drawing scene. */
     QVector<CPhysValShape*> m_arpPhysValShapes;
     QVector<CDrawSettings> m_arDrawSettingsPhysValShapes;
 protected: // instance members (method tracing)
     /*!< Counters to block debug trace outputs for internal position and state infos. */
-    int m_iTraceBlockedCounter;
-    int m_iTraceInternalStatesBlockedCounter;
-    int m_iTraceItemsAtScenePosBlockedCounter;
-    int m_iTraceAllItemsBlockedCounter;
+    int m_iTraceBlockedCounter = 0;
+    int m_iTraceInternalStatesBlockedCounter = 0;
+    int m_iTraceItemsAtScenePosBlockedCounter = 0;
+    int m_iTraceAllItemsBlockedCounter = 0;
 protected: // instance members (method tracing)
     /*!< Objects to control method tracing. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents = nullptr;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjKeyEvents = nullptr;
 
 }; // class CDrawingScene
 

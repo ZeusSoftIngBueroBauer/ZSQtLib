@@ -29,9 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Label to show the angle of the line between two shape or selection points.
@@ -89,9 +87,12 @@ public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
-    virtual void updatePosition() override;
-    virtual void updatePolarCoorsToLinkedSelPt() override;
+    virtual void updateText() override;
+    //virtual void updatePosition() override;
+    //virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -110,15 +111,9 @@ protected: // instance members
     /*!< Span of the pie  to draw the "anchor" line of the rotation angle.
          The span is equal to the rotation angle of the linked object. */
     double m_fPieSpanAngle_degrees = 0.0;
-    /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
-    CDrawSettings m_drawSettingsArrowHeads;
-    /*!< Polygon points for arrow head at P2 (line end) */
-    QPolygonF m_plgP2ArrowHead;
 
 }; // class CGraphObjLabelGeometryAngle
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjLabelGeometryAngle_h

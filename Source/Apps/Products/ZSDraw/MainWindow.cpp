@@ -3807,7 +3807,9 @@ void CMainWindow::onActionDebugTestTriggered(bool i_bChecked)
         /* strAddInfo   */ strMthInArgs );
 
     if( m_pDlgTest == nullptr ) {
-        m_pDlgTest = new ZS::Test::GUI::CDlgTest("Test", m_pTest);
+        m_pDlgTest = new ZS::Test::GUI::CDlgTest(
+            "Test", m_pTest, nullptr,
+            Qt::WindowFlags() /*| Qt::WindowMinMaxButtonsHint*/);
     }
 
     m_pDlgTest->show();

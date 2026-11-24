@@ -35,9 +35,7 @@ may result in using the software modules.
 #include <QtWidgets/QGraphicsEllipseItem>
 #endif
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjEllipse : public CGraphObj, public QGraphicsEllipseItem
@@ -160,6 +158,9 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItem_prepareGeometryChange() override;
+protected: // must overridables of base class CGraphObj (method tracing)
+    virtual QRectF boundingRectInternal() const override;
+    virtual QRectF getBoundingRectInternal() const override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -206,8 +207,6 @@ protected: // instance members
 
 }; // class CGraphObjEllipse
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_GraphObjEllipse_h

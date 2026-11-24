@@ -248,7 +248,7 @@ typedef enum {
     EGraphObjTypePolygon         = QGraphicsItem::UserType +  3,
     EGraphObjTypePolyline        = QGraphicsItem::UserType +  4,
     EGraphObjTypeText            = QGraphicsItem::UserType +  5,
-    EGraphObjTypePixmap           = QGraphicsItem::UserType +  6,
+    EGraphObjTypePixmap          = QGraphicsItem::UserType +  6,
     EGraphObjTypeConnectionPoint = QGraphicsItem::UserType +  7,  // not a SVG element
     EGraphObjTypeConnectionLine  = QGraphicsItem::UserType +  8,  // not a SVG element
     EGraphObjTypeGroup           = QGraphicsItem::UserType +  9,  // not a SVG element
@@ -929,10 +929,10 @@ public: // struct methods
 public: // ctors
     SGraphObjSelectionPoint();
     SGraphObjSelectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
+    SGraphObjSelectionPoint(ESelectionPointType i_selPtType, int i_idxPtOrLine);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
     SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPt);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPointType i_selPtType, int i_idxPtOrLine);
     SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
 public: // operators
     SGraphObjSelectionPoint& operator = (const SGraphObjSelectionPoint& i_other);
@@ -962,7 +962,7 @@ public: // struct members
          is stored the selection point is assigned to. The first point has index 0.
          For selection points in the center of lines the line index is stored.
          The first line has index 0. */
-    int m_idxPt = -1;
+    int m_idxPtOrLine = -1;
 
 }; // struct SGraphObjSelectionPoint
 
@@ -1109,10 +1109,9 @@ public: // struct members
          The position of the top left corner to the corresponding selection point.
          Width, height and angle are also linked to the center point of the bounding rectangle. */
     SGraphObjSelectionPoint m_selPt;
-    /*!< When modifying the shape of graphical objects the relative position of labels
-         linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
+    /*!< When modifying the shape of graphical objects the relative position of labels linked
+         to the graphical objects should always be the same. This can be achieved by keeping
+         the distance and the angle to the selection point after moving the labels. */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag indicating whether the anchored object is visible. */
     bool m_bIsVisible = false;

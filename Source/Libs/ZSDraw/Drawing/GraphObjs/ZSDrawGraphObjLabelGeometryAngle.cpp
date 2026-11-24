@@ -108,8 +108,7 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
         /* pDrawingScene */ i_pDrawingScene,
         /* strKey        */ i_strKey,
         /* type          */ EGraphObjTypeLabelGeometryAngle,
-        /* selPt         */ i_selPt),
-    m_drawSettingsArrowHeads(EGraphObjTypeLine)
+        /* selPt         */ i_selPt)
 {
     createTraceAdminObjs("ZS::Draw::Drawing::GraphObjs::Labels", ClassName());
 
@@ -140,6 +139,7 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     // to the end of the rectangle pie.
     m_anchorLines.append(QLineF());
     m_anchorLines.append(QLineF());
+    m_arrowHeads.append(QPolygonF());
 }
 
 //------------------------------------------------------------------------------
@@ -218,27 +218,7 @@ QRectF CGraphObjLabelGeometryAngle::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-    if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine) {
-        for (const QLineF& anchorLine : m_anchorLines) {
-            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
-            rctBounding |= rctBoundingAnchorLine;
-        }
-    }
-    rctBounding |= m_rectPie;
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.width() + static_cast<double>(iPenWidth),
-        rctBounding.height() + static_cast<double>(iPenWidth));
-    if (m_plgP2ArrowHead.size() > 0) {
-        rctBounding |= m_plgP2ArrowHead.boundingRect();
-    }
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -276,28 +256,14 @@ void CGraphObjLabelGeometryAngle::paint(
     // Use a different color if the line is hit, hovered or selected.
     if (/*m_bIsHit ||*/ isSelected() || m_bShowAnchorLine) {
         i_pPainter->save();
-        i_pPainter->setRenderHints(s_painterRenderHints);
-        QPen pn = pen();
-        pn.setWidth(1);
-        pn.setStyle(Qt::SolidLine);
-        QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
-        color.setAlpha(192);
-        pn.setColor(color);
-        i_pPainter->setPen(pn);
-        for (const QLineF& anchorLine : m_anchorLines) {
-            i_pPainter->drawLine(anchorLine);
-        }
-
         // The startAngle and spanAngle must be specified in 1/16th of a degree.
         // The painter counts angles counter clockwise whereas the graphics system
         // counts angles clockwise. Correct the angles before drawing the pies.
+        #if 0
+        i_pPainter->setPen(Qt::red);
+        #endif
         if ((fabs(m_rectPie.width()) >= 20.0) || (fabs(m_rectPie.height()) >= 20.0)) {
-            double fPieStartAngle_degrees = Math::toCounterClockWiseAngleDegree(m_fPieStartAngle_degrees);
-            double fPieSpanAngle_degrees = -m_fPieSpanAngle_degrees;
-            i_pPainter->drawPie(m_rectPie, 16.0 * fPieStartAngle_degrees, 16.0 * fPieSpanAngle_degrees);
-            QBrush brsh(pn.color());
-            i_pPainter->setBrush(brsh);
-            i_pPainter->drawPolygon(m_plgP2ArrowHead);
+            i_pPainter->drawPie(m_rectPie, 16.0 * m_fPieStartAngle_degrees, 16.0 * m_fPieSpanAngle_degrees);
         }
         i_pPainter->restore();
     }
@@ -308,169 +274,26 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief 
-*/
-void CGraphObjLabelGeometryAngle::updatePosition()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "updatePosition",
-        /* strAddInfo   */ "" );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
-    }
-    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
-
-    // First set the text at the graphics item so that the
-    // bounding rectangle includes the new text.
-    m_bUpdatePositionInProgress = true;
-
-    QString strText = m_selPtLinkedObject.m_pGraphObj->rotationAngle().toString();
-    if (QGraphicsSimpleTextItem::text() != strText) {
-        QGraphicsSimpleTextItem::setText(strText);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QRectF rctBoundingThis = getBoundingRect();
-
-    QPointF ptSelPt1ScenePos;
-    QPointF ptSelPt2ScenePos;
-
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
-    }
-    else if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt+1);
-    }
-
-    // Get the zero point for the polar coordinates
-    // (center of label's bounding rectangle of the label at its initial position).
-    QPointF ptPolarCoorsOriginScenePos = ptSelPt2ScenePos;
-
-    // Get distance line from the item's center point to the label's center point in scene coordinates.
-    // getLineFromPolar calculates the resulting line starting from P1. So we need to change 
-    // start and end of the line from center to right center.
-    QLineF lineBaseForPolarCoors = QLineF(ptPolarCoorsOriginScenePos, ptSelPt1ScenePos);
-    lineBaseForPolarCoors.setAngle(lineBaseForPolarCoors.angle() + 180.0);
-    QLineF lineMoveVector = ZS::Draw::getLineFromPolar(
-        m_polarCoorsToLinkedSelPt.m_fLength_px,
-        m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
-        lineBaseForPolarCoors);
-
-    // The position of a QGraphicsTextItem is defined by its top left corner.
-    // Move text item so that its center point is at the line end point of the anchor line.
-    // Note that labels are always positioned directly on the drawing scene and never belong to groups.
-    QPointF posTextItem(
-        lineMoveVector.p2().x() - rctBoundingThis.width()/2.0,
-        lineMoveVector.p2().y() - rctBoundingThis.height()/2.0);
-
-    // Please note that on calling setPos the itemChange method of the
-    // label is called invoking updateAnchorLines.
-    if (pos() != posTextItem) {
-        QGraphicsItem_setPos(posTextItem);
-    }
-    else {
-        updateAnchorLines();
-    }
-
-    m_bUpdatePositionInProgress = false;
-
-    refCountGuardTrace.decrementAndReleaseCounter();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
-    }
-}
-
-//------------------------------------------------------------------------------
 /*! @brief
 */
-void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
+void CGraphObjLabelGeometryAngle::updateText()
 //------------------------------------------------------------------------------
 {
-    // If the position is updated because the parent's geometry is changed,
-    // the relative distance in polar coordinates (length and angle) to the
-    // linked selection point must not be changed.
-    if (m_bPositionUpdateOnParentGeometryChanged) {
-        return;
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
-        /* strAddInfo   */ "" );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+        /* strMethod    */ "updateText",
+        /* strAddInfo   */ "");
+
+    QString strText;
+    if (m_selPtLinkedObject.m_pGraphObj == nullptr) {
+        strText = "?";
     }
-    CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
-
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QRectF rctBoundingThis = getBoundingRect();
-    QPointF ptThisCenterScenePos = pGraphicsItemThis->mapToScene(rctBoundingThis.center());
-
-    QPointF ptSelPt1ScenePos;
-    QPointF ptSelPt2ScenePos;
-
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+    else {
+        strText = m_selPtLinkedObject.m_pGraphObj->rotationAngle().toString();
     }
-    else if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt+1);
-    }
-
-    SPolarCoors polarCoors = getPolarCoorsToSelectionPointFromSceneCoors();
-    // Get the zero point for the polar coordinates
-    // (center of label's bounding rectangle of the label at its initial position).
-    //QPointF ptPolarCoorsOriginScenePos = ptSelPt2ScenePos;
-
-    //QLineF lineBaseForPolarCoors = QLineF(ptPolarCoorsOriginScenePos, ptSelPt1ScenePos);
-    //QLineF lineMoveVector(ptThisCenterScenePos, ptPolarCoorsOriginScenePos);
-
-    //m_polarCoorsToLinkedSelPt.m_fLength_px = lineMoveVector.length();
-    //m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineMoveVector.angleTo(lineBaseForPolarCoors);
-    //m_polarCoorsToLinkedSelPt.m_fAngle_degrees =
-    //    Math::toClockWiseAngleDegree(m_polarCoorsToLinkedSelPt.m_fAngle_degrees);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strRuntimeInfo = "PolarCoors {" + QString::number(m_polarCoorsToLinkedSelPt.m_fLength_px) + " px" +
-            ", " + QString::number(m_polarCoorsToLinkedSelPt.m_fAngle_degrees) + " " + QString(Math::c_chSymbolDegree) + "}";
-        mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
-    }
-
-    // Update coordinates of the anchor line.
-    updateAnchorLines();
-
-    refCountGuardTrace.decrementAndReleaseCounter();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceThisPositionInfo(mthTracer, EMethodDir::Leave);
-    }
+    setText(strText);
 }
 
 //------------------------------------------------------------------------------
@@ -482,7 +305,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
 
     Example for a Rectangle (rotated by 270°):
 
-                TopRight        BottomRight
+                TopRight               BottomRight
                     +-----------------------+
                     |          270°         |
                     |    +----->|           |
@@ -494,7 +317,10 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
                     |    +--------------+   |
                     |                       |
                     +-----------------------+
-                TopLeft         BottomLeft
+                TopLeft                BottomLeft
+
+        Anchor0: Start boundary line of the angular dimensioning
+        Anchor1: End boundary line of the angular dimensioning
 */
 void CGraphObjLabelGeometryAngle::updateAnchorLines()
 //------------------------------------------------------------------------------
@@ -509,87 +335,91 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         traceThisPositionInfo(mthTracer, EMethodDir::Enter);
     }
     CRefCountGuard refCountGuardTrace(&m_iTraceBlockedCounter);
+    if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        QRectF rctBoundingThis = getBoundingRect();
+        QPointF ptThisCenterScenePos = pGraphicsItemThis->mapToScene(rctBoundingThis.center());
+        SGraphObjSelectionPoint selPtLinkedObjectBoundingRectCenter(
+            m_selPtLinkedObject.m_pGraphObj, ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
+        QPointF ptCenterLinkedObjectSceneCoors =
+            getPositionOfLinkedSelectionPointInSceneCoors(selPtLinkedObjectBoundingRectCenter);
+        // The length of the start and end boundary lines is the distance betweeen this
+        // label's center and the center point of the lined object's bounding rectangle.
+        // Note! To avoid that the line goes through the text of the angle label, the radius
+        // may be changed depending on the angle (for angles < 90° the top left corner could be
+        // the start point, for angles > 90° the top right corner, etc.).
+        QLineF lineLinkedObjectCenterToThisCenterInSceneCoors(ptCenterLinkedObjectSceneCoors, ptThisCenterScenePos);
+        double fDistanceToLinkedObjectCenter = lineLinkedObjectCenterToThisCenterInSceneCoors.length();
 
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QRectF rctBoundingThis = getBoundingRect();
-    QPointF ptThisCenterScenePos = pGraphicsItemThis->mapToScene(rctBoundingThis.center());
+        CPhysVal physValAngle = m_selPtLinkedObject.m_pGraphObj->rotationAngle();
+        double fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
+        CPhysVal physValAngleSceneCoors_degrees = getEffectiveRotationAngleOfLinkedObjectInSceneCoors();
+        double fAngleSceneCoors_degrees = physValAngleSceneCoors_degrees.getVal(Units.Angle.Degree);
 
-    QPointF ptSelPt1ScenePos;
-    QPointF ptSelPt2ScenePos;
+        // Anchor0 is the start boundary of the angular dimensioning at 0°.
+        // The boundary line starts in the center of the linked object with the angle
+        // of 0° in the coordinate system of the linked object's parent.
+        QLineF anchorLine0InSceneCoors = getLineFromPolar(
+            ptCenterLinkedObjectSceneCoors,
+            SPolarCoors(fDistanceToLinkedObjectCenter, fAngleSceneCoors_degrees - fAngle_degrees));
 
-    if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::Center);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
+        // Anchor1 is the end boundary of the angular dimensionang at the angle to be indicated.
+        // The boundary line starts in the center of the linked object with the rotation angle
+        // of the linked object in the coordinate system of the linked object's parent.
+        QLineF anchorLine1InSceneCoors = getLineFromPolar(
+            ptCenterLinkedObjectSceneCoors, 
+            SPolarCoors(fDistanceToLinkedObjectCenter, fAngleSceneCoors_degrees));
+
+        m_anchorLines[0] = QLineF(mapFromScene(anchorLine0InSceneCoors.p1()), mapFromScene(anchorLine0InSceneCoors.p2()));
+        m_anchorLines[1] = QLineF(mapFromScene(anchorLine1InSceneCoors.p1()), mapFromScene(anchorLine1InSceneCoors.p2()));
+
+        //QLineF lineFromLinkedObjectCenter(m_lineSelPtsSceneCoors.p1(), ptThisCenterScenePos);
+        //lineFromLinkedObjectCenter.setLength(lineFromLinkedObjectCenter.length() - rctBoundingThis.width()/2.0);
+        m_rectPie.setWidth(2.0 * fDistanceToLinkedObjectCenter);
+        m_rectPie.setHeight(2.0 * fDistanceToLinkedObjectCenter);
+        m_rectPie.moveCenter(mapFromScene(ptCenterLinkedObjectSceneCoors));
+
+        // The angle returned by QLineF is counter-clockwise with 0° at 3 o'clock.
+        // The graphics scene uses clockwise angles with 0° at 3 o'clock.
+        m_fPieStartAngle_degrees = Math::toCounterClockWiseAngleDegree(fAngleSceneCoors_degrees - fAngle_degrees);
+        m_fPieSpanAngle_degrees = -fAngle_degrees;
+
+        QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
+            m_anchorLines[1], m_anchorLines[1].p2(), 10.0);
+
+        getLineEndArrowPolygons(
+            /* line          */ perpendicularLineEndOfSegment,
+            /* drawSetings   */ m_drawSettingsArrowHeads,
+            /* pplgLineStart */ &m_arrowHeads[0],
+            /* pplgLineEnd   */ nullptr);
     }
-    else if (m_selPtLinkedObject.m_selPtType == ESelectionPointType::LineCenterPoint) {
-        ptSelPt1ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt);
-        ptSelPt2ScenePos =
-            m_selPtLinkedObject.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-                ESelectionPointType::PolygonPoint, m_selPtLinkedObject.m_idxPt+1);
-    }
-
-    QLineF lineLinkedObjectCenterToThisCenterInSceneCoors(
-        ptSelPt1ScenePos, ptThisCenterScenePos);
-
-    // Anchor0 is a horizontal line starting at the center point of the linked object
-    // (in case of lines, at the start point P1 of the line).
-    // The length of Anchor0 is the distance betweeen the center point of the linked object
-    // and this label's center point.
-    QLineF anchorLine0InSceneCoors( // any horizontal line through the center of the linked object
-        ptSelPt1ScenePos,
-        QPointF(ptSelPt1ScenePos.x() + 20, ptSelPt1ScenePos.y()));
-    anchorLine0InSceneCoors.setLength(lineLinkedObjectCenterToThisCenterInSceneCoors.length());
-
-    // Anchor1 starts at the center point of the linked object and goes through the center point
-    // of the right line of the linked objects bounding rectangle (in case of lines through
-    // the end point of the line).
-    // The length of Anchor1 is equal to the length of Anchor0.
-    QLineF anchorLine1InSceneCoors(ptSelPt1ScenePos, ptSelPt2ScenePos);
-    anchorLine1InSceneCoors.setLength(lineLinkedObjectCenterToThisCenterInSceneCoors.length());
-
-    m_anchorLines[0] = QLineF(mapFromScene(anchorLine0InSceneCoors.p1()), mapFromScene(anchorLine0InSceneCoors.p2()));
-    m_anchorLines[1] = QLineF(mapFromScene(anchorLine1InSceneCoors.p1()), mapFromScene(anchorLine1InSceneCoors.p2()));
-
-    //QLineF lineFromLinkedObjectCenter(m_lineSelPtsSceneCoors.p1(), ptThisCenterScenePos);
-    //lineFromLinkedObjectCenter.setLength(lineFromLinkedObjectCenter.length() - rctBoundingThis.width()/2.0);
-    m_rectPie.setWidth(2.0 * lineLinkedObjectCenterToThisCenterInSceneCoors.length());
-    m_rectPie.setHeight(2.0 * lineLinkedObjectCenterToThisCenterInSceneCoors.length());
-    m_rectPie.moveCenter(mapFromScene(ptSelPt1ScenePos));
-
-    // The angle returned by QLineF is counter-clockwise with 0° at 3 o'clock.
-    // The graphics scene uses clockwise angles with 0° at 3 o'clock.
-    m_fPieStartAngle_degrees = 0.0;
-    m_fPieSpanAngle_degrees = m_selPtLinkedObject.m_pGraphObj->rotationAngle(Units.Angle.Degree).getVal();
-    // The scenes rotation angle of the parent group of the linked object must be subtracted
-    // to get the start point of the pie and the span has to be corrected correspondingly.
-    CGraphObjGroup* pGraphObjParentGroup = m_selPtLinkedObject.m_pGraphObj->parentGroup();
-    if (pGraphObjParentGroup != nullptr) {
-        double fParentGroupSceneRotationAngle_degrees = pGraphObjParentGroup->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
-        m_fPieStartAngle_degrees = fParentGroupSceneRotationAngle_degrees;
-        m_fPieStartAngle_degrees = Math::normalizeAngleInDegree(m_fPieStartAngle_degrees);
-        m_fPieSpanAngle_degrees -= fParentGroupSceneRotationAngle_degrees;
-        m_fPieSpanAngle_degrees = Math::normalizeAngleInDegree(m_fPieSpanAngle_degrees);
-    }
-
-    QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
-        m_anchorLines[1], m_anchorLines[1].p2(), 10.0);
-
-    getLineEndArrowPolygons(
-        /* line          */ perpendicularLineEndOfSegment,
-        /* drawSetings   */ m_drawSettingsArrowHeads,
-        /* pplgLineStart */ &m_plgP2ArrowHead,
-        /* pplgLineEnd   */ nullptr);
-
     refCountGuardTrace.decrementAndReleaseCounter();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceThisPositionInfo(mthTracer, EMethodDir::Leave);
     }
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjLabelGeometryAngle::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRectInternal();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    QRectF rctPie = m_rectPie;
+    rctPie = QRectF(
+        rctPie.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctPie.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctPie.width() + static_cast<double>(iPenWidth),
+        rctPie.height() + static_cast<double>(iPenWidth));
+    rctBounding |= rctPie;
+    return rctBounding;
 }
 
 /*==============================================================================

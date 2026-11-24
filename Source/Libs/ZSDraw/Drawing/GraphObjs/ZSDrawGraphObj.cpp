@@ -99,6 +99,50 @@ QColor CGraphObj::s_selectionColor = QColor::fromHsv(300, 30, 200);
 QColor CGraphObj::s_highlightColor = QColor::fromHsv(240, 30, 200);
 
 /*==============================================================================
+public: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CGraphObj::createPolygonPointLabelName(int i_idxPt)
+//------------------------------------------------------------------------------
+{
+    return c_strGeometryLabelNameP + QString::number(i_idxPt + 1);
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isPolygonPointLabelName(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    bool bIs = false;
+    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
+        QString strIndex = i_strLabelName.mid(1);
+        bool bIsValidIndex = false;
+        strIndex.toInt(&bIsValidIndex);
+        if (bIsValidIndex) {
+            bIs = true;
+        }
+    }
+    return bIs;
+}
+
+//------------------------------------------------------------------------------
+int CGraphObj::extractIndexFromPolygonPointLabelName(const QString& i_strLabelName)
+//------------------------------------------------------------------------------
+{
+    int idxPt = -1;
+    if (i_strLabelName.startsWith(c_strGeometryLabelNameP)) {
+        QString strIndex = i_strLabelName.mid(1);
+        bool bIsValidIndex = false;
+        int idxPtTmp = strIndex.toInt(&bIsValidIndex);
+        // The label name for the polygon point at index 0 is P1.
+        if (bIsValidIndex && idxPtTmp > 0) {
+            idxPt = idxPtTmp - 1;
+        }
+    }
+    return idxPt;
+}
+
+/*==============================================================================
 protected: // ctor
 ==============================================================================*/
 
@@ -634,83 +678,6 @@ CGraphObjGroup* CGraphObj::parentGroup() const
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CGraphObjGroup*>(m_pParentBranch);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Informs the object that the parent item of the item has been changed
-           to another parent item.
-
-    The method connects the slot onParentGroupGeometryOnSceneChanged to the
-    geometryOnSceneChanged signal of the parent item. If the item already had
-    a parent the signal/slot connection to the previous parent is removed.
-
-    The itemChange method of QGraphicsItem with ItemParentHasChanged cannot be used
-    for this as item has already been removed for the previous parent if the itemChange
-    method is called.
-
-    Items need to inform e.g. their labels about the geometry changes of the items
-    the labels are linked to. For this the item emits the geometryOnSceneChanged
-    signal if the geometry of the item changes.
-
-    If the item belongs to a group and the group changes its geometry on the scene,
-    also the child items geometry on the scene is changed and all labels linked to
-    the items must update their geometry information and their position on the scene.
-    The default implementation of the onParentGroupGeometryOnSceneChanged slot
-    emits the geometryOnSceneChanged signal to update the labels.
-
-    When resizing a group all children of the group should be resized and positioned so
-    that they keep their relative positions and sizes within the group. If the item
-    is added to a new group the current rectangle of the parent group is stored as
-    the original group rectangle.
-    If the item is removed from a group (but not added to a new group) the original
-    parent group rectangle is invalidated.
-    This allows the default implementation of onParentGroupGeometryOnSceneChanged
-    to calculate the current scale factor of the parent group.
-
-    @param [in] i_pGraphObjGroupPrev
-        Pointer to group the item will be removed from or nullptr, if the item don't
-        belong to a group yet.
-    @param [in] i_pGraphObjGroupNew
-        Pointer to group the item will be added to or nullptr, if the item will just
-        be removed from the current group but not added to another group.
-*/
-void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
-            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onParentGroupChanged",
-        /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
-    }
-
-    {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
-
-        if (i_pGraphObjGroupPrev != nullptr) {
-            QObject::disconnect(
-                i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
-        }
-        if (i_pGraphObjGroupNew != nullptr) {
-            QObject::connect(
-                i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
-                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
-        }
-        m_pGraphObjGroupParent = i_pGraphObjGroupNew;
-        initParentTransform();
-        updateTransformedCoorsOnParentChanged(i_pGraphObjGroupPrev, i_pGraphObjGroupNew);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
-    }
 }
 
 /*==============================================================================
@@ -2753,7 +2720,7 @@ QRectF CGraphObj::getBoundingRect() const
 #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 
-    QRectF rctBounding;
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -3142,8 +3109,7 @@ CPhysVal CGraphObj::getEffectiveRotationAngleOnScene(const ZS::PhysVal::CUnit& i
 //------------------------------------------------------------------------------
 {
     CPhysVal physValRotationAngle = m_physValRotationAngle;
-    if (parentGroup() != nullptr)
-    {
+    if (parentGroup() != nullptr) {
         physValRotationAngle += parentGroup()->getEffectiveRotationAngleOnScene(i_unit);
     }
     physValRotationAngle.convertValue(i_unit);
@@ -4634,144 +4600,103 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the polar coordinates in length and angle of the given point
-           to the selection point of the graphical object.
-
-    How the angle of anchor lines to selection points is interpreted depends on
-    the graphical object type and the selection point.
-
-    This method must be reimplemented by derived classes to ensure that labels
-    linked to the selection point are always at the same relative position,
-    no matter how the object will be rotated.
+/*! @brief Returns the polar coordinates (length and angle) of the given point
+           relative to the given selection point at the item's bounding rectangle.
 
     The default implementation calculates the polar coordinates for selection points
-    on the bounding rectangle of the item if the center point and all selection points
-    on the bounding rectangle are allowed.
+    on the bounding rectangle of the item assuming that all selection points at
+    the bounding rectangle are allowed.
 
-    @note This method is used to keep the relative position of labels to the
+    @note Polar coordinates are used to keep the relative position of labels to the
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
-
-    Example:
-
-                       + Pt
-                      / Calculated Angle: 300°
-                     /           TC
-                 TL +------------x------------+ TR
-                    |                         |
-                    |         Center          |
-                 LC x            x            x RC
-                    |                         |
-                    |                         |
-                 BL +------------x------------+ BR
-                                 BC
-
-          For example if the item would be rotated by 90°:
-                                RC
-                      TR +-------x--------+ BR
-                         |                |
-                         |                |
-                         |                |
-                         |    Center      |
-                      TC x       x        x BC
-                         |                |
-                         |                |
-                 Pt + 300°                |
-                     \   |                |
-                      TL +-------x--------+ BL
-                                 LC
 
     @param [in] i_pt
         Point in scene coordinates to which the polar coordinates from the
         given selection point have to be returned.
+    @param [in] i_selPtType
+        Type of the selection point. Only BoundingRectangle is allowed here.
     @param [in] i_selPt
         Selection point on the bounding rectangle.
+
+    Example:
+
+                       * Pt
+                      / Calculated Angle: 300°
+                     /
+                 TL +---------------------+ TR
+                    |                     |
+                    |       Center        |
+                    |          x          |
+                    |                     |
+                    |                     |
+                 BL +---------------------+ BR
+
+          If the item would be rotated by 270°:
+
+                    TR +----------------+ BR
+                       |                |
+                       |                |
+                       |    Center      |
+                       |       x        |
+                       |                |
+               Pt * 300°                |
+                   \   |                |
+                    TL +----------------+ BL
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-    //CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
-    //CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
-    //CPhysValPoint physValPointP2 = physValRctBounding.center();
-    //CPhysValPoint physValPointP2(*m_pDrawingScene);
-    //if (i_selPt == ESelectionPoint::TopLeft) {
-    //    physValPointP2 = physValRctBounding.topRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::TopRight) {
-    //    physValPointP2 = physValRctBounding.topLeft();
-    //}
-    //else if (i_selPt == ESelectionPoint::BottomRight) {
-    //    physValPointP2 = physValRctBounding.bottomLeft();
-    //}
-    //else if (i_selPt == ESelectionPoint::BottomLeft) {
-    //    physValPointP2 = physValRctBounding.bottomRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::TopCenter) {
-    //    physValPointP2 = physValRctBounding.topRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::RightCenter) {
-    //    physValPointP2 = physValRctBounding.bottomRight();
-    //}
-    //else if (i_selPt == ESelectionPoint::BottomCenter) {
-    //    physValPointP2 = physValRctBounding.bottomLeft();
-    //}
-    //else if (i_selPt == ESelectionPoint::LeftCenter) {
-    //    physValPointP2 = physValRctBounding.topLeft();
-    //}
-    //else /*if (i_selPt == ESelectionPoint::Center)*/ {
-    //    physValPointP2 = physValRctBounding.rightCenter();
-    //}
-    if (parentGroup() != nullptr) {
-        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
-        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
-    }
-    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
-    return ZS::Draw::getPolarCoors(lineSceneCoors, i_pt);
-}
+//SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_selPt);
+//    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the polar coordinates in length and angle of the given point
-           to the selection point of the graphical object.
+           relative to the given shape point or line center point of a poylgon
+           or polyline.
 
     How the angle of anchor lines to selection points is interpreted depends on
     the graphical object type and the selection point.
 
-    Example: Horizontal Line
+    @param [in] i_pt
+        Point in scene coordinates to which the polar coordinates from the
+        given selection point have to be returned.
+    @param [in] i_selPtType
+        Type of the selection point. Only PolygonPoint or LineCenterPoint is allowed here.
+    @param [in] i_idxPtOrLine
+        Depending on the selection point type either the index of the
+        shape point (starting with index 0) or the index of the line segment
+        (also starting with index 0).
+        A polyline with 5 points has 4 line segments (L0 to L3).
+        A polygon with 5 points has 5 line segments (L0 to L4).
 
-           + Pt
-          /
-         / Calculated Angle: 60°
-        +------------x------------+
-        P1         Center         P2
+         P0 +----L0----+ P1
+            |          L1
+            |          + P2
+            L4        /
+            |       L2
+            |       /
+         P4 +--L3--+ P3
 
     @note This method is used to keep the relative position of labels to the
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
-
-          For example if the line would be rotated by 180°:
-
-            P2         Center         P1
-            +------------x------------+
-                          Angle: 60° /
-                                    /
-                                Pt +
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
-    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-#pragma message(__TODO__"pure virtual")
-    SPolarCoors polarCoors;
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    return polarCoors;
-}
+//SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
+//    const QPointF& i_pt, ESelectionPointType i_selPtType, int i_idxPtOrLine) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    QPointF ptSelPt = getPositionOfSelectionPointInSceneCoors(i_selPtType, i_idxPtOrLine);
+//    return ZS::Draw::getPolarCoors(i_pt, ptSelPt);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -4806,53 +4731,53 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(
        AnchorLine   +-----+
                    P1     P2
 */
-QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
-    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
-    CPhysValPoint physValPointP2(*m_pDrawingScene);
-    if (i_selPt == ESelectionPoint::TopLeft) {
-        physValPointP2 = physValRctBounding.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::TopRight) {
-        physValPointP2 = physValRctBounding.topLeft();
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        physValPointP2 = physValRctBounding.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::BottomLeft) {
-        physValPointP2 = physValRctBounding.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::TopCenter) {
-        physValPointP2 = physValRctBounding.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::RightCenter) {
-        physValPointP2 = physValRctBounding.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::BottomCenter) {
-        physValPointP2 = physValRctBounding.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::LeftCenter) {
-        physValPointP2 = physValRctBounding.topLeft();
-    }
-    else /*if (i_selPt == ESelectionPoint::Center)*/ {
-        physValPointP2 = physValRctBounding.rightCenter();
-    }
-    if (parentGroup() != nullptr) {
-        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
-        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
-    }
-    physValPointP1 = m_pDrawingScene->convert(physValPointP1, Units.Length.px);
-    physValPointP2 = m_pDrawingScene->convert(physValPointP2, Units.Length.px);
-    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
-    return ZS::Draw::getLineFromPolar(
-        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSceneCoors);
-}
+//QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+//    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, ESelectionPoint i_selPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::BoundingRectangle) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//    CPhysValRect physValRctBounding = getPhysValBoundingRect(Units.Length.px);
+//    CPhysValPoint physValPointP1 = physValRctBounding.selectionPoint(i_selPt);
+//    CPhysValPoint physValPointP2(*m_pDrawingScene);
+//    if (i_selPt == ESelectionPoint::TopLeft) {
+//        physValPointP2 = physValRctBounding.topRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::TopRight) {
+//        physValPointP2 = physValRctBounding.topLeft();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomRight) {
+//        physValPointP2 = physValRctBounding.bottomLeft();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomLeft) {
+//        physValPointP2 = physValRctBounding.bottomRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::TopCenter) {
+//        physValPointP2 = physValRctBounding.topRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::RightCenter) {
+//        physValPointP2 = physValRctBounding.bottomRight();
+//    }
+//    else if (i_selPt == ESelectionPoint::BottomCenter) {
+//        physValPointP2 = physValRctBounding.bottomLeft();
+//    }
+//    else if (i_selPt == ESelectionPoint::LeftCenter) {
+//        physValPointP2 = physValRctBounding.topLeft();
+//    }
+//    else /*if (i_selPt == ESelectionPoint::Center)*/ {
+//        physValPointP2 = physValRctBounding.rightCenter();
+//    }
+//    if (parentGroup() != nullptr) {
+//        physValPointP1 = parentGroup()->mapToScene(physValPointP1);
+//        physValPointP2 = parentGroup()->mapToScene(physValPointP2);
+//    }
+//    physValPointP1 = m_pDrawingScene->convert(physValPointP1, Units.Length.px);
+//    physValPointP2 = m_pDrawingScene->convert(physValPointP2, Units.Length.px);
+//    QLineF lineSceneCoors(physValPointP1.toQPointF(), physValPointP2.toQPointF());
+//    return ZS::Draw::getLineFromPolar(
+//        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSceneCoors);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a line with the given length and angle with the start point (P1)
@@ -4860,18 +4785,18 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
 
     See above for more details.
 */
-QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
-    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
-//------------------------------------------------------------------------------
-{
-    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
-    }
-#pragma message(__TODO__"pure virtual")
-    QLineF anchorLine;
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    return anchorLine;
-}
+//QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+//    const SPolarCoors& i_polarCoors, ESelectionPointType i_selPtType, int i_idxPt) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_selPtType != ESelectionPointType::PolygonPoint && i_selPtType != ESelectionPointType::LineCenterPoint) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, CEnumSelectionPointType(i_selPtType).toString());
+//    }
+//#pragma message(__TODO__"pure virtual")
+//    QLineF anchorLine;
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    return anchorLine;
+//}
 
 /*==============================================================================
 protected: // overridables
@@ -5949,7 +5874,7 @@ void CGraphObj::setTextLabelAnchorPoint(
     bool bSelPtAllowed = false;
     QList<SGraphObjSelectionPoint> arSelPts = getPossibleTextLabelAnchorPoints(i_strName);
     for (const SGraphObjSelectionPoint& selPt : arSelPts) {
-        if (selPt.m_selPtType == i_selPtType && selPt.m_idxPt == i_idxPt) {
+        if (selPt.m_selPtType == i_selPtType && selPt.m_idxPtOrLine == i_idxPt) {
             bSelPtAllowed = true;
             break;
         }
@@ -5960,9 +5885,9 @@ void CGraphObj::setTextLabelAnchorPoint(
     }
 
     SLabelAnchorDscr& labelDscr = m_hshTextLabelDscrs[i_strName];
-    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPt != i_idxPt) {
+    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPtOrLine != i_idxPt) {
         labelDscr.m_selPt.m_selPtType = i_selPtType;
-        labelDscr.m_selPt.m_idxPt = i_idxPt;
+        labelDscr.m_selPt.m_idxPtOrLine = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpTextLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
@@ -6426,9 +6351,9 @@ void CGraphObj::setGeometryLabelAnchorPoint(
     }
 
     SLabelAnchorDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
-    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPt != i_idxPt) {
+    if (labelDscr.m_selPt.m_selPtType != i_selPtType || labelDscr.m_selPt.m_idxPtOrLine != i_idxPt) {
         labelDscr.m_selPt.m_selPtType = i_selPtType;
-        labelDscr.m_selPt.m_idxPt = i_idxPt;
+        labelDscr.m_selPt.m_idxPtOrLine = i_idxPt;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
@@ -8054,22 +7979,6 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     m_bForceConversionToSceneCoors = false;
 }
 
-////------------------------------------------------------------------------------
-//void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_pGraphObjParent->keyInTree();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ path(),
-//        /* strMethod    */ "CGraphObj::onGraphObjParentScenePosChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//}
-
 //------------------------------------------------------------------------------
 /*! @brief The slot method is called if the parent item of the item changes
            its geometry on the scene and emits the geometryOnSceneChanged signal.
@@ -8461,8 +8370,87 @@ int CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
 }
 
 /*==============================================================================
-protected: // overridables
+public: // overridables
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Informs the object that the parent item of the item has been changed
+           to another parent item.
+
+    The method connects the slot onParentGroupGeometryOnSceneChanged to the
+    geometryOnSceneChanged signal of the parent item. If the item already had
+    a parent the signal/slot connection to the previous parent is removed.
+
+    The itemChange method of QGraphicsItem with ItemParentHasChanged cannot be used
+    for this as item has already been removed for the previous parent if the itemChange
+    method is called.
+
+    Items need to inform e.g. their labels about the geometry changes of the items
+    the labels are linked to. For this the item emits the geometryOnSceneChanged
+    signal if the geometry of the item changes.
+
+    If the item belongs to a group and the group changes its geometry on the scene,
+    also the child items geometry on the scene is changed and all labels linked to
+    the items must update their geometry information and their position on the scene.
+    The default implementation of the onParentGroupGeometryOnSceneChanged slot
+    emits the geometryOnSceneChanged signal to update the labels.
+
+    When resizing a group all children of the group should be resized and positioned so
+    that they keep their relative positions and sizes within the group. If the item
+    is added to a new group the current rectangle of the parent group is stored as
+    the original group rectangle.
+    If the item is removed from a group (but not added to a new group) the original
+    parent group rectangle is invalidated.
+    This allows the default implementation of onParentGroupGeometryOnSceneChanged
+    to calculate the current scale factor of the parent group.
+
+    @param [in] i_pGraphObjGroupPrev
+        Pointer to group the item will be removed from or nullptr, if the item don't
+        belong to a group yet.
+    @param [in] i_pGraphObjGroupNew
+        Pointer to group the item will be added to or nullptr, if the item will just
+        be removed from the current group but not added to another group.
+*/
+void CGraphObj::changeParent(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
+            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::changeParent",
+        /* strAddInfo   */ strMthInArgs);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+    }
+
+    {
+        CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
+
+        if (i_pGraphObjGroupPrev != nullptr) {
+            QObject::disconnect(
+                i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
+        }
+        if (i_pGraphObjGroupNew != nullptr) {
+            QObject::connect(
+                i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
+                this, &CGraphObj::onParentGroupGeometryOnSceneChanged);
+        }
+        m_pGraphObjGroupParent = i_pGraphObjGroupNew;
+
+        initParentTransform();
+        updateTransformedCoorsOnParentChanged(i_pGraphObjGroupPrev, i_pGraphObjGroupNew);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Initializes (resets) the items scale transformation parameters within its parent.
@@ -8472,7 +8460,7 @@ protected: // overridables
     is stored as the original position (relative to the origin (center point) of the
     parents bounding). The group scale parameters are reset to 1.0.
 
-    Called by the onParentGroupChanged method if the parent is going to been changed.
+    Called by the changeParent method if the parent is going to been changed.
 
     This method is also called by the parent group if the bounding rectangle
     of the parent group is changed on adding childs or resizing the parent
@@ -9985,30 +9973,58 @@ void CGraphObj::traceThisPositionInfo(
     }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
-        QPointF ptPos = pGraphicsItemThis->pos();
-        QPointF ptScenePos = pGraphicsItemThis->scenePos();
-        QRectF rectBounding = getBoundingRect();
-        QPointF ptCenterPos = rectBounding.center();
+        QRectF rctBounding = getBoundingRectInternal();
+        QPointF ptCenterPos = rctBounding.center();
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += "GraphicsItem {";
+        strRuntimeInfo += "GraphObj {";
         i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += ". BoundingRect Local {" + qRect2Str(rctBounding) + "}" +
+                ", Center {" + qPoint2Str(ptCenterPos) + "}" +
+                ", Scene {" + qRect2Str(pGraphicsItemThis->mapToScene(rctBounding).boundingRect()) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
             strRuntimeInfo += ". RotationAngle: " + m_physValRotationAngle.toString();
             i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += "}";
+        i_mthTracer.trace(strRuntimeInfo);
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += "GraphicsItem {";
+        i_mthTracer.trace(strRuntimeInfo);
+            rctBounding = boundingRectInternal();
+            ptCenterPos = rctBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += ". BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+            strRuntimeInfo += ". Pos {" + qPoint2Str(pGraphicsItemThis->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemThis->scenePos()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += ". Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+            strRuntimeInfo += ". BoundingRect Local {" + qRect2Str(rctBounding) + "}" +
+                ", Center {" + qPoint2Str(ptCenterPos) + "}" +
+                ", Scene {" + qRect2Str(pGraphicsItemThis->mapToScene(rctBounding).boundingRect()) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += ". Transform {Scale: " + QString::number(pGraphicsItemThis->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemThis->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemThis->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemThis->transform()).join(", ") + "}}";
             i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -10027,43 +10043,74 @@ void CGraphObj::traceParentGroupPositionInfo(
         return;
     }
     QGraphicsItem* pGraphicsItemGroupParent = dynamic_cast<QGraphicsItemGroup*>(m_pGraphObjGroupParent);
-    //CGraphObjGroup* pGraphObjGroupParent = parentGroup();
     QString strRuntimeInfo;
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-    else strRuntimeInfo = "   ";
-    strRuntimeInfo += "ParentGroup: " + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->path());
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "ParentGroup " + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->path()) + " {";
     if (pGraphicsItemGroupParent == nullptr && m_pGraphObjGroupParent != nullptr) {
         strRuntimeInfo += ", !! ParentGraphicsItem: null !!";
     }
     i_mthTracer.trace(strRuntimeInfo);
-    if (pGraphicsItemGroupParent != nullptr || m_pGraphObjGroupParent != nullptr) {
+    if ((pGraphicsItemGroupParent != nullptr) && (m_pGraphObjGroupParent != nullptr)) {
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " . ParentTransform PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
-            ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . GraphObj {";
         i_mthTracer.trace(strRuntimeInfo);
-        QPointF ptPos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->pos();
-        QPointF ptScenePos = pGraphicsItemGroupParent == nullptr ? QPointF() : pGraphicsItemGroupParent->scenePos();
-        QRectF rectBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRect();
-        QPointF ptCenterPos = rectBounding.center();
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
+                ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            QRectF rctBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRectInternal();
+            QPointF ptCenterPos = rctBounding.center();
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . PhysValRect {" + m_pGraphObjGroupParent->getRect().toString() + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . BoundingRect {" + qRect2Str(rctBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " . Parent PhysValRect {" + QString(m_pGraphObjGroupParent == nullptr ? "null" : m_pGraphObjGroupParent->getRect().toString()) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . }";
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " .. BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . GraphicsItem {";
         i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . Pos {" + qPoint2Str(pGraphicsItemGroupParent->pos()) + "}" +
+                ", ScenePos {" + qPoint2Str(pGraphicsItemGroupParent->scenePos()) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = " . ";
+            strRuntimeInfo += " . . Transform {Scale: " + QString::number(pGraphicsItemGroupParent->scale()) +
+                ", Rotation: " + QString::number(pGraphicsItemGroupParent->rotation()) + QString(Math::c_chSymbolDegree) +
+                ", Origin {" + qPoint2Str(pGraphicsItemGroupParent->transformOriginPoint()) + "}" +
+                ", Matrix {" + qTransformation2StrList(pGraphicsItemGroupParent->transform()).join(", ") + "}}";
+            i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "   ";
-        strRuntimeInfo += " .. ItemPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+        else strRuntimeInfo = " . ";
+        strRuntimeInfo += " . }";
         i_mthTracer.trace(strRuntimeInfo);
     }
+    if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+    else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+    else strRuntimeInfo = " . ";
+    strRuntimeInfo += "}";
+    i_mthTracer.trace(strRuntimeInfo);
 }
 
 //------------------------------------------------------------------------------

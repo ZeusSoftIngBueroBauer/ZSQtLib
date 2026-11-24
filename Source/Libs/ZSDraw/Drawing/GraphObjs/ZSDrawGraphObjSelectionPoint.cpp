@@ -344,11 +344,7 @@ QRectF CGraphObjSelectionPoint::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
-
-    // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
-    // into account. So we cannot call this method to get the real bounding rectangle of
-    // the line if only the real shape points should be considered.
-    QRectF rctBounding = rect();
+    QRectF rctBounding = getBoundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -400,7 +396,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_pt) const
                 const QGraphicsEllipseItem* pGraphicsItemThis = dynamic_cast<const QGraphicsEllipseItem*>(this);
                 // Check whether a connection point has been hit.
                 QPointF ptScenePos = pGraphicsItemThis->mapToScene(i_pt);
-                CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->getConnectionPoint(ptScenePos);
+                CGraphObjConnectionPoint* pGraphObjCnctPtHit = m_pDrawingScene->connectionPointAt(ptScenePos);
                 if (pGraphObjCnctPtHit != nullptr) {
                     QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
                     cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
@@ -454,35 +450,7 @@ QRectF CGraphObjSelectionPoint::boundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsEllipseItem::boundingRect();
-    int iPenWidth = m_drawSettings.penWidth();
-    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
-        iPenWidth += 3; // see paint method
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.top() - static_cast<double>(iPenWidth)/2.0,
-        rctBounding.width() + static_cast<double>(iPenWidth),
-        rctBounding.height() + static_cast<double>(iPenWidth));
-
-    // When including the anchor lines in the bounding rectangle, the bounding rectangle of the
-    // rotation selection points overlap the top and bottom center selection points.
-    //if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
-    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
-    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
-    //    rctBounding |= rctBoundingAnchorLine;
-    //}
-    //else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
-    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
-    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
-    //    rctBounding |= rctBoundingAnchorLine;
-    //}
-
+    QRectF rctBounding = boundingRectInternal();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         QRectF rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
@@ -1027,9 +995,58 @@ void CGraphObjSelectionPoint::updatePosition()
     }
     else {
         ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
-            m_selPt.m_selPtType, m_selPt.m_idxPt);
+            m_selPt.m_selPtType, m_selPt.m_idxPtOrLine);
     }
     setPos(ptSelScenePosParent);
 
     m_bUpdatePositionInProgress = false;
+}
+
+/*==============================================================================
+protected: // must overridables of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjSelectionPoint::boundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRectInternal();
+    int iPenWidth = m_drawSettings.penWidth();
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHighlighted || isSelected())) {
+        iPenWidth += 3; // see paint method
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.top() - static_cast<double>(iPenWidth) / 2.0,
+        rctBounding.width() + static_cast<double>(iPenWidth),
+        rctBounding.height() + static_cast<double>(iPenWidth));
+
+    // When including the anchor lines in the bounding rectangle, the bounding rectangle of the
+    // rotation selection points overlap the top and bottom center selection points.
+    //if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {
+    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::TopCenter);
+    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+    //    rctBounding |= rctBoundingAnchorLine;
+    //}
+    //else if (m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
+    //    QPointF ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
+    //        ESelectionPointType::BoundingRectangle, ESelectionPoint::BottomCenter);
+    //    QPointF ptSelPosParent = mapFromScene(ptSelScenePosParent);
+    //    QRectF rctBoundingAnchorLine(pos(), ptSelPosParent);
+    //    rctBounding |= rctBoundingAnchorLine;
+    //}
+
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObjSelectionPoint::getBoundingRectInternal() const
+//------------------------------------------------------------------------------
+{
+    // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
+    // into account. So we cannot call this method to get the real bounding rectangle of
+    // the line if only the real shape points should be considered.
+    return rect();
 }

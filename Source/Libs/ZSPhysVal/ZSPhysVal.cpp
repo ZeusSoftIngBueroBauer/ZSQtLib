@@ -844,11 +844,11 @@ CPhysVal& CPhysVal::operator += ( const CPhysVal& i_physValOp )
     {
         m_fVal += i_physValOp.getVal();
 
-        // TODO: operator for resolution missing ...
-        if( m_physValRes.isValid() )
-        {
-            m_physValRes += i_physValOp.m_physValRes;
-        }
+        // TODO: operator for resolution missing (use "Max(thisValue, otherValue)".
+        //if( m_physValRes.isValid() )
+        //{
+        //    m_physValRes += i_physValOp.m_physValRes;
+        //}
     }
     else
     {
@@ -865,19 +865,19 @@ CPhysVal& CPhysVal::operator += ( const CPhysVal& i_physValOp )
 
             m_fVal *= fFactor;
 
-            if( m_physValRes.isValid() )
-            {
-                m_physValRes = m_physValRes * fFactor;
-            }
+            //if( m_physValRes.isValid() )
+            //{
+            //    m_physValRes = m_physValRes * fFactor;
+            //}
         }
         else
         {
             m_fVal += i_physValOp.getVal(m_unit);
 
-            if( m_physValRes.isValid() )
-            {
-                m_physValRes += m_physValRes;
-            }
+            //if( m_physValRes.isValid() )
+            //{
+            //    m_physValRes += m_physValRes;
+            //}
         }
     }
     return *this;
@@ -921,10 +921,11 @@ CPhysVal& CPhysVal::operator -= ( const CPhysVal& i_physValOp )
     {
         m_fVal -= i_physValOp.getVal();
 
-        if( m_physValRes.isValid() )
-        {
-            m_physValRes += i_physValOp.m_physValRes;
-        }
+        // TODO: operator for resolution missing (use "Max(thisValue, otherValue)".
+        //if( m_physValRes.isValid() )
+        //{
+        //    m_physValRes += i_physValOp.m_physValRes;
+        //}
     }
     else
     {
@@ -941,19 +942,19 @@ CPhysVal& CPhysVal::operator -= ( const CPhysVal& i_physValOp )
 
             m_fVal /= fFactor;
 
-            if( m_physValRes.isValid() )
-            {
-                m_physValRes = m_physValRes * fFactor;
-            }
+            //if( m_physValRes.isValid() )
+            //{
+            //    m_physValRes = m_physValRes * fFactor;
+            //}
         }
         else
         {
             m_fVal -= i_physValOp.getVal(m_unit);
 
-            if( m_physValRes.isValid() )
-            {
-                m_physValRes += m_physValRes;
-            }
+            //if( m_physValRes.isValid() )
+            //{
+            //    m_physValRes += m_physValRes;
+            //}
         }
     }
     return *this;
