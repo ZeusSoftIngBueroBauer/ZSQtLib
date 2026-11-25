@@ -2882,32 +2882,20 @@ QRectF CGraphObj::getEffectiveBoundingRectOnScene(CGraphObjGroup* i_pGraphObjGro
         /* strMethod    */ "CGraphObj::getEffectiveBoundingRectOnScene",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValRect physValRectBounding = getPhysValBoundingRect();
-    CGraphObjGroup* pGraphObjGroupParent = i_pGraphObjGroupParent;
-    if (i_pGraphObjGroupParent == nullptr) {
-        pGraphObjGroupParent = parentGroup();
-    }
-    if (pGraphObjGroupParent != nullptr) {
-        physValRectBounding = pGraphObjGroupParent->mapToScene(physValRectBounding);
-        physValRectBounding = pGraphObjGroupParent->convert(physValRectBounding, Units.Length.px);
+    QRectF rctBoundingItemCoors = getBoundingRect();
+    QRectF rctBoundingSceneCoors;
+    if (i_pGraphObjGroupParent != nullptr) {
+        const QGraphicsItem* pGraphicsItemParentGroup = dynamic_cast<const QGraphicsItem*>(i_pGraphObjGroupParent);
+        rctBoundingSceneCoors = pGraphicsItemParentGroup->mapToScene(rctBoundingItemCoors).boundingRect();
     }
     else {
-        physValRectBounding = m_pDrawingScene->convert(physValRectBounding, Units.Length.px);
+        const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+        rctBoundingSceneCoors = pGraphicsItemThis->mapToScene(rctBoundingItemCoors).boundingRect();
     }
-    CPhysValPoint physValPointTL = physValRectBounding.topLeft();
-    CPhysValPoint physValPointTR = physValRectBounding.topRight();
-    CPhysValPoint physValPointBR = physValRectBounding.bottomRight();
-    CPhysValPoint physValPointBL = physValRectBounding.bottomLeft();
-    QPointF ptTL = physValPointTL.toQPointF();
-    QPointF ptTR = physValPointTR.toQPointF();
-    QPointF ptBR = physValPointBR.toQPointF();
-    QPointF ptBL = physValPointBL.toQPointF();
-    QPolygonF plg({ptTL, ptTR, ptBR, ptBL});
-    QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBoundingSceneCoors) + "}");
     }
-    return rctBounding;
+    return rctBoundingSceneCoors;
 }
 
 /*==============================================================================

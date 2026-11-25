@@ -491,7 +491,8 @@ void CPhysValLine::setP1( const QPointF& i_p1 )
 void CPhysValLine::setP1( const CPhysValPoint& i_physValP1 )
 //------------------------------------------------------------------------------
 {
-    m_line.setP1(QPointF(i_physValP1.x().getVal(m_unit), i_physValP1.y().getVal(m_unit)));
+    QPointF pt1 = i_physValP1.toQPointF(m_unit);
+    m_line.setP1(pt1);
 }
 
 //------------------------------------------------------------------------------
@@ -505,7 +506,8 @@ void CPhysValLine::setP2( const QPointF& i_p2 )
 void CPhysValLine::setP2( const CPhysValPoint& i_physValP2 )
 //------------------------------------------------------------------------------
 {
-    m_line.setP2(QPointF(i_physValP2.x().getVal(m_unit), i_physValP2.y().getVal(m_unit)));
+    QPointF pt2 = i_physValP2.toQPointF(m_unit);
+    m_line.setP2(pt2);
 }
 
 //------------------------------------------------------------------------------

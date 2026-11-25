@@ -2306,6 +2306,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     QString strLabelName;
     QString strMethod;
     QString strMthArgs;
+    QString strLabelText;
 
     CPhysValPoint physValPoint(*m_pDrawingScene);
     CPhysValLine physValLine(*m_pDrawingScene);
@@ -2317,6 +2318,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SPolarCoors polarCoorsLabel;
 
     //-------------------
     // Triangle
@@ -2513,7 +2515,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("300, 300"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->center().toString(false);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -2522,7 +2525,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->center().toString(false)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -2555,7 +2558,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("275, 300"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->at(0).toString(false);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -2566,7 +2570,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -3183,13 +3187,15 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpTextAndPositionGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    ptPosLabel = bUnitPixel ? QPointF(256.3, 292.0) : QPointF(247.3, 292.0);
+    polarCoorsLabel = SPolarCoors(32.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameP + "1"},
         {"ExpectedText", m_pPhysValPolygonTriangle->at(0).toString(false)},
-        {"ExpectedPos", QPointF(256.3, 292.0)},
-        {"ExpectedPolarCoors", SPolarCoors(32.0, 90.0).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Reset polygon to original shape and position
@@ -3284,7 +3290,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
 
     ZS::Test::CTestStepGroup* pGrpComplexGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " TextAndPositionGeometryLabels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " ComplexGeometryLabels",
         /* pTSGrpParent */ i_pTestStepGroupParent);
 
     // Show Geometry Labels
@@ -3299,7 +3305,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -3310,7 +3317,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -3324,6 +3331,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -3331,7 +3339,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameHeight;
@@ -3343,7 +3351,8 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
-    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance("50"), fontMetrics.height());
+    strLabelText = m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
@@ -3354,7 +3363,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", strLabelName},
-        {"ExpectedText", m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val)},
+        {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
         {"ExpectedPolarCoors", SPolarCoors(0.0, 0.0).toString()}
         });
@@ -3368,6 +3377,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -3375,7 +3385,7 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         {"setPos", ptPosLabel},
         {"ExpectedText", m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val)},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
@@ -3942,29 +3952,37 @@ void CTest::createTestGroupDrawStandardShapesPolygonTriangleModifications(
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpComplexGeometryLabels,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValPolygonTriangle->width().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(235.0, 292.0) : QPointF(230.5, 292.0);
+    polarCoorsLabel = SPolarCoors(16.0, 90.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameWidth},
-        {"ExpectedPos", QPointF(235.0, 292.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->width().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 90.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    strLabelText = m_pPhysValPolygonTriangle->height().toString(EUnitFind::None, PhysValSubStr::Val);
+    ptPosLabel = bUnitPixel ? QPointF(308.5, 404.0) : QPointF(304.0, 413.0);
+    polarCoorsLabel = bUnitPixel ? SPolarCoors(12.0, 0.0) : SPolarCoors(21.0, 0.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameHeight},
-        {"ExpectedPos", QPointF(308.5, 404.0)},
-        {"ExpectedText", QString::number(m_pPhysValPolygonTriangle->height().getVal(), 'f', 0)},
-        {"ExpectedPolarCoors", SPolarCoors(12.0, 0.0).toString()}
+        {"ExpectedText", strLabelText},
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
+    ptPosLabel = QPointF(319.0, 425.0);
+    polarCoorsLabel = SPolarCoors(36.6742, 334.134);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
         {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
-        {"ExpectedPos", QPointF(319.0, 425.0)},
         {"ExpectedText", m_pPhysValPolygonTriangle->angle().toString()},
-        {"ExpectedPolarCoors", SPolarCoors(36.6742, 334.134).toString()}
+        {"ExpectedPos", ptPosLabel},
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 }
 
