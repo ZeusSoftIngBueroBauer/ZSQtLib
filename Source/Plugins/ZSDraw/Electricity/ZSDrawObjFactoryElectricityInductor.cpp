@@ -71,17 +71,17 @@ CObjFactoryInductor::CObjFactoryInductor( const QPixmap& i_pxmToolIcon ) :
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ "Inductor",
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactoryInductor::~CObjFactoryInductor()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // interface methods

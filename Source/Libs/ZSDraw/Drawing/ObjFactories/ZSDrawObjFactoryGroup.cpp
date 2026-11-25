@@ -112,6 +112,12 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene);
+    to be used by all object factories
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -144,6 +150,12 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene);
+    to be used by all object factories
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -239,7 +251,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
             QString strFactoryGroupName = pGraphObjChild->factoryGroupName();
             QString strGraphObjType = pGraphObjChild->typeAsString();
             QString strObjName = pGraphObjChild->name();
-            CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+            CObjFactory* pObjFactoryChild = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
             if (pObjFactoryChild != nullptr) {
                 i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName, strFactoryGroupName);
@@ -259,7 +271,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
                 QString strFactoryGroupName = pGraphObjChild->factoryGroupName();
                 QString strGraphObjType = pGraphObjChild->typeAsString();
                 QString strObjName = pGraphObjChild->name();
-                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+                CObjFactory* pObjFactoryChild = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
                 if (pObjFactoryChild != nullptr) {
                     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
                     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName, strFactoryGroupName);
@@ -488,7 +500,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                 }
                             }
                             if (!i_xmlStreamReader.hasError()) {
-                                CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+                                CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
                                 if (pObjFactory == nullptr) {
                                     i_xmlStreamReader.raiseError(
                                         "ObjectFactory \"" + strFactoryGroupName + "::" + strGraphObjType + "\" for element \"" + strElemName + "\" not found");

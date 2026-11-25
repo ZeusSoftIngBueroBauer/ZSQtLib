@@ -87,11 +87,12 @@ public: // class members
     /*! Group name for selection points. */
     static const QString c_strGroupNameSelectionPoints; // = "Selection Points"
 public: // class methods
-    static int GetObjFactoriesCount();
-    static CObjFactory* GetObjFactory( int i_idx );
-    static CObjFactory* FindObjFactory( const QString& i_strGraphObjPath );
-    static CObjFactory* FindObjFactory( const QString& i_strGroupName, int i_iGraphObjType );
-    static CObjFactory* FindObjFactory( const QString& i_strGroupName, const QString& i_strGraphObjType );
+    //static int getObjFactoriesCount();
+    //static CObjFactory* getObjFactory(int i_idx);
+    static bool isFactoryGroupRegistered(const QString& i_strGroupName);
+    static CObjFactory* findObjFactory(const QString& i_strGraphObjPath);
+    static CObjFactory* findObjFactory(const QString& i_strGroupName, int i_iGraphObjType);
+    static CObjFactory* findObjFactory(const QString& i_strGroupName, const QString& i_strGraphObjType);
 public: // class methods
     static ZS::System::CIdxTree* IdxTree() { return s_pIdxTree; }
 protected: // ctor

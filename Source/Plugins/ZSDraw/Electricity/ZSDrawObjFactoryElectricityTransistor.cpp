@@ -71,17 +71,17 @@ CObjFactoryTransistor::CObjFactoryTransistor( const QPixmap& i_pxmToolIcon ) :
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ "Transistor",
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactoryTransistor::~CObjFactoryTransistor()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // interface methods

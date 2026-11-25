@@ -28,7 +28,7 @@ may result in using the software modules.
 #include "Electricity/ZSDrawWdgtFormatGraphObjsElectricityResistor.h"
 
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
@@ -113,7 +113,7 @@ CGraphObjResistor::CGraphObjResistor(
     /*
                           Body
                        +--------+
-             CnctLine1 |        | CnctLine2
+                 Line1 |        | Line2
     CnctPt1 X----------X        X----------X CnctPt2
                        |        |
                        +--------+
@@ -131,8 +131,6 @@ CGraphObjResistor::CGraphObjResistor(
     double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
     CPhysValRect physValRectBody(*m_pDrawingScene, rctBody.topLeft(), rctBody.size());
-    CPhysValPoint physValPointCnctPt1(*m_pDrawingScene, QPointF(rctBounding.left(), rctBounding.center().y()));
-    CPhysValPoint physValPointCnctPt2(*m_pDrawingScene, QPointF(rctBounding.right(), rctBounding.center().y()));
 
     // The group will be added to the drawing scene at position (0, 0) right after creating the group.
     // By adding child objects to the group the group will map the shape point coordinates of the child
@@ -140,88 +138,49 @@ CGraphObjResistor::CGraphObjResistor(
     // the group. In order for the group to map the coordinates of the new child object, the group must
     // already have gotten its final size.
     setRect(physValRect);
+
+    // Also a unique name must be assigned to the group.
+    QString strEntryType = entryType2Str(EEnumEntryAliasStrSymbol);
+    QString strObjKey = i_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, m_strName);
+    CGraphObj* pGraphObjWithSameKey = i_pDrawingScene->getGraphObj(strObjKey);
+    if ((pGraphObjWithSameKey != nullptr) && (pGraphObjWithSameKey != this)) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(this);
+        setName(strObjName);
+    }
     m_pDrawingScene->addGraphObj(this);
 
     QList<CGraphObj*> arpGraphObjs;
 
     CObjFactory* pObjFactoryRect =
-        CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeRect);
+        CObjFactory::findObjFactory(CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeRect);
+    CObjFactory* pObjFactoryLine =
+        CObjFactory::findObjFactory(CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeLine);
 
     m_drawSettings.setLineStyle(ELineStyle::NoLine);
 
     m_pGraphObjRectBody = dynamic_cast<CGraphObjRect*>(
         pObjFactoryRect->createGraphObj(m_pDrawingScene, physValRectBody.topLeft()));
-    m_pDrawingScene->addGraphObj(m_pGraphObjRectBody);
-    m_pGraphObjRectBody->rename("Body");
+    m_pGraphObjRectBody->setName("Body");
+    m_pDrawingScene->addGraphObj(m_pGraphObjRectBody, this);
     m_pGraphObjRectBody->setRect(physValRectBody);
-    QString strCnctPtNameRectBodyLeftCenter =
-        m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
-    m_pGraphObjCnctPtRectBodyLeftCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyLeftCenter);
-    m_pGraphObjCnctPtRectBodyLeftCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
-    QString strCnctPtNameRectBodyRightCenter =
-        m_pGraphObjRectBody->addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
-    m_pGraphObjCnctPtRectBodyRightCenter = m_pGraphObjRectBody->getConnectionPoint(strCnctPtNameRectBodyRightCenter);
-    m_pGraphObjCnctPtRectBodyRightCenter->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
-    arpGraphObjs.append(m_pGraphObjRectBody);
 
-    //m_pGraphObjCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(
-    //    pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt1));
-    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt1);
-    //m_pGraphObjCnctPt1->rename("CnctPt1");
-    //m_pGraphObjCnctPt1->setPosition(physValPointCnctPt1);
-    //arpGraphObjs.append(m_pGraphObjCnctPt1);
+    m_pGraphObjLine1 = dynamic_cast<CGraphObjLine*>(pObjFactoryLine->createGraphObj(m_pDrawingScene));
+    m_pGraphObjLine1->setName("WireP1");
+    m_pDrawingScene->addGraphObj(m_pGraphObjLine1, this);
+    m_pGraphObjLine1->setLine(CPhysValLine(physValRect.leftCenter(), physValRectBody.leftCenter()));
+    m_pGraphObjLine2 = dynamic_cast<CGraphObjLine*>(pObjFactoryLine->createGraphObj(m_pDrawingScene));
+    m_pGraphObjLine2->setName("WireP2");
+    m_pDrawingScene->addGraphObj(m_pGraphObjLine2, this);
+    m_pGraphObjLine2->setLine(CPhysValLine(physValRect.rightCenter(), physValRectBody.rightCenter()));
 
-    //m_pGraphObjCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(
-    //    pObjFactoryCnctPt->createGraphObj(m_pDrawingScene, physValPointCnctPt2));
-    //m_pDrawingScene->addGraphObj(m_pGraphObjCnctPt2);
-    //m_pGraphObjCnctPt2->rename("CnctPt2");
-    //m_pGraphObjCnctPt2->setPosition(physValPointCnctPt2);
-    //arpGraphObjs.append(m_pGraphObjCnctPt2);
-
-    m_pGraphObjCnctLine1 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine1");
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine1);
-    m_pGraphObjCnctLine1->setConnectionPoint(ELinePoint::Start, m_pGraphObjCnctPt1);
-    m_pGraphObjCnctLine1->setConnectionPoint(ELinePoint::End, m_pGraphObjCnctPtRectBodyLeftCenter);
-
-    m_pGraphObjCnctLine2 = new CGraphObjConnectionLine(m_pDrawingScene, "CnctLine2");
-    m_pDrawingScene->addGraphObj(m_pGraphObjCnctLine2);
-    m_pGraphObjCnctLine2->setConnectionPoint(ELinePoint::Start, m_pGraphObjCnctPtRectBodyRightCenter);
-    m_pGraphObjCnctLine2->setConnectionPoint(ELinePoint::End, m_pGraphObjCnctPt2);
-
-    // Create resistor as object group
-    //--------------------------------
-
-    addToGroup(arpGraphObjs, true);
-
-    // The alignments will be adjusted in the order they are added. The order
-    // takes effect on the result. Usually the size should be adjusted before
-    // the positions to get relative adjustments working as expected.
-
-    //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, 1.0);
-    //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
-    //m_pLinCnct->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pLinCnct->addAlignment(alignment);
-
-    //alignment = SGraphObjAlignment(EAlignmentRefWidth, EAlignmentRefWidth, false, rctBody.width()/rctBounding.width());
-    //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRefHeight, EAlignmentRefHeight, false, rctBody.height()/rctBounding.height());
-    //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::HCenter, EAlignmentRef::HCenter, true, 0.0);
-    //m_pRctBody->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pRctBody->addAlignment(alignment);
-
-    //alignment = SGraphObjAlignment(EAlignmentRef::Left, EAlignmentRef::Left, true, 0.0);
-    //m_pCnctPt1->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pCnctPt1->addAlignment(alignment);
-
-    //alignment = SGraphObjAlignment(EAlignmentRef::Right, EAlignmentRef::Right, true, 0.0);
-    //m_pCnctPt2->addAlignment(alignment);
-    //alignment = SGraphObjAlignment(EAlignmentRef::VCenter, EAlignmentRef::VCenter, true, 0.0);
-    //m_pCnctPt2->addAlignment(alignment);
+    QString strGraphObjNameCnctPt1 = addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::LeftCenter);
+    m_pGraphObjCnctPt1 = getConnectionPoint(strGraphObjNameCnctPt1);
+    m_pGraphObjCnctPt1->setName("P1");
+    m_pGraphObjCnctPt1->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
+    QString strGraphObjNameCnctPt2 = addConnectionPoint(ESelectionPointType::BoundingRectangle, ESelectionPoint::RightCenter);
+    m_pGraphObjCnctPt2 = getConnectionPoint(strGraphObjNameCnctPt2);
+    m_pGraphObjCnctPt2->setName("P2");
+    m_pGraphObjCnctPt2->setFixedSize(CPhysValSize(*m_pDrawingScene, QSizeF(1.0, 1.0), Units.Length.px));
 }
 
 //------------------------------------------------------------------------------

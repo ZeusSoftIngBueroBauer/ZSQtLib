@@ -71,17 +71,17 @@ CObjFactoryDiode::CObjFactoryDiode( const QPixmap& i_pxmToolIcon ) :
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ "Diode",
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactoryDiode::~CObjFactoryDiode()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // interface methods

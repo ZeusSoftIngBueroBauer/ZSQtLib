@@ -61,8 +61,10 @@ list(APPEND _SourcesMain
 
 list(APPEND _SourcesTest
     ${_SourcesPath}/ZSDraw/Test/Test.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupAddObjects.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupDrawObjects.cpp
+    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupAddStandardShapes.cpp
+    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupAddPluginElectricityShapes.cpp
+    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupDrawStandardShapes.cpp
+    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupDrawPluginElectricityShapes.cpp
     ${_SourcesPath}/ZSDraw/Test/TestCreateGroupImageSizeAndObjectCoordinates.cpp
 )
 

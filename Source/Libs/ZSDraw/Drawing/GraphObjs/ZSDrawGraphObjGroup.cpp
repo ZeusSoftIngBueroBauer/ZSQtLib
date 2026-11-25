@@ -151,18 +151,30 @@ protected: // ctor (used by derived classes)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief This constructor is used e.g. by plugin objects to create a group
+           of objects. E.g. a electrical resistor contains of several graphical
+           items added to a group forming the resistor.
+
+    @param [in] i_pDrawingScene
+    @param [in] i_strFactoryGroupName
+        The group name of the factory. Usually the name of the plugin (e.g. "Electricity").
+    @param [in] i_strUserType
+        The user defined type (e.g. "Resistor").
+    @param [in] i_strObjName
+        Name of the object. If an empty name is provided, a predefined name
+        is used by incrementing the number of created group instances.
+*/
 CGraphObjGroup::CGraphObjGroup(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strFactoryGroupName,
-    EGraphObjType i_type,
-    const QString& i_strType,
+    const QString& i_strUserType,
     const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
-        /* type                */ i_type,
-        /* strType             */ i_strType,
+        /* type                */ EGraphObjTypeGroup,
+        /* strType             */ i_strUserType,
         /* strObjName          */ i_strObjName),
     QGraphicsItemGroup(),
     m_divLinesMetricsX(EScaleAxis::X),

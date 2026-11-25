@@ -53,10 +53,6 @@ protected: // ctor
         const QString& i_strObjName);
 public: // dtor
     virtual ~CGraphObjElectricity();
-public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypeUserDefined; }
-public: // overridables of base class CGraphObj
-    //virtual void setObjId( const QString& i_strObjId );
 
 }; // class CGraphObjElectricity
 

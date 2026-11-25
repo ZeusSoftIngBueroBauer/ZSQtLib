@@ -496,6 +496,7 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     CDrawingSize drawingSize;
 
 #if TEST_PIXELS_DRAWINGS == 1
+
     drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
     drawingSize.setScreenResolutionInPxPerMM(1.0);
 
@@ -573,19 +574,11 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 #endif // TEST_PIXELS_DRAWINGS_OBJECT_COORDINATES
 
 #if TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS == 1
-    ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxAddObjects = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
-        /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
-    createTestGroupAddObjects(pGrpPixelsDrawing800x600pxAddObjects);
-#endif // TEST_PIXELS_DRAWINGS_ADD_OBJECTS
+    createTestGroupAddShapes(pGrpPixelsDrawing800x600px);
+#endif
 
 #if TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS == 1
-    ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600pxDrawObjects = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
-        /* pTSGrpParent */ pGrpPixelsDrawing800x600px );
-    createTestGroupDrawObjects(pGrpPixelsDrawing800x600pxDrawObjects);
+    createTestGroupDrawShapes(pGrpPixelsDrawing800x600px);
 #endif // TEST_PIXELS_DRAWINGS_DRAW_OBJECTS
 #endif // TEST_PIXELS_DRAWINGS_800x600
 #endif // TEST_PIXELS_DRAWINGS
@@ -657,23 +650,15 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600mmObjectCoordinates);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OBJECT_COORDINATES
+#endif
 
 #if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS == 1
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
-        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
-    createTestGroupAddObjects(pGrpMetricsDrawingYScaleTopDown800x600mmAddObjects);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS
+    createTestGroupAddShapes(pGrpMetricsDrawingYScaleTopDown800x600mm);
+#endif
 
 #if TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS == 1
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
-        /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown800x600mm );
-    createTestGroupDrawObjects(pGrpMetricsDrawingYScaleTopDown800x600mmDrawObjects);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS
+    createTestGroupDrawShapes(pGrpMetricsDrawingYScaleTopDown800x600mm);
+#endif
 #endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600
 #endif // TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN
 
@@ -730,23 +715,15 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Object Coordinates",
         /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
     createTestGroupObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600mmObjectCoordinates);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OBJECT_COORDINATES
+#endif
 
 #if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS == 1
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Objects",
-        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
-    createTestGroupAddObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmAddObjects);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS
+    createTestGroupAddShapes(pGrpMetricsDrawingYScaleBottomUp800x600mm);
+#endif
 
 #if TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS == 1
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
-        /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp800x600mm );
-    createTestGroupDrawObjects(pGrpMetricsDrawingYScaleBottomUp800x600mmDrawObjects);
-#endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS
+    createTestGroupDrawShapes(pGrpMetricsDrawingYScaleBottomUp800x600mm);
+#endif
 #endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600
 #endif // TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP
 #endif // TEST_METRICS_DRAWINGS == 1
@@ -1706,6 +1683,90 @@ void CTest::createTestGroupPrepareScene(
 
     initInstCounts();
     initObjectCoors();
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupAddShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupAddShapes",
+        /* strAddInfo   */ strMthInArgs);
+
+    ZS::Test::CTestStepGroup* pGrpAddShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Shapes",
+        /* pTSGrpParent */ i_pTestStepGroupParent);
+
+#if TEST_ADD_OBJECTS_STANDARDSHAPES == 1
+    ZS::Test::CTestStepGroup* pGrpAddStandardShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + CObjFactory::c_strGroupNameStandardShapes,
+        /* pTSGrpParent */ pGrpAddShapes);
+
+    createTestGroupAddStandardShapes(pGrpAddStandardShapes);
+#endif
+
+#if TEST_ADD_OBJECTS_PLUGINS == 1
+    ZS::Test::CTestStepGroup* pGrpAddPlugins = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Plugins",
+        /* pTSGrpParent */ pGrpAddShapes);
+
+#if TEST_ADD_OBJECTS_PLUGINS_ELECTRICITY == 1
+    if (CObjFactory::isFactoryGroupRegistered("Electricity")) {
+        createTestGroupAddPluginElectricityShapes(pGrpAddPlugins);
+    }
+#endif
+#endif
+}
+
+//------------------------------------------------------------------------------
+void CTest::createTestGroupDrawShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupDrawShapes",
+        /* strAddInfo   */ strMthInArgs);
+
+    ZS::Test::CTestStepGroup* pGrpDrawShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Shapes",
+        /* pTSGrpParent */ i_pTestStepGroupParent);
+
+#if TEST_DRAW_OBJECTS_STANDARDSHAPES == 1
+    ZS::Test::CTestStepGroup* pGrpDrawStandardShapes = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + CObjFactory::c_strGroupNameStandardShapes,
+        /* pTSGrpParent */ pGrpDrawShapes);
+
+    createTestGroupDrawStandardShapes(pGrpDrawStandardShapes);
+#endif
+
+#if TEST_DRAW_OBJECTS_PLUGINS == 1
+    ZS::Test::CTestStepGroup* pGrpDrawPlugins = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Plugins",
+        /* pTSGrpParent */ pGrpDrawShapes);
+
+#if TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY == 1
+    if (CObjFactory::isFactoryGroupRegistered("Electricity")) {
+        createTestGroupDrawPluginElectricityShapes(pGrpDrawPlugins);
+    }
+#endif
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -3596,6 +3657,62 @@ void CTest::doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep)
 }
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepAddGraphObj(ZS::Test::CTestStep* i_pTestStep)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepAddGraphObj",
+        /* strAddInfo   */ strMthInArgs);
+
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    if (i_pTestStep->hasConfigValue("GraphObjFactoryGroup")) {
+        strFactoryGroupName = i_pTestStep->getConfigValue("GraphObjFactoryGroup").toString();
+    }
+    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
+    if (pObjFactory != nullptr) {
+        CGraphObj* pGraphObj = nullptr;
+        if (i_pTestStep->hasConfigValue("P1")) {
+            QPointF p1 = i_pTestStep->getConfigValue("P1").toPointF();
+            CUnit unit = m_pDrawingScene->drawingSize().unit();
+            if (i_pTestStep->hasConfigValue("P1.Unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("P1.Unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint1(*m_pDrawingScene, p1, unit);
+            pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, physValPoint1);
+        }
+        else {
+            pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene);
+        }
+        m_pDrawingScene->addGraphObj(pGraphObj);
+        pGraphObj->rename(strGraphObjName);
+    }
+
+    int iResultValuesPrecision = i_pTestStep->hasConfigValue("ResultValuesPrecision") ?
+        i_pTestStep->getConfigValue("ResultValuesPrecision").toInt() : -1;
+    QStringList strlstResultValues;
+    CGraphObj* pGraphObj = m_pDrawingScene->getGraphObj(strKeyInTree);
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj, false, false, iResultValuesPrecision));
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
 //------------------------------------------------------------------------------
 {
@@ -3619,7 +3736,7 @@ void CTest::doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeLine);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
@@ -3682,7 +3799,7 @@ void CTest::doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         QRectF rect = i_pTestStep->getConfigValue("Rect").value<QRectF>();
         CUnit unit = drawingSize.unit();
@@ -3735,7 +3852,7 @@ void CTest::doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         QRectF rect = i_pTestStep->getConfigValue("Rect").value<QRectF>();
         CUnit unit = drawingSize.unit();
@@ -3788,7 +3905,7 @@ void CTest::doTestStepAddGraphObjText(ZS::Test::CTestStep* i_pTestStep)
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
     QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         QRectF rect = i_pTestStep->getConfigValue("Rect").value<QRectF>();
         CUnit unit = drawingSize.unit();
@@ -3870,7 +3987,7 @@ void CTest::doTestStepAddGraphObjPolygon(ZS::Test::CTestStep* i_pTestStep)
 
     QPolygonF polygon = i_pTestStep->getConfigValue("Points").value<QPolygonF>();
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
@@ -3921,7 +4038,7 @@ void CTest::doTestStepAddGraphObjPixmap(ZS::Test::CTestStep* i_pTestStep)
     QString strImageFilePath = i_pTestStep->getConfigValue("ImageFilePath").toString();
     QPointF pos = i_pTestStep->getConfigValue("setPos").toPointF();
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(graphObjType);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, drawSettings);
@@ -3975,7 +4092,7 @@ void CTest::doTestStepAddGraphObjConnectionPoint(ZS::Test::CTestStep* i_pTestSte
         pGraphObjParent = m_pDrawingScene->getGraphObj(strKeyInTreeParent);
     }
     if (pGraphObjParent == nullptr) {
-        CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+        CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
         if (pObjFactory != nullptr) {
             QPointF ptPos = i_pTestStep->getConfigValue("Point").value<QPointF>();
             CUnit unit = drawingSize.unit();
@@ -4056,7 +4173,7 @@ void CTest::doTestStepAddGraphObjConnectionLine(ZS::Test::CTestStep* i_pTestStep
     CGraphObjConnectionPoint* pCnctPt1 = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->getGraphObj(strKeyInTreeCnctPt1));
     CGraphObjConnectionPoint* pCnctPt2 = dynamic_cast<CGraphObjConnectionPoint*>(m_pDrawingScene->getGraphObj(strKeyInTreeCnctPt2));
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
 
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeConnectionLine);
@@ -4114,7 +4231,7 @@ void CTest::doTestStepAddGraphObjGroup(ZS::Test::CTestStep* i_pTestStep)
     }
 
     CGraphObjGroup* pGraphObjGroup = nullptr;
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeGroup);
         pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactory->createGraphObj(m_pDrawingScene, drawSettings));
@@ -4222,7 +4339,7 @@ void CTest::doTestStepDrawGraphObj(ZS::Test::CTestStep* i_pTestStep)
         }
     }
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
     if (pObjFactory != nullptr) {
         QPointF pt1 = i_pTestStep->getConfigValue("P1").toPointF();
         QPointF pt2 = i_pTestStep->getConfigValue("P2").toPointF();

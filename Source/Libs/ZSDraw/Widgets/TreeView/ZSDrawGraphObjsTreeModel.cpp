@@ -182,7 +182,7 @@ QVariant CModelIdxTreeGraphObjs::data( const QModelIndex& i_modelIdx, int i_iRol
                 {
                     CObjFactory* pObjFactory = nullptr;
 
-                    pObjFactory = CObjFactory::FindObjFactory(pGraphObj->factoryGroupName(), pGraphObj->typeAsString());
+                    pObjFactory = CObjFactory::findObjFactory(pGraphObj->factoryGroupName(), pGraphObj->typeAsString());
 
                     if( pObjFactory != nullptr )
                     {

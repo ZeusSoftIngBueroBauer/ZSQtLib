@@ -94,7 +94,7 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
 
         if( pModelTreeEntry != nullptr )
         {
-            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(pModelTreeEntry->keyInTree());
+            CObjFactory* pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
 
             switch( i_modelIdx.column() )
             {
@@ -142,7 +142,7 @@ Qt::ItemFlags CObjFactoriesModel::flags( const QModelIndex& i_modelIdx ) const
 
         if( pModelTreeEntry != nullptr )
         {
-            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(pModelTreeEntry->keyInTree());
+            CObjFactory* pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
 
             if( pObjFactory != nullptr )
             {
@@ -238,7 +238,7 @@ QMimeData* CObjFactoriesModel::mimeData( const QModelIndexList& i_modelIdxList )
 
             if( pModelTreeEntry != nullptr )
             {
-                pObjFactory = CObjFactory::FindObjFactory(pModelTreeEntry->keyInTree());
+                pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
 
                 if( pObjFactory != nullptr )
                 {

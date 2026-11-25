@@ -57,12 +57,7 @@ CGraphObjElectricity::CGraphObjElectricity(
     const QString& i_strType,
     const QString& i_strObjName) :
 //------------------------------------------------------------------------------
-    CGraphObjGroup(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ c_strFactoryGroupName,
-        /* type                */ EGraphObjTypeUserDefined,
-        /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName)
+    CGraphObjGroup(i_pDrawingScene, c_strFactoryGroupName, i_strType, i_strObjName)
 {
 }
 

@@ -100,8 +100,7 @@ protected: // ctor (used by derived classes)
     CGraphObjGroup(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strFactoryGroupName,
-        EGraphObjType i_type,
-        const QString& i_strType,
+        const QString& i_strUserType,
         const QString& i_strObjName);
     void initInstance();
 public: // dtor

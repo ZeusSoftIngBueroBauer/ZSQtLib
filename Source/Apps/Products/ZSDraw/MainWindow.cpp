@@ -949,8 +949,7 @@ void CMainWindow::createObjFactories()
         QString strAbsFilePath = dirPlugins.absoluteFilePath(strPluginFileName);
         QPluginLoader* pPluginLoader = new QPluginLoader(strAbsFilePath);
         QObject* pObjPluginLoader = pPluginLoader->instance();
-        if (pObjPluginLoader == nullptr)
-        {
+        if (pObjPluginLoader == nullptr) {
             QString strAddErrInfo = "Plugin '" + strPluginFileName + "'could not be loaded. "
                 + pPluginLoader->errorString();
             SErrResultInfo errResultInfo(
@@ -963,11 +962,10 @@ void CMainWindow::createObjFactories()
                 /* strAddErrInfo */ strAddErrInfo);
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
-        else
-        {
-            Plugins::IDrawPluginInterface* pDrawPluingInterface = qobject_cast<Plugins::IDrawPluginInterface*>(pObjPluginLoader);
-            if (pDrawPluingInterface == nullptr)
-            {
+        else {
+            Plugins::IDrawPluginInterface* pDrawPluingInterface =
+                qobject_cast<Plugins::IDrawPluginInterface*>(pObjPluginLoader);
+            if (pDrawPluingInterface == nullptr) {
                 QString strAddErrInfo = "Invalid plugin '" + strPluginFileName + "'. "
                     + "DrawPluginInterface not implemented.";
                 SErrResultInfo errResultInfo(
@@ -983,8 +981,7 @@ void CMainWindow::createObjFactories()
                 delete pPluginLoader;
                 pPluginLoader = nullptr;
             }
-            else
-            {
+            else {
                 pDrawPluingInterface->createObjFactories();
                 m_arpPluginLoaders.append(pPluginLoader);
             }

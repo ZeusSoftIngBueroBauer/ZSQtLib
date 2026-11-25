@@ -31,8 +31,8 @@ may result in using the software modules.
 
 namespace ZS::Draw
 {
+class CGraphObjLine;
 class CGraphObjRect;
-class CGraphObjConnectionLine;
 class CGraphObjConnectionPoint;
 
 namespace Plugins::Electricity
@@ -42,7 +42,7 @@ class CGraphObjResistor : public CGraphObjElectricity
 /*
                           Body
                        +--------+
-             CnctLine1 |        | CnctLine2
+                 Line1 |        | Line2
     CnctPt1 X----------X        X----------X CnctPt2
                        |        |
                        +--------+
@@ -79,12 +79,10 @@ public: // class members
     static qint64 s_iInstCount;
 protected: // instance members
     CGraphObjRect* m_pGraphObjRectBody = nullptr;
-    CGraphObjConnectionPoint* m_pGraphObjCnctPtRectBodyLeftCenter = nullptr;
-    CGraphObjConnectionPoint* m_pGraphObjCnctPtRectBodyRightCenter = nullptr;
     CGraphObjConnectionPoint* m_pGraphObjCnctPt1 = nullptr;
     CGraphObjConnectionPoint* m_pGraphObjCnctPt2 = nullptr;
-    CGraphObjConnectionLine* m_pGraphObjCnctLine1 = nullptr;
-    CGraphObjConnectionLine* m_pGraphObjCnctLine2 = nullptr;
+    CGraphObjLine* m_pGraphObjLine1 = nullptr;
+    CGraphObjLine* m_pGraphObjLine2 = nullptr;
     double m_fResistance_Ohm = 1000.0;
 
 }; // class CGraphObjResistor

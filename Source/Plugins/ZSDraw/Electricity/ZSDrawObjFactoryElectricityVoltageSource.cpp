@@ -71,17 +71,17 @@ CObjFactoryVoltageSource::CObjFactoryVoltageSource( const QPixmap& i_pxmToolIcon
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ "VoltageSource",
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactoryVoltageSource::~CObjFactoryVoltageSource()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // interface methods

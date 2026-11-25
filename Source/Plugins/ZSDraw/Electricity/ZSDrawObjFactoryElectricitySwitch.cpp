@@ -71,17 +71,17 @@ CObjFactorySwitch::CObjFactorySwitch( const QPixmap& i_pxmToolIcon ) :
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ "Switch",
         /* toolIcon        */ i_pxmToolIcon )
 {
-} // default ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactorySwitch::~CObjFactorySwitch()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // interface methods

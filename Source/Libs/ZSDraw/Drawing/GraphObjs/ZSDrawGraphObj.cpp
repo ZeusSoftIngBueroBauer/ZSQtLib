@@ -310,8 +310,8 @@ CGraphObj::~CGraphObj()
         }
     }
 
-    QStringList strlstLabelNames = m_hshpTextLabels.keys();
-    for (const QString& strLabelName : strlstLabelNames) {
+    QStringList strlstTextLabelNames = m_hshpTextLabels.keys();
+    for (const QString& strLabelName : strlstTextLabelNames) {
         CGraphObjLabel* pGraphObjLabel = m_hshpTextLabels.value(strLabelName, nullptr);
         if (pGraphObjLabel != nullptr) {
             try {
@@ -323,8 +323,8 @@ CGraphObj::~CGraphObj()
         }
     }
 
-    QStringList strlstValueLabelNames = m_hshpGeometryLabels.keys();
-    for (const QString& strLabelName : strlstValueLabelNames) {
+    QStringList strlstGeometryLabelNames = m_hshpGeometryLabels.keys();
+    for (const QString& strLabelName : strlstGeometryLabelNames) {
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(strLabelName, nullptr);
         if (pGraphObjLabel != nullptr) {
             try {
@@ -333,6 +333,19 @@ CGraphObj::~CGraphObj()
             catch (...) {
             }
             pGraphObjLabel = nullptr;
+        }
+    }
+
+    QStringList strlstCnctPtNames = m_hshpConnectionPoints.keys();
+    for (const QString& strCnctPtName : strlstCnctPtNames) {
+        CGraphObjConnectionPoint* pGraphObjCnctPt = m_hshpConnectionPoints.value(strCnctPtName, nullptr);
+        if (pGraphObjCnctPt != nullptr) {
+            try {
+                delete pGraphObjCnctPt;
+            }
+            catch (...) {
+            }
+            pGraphObjCnctPt = nullptr;
         }
     }
 
@@ -357,48 +370,7 @@ CGraphObj::~CGraphObj()
     mthTracer.onAdminObjAboutToBeReleased();
 
     releaseTraceAdminObjs();
-
-    m_bDtorInProgress = false;
-    m_bAboutToBeDestroyedEmitted = false;
-    m_bForceConversionToSceneCoors = false;
-    m_pDrawingScene = nullptr;
-    m_type = static_cast<EGraphObjType>(0);
-    m_pDrawSettingsTmp = nullptr;
-    m_bIsHighlighted = false;
-    m_editMode = static_cast<EEditMode>(0);
-    m_pGraphObjGroupParent = nullptr;
-    m_fParentGroupScaleX = 0.0;
-    m_fParentGroupScaleY = 0.0;
-    m_pMenuContext = nullptr;
-    m_pActionMenuContextFormat = nullptr;
-    m_iItemChangeBlockedCounter = 0;
-    m_iItemChangeUpdatePhysValCoorsBlockedCounter = 0;
-    m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
-    m_iIgnoreParentGeometryChange = 0;
-    m_iTraceBlockedCounter = 0;
-    m_iTracePositionInfoBlockedCounter = 0;
-    m_iTraceThisPositionInfoInfoBlockedCounter = 0;
-    m_iTraceParentGroupPositionInfoInfoBlockedCounter = 0;
-    m_iTraceGraphicsItemStatesInfoBlockedCounter = 0;
-    m_iTraceGraphObjStatesInfoBlockedCounter = 0;
-    m_iTraceDrawSettingsInfoBlockedCounter = 0;
-    // Method Tracing
-    m_pTrcAdminObjCtorsAndDtor = nullptr;
-    m_pTrcAdminObjItemChange = nullptr;
-    m_pTrcAdminObjBoundingRect = nullptr;
-    m_pTrcAdminObjCoordinateConversions = nullptr;
-    //m_pTrcAdminObjIsHit = nullptr;
-    m_pTrcAdminObjCursor = nullptr;
-    m_pTrcAdminObjPaint = nullptr;
-    //m_pTrcAdminObjSceneEvent = nullptr;
-    m_pTrcAdminObjSceneEventFilter = nullptr;
-    m_pTrcAdminObjHoverEnterLeaveEvents = nullptr;
-    m_pTrcAdminObjHoverMoveEvents = nullptr;
-    m_pTrcAdminObjMouseClickEvents = nullptr;
-    m_pTrcAdminObjMouseMoveEvents = nullptr;
-    m_pTrcAdminObjKeyEvents = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 protected: // instance methods (trace admin objects have to be created in ctor of "final" class)

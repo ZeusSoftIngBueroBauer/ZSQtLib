@@ -841,7 +841,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                             }
                         }
                         if (!xmlStreamReader.hasError()) {
-                            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+                            CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
                             if (pObjFactory == nullptr) {
                                 xmlStreamReader.raiseError(
                                     "ObjectFactory \"" + strFactoryGroupName + "::" + strGraphObjType + "\" for element \"" + strElemName + "\" not found");
@@ -1000,7 +1000,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
     QString strGraphObjType = i_pGraphObj->typeAsString();
     QString strObjName = i_pGraphObj->name();
 
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
 
     if (pObjFactory == nullptr) {
         QString strAddErrInfo = strFactoryGroupName + "::" + strGraphObjType;
@@ -1967,7 +1967,7 @@ void CDrawingScene::setCurrentDrawingTool(
     if (m_mode != EMode::Edit) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
-    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType);
+    CObjFactory* pObjFactory = CObjFactory::findObjFactory(i_strFactoryGrpName, i_strGraphObjType);
     if (pObjFactory == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotRegistered, "pObjFactory == nullptr");
     }
@@ -2636,7 +2636,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<QGraphicsItem*> i_arpGraphic
 
     CGraphObjGroup* pGraphObjGroup = nullptr;
 
-    CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
+    CObjFactory* pObjFactoryTmp = CObjFactory::findObjFactory(
         CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
     CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
     if (pObjFactoryGroup != nullptr) {
@@ -2767,7 +2767,7 @@ CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<CGraphObj*> i_arpGraphObjs)
 
     CGraphObjGroup* pGraphObjGroup = nullptr;
 
-    CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
+    CObjFactory* pObjFactoryTmp = CObjFactory::findObjFactory(
         CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
     CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
     if (pObjFactoryGroup != nullptr) {
@@ -3651,7 +3651,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
             QList<QUrl> arurls = pMimeData->urls();
             for (const QUrl& url : arurls) {
                 QString strFilePath = url.toLocalFile();
-                CObjFactory* pObjFactory = CObjFactory::FindObjFactory(
+                CObjFactory* pObjFactory = CObjFactory::findObjFactory(
                     CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypePixmap);
                 if (pObjFactory == nullptr) {
                     throw CException(__FILE__, __LINE__, EResultObjFactoryNotFound, "Pixmap");
@@ -3691,7 +3691,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                         if (strType.compare("ObjFactory",Qt::CaseInsensitive) == 0) {
                             strlstObjPath.removeFirst();
                             QString strObjPath = strlstObjPath.join("::");
-                            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
+                            CObjFactory* pObjFactory = CObjFactory::findObjFactory(strObjPath);
                             if (pObjFactory != nullptr) {
                                 CGraphObj* pGraphObj = pObjFactory->createGraphObj(this, convert(i_pEv->scenePos()), m_drawSettings);
                                 QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);

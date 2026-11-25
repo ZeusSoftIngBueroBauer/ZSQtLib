@@ -71,7 +71,7 @@ CObjFactoryResistor::CObjFactoryResistor( const QPixmap& i_pxmToolIcon ) :
         /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
         /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
         /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeUserDefined,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
         /* strGraphObjType */ "Resistor",
         /* toolIcon        */ i_pxmToolIcon )
 {
@@ -96,8 +96,7 @@ int CObjFactoryResistor::getNumberOfCreatedGraphObjects() const
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryResistor::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings )
+    CDrawingScene* i_pDrawingScene, const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -116,6 +115,12 @@ CGraphObj* CObjFactoryResistor::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObj* pGraphObj = new CGraphObjResistor(i_pDrawingScene);
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
+    // Don't set the passed draw settings. The plugin object uses its own settings.
     //pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
 }
@@ -144,6 +149,13 @@ CGraphObj* CObjFactoryResistor::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObj* pGraphObj = new CGraphObjResistor(i_pDrawingScene);
+    QString strObjKey = pGraphObj->keyInTree();
+    CGraphObj* pGraphObjWithSameKey = i_pDrawingScene->getGraphObj(strObjKey);
+    if ((pGraphObjWithSameKey != nullptr) && (pGraphObjWithSameKey != pGraphObj)) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
+    // Don't set the passed draw settings. The plugin object uses its own settings.
     //pGraphObj->setDrawSettings(drawSettings);
     pGraphObj->setPosition(i_physValPoint);
     return pGraphObj;
@@ -227,7 +239,7 @@ SErrResultInfo CObjFactoryResistor::saveGraphObj(
             QString strFactoryGroupName = pGraphObjChild->factoryGroupName();
             QString strGraphObjType = pGraphObjChild->typeAsString();
             QString strObjName = pGraphObjChild->name();
-            CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+            CObjFactory* pObjFactoryChild = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
             if (pObjFactoryChild != nullptr) {
                 i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName, strFactoryGroupName);
@@ -247,7 +259,7 @@ SErrResultInfo CObjFactoryResistor::saveGraphObj(
                 QString strFactoryGroupName = pGraphObjChild->factoryGroupName();
                 QString strGraphObjType = pGraphObjChild->typeAsString();
                 QString strObjName = pGraphObjChild->name();
-                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+                CObjFactory* pObjFactoryChild = CObjFactory::findObjFactory(strFactoryGroupName, strGraphObjType);
                 if (pObjFactoryChild != nullptr) {
                     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
                     i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName, strFactoryGroupName);

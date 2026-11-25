@@ -78,33 +78,41 @@ CIdxTree* CObjFactory::s_pIdxTree = nullptr;
 public: // class methods
 ==============================================================================*/
 
+////------------------------------------------------------------------------------
+//int CObjFactory::getObjFactoriesCount()
+////------------------------------------------------------------------------------
+//{
+//    return s_iInstCount;
+//}
+//
+////------------------------------------------------------------------------------
+//CObjFactory* CObjFactory::getObjFactory( int i_idx )
+////------------------------------------------------------------------------------
+//{
+//    CObjFactory* pObjFactory = nullptr;
+//    if (s_pIdxTree != nullptr && i_idx >= 0 && i_idx < s_pIdxTree->treeEntriesVectorSize()) {
+//        pObjFactory = dynamic_cast<CObjFactory*>(s_pIdxTree->getEntry(i_idx));
+//    }
+//    return pObjFactory;
+//}
+
 //------------------------------------------------------------------------------
-int CObjFactory::GetObjFactoriesCount()
+bool CObjFactory::isFactoryGroupRegistered(const QString& i_strGroupName)
 //------------------------------------------------------------------------------
 {
-    return s_iInstCount;
+    ZS::System::CIdxTreeEntry* pTreeEntry = s_pIdxTree->findBranch(i_strGroupName);
+    return (pTreeEntry != nullptr);
 }
 
 //------------------------------------------------------------------------------
-CObjFactory* CObjFactory::GetObjFactory( int i_idx )
-//------------------------------------------------------------------------------
-{
-    CObjFactory* pObjFactory = nullptr;
-    if (s_pIdxTree != nullptr && i_idx >= 0 && i_idx < s_pIdxTree->treeEntriesVectorSize()) {
-        pObjFactory = dynamic_cast<CObjFactory*>(s_pIdxTree->getEntry(i_idx));
-    }
-    return pObjFactory;
-}
-
-//------------------------------------------------------------------------------
-CObjFactory* CObjFactory::FindObjFactory( const QString& i_strGraphObjPath )
+CObjFactory* CObjFactory::findObjFactory( const QString& i_strGraphObjPath )
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CObjFactory*>(s_pIdxTree->findLeave(i_strGraphObjPath));
 }
 
 //------------------------------------------------------------------------------
-CObjFactory* CObjFactory::FindObjFactory(
+CObjFactory* CObjFactory::findObjFactory(
     const QString& i_strFactoryGroupName, int i_iGraphObjType )
 //------------------------------------------------------------------------------
 {
@@ -118,7 +126,7 @@ CObjFactory* CObjFactory::FindObjFactory(
 }
 
 //------------------------------------------------------------------------------
-CObjFactory* CObjFactory::FindObjFactory(
+CObjFactory* CObjFactory::findObjFactory(
     const QString& i_strFactoryGroupName,
     const QString& i_strGraphObjType )
 //------------------------------------------------------------------------------
@@ -201,7 +209,7 @@ CObjFactory::CObjFactory(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (FindObjFactory(m_strGroupName, m_strName) != nullptr) {
+    if (findObjFactory(m_strGroupName, m_strName) != nullptr) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyRegistered);
     }
     s_pIdxTree->add(this, m_strGroupName);

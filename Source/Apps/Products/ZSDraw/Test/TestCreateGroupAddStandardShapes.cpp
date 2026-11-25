@@ -60,30 +60,6 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupAddObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjDrawTestSteps, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjDrawTestSteps,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupAddObjects",
-        /* strAddInfo   */ strMthInArgs );
-
-#if TEST_ADD_OBJECTS_STANDARDSHAPES == 1
-    ZS::Test::CTestStepGroup* pGrpAddStandardShapes = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add " + CObjFactory::c_strGroupNameStandardShapes,
-        /* pTSGrpParent */ i_pTestStepGroupParent );
-
-    createTestGroupAddStandardShapes(pGrpAddStandardShapes);
-#endif // TEST_ADD_OBJECTS_STANDARDSHAPES
-}
-
-//------------------------------------------------------------------------------
 void CTest::createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {

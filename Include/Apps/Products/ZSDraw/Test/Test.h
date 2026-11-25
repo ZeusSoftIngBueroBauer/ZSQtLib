@@ -47,7 +47,7 @@ class QPainterPath;
 #define TEST_LABELS_CHECK_POS 1
 #define TEST_LABELS_CHECK_POLARCOORS 1
 
-#define TEST_ALL 1
+#define TEST_ALL 0
 
 #if TEST_ALL == 0
 
@@ -70,21 +70,21 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALPOLYGON 0
 #define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
 #define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
-#define TEST_METRICS_DRAWINGS 1
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 1
+#define TEST_METRICS_DRAWINGS 0
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_OBJECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_ADD_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_800x600_DRAW_OBJECTS 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_100x100 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_OBJECT_COORDINATES 0
-#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 1
+#define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_ADD_OBJECTS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_BOTTOMUP_800x600_DRAW_OBJECTS 0
 
-#define TEST_ADD_OBJECTS_STANDARDSHAPES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SINGLELINE 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_LINES_SMALLPLUSSIGN 0
@@ -113,9 +113,9 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOTEXTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOBITMAPS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 0
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES 1
-#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSSES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES 0
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CROSSES 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 0
@@ -127,6 +127,10 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 0
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 0
+
+#define TEST_ADD_OBJECTS_PLUGINS 1
+#define TEST_ADD_OBJECTS_PLUGINS_ELECTRICITY 1
+#define TEST_ADD_OBJECTS_PLUGINS_ELECTRICITY_RESISTORS 1
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 0
@@ -156,6 +160,10 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
+
+#define TEST_DRAW_OBJECTS_PLUGINS 0
+#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY 0
+#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY_RESISTORS 0
 
 #else // TEST_ALL
 
@@ -229,11 +237,16 @@ class QPainterPath;
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_PLUSSIGNS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_LINES_CHECKMARK 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES 1
+#define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_RECTANGLES_CROSSES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ELLIPSES 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_TEXTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_POLYGONS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_CONNECTIONPOINTS 1
 #define TEST_ADD_OBJECTS_STANDARDSHAPES_GROUPS_ALL 1
+
+#define TEST_ADD_OBJECTS_PLUGINS 1
+#define TEST_ADD_OBJECTS_PLUGINS_ELECTRICITY 1
+#define TEST_ADD_OBJECTS_PLUGINS_ELECTRICITY_RESISTORS 1
 
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_LINES 1
@@ -261,8 +274,12 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_CONNECTIONPOINTS_ANCHORED_TOGROUPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES 1
-#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
+#define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 1
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 1
+
+#define TEST_DRAW_OBJECTS_PLUGINS 1
+#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY 1
+#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY_RESISTORS 1
 
 #endif // TEST_ALL
 
@@ -433,7 +450,7 @@ protected: // instance methods
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValSize(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValLine(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupObjectCoordinatesMetricsDrawingConvertToPhysValRect(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupAddObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSingleLineModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -486,7 +503,9 @@ protected: // instance methods
     void createTestGroupAddStandardShapesGroupConnectionPointsAnchored(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroupsModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
-    void createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddPluginElectricityShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddPluginElectricityShapesResistor(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesSmallPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
@@ -523,6 +542,8 @@ protected: // instance methods
     void createTestGroupDrawStandardShapesGroupLinesSmallPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupDrawStandardShapesGroupLinesBigPlusSignModifications(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawPluginElectricityShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupDrawPluginElectricityShapesResistor(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 protected slots:
     void doTestStepGetLineEndArrowPolygons(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepGetLineFromPolar(ZS::Test::CTestStep* i_pTestStep);
@@ -550,6 +571,7 @@ protected slots:
     void doTestStepHideTextLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObj(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep);
