@@ -19188,6 +19188,7 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     QRectF rctBoundingLabel;
     QSizeF sizeLabel;
     QPointF ptPosLabel;
+    SPolarCoors polarCoorsLabel;
 
     ZS::Test::CTestStepGroup* pGrpGroupUngroupLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -19212,14 +19213,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameLine1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValLine1->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 250.0)/*, Units.Length.px*/));
-    m_pPhysValLine1->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 350.0)/*, Units.Length.px*/));
+    m_pPhysValLine1->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 250.0)));
+    m_pPhysValLine1->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(200.0, 350.0)));
     m_ptPosLine1 = m_pPhysValLine1->center().toQPointF(Units.Length.px);
     m_lineLine1.setP1(m_pPhysValLine1->p1().toQPointF(Units.Length.px) - m_ptPosLine1);
     m_lineLine1.setP2(m_pPhysValLine1->p2().toQPointF(Units.Length.px) - m_ptPosLine1);
     pTestStep->setConfigValue("GraphObjName", strObjName);
-    pTestStep->setConfigValue("P1", m_pPhysValLine1->p1().toQPointF(Units.Length.px));
-    pTestStep->setConfigValue("P2", m_pPhysValLine1->p2().toQPointF(Units.Length.px));
+    pTestStep->setConfigValue("P1", m_pPhysValLine1->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine1->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strObjName, m_ptPosLine1, m_lineLine1, *m_pPhysValLine1, false));
@@ -19239,14 +19240,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameLine2;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValLine2->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(150.0, 300.0), Units.Length.px));
-    m_pPhysValLine2->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(250.0, 300.0), Units.Length.px));
+    m_pPhysValLine2->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(150.0, 300.0)));
+    m_pPhysValLine2->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(250.0, 300.0)));
     m_ptPosLine2 = m_pPhysValLine2->center().toQPointF(Units.Length.px);
     m_lineLine2.setP1(m_pPhysValLine2->p1().toQPointF(Units.Length.px) - m_ptPosLine2);
     m_lineLine2.setP2(m_pPhysValLine2->p2().toQPointF(Units.Length.px) - m_ptPosLine2);
     pTestStep->setConfigValue("GraphObjName", strObjName);
-    pTestStep->setConfigValue("P1", m_pPhysValLine2->p1().toQPointF(Units.Length.px));
-    pTestStep->setConfigValue("P2", m_pPhysValLine2->p2().toQPointF(Units.Length.px));
+    pTestStep->setConfigValue("P1", m_pPhysValLine2->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine2->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strObjName, m_ptPosLine2, m_lineLine2, *m_pPhysValLine2, false));
@@ -19285,14 +19286,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup1, *m_pPhysValRectGroup1, false));
     // Line1: Vertical
-    m_pPhysValLine1->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValLine1->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0)));
     m_ptPosLine1 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     QLineF line1 = m_pPhysValLine1->toQLineF(Units.Length.px);
     m_lineLine1 = QLineF(-line1.dx() / 2.0, -line1.dy() / 2.0, line1.dx() / 2.0, line1.dy() / 2.0);
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine1, m_ptPosLine1, m_lineLine1, *m_pPhysValLine1, false));
     // Line2: Horizontal
-    m_pPhysValLine2->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValLine2->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0)));
     m_ptPosLine2 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     QLineF line2 = m_pPhysValLine2->toQLineF(Units.Length.px);
     m_lineLine2 = QLineF(-line2.dx() / 2.0, -line2.dy() / 2.0, line2.dx() / 2.0, line2.dy() / 2.0);
@@ -19306,7 +19307,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameLine1;
     strMethod = "showTextLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameP1;
-    strLabelText = strLabelName;
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19314,11 +19314,12 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    strLabelText = strLabelName;
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = m_pPhysValRectGroup1->topCenter().toQPointF(Units.Length.px);
+    ptPosLabel = bYAxisTopDown ? QPointF(200.0, 250.0) : QPointF(200.0, 350.0);
     ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
     ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
@@ -19331,7 +19332,7 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         });
 
     strMethod = "moveTextLabel";
-    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height());
+    bYAxisTopDown ? ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height()) : ptPosLabel.setY(ptPosLabel.y() + sizeLabel.height());
     strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19355,7 +19356,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameLine2;
     strMethod = "showTextLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameP2;
-    strLabelText = strLabelName;
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19363,11 +19363,12 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    strLabelText = strLabelName;
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = m_pPhysValRectGroup1->rightCenter().toQPointF(Units.Length.px);
+    ptPosLabel = QPointF(250.0, 300.0);
     ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
     ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
@@ -19404,7 +19405,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameLine1;
     strMethod = "showGeometryLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
-    strLabelText = m_pPhysValLine1->angle().toString();
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19412,11 +19412,12 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValLine1->angle().toString();
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = m_pPhysValRectGroup1->bottomCenter().toQPointF(Units.Length.px);
+    ptPosLabel = bYAxisTopDown ? QPointF(200.0, 350.0) : QPointF(200.0, 250.0);
     ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
     ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
@@ -19446,8 +19447,8 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameLine3;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValLine3->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(350.0, 250.0), Units.Length.px));
-    m_pPhysValLine3->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(450.0, 350.0), Units.Length.px));
+    m_pPhysValLine3->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(350.0, 250.0)));
+    m_pPhysValLine3->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(450.0, 350.0)));
     CPhysValPoint physValPointLine3Center = m_pPhysValLine3->center();
     m_pPhysValLine3->setLength(m_pPhysValLine1->length());
     m_pPhysValLine3->setCenter(physValPointLine3Center);
@@ -19455,8 +19456,8 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     m_lineLine3.setP1(m_pPhysValLine3->p1().toQPointF(Units.Length.px) - m_ptPosLine3);
     m_lineLine3.setP2(m_pPhysValLine3->p2().toQPointF(Units.Length.px) - m_ptPosLine3);
     pTestStep->setConfigValue("GraphObjName", strObjName);
-    pTestStep->setConfigValue("P1", m_pPhysValLine3->p1().toQPointF(Units.Length.px));
-    pTestStep->setConfigValue("P2", m_pPhysValLine3->p2().toQPointF(Units.Length.px));
+    pTestStep->setConfigValue("P1", m_pPhysValLine3->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine3->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strObjName, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
@@ -19476,8 +19477,8 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameLine4;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    m_pPhysValLine4->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(350.0, 350.0), Units.Length.px));
-    m_pPhysValLine4->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(450.0, 250.0), Units.Length.px));
+    m_pPhysValLine4->setP1(CPhysValPoint(*m_pDrawingScene, QPointF(350.0, 350.0)));
+    m_pPhysValLine4->setP2(CPhysValPoint(*m_pDrawingScene, QPointF(450.0, 250.0)));
     CPhysValPoint physValPointLine4Center = m_pPhysValLine4->center();
     m_pPhysValLine4->setLength(m_pPhysValLine2->length());
     m_pPhysValLine4->setCenter(physValPointLine4Center);
@@ -19485,8 +19486,8 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     m_lineLine4.setP1(m_pPhysValLine4->p1().toQPointF(Units.Length.px) - m_ptPosLine4);
     m_lineLine4.setP2(m_pPhysValLine4->p2().toQPointF(Units.Length.px) - m_ptPosLine4);
     pTestStep->setConfigValue("GraphObjName", strObjName);
-    pTestStep->setConfigValue("P1", m_pPhysValLine4->p1().toQPointF(Units.Length.px));
-    pTestStep->setConfigValue("P2", m_pPhysValLine4->p2().toQPointF(Units.Length.px));
+    pTestStep->setConfigValue("P1", m_pPhysValLine4->p1().toQPointF());
+    pTestStep->setConfigValue("P2", m_pPhysValLine4->p2().toQPointF());
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForLine(
         strObjName, m_ptPosLine4, m_lineLine4, *m_pPhysValLine4, false));
@@ -19525,14 +19526,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup2, *m_pPhysValRectGroup2, false));
     // Line3: TopLeftBottomRight
-    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0), Units.Length.px));
+    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0)));
     m_ptPosLine3 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     QLineF line3 = m_pPhysValLine3->toQLineF(Units.Length.px);
     m_lineLine3 = QLineF(-line3.dx() / 2.0, -line3.dy() / 2.0, line3.dx() / 2.0, line3.dy() / 2.0);
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0), Units.Length.px));
+    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0)));
     m_ptPosLine4 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     QLineF line4 = m_pPhysValLine4->toQLineF(Units.Length.px);
     m_lineLine4 = QLineF(-line4.dx() / 2.0, -line4.dy() / 2.0, line4.dx() / 2.0, line4.dy() / 2.0);
@@ -19546,7 +19547,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameLine3;
     strMethod = "showTextLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameP1;
-    strLabelText = strLabelName;
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19554,11 +19554,13 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    strLabelText = strLabelName;
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = m_pPhysValRectGroup2->topLeft().toQPointF(Units.Length.px);
+    ptPosLabel = bYAxisTopDown ? QPointF(400.0 - f100MulSqrt2 / 4.0, 300.0 - f100MulSqrt2 / 4.0)
+                               : QPointF(400.0 - f100MulSqrt2 / 4.0, 300.0 + f100MulSqrt2 / 4.0);
     ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
     ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
@@ -19571,7 +19573,8 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         });
 
     strMethod = "moveTextLabel";
-    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height());
+    bYAxisTopDown ? ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height())
+                  : ptPosLabel.setY(ptPosLabel.y() + sizeLabel.height());
     strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19579,6 +19582,7 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bYAxisTopDown ? SPolarCoors(16.0, 225.0) : SPolarCoors(16.0, 135.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -19586,7 +19590,7 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         {"setPos", ptPosLabel},
         {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 225.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Line4 (BottomLeft -> TopRight): Show Text Labels
@@ -19595,7 +19599,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameLine4;
     strMethod = "showTextLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameP2;
-    strLabelText = strLabelName;
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19603,11 +19606,13 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    strLabelText = strLabelName;
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = m_pPhysValRectGroup2->topRight().toQPointF(Units.Length.px);
+    ptPosLabel = bYAxisTopDown ? QPointF(400.0 + f100MulSqrt2 / 4.0, 300.0 - f100MulSqrt2 / 4.0)
+                               : QPointF(400.0 + f100MulSqrt2 / 4.0, 300.0 + f100MulSqrt2 / 4.0);
     ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
     ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
@@ -19620,7 +19625,8 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         });
 
     strMethod = "moveTextLabel";
-    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height());
+    bYAxisTopDown ? ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height())
+                  : ptPosLabel.setY(ptPosLabel.y() + sizeLabel.height());
     strMthArgs = strLabelName + ", {" + qPoint2Str(ptPosLabel) + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19628,6 +19634,7 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowTextLabels(ZS::Test::CTestStep*)));
+    polarCoorsLabel = bYAxisTopDown ? SPolarCoors(16.0, 315.0) : SPolarCoors(16.0, 45.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -19635,7 +19642,7 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         {"setPos", ptPosLabel},
         {"ExpectedText", strLabelText},
         {"ExpectedPos", ptPosLabel},
-        {"ExpectedPolarCoors", SPolarCoors(16.0, 315.0).toString()}
+        {"ExpectedPolarCoors", polarCoorsLabel.toString()}
         });
 
     // Line3 (TopLeft -> BottomRight): Show Geometry Labels
@@ -19644,7 +19651,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameLine3;
     strMethod = "showGeometryLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
-    strLabelText = m_pPhysValLine3->angle().toString();
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19652,11 +19658,13 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValLine3->angle().toString();
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = m_pPhysValRectGroup2->bottomRight().toQPointF(Units.Length.px);
+    ptPosLabel = bYAxisTopDown ? QPointF(400.0 + f100MulSqrt2 / 4.0, 300.0 + f100MulSqrt2 / 4.0)
+                               : QPointF(400.0 + f100MulSqrt2 / 4.0, 300.0 - f100MulSqrt2 / 4.0);
     ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
     ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
@@ -19694,14 +19702,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Line3: TopLeftBottomRight
-    m_pPhysValLine3->setP1(m_pPhysValRectGroup2->topLeft());
-    m_pPhysValLine3->setP2(m_pPhysValRectGroup2->bottomRight());
+    m_pPhysValLine3->setP1(bYAxisTopDown ? m_pPhysValRectGroup2->topLeft() : m_pPhysValRectGroup2->bottomLeft());
+    m_pPhysValLine3->setP2(bYAxisTopDown ? m_pPhysValRectGroup2->bottomRight() : m_pPhysValRectGroup2->topRight());
     m_ptPosLine3 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    m_pPhysValLine4->setP1(m_pPhysValRectGroup2->bottomLeft());
-    m_pPhysValLine4->setP2(m_pPhysValRectGroup2->topRight());
+    m_pPhysValLine4->setP1(bYAxisTopDown ? m_pPhysValRectGroup2->bottomLeft() : m_pPhysValRectGroup2->topLeft());
+    m_pPhysValLine4->setP2(bYAxisTopDown ? m_pPhysValRectGroup2->topRight() : m_pPhysValRectGroup2->bottomRight());
     m_ptPosLine4 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine4, m_ptPosLine4, m_lineLine4, *m_pPhysValLine4, false));
@@ -19732,20 +19740,15 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
     strlstExpectedValues.clear();
     // Group2 (Values remain unchanged)
-    //m_pPhysValRectGroup2->setHeight(m_pPhysValLine3->dy());
-    //m_pPhysValRectGroup2->setWidth(m_pPhysValLine3->dx());
-    //m_pPhysValRectGroup2->setCenter(m_pPhysValLine3->center());
-    //m_sizeGroup2 = m_pPhysValRectGroup2->size().toQSizeF(Units.Length.px);
-    //m_ptPosGroup2 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup2, *m_pPhysValRectGroup2, false));
     // Line3: TopLeftBottomRight
-    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0), Units.Length.px));
+    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0)));
     m_ptPosLine3 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0), Units.Length.px));
+    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(f100MulSqrt2 / 4.0, f100MulSqrt2 / 4.0)));
     m_ptPosLine4 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine4, m_ptPosLine4, m_lineLine4, *m_pPhysValLine4, false));
@@ -19757,7 +19760,6 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strObjName = c_strGraphObjNameGroup2;
     strMethod = "showGeometryLabel";
     strLabelName = CGraphObj::c_strGeometryLabelNameAngle;
-    strLabelText = m_pPhysValRectGroup2->angle().toString();
     strMthArgs = strLabelName;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -19765,12 +19767,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpGroupUngroupLines,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabels(ZS::Test::CTestStep*)));
+    strLabelText = m_pPhysValRectGroup2->angle().toString();
     rctBoundingLabel = QRectF(0.0, 0.0, fontMetrics.horizontalAdvance(strLabelText), fontMetrics.height());
     sizeLabel = rctBoundingLabel.size();
-    ptPosLabel = m_pPhysValRectGroup2->rightCenter().toQPointF(Units.Length.px);
     // The position of a QGraphics[Simple]TextItem is defined by its top left corner.
     // Move item so that its center point is at the line end point of the anchor line.
-    ptPosLabel = QPointF(ptPosLabel.x() - sizeLabel.width() / 2.0, ptPosLabel.y() - sizeLabel.height() / 2.0);
+    ptPosLabel = m_pPhysValRectGroup2->rightCenter().toQPointF();
+    ptPosLabel.setX(ptPosLabel.x() - sizeLabel.width() / 2.0);
+    ptPosLabel.setY(ptPosLabel.y() - sizeLabel.height() / 2.0);
     pTestStep->addDataRow({
         {"GraphObjName", strObjName},
         {"GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]},
@@ -19840,16 +19844,16 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
     strlstExpectedValues.clear();
     // Line3: TopLeftBottomRight
-    m_pPhysValLine3->setP1(m_pPhysValRectGroup2->topLeft());
-    m_pPhysValLine3->setP2(m_pPhysValRectGroup2->bottomRight());
+    m_pPhysValLine3->setP1(bYAxisTopDown ? m_pPhysValRectGroup2->topLeft() : m_pPhysValRectGroup2->bottomLeft());
+    m_pPhysValLine3->setP2(bYAxisTopDown ? m_pPhysValRectGroup2->bottomRight() : m_pPhysValRectGroup2->topRight());
     m_ptPosLine3 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
     line3 = m_pPhysValLine3->toQLineF(Units.Length.px);
     m_lineLine3 = QLineF(-line3.dx() / 2.0, -line3.dy() / 2.0, line3.dx() / 2.0, line3.dy() / 2.0);
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    m_pPhysValLine4->setP1(m_pPhysValRectGroup2->bottomLeft());
-    m_pPhysValLine4->setP2(m_pPhysValRectGroup2->topRight());
+    m_pPhysValLine4->setP1(bYAxisTopDown ? m_pPhysValRectGroup2->bottomLeft() : m_pPhysValRectGroup2->topLeft());
+    m_pPhysValLine4->setP2(bYAxisTopDown ? m_pPhysValRectGroup2->topRight() : m_pPhysValRectGroup2->bottomRight());
     m_ptPosLine4 = m_pPhysValRectGroup2->center().toQPointF(Units.Length.px);
     line4 = m_pPhysValLine4->toQLineF(Units.Length.px);
     m_lineLine4 = QLineF(-line4.dx() / 2.0, -line4.dy() / 2.0, line4.dx() / 2.0, line4.dy() / 2.0);
@@ -19890,12 +19894,14 @@ void CTest::createTestGroupAddStandardShapesGroupLines(ZS::Test::CTestStepGroup*
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosGroup2, *m_pPhysValRectGroup2, false));
     // Line3: TopLeftBottomRight
-    m_pPhysValLine3->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValLine3->setP1(bYAxisTopDown ? QPointF(50.0, 0.0) : QPointF(0.0, 50.0));
+    m_pPhysValLine3->setP2(bYAxisTopDown ? QPointF(50.0, 100.0) : QPointF(100.0, 50.0));
     m_ptPosLine3 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine3, m_ptPosLine3, m_lineLine3, *m_pPhysValLine3, false));
     // Line4: BottomLeftTopRight
-    m_pPhysValLine4->setCenter(CPhysValPoint(*m_pDrawingScene, QPointF(50.0, 50.0), Units.Length.px));
+    m_pPhysValLine4->setP1(bYAxisTopDown ? QPointF(0.0, 50.0) : QPointF(50.0, 100.0));
+    m_pPhysValLine4->setP2(bYAxisTopDown ? QPointF(100.0, 50.0) : QPointF(50.0, 0.0));
     m_ptPosLine4 = QPointF(0.0, 0.0); // Parent coordinate system. Origin is center of group.
     strlstExpectedValues.append(resultValuesForLine(
         c_strGraphObjNameLine4, m_ptPosLine4, m_lineLine4, *m_pPhysValLine4, false));
