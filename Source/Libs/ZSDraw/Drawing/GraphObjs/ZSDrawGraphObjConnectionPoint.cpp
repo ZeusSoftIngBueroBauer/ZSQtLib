@@ -137,7 +137,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
-        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeConnectionPoint) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem(),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),

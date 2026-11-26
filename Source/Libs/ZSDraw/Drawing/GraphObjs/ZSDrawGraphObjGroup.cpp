@@ -115,7 +115,7 @@ CGraphObjGroup::CGraphObjGroup(
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeGroup,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Group" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeGroup) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItemGroup(),
     m_divLinesMetricsX(EScaleAxis::X),
     m_divLinesMetricsY(EScaleAxis::Y),

@@ -498,13 +498,13 @@ signals:
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
     void drawSettingsChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if a new text label has been added. */
-    void labelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void textLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a text label has been removed. */
-    void labelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void textLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a text label has been renamed. */
-    void labelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
+    void textLabelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
     /*!< This signal is emitted if a text label has been changed. */
-    void labelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void textLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a new geometry label has been added. */
     void geometryLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a geometry label has been removed. */
@@ -774,7 +774,6 @@ public: // overridables (connection points)
     virtual QString addConnectionPoint(ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     virtual QString addConnectionPoint(ESelectionPointType i_selPtType, int i_idxPt);
     virtual bool removeConnectionPoint(const QString& i_strName);
-    virtual bool renameConnectionPoint(const QString& i_strName, const QString& i_strNameNew);
     virtual void setConnectionPointAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, ESelectionPoint i_selPt);
     virtual void setConnectionPointAnchorPoint(const QString& i_strName, ESelectionPointType i_selPtType, int i_idxPt);
     virtual SGraphObjSelectionPoint connectionPointAnchorPoint(const QString& i_strName) const;
@@ -805,6 +804,7 @@ protected slots: // overridables
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel);
     virtual void onConnectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjConnectionPoint);
+    virtual void onConnectionPointNameChanged(CGraphObj* i_pGraphObjConnectionPoint, const QString& i_strNameNew, const QString& i_strNameOld);
 public slots: // overridables
     virtual void onActionFormatTriggered();
 public: // instance methods
@@ -848,16 +848,15 @@ protected: // auxiliary instance methods (method tracing)
     //void emit_geometryValuesUnitChanged();
     void emit_zValueChanged(double i_fZValue);
     void emit_drawSettingsChanged();
-    void emit_labelAdded(const QString& i_strName);
-    void emit_labelRemoved(const QString& i_strName);
-    void emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew);
-    void emit_labelChanged(const QString& i_strName);
+    void emit_textLabelAdded(const QString& i_strName);
+    void emit_textLabelRemoved(const QString& i_strName);
+    void emit_textLabelRenamed(const QString& i_strName, const QString& i_strNameNew);
+    void emit_textLabelChanged(const QString& i_strName);
     void emit_geometryLabelAdded(const QString& i_strName);
     void emit_geometryLabelRemoved(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
     void emit_connectionPointAdded(const QString& i_strName);
     void emit_connectionPointRemoved(const QString& i_strName);
-    void emit_connectionPointRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_connectionPointChanged(const QString& i_strName);
     void emit_optionPaintBoundingRectChanged(bool i_bOptionSet);
     void emit_optionPaintShapePathChanged(bool i_bOptionSet);

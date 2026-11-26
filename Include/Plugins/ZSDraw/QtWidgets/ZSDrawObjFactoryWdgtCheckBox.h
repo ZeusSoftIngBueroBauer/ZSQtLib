@@ -44,6 +44,7 @@ public: // ctors and dtor
     CObjFactoryWdgtCheckBox( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryWdgtCheckBox() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return "CheckBox"; }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,

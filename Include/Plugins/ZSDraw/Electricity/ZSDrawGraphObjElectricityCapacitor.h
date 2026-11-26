@@ -80,13 +80,13 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
-    CGraphObjLine*            m_pLinCnct;
-    CGraphObjRect*            m_pRctDielectric;
-    CGraphObjLine*            m_pLinPlate1;
-    CGraphObjLine*            m_pLinPlate2;
+    CGraphObjLine* m_pLinCnct;
+    CGraphObjRect* m_pRctDielectric;
+    CGraphObjLine* m_pLinPlate1;
+    CGraphObjLine* m_pLinPlate2;
     CGraphObjConnectionPoint* m_pCnctPt1;
     CGraphObjConnectionPoint* m_pCnctPt2;
-    double                    m_fCapacitance_F; // Farad = C/V = Coulomb/Volt
+    double m_fCapacitance_F; // Farad = C/V = Coulomb/Volt
 
 }; // class CGraphObjCapacitor
 

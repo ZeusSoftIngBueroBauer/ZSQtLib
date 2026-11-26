@@ -5493,7 +5493,7 @@ bool CGraphObj::addTextLabel(
         SLabelAnchorDscr labelDscr(
             EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_selPtType, i_selPt));
         m_hshTextLabelDscrs.insert(i_strName, labelDscr);
-        emit_labelAdded(i_strName);
+        emit_textLabelAdded(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5563,7 +5563,7 @@ bool CGraphObj::addTextLabel(
         SLabelAnchorDscr labelDscr(
             EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_selPtType, i_idxPt));
         m_hshTextLabelDscrs.insert(i_strName, labelDscr);
-        emit_labelAdded(i_strName);
+        emit_textLabelAdded(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5611,7 +5611,7 @@ bool CGraphObj::removeTextLabel(const QString& i_strName)
             delete pGraphObjLabel;
             pGraphObjLabel = nullptr;
         }
-        emit_labelRemoved(i_strName);
+        emit_textLabelRemoved(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5669,7 +5669,7 @@ bool CGraphObj::renameTextLabel(const QString& i_strName, const QString& i_strNa
                 pGraphObjLabel->setText(m_strName);
             }
         }
-        emit_labelRenamed(i_strName, i_strNameNew);
+        emit_textLabelRenamed(i_strName, i_strNameNew);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5716,7 +5716,7 @@ void CGraphObj::setTextLabelText(const QString& i_strName, const QString& i_strT
             if (pGraphObjLabel != nullptr) {
                 pGraphObjLabel->setText(i_strText);
             }
-            emit_labelChanged(i_strName);
+            emit_textLabelChanged(i_strName);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
@@ -5792,7 +5792,7 @@ void CGraphObj::setTextLabelAnchorPoint(
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5852,7 +5852,7 @@ void CGraphObj::setTextLabelAnchorPoint(
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5922,7 +5922,7 @@ void CGraphObj::showTextLabel(const QString& i_strName)
             this, &CGraphObj::onLabelAboutToBeDestroyed);
         // The labels anchor line should be drawn before the object is drawn.
         // Otherwise the anchor lines may cover the painting of this object.
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -5969,7 +5969,7 @@ void CGraphObj::hideTextLabel(const QString& i_strName)
         // The destructor also removes the label from the graphics scene.
         delete pGraphObjLabel;
         pGraphObjLabel = nullptr;
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6029,7 +6029,7 @@ void CGraphObj::setTextLabelPolarCoorsToLinkedSelectionPoint(const QString& i_st
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_polarCoors);
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6085,7 +6085,7 @@ void CGraphObj::showTextLabelAnchorLine(const QString& i_strName)
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->showAnchorLines();
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6125,7 +6125,7 @@ void CGraphObj::hideTextLabelAnchorLine(const QString& i_strName)
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->hideAnchorLines();
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6271,7 +6271,7 @@ void CGraphObj::setGeometryLabelAnchorPoint(
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -6318,7 +6318,7 @@ void CGraphObj::setGeometryLabelAnchorPoint(
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setLinkedObjectSelectionPoint(labelDscr.m_selPt);
         }
-        emit_labelChanged(i_strName);
+        emit_textLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -7080,6 +7080,9 @@ bool CGraphObj::addConnectionPoint(
         QObject::connect(
             pGraphObjCnctPt, &CGraphObj::aboutToBeDestroyed,
             this, &CGraphObj::onConnectionPointAboutToBeDestroyed);
+        QObject::connect(
+            pGraphObjCnctPt, &CGraphObj::nameChanged,
+            this, &CGraphObj::onConnectionPointNameChanged);
         emit_connectionPointAdded(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -7277,54 +7280,6 @@ bool CGraphObj::removeConnectionPoint(const QString& i_strName)
         pGraphicsItemConnectionPoint = nullptr;
     }
     emit_connectionPointRemoved(i_strName);
-    if (m_pTree != nullptr) {
-        m_pTree->onTreeEntryChanged(this);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(true);
-    }
-    return true;
-}
-
-//------------------------------------------------------------------------------
-/*! Renames the label with the given name.
-
-    If a label with passed new name already exists, the label is not renamed and
-    the method returns false.
-
-    @param [in] i_strName
-        Current name of the label. If no label with the name exists an exception is thrown.
-    @param [in] i_strNameNew
-        New name of the label. If a label with the new name already exists, the
-        label will not be renamed.
-
-    @return true, if the label has been renamed, false otherwise.
-*/
-bool CGraphObj::renameConnectionPoint(const QString& i_strName, const QString& i_strNameNew)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strNameNew;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::renameConnectionPoint",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (!m_hshpConnectionPoints.contains(i_strName)) {
-        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
-    }
-
-    CGraphObjConnectionPoint* pGraphObjCnctPt = m_hshpConnectionPoints.value(i_strName, nullptr);
-    if (pGraphObjCnctPt != nullptr) {
-        m_hshpConnectionPoints.remove(i_strName);
-        pGraphObjCnctPt->setName(i_strNameNew);
-        m_hshpConnectionPoints.insert(i_strNameNew, pGraphObjCnctPt);
-    }
-    emit_connectionPointRenamed(i_strName, i_strNameNew);
     if (m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
@@ -8070,16 +8025,15 @@ void CGraphObj::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pGraphObjSel
 }
 
 //------------------------------------------------------------------------------
-/*! Informs the grapical object that a selection point is going to be destroyed.
+/*! @brief Informs the grapical object that a selection point is about to be destroyed.
 
     If currently objects are selected their selection points are created.
     On clearing the graphics scene all items including selection points will
     be destroyed. Selection points may be destroyed before its parent object
-    the selection points belong to. The parent object got to be informed if the
-    selection point will be destroyed by someone else.
+    the selection points belong to.
 
     @param i_pSelectionPoint [in]
-        Pointer to selection point which will be destroyed.
+        Pointer to selection point which is about be destroyed.
 */
 void CGraphObj::onSelectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjSelectionPoint)
 //------------------------------------------------------------------------------
@@ -8114,15 +8068,13 @@ void CGraphObj::onSelectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjSelecti
 }
 
 //------------------------------------------------------------------------------
-/*! Informs the graphical object that one of its labels is going to be destroyed.
+/*! Informs the graphical object that one of its labels is about to be destroyed.
 
     On clearing the drawing scene all graphical objects will be destroyed.
     Labels may be destroyed before its parent object the labels belong to.
-    The parent object got to be informed if the label will be destroyed by
-    someone else.
 
     @param i_pLabel [in]
-        Pointer to label which will be destroyed.
+        Pointer to label which is about to be destroyed.
 */
 void CGraphObj::onLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel)
 //------------------------------------------------------------------------------
@@ -8176,15 +8128,13 @@ void CGraphObj::onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pGraphObjLabel)
 }
 
 //------------------------------------------------------------------------------
-/*! Informs the graphical object that one of its labels is going to be destroyed.
+/*! @brief Informs the graphical object that one of the connections points is about to be destroyed.
 
     On clearing the drawing scene all graphical objects will be destroyed.
-    Labels may be destroyed before its parent object the labels belong to.
-    The parent object got to be informed if the label will be destroyed by
-    someone else.
+    Connection points may be destroyed before its parent object.
 
-    @param i_pLabel [in]
-        Pointer to label which will be destroyed.
+    @param i_pGraphObjConnectionPoint [in]
+        Pointer to graphical object which is about to be destroyed.
 */
 void CGraphObj::onConnectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjConnectionPoint)
 //------------------------------------------------------------------------------
@@ -8204,6 +8154,43 @@ void CGraphObj::onConnectionPointAboutToBeDestroyed(CGraphObj* i_pGraphObjConnec
     if( m_hshpConnectionPoints.contains(pGraphObjCnctPt->name())) {
         m_hshpConnectionPoints.remove(pGraphObjCnctPt->name());
     }
+}
+
+//------------------------------------------------------------------------------
+/*! Informs the graphical object that a connection point has been renamed.
+
+    If the child object is renamed, the hash containing the list of connection points
+    got to be updated.
+
+    @param i_pGraphObjConnectionPoint [in]
+        Pointer to renamed connection point.
+    @param i_strNameNew [in]
+        New (current) name of the object. Provided for convenience as the new name
+        could also be retrived by calling i_pGraphObj->name().
+    @param i_strNameOld [in]
+        Old (previous) name of the object.
+*/
+void CGraphObj::onConnectionPointNameChanged(
+    CGraphObj* i_pGraphObjConnectionPoint, const QString& i_strNameNew, const QString& i_strNameOld)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObjConnectionPoint == nullptr ? "nullptr" : i_pGraphObjConnectionPoint->path()) +
+            ", NewName: " + i_strNameNew + ", OldName: " + i_strNameOld;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onConnectionPointNameChanged",
+        /* strAddInfo   */ strMthInArgs);
+
+    CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjConnectionPoint);
+    if (m_hshpConnectionPoints.contains(i_strNameOld)) {
+        m_hshpConnectionPoints.remove(i_strNameOld);
+    }
+    m_hshpConnectionPoints.insert(i_strNameNew, pGraphObjCnctPt);
 }
 
 /*==============================================================================
@@ -9295,7 +9282,7 @@ void CGraphObj::emit_drawSettingsChanged()
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::emit_labelAdded(const QString& i_strName)
+void CGraphObj::emit_textLabelAdded(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -9306,13 +9293,13 @@ void CGraphObj::emit_labelAdded(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_labelAdded",
+        /* strMethod    */ "CGraphObj::emit_textLabelAdded",
         /* strAddInfo   */ strMthInArgs );
-    emit labelAdded(this, i_strName);
+    emit textLabelAdded(this, i_strName);
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::emit_labelRemoved(const QString& i_strName)
+void CGraphObj::emit_textLabelRemoved(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -9323,13 +9310,13 @@ void CGraphObj::emit_labelRemoved(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_labelRemoved",
+        /* strMethod    */ "CGraphObj::emit_textLabelRemoved",
         /* strAddInfo   */ strMthInArgs );
-    emit labelRemoved(this, i_strName);
+    emit textLabelRemoved(this, i_strName);
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew)
+void CGraphObj::emit_textLabelRenamed(const QString& i_strName, const QString& i_strNameNew)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -9340,13 +9327,13 @@ void CGraphObj::emit_labelRenamed(const QString& i_strName, const QString& i_str
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_labelRenamed",
+        /* strMethod    */ "CGraphObj::emit_textLabelRenamed",
         /* strAddInfo   */ strMthInArgs );
-    emit labelRenamed(this, i_strName, i_strNameNew);
+    emit textLabelRenamed(this, i_strName, i_strNameNew);
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::emit_labelChanged(const QString& i_strName)
+void CGraphObj::emit_textLabelChanged(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -9357,9 +9344,9 @@ void CGraphObj::emit_labelChanged(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_labelChanged",
+        /* strMethod    */ "CGraphObj::emit_textLabelChanged",
         /* strAddInfo   */ strMthInArgs );
-    emit labelChanged(this, i_strName);
+    emit textLabelChanged(this, i_strName);
 }
 
 //------------------------------------------------------------------------------
@@ -9442,26 +9429,9 @@ void CGraphObj::emit_connectionPointRemoved(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_labelRemoved",
+        /* strMethod    */ "CGraphObj::emit_textLabelRemoved",
         /* strAddInfo   */ strMthInArgs );
-    emit labelRemoved(this, i_strName);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::emit_connectionPointRenamed(const QString& i_strName, const QString& i_strNameNew)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strNameNew;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_connectionPointRenamed",
-        /* strAddInfo   */ strMthInArgs );
-    emit connectionPointRenamed(this, i_strName, i_strNameNew);
+    emit connectionPointRemoved(this, i_strName);
 }
 
 //------------------------------------------------------------------------------

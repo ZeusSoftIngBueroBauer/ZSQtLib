@@ -115,7 +115,12 @@ CGraphObj* CObjFactoryLine::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeLine);
-    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene);
+    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene, getInitialObjName());
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
     pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -147,7 +152,12 @@ CGraphObj* CObjFactoryLine::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeLine);
-    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene);
+    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene, getInitialObjName());
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
     pGraphObj->setLine(i_physValPoint, i_physValPoint);
     pGraphObj->setDrawSettings(drawSettings);
 

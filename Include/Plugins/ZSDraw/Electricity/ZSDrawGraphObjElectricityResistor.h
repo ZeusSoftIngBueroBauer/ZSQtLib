@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObjElectricityResistor_h
 
 #include "ZSDrawGraphObjElectricity.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 
 namespace ZS::Draw
 {
@@ -53,6 +54,11 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjResistor"; }
+    static CPhysValRect initialSize(ZS::Draw::CDrawingScene* i_pDrawingScene, const ZS::PhysVal::CUnit& i_unit) {
+        QRectF rctBounding(QPointF(0.0, 0.0), QSizeF(60.0, 10.0));
+        CPhysValRect physValRect(*i_pDrawingScene, rctBounding.topLeft(), rctBounding.size(), Units.Length.px);
+        return i_pDrawingScene->convert(physValRect, i_unit);
+    }
 public: // ctors and dtor
     CGraphObjResistor(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjResistor();

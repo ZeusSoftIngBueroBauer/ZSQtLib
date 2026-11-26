@@ -139,10 +139,10 @@ protected: // type definitions and constants
         ZS::System::SErrResultInfo m_errResultInfo;
     };
 protected slots:
-    void onGraphObjLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
-    void onGraphObjLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
-    void onGraphObjLabelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
-    void onGraphObjLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void onGraphObjTextLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void onGraphObjTextLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void onGraphObjTextLabelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
+    void onGraphObjTextLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
     void clearModel();

@@ -27,11 +27,8 @@ may result in using the software modules.
 #include "Test/Test.h"
 #include "Test/TestConfig.h"
 
+#include "Electricity/ZSDrawGraphObjElectricityResistor.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStep.h"
@@ -49,6 +46,7 @@ using namespace ZS::Draw;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
 using namespace ZS::Apps::Test::Draw;
+using namespace ZS::Draw::Plugins::Electricity;
 
 
 /*******************************************************************************
@@ -107,7 +105,8 @@ void CTest::createTestGroupAddPluginElectricityShapesResistor(
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    CUnit unit = drawingSize.unit();
+    QString strUnit = unit.symbol();
     int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     QFontMetricsF fontMetrics(m_pDrawingScene->font());
 
@@ -125,19 +124,29 @@ void CTest::createTestGroupAddPluginElectricityShapesResistor(
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
-    QString strLabelText;
-
-    QRectF rctBoundingLabel;
-    QSizeF sizeLabel;
-    QPointF ptPosLabel;
-    SPolarCoors polarCoorsLabel;
 
     ZS::Test::CTestStepGroup* pGrpResistorShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Resistors",
         /* pTSGrpParent */ i_pTestStepGroupParent);
 
-    QString c_strGraphObjNameElectricityResistor1 = "R1";
+    // Clear Drawing
+    //--------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)));
+    pTestStep->setExpectedValue("");
+
+    initInstCounts();
+    initObjectCoors();
+
+    // R1
+    //-----
+
     strObjName = "DrawingScene";
     strMethod = "addGraphObj";
     strMthArgs = c_strGraphObjNameElectricityResistor1;
@@ -149,13 +158,43 @@ void CTest::createTestGroupAddPluginElectricityShapesResistor(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameElectricityResistor1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    QPointF m_ptPosElectricityResistor1 = QPointF(300.0, 300.0);
-    CPhysValRect* m_pPhysValRectElectricityResistor1 = new CPhysValRect(*m_pDrawingScene);
+    m_ptPosElectricityResistor1 = QPointF(200.0, 200.0);
+    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
+    m_pPhysValRectElectricityResistor1->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
     pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
-    pTestStep->setConfigValue("P1", m_ptPosElectricityResistor1);
-    pTestStep->setConfigValue("P1.Unit", strUnit);
+    pTestStep->setConfigValue("Rect", m_pPhysValRectElectricityResistor1->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForGroup(
+        strObjName, m_ptPosElectricityResistor1, *m_pPhysValRectElectricityResistor1,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // R2
+    //-----
+
+    strObjName = "DrawingScene";
+    strMethod = "addGraphObj";
+    strMthArgs = c_strGraphObjNameElectricityResistor2;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)));
+    strObjName = c_strGraphObjNameElectricityResistor2;
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_ptPosElectricityResistor1 = QPointF(400.0, 200.0);
+    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
+    m_pPhysValRectElectricityResistor1->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
+    pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("Rect", m_pPhysValRectElectricityResistor1->toQRectF());
+    pTestStep->setConfigValue("Rect.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForGroup(

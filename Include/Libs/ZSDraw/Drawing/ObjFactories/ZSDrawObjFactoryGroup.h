@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CObjFactoryGroup : public CObjFactory
@@ -46,7 +44,15 @@ public: // class methods
 public: // ctors and dtor
     CObjFactoryGroup( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryGroup() override;
+protected: // ctor
+    CObjFactoryGroup(
+        const QString& i_strGroupName,
+        const QString& i_strNameSpace,
+        const QString& i_strClassName,
+        const QString& i_strGraphObjType,
+        const QPixmap& i_pxmToolIcon = QPixmap() );
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return graphObjType2Str(EGraphObjTypeGroup); }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -66,8 +72,6 @@ public: // interface methods of base class CObjFactory
 
 }; // class CObjFactoryGroup
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_ObjFactoryGroup_h

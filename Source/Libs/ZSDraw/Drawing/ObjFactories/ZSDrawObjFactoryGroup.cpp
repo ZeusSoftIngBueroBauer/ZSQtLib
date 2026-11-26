@@ -84,6 +84,28 @@ CObjFactoryGroup::~CObjFactoryGroup()
 }
 
 /*==============================================================================
+protected: // ctor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CObjFactoryGroup::CObjFactoryGroup(
+    const QString& i_strGroupName,
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strGraphObjType,
+    const QPixmap& i_pxmToolIcon) :
+//------------------------------------------------------------------------------
+    CObjFactory(
+        /* strGroupName    */ i_strGroupName,
+        /* strNameSpace    */ i_strNameSpace,
+        /* strClassName    */ i_strClassName,
+        /* iGraphObjType   */ EGraphObjTypeGroup,
+        /* strGraphObjType */ i_strGraphObjType,
+        /* toolIcon        */ i_pxmToolIcon)
+{
+}
+
+/*==============================================================================
 public: // interface methods
 ==============================================================================*/
 
@@ -111,8 +133,7 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene);
-    to be used by all object factories
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, getInitialObjName());
     QString strObjKey = pGraphObj->keyInTree();
     if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
         QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
@@ -149,8 +170,7 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene);
-    to be used by all object factories
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, getInitialObjName());
     QString strObjKey = pGraphObj->keyInTree();
     if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
         QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);

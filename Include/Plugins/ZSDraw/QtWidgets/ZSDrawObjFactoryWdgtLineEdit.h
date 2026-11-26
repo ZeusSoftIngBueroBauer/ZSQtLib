@@ -44,6 +44,7 @@ public: // ctors and dtor
     CObjFactoryWdgtLineEdit( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryWdgtLineEdit() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return "LineEdit"; }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,

@@ -129,7 +129,7 @@ CGraphObjRect::CGraphObjRect(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeRect,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeRect),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Rect" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeRect) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsRectItem(),
     m_rectOrig(),
     m_physValRectOrig(*m_pDrawingScene),

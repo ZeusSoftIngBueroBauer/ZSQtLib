@@ -24,12 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qmimedata.h>
-#include <QtCore/qmutex.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qthread.h>
-#include <QtXml/qdom.h>
-
 #include "ZSDraw/Widgets/ObjFactories/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
@@ -37,6 +31,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#include <QtCore/qmimedata.h>
+#include <QtCore/qmutex.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qthread.h>
+#include <QtXml/qdom.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -59,17 +59,15 @@ CObjFactoriesModel::CObjFactoriesModel(
     CIdxTree* i_pIdxTree,
     QObject*  i_pObjParent ) :
 //------------------------------------------------------------------------------
-    ZS::System::GUI::CModelIdxTree(
-        /* pIdxTree   */ i_pIdxTree,
-        /* pObjParent */ i_pObjParent )
+    ZS::System::GUI::CModelIdxTree(i_pIdxTree, i_pObjParent)
 {
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CObjFactoriesModel::~CObjFactoriesModel()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 public: // overridables of base class QAbstractItemModel, overriding implementation in class CModelIdxTree
@@ -87,32 +85,22 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
 //------------------------------------------------------------------------------
 {
     QVariant varData;
-
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
-        {
+        if (pModelTreeEntry != nullptr) {
             CObjFactory* pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
-
-            switch( i_modelIdx.column() )
-            {
+            switch (i_modelIdx.column()) {
                 case EColumnNodeName:
                 {
-                    if( i_iRole == Qt::DisplayRole )
-                    {
+                    if (i_iRole == Qt::DisplayRole) {
                         varData = pModelTreeEntry->name();
                     }
-                    else if( i_iRole == Qt::DecorationRole )
-                    {
-                        if( pObjFactory == nullptr )
-                        {
+                    else if (i_iRole == Qt::DecorationRole) {
+                        if (pObjFactory == nullptr) {
                             varData = ZS::System::GUI::CModelIdxTree::getIcon(
                                 pModelTreeEntry->entryTypeSymbol());
                         }
-                        else
-                        {
+                        else {
                             varData = pObjFactory->toolIconPixmap();
                         }
                     }
@@ -123,79 +111,59 @@ QVariant CObjFactoriesModel::data( const QModelIndex& i_modelIdx, int i_iRole ) 
                     break;
                 }
             }
-        } // if( pTreeEntry != nullptr )
-    } // if( i_modelIdx.isValid() )
-
+        }
+    }
     return varData;
-
-} // data
+}
 
 //------------------------------------------------------------------------------
 Qt::ItemFlags CObjFactoriesModel::flags( const QModelIndex& i_modelIdx ) const
 //------------------------------------------------------------------------------
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags(i_modelIdx);
-
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
-        {
+        if (pModelTreeEntry != nullptr) {
             CObjFactory* pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
-
-            if( pObjFactory != nullptr )
-            {
+            if (pObjFactory != nullptr) {
                 flags |= Qt::ItemIsDragEnabled;
             }
         }
-    } // if( i_modelIdx.isValid() )
-
+    }
     return flags;
-
-} // flags
+}
 
 //------------------------------------------------------------------------------
 QVariant CObjFactoriesModel::headerData(
-    int             i_iSection,
+    int i_iSection,
     Qt::Orientation i_orientation,
-    int             i_iRole ) const
+    int i_iRole ) const
 //------------------------------------------------------------------------------
 {
     QVariant varData;
-
-    if( i_orientation == Qt::Horizontal )
-    {
-        switch( i_iSection )
-        {
+    if (i_orientation == Qt::Horizontal) {
+        switch (i_iSection) {
             case EColumnNodeName:
             {
-                if( i_iRole == Qt::DisplayRole )
-                {
+                if (i_iRole == Qt::DisplayRole) {
                     varData = "Name";
                 }
                 break;
             }
             default:
             {
-                if( i_iRole == Qt::DisplayRole )
-                {
+                if (i_iRole == Qt::DisplayRole) {
                     varData = "?";
                 }
-                else if( i_iRole == Qt::SizeHintRole )
-                {
+                else if (i_iRole == Qt::SizeHintRole) {
                     //varData = QSize(10,16);
                 }
                 break;
             }
         }
     }
-    else // if( i_orientation == Qt::Vertical )
-    {
-    }
     return varData;
-
-} // headerData
+}
 
 /*==============================================================================
 public: // overridables of base class QAbstractItemModel
@@ -206,53 +174,30 @@ QStringList CObjFactoriesModel::mimeTypes() const
 //------------------------------------------------------------------------------
 {
     QStringList strlstTypes;
-
     strlstTypes << "application/vnd.text.list";
-
     return strlstTypes;
-
-} // mimeTypes
+}
 
 //------------------------------------------------------------------------------
 QMimeData* CObjFactoriesModel::mimeData( const QModelIndexList& i_modelIdxList ) const
 //------------------------------------------------------------------------------
 {
     QMimeData* pMimeData = new QMimeData();
-
-    CModelIdxTreeEntry* pModelTreeEntry;
-    CObjFactory*        pObjFactory;
-    QString             strObjFactoryGroupName;
-    QString             strObjFactoryGraphObjType;
-    QString             strMimeData;
-    QStringList         strlstMimeData;
-    QModelIndex         modelIdx;
-    int                 idx;
-
-    for( idx = 0; idx < i_modelIdxList.size(); idx++ )
-    {
-        modelIdx = i_modelIdxList[idx];
-
-        if( modelIdx.isValid() )
-        {
-            pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
-
-            if( pModelTreeEntry != nullptr )
-            {
-                pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
-
-                if( pObjFactory != nullptr )
-                {
-                    strObjFactoryGroupName = pObjFactory->groupName();
-                    strObjFactoryGraphObjType = pObjFactory->graphObjTypeAsString();
-
-                    strMimeData = "ObjFactory::";
-
-                    if( strObjFactoryGroupName.isEmpty() )
-                    {
+    QStringList strlstMimeData;
+    for (int idx = 0; idx < i_modelIdxList.size(); idx++) {
+        QModelIndex modelIdx = i_modelIdxList[idx];
+        if (modelIdx.isValid()) {
+            CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
+            if (pModelTreeEntry != nullptr) {
+                CObjFactory* pObjFactory = CObjFactory::findObjFactory(pModelTreeEntry->keyInTree());
+                if (pObjFactory != nullptr) {
+                    QString strObjFactoryGroupName = pObjFactory->groupName();
+                    QString strObjFactoryGraphObjType = pObjFactory->graphObjTypeAsString();
+                    QString strMimeData = "ObjFactory::";
+                    if (strObjFactoryGroupName.isEmpty()) {
                         strMimeData += strObjFactoryGraphObjType;
                     }
-                    else
-                    {
+                    else {
                         strMimeData += strObjFactoryGroupName + "::"+ strObjFactoryGraphObjType;
                     }
                     strlstMimeData.append(strMimeData);
@@ -260,9 +205,6 @@ QMimeData* CObjFactoriesModel::mimeData( const QModelIndexList& i_modelIdxList )
             }
         }
     }
-
     pMimeData->setText( strlstMimeData.join("; ") );
-
     return pMimeData;
-
-} // mimeData
+}

@@ -128,7 +128,7 @@ CGraphObjPixmap::CGraphObjPixmap(CDrawingScene* i_pDrawingScene, const QString& 
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePixmap,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePixmap),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Pixmap" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypePixmap) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPixmapItem(),
     m_physValRectOrig(*m_pDrawingScene),
     m_physValRectScaled(*m_pDrawingScene),

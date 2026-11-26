@@ -67,7 +67,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CGraphObjCapacitor : public CGraphObjElectricity
+class CGraphObjResistor : public CGraphObjElectricity
 *******************************************************************************/
 
 /*==============================================================================
@@ -108,8 +108,6 @@ CGraphObjResistor::CGraphObjResistor(
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    #pragma message(__TODO__"Don't use connection lines")
-    // Stattdessen eine durchgezogene Linie. Und zwei connection points an der Gruppe Left und RightCenter.
     /*
                           Body
                        +--------+
@@ -119,15 +117,14 @@ CGraphObjResistor::CGraphObjResistor(
                        +--------+
     */
 
-
     // Before adding the items to the drawing scene they will be created in their
     // own coordinate system starting at (0.0/0.0). After adding the items to the
     // drawing scene they will be moved by "setPos" relative within the group.
     // The group itself will be positioned by the caller of the ctor relative to
     // the caller's coordinate system.
 
-    QRectF rctBounding(QPointF(0.0, 0.0), QSizeF(60.0, 10.0));
-    CPhysValRect physValRect(*m_pDrawingScene, rctBounding.topLeft(), rctBounding.size());
+    CPhysValRect physValRect = initialSize(m_pDrawingScene, Units.Length.px);
+    QRectF rctBounding = physValRect.toQRectF(Units.Length.px);
     double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());
     CPhysValRect physValRectBody(*m_pDrawingScene, rctBody.topLeft(), rctBody.size());

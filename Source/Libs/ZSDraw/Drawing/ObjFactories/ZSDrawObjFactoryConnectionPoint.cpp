@@ -113,7 +113,12 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene, getInitialObjName());
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
     //pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     //CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     //physValSize = i_pDrawingScene->convert(physValSize);
@@ -148,7 +153,12 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionPoint);
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene, getInitialObjName());
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
     //pGraphObj->setRect(QPointF(0.0, 0.0), CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     //CPhysValSize physValSize(*i_pDrawingScene, CGraphObjConnectionPoint::defaultSizeInPx(), Units.Length.px);
     //physValSize = i_pDrawingScene->convert(physValSize);

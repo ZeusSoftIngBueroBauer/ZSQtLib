@@ -106,6 +106,7 @@ protected: // ctor
 public: // dtor
     virtual ~CObjFactory();
 public: // interface methods
+    virtual QString initialObjNamePrefix() const = 0;
     virtual int getNumberOfCreatedGraphObjects() const = 0;
     virtual CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -137,6 +138,7 @@ public: // instance methods
     //void setFilePath( const QString& i_strFilePath );
     //QString filePath() const;
 public: // overridables
+    virtual QString getInitialObjName() const;
     virtual bool hasInitialSize() const { return false; }
     virtual QSizeF initialSize() const { return QSizeF(); }
 protected: // class methods

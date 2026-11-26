@@ -27,11 +27,8 @@ may result in using the software modules.
 #include "Test/Test.h"
 #include "Test/TestConfig.h"
 
+#include "Electricity/ZSDrawGraphObjElectricityResistor.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStep.h"
@@ -49,6 +46,7 @@ using namespace ZS::Draw;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
 using namespace ZS::Apps::Test::Draw;
+using namespace ZS::Draw::Plugins::Electricity;
 
 
 /*******************************************************************************
@@ -107,7 +105,8 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
     bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
-    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    CUnit unit = drawingSize.unit();
+    QString strUnit = unit.symbol();
     int iResultValuesPrecision = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
     QFontMetricsF fontMetrics(m_pDrawingScene->font());
 
@@ -125,41 +124,193 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
-    QString strLabelText;
-
-    QRectF rctBoundingLabel;
-    QSizeF sizeLabel;
-    QPointF ptPosLabel;
-    SPolarCoors polarCoorsLabel;
 
     ZS::Test::CTestStepGroup* pGrpResistorShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Resistors",
         /* pTSGrpParent */ i_pTestStepGroupParent);
 
-    QString c_strGraphObjNameElectricityResistor1 = "R1";
+    // Clear Drawing
+    //--------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)));
+    pTestStep->setExpectedValue("");
+
+    initInstCounts();
+    initObjectCoors();
+
+    // R1
+    //-----
+
     strObjName = "DrawingScene";
-    strMethod = "addGraphObj";
+    strMethod = "dropGraphObj";
     strMthArgs = c_strGraphObjNameElectricityResistor1;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
         /* pGrpParent      */ pGrpResistorShapes,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)));
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjByDropEvent(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameElectricityResistor1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
-    QPointF m_ptPosElectricityResistor1 = QPointF(300.0, 300.0);
-    CPhysValRect* m_pPhysValRectElectricityResistor1 = new CPhysValRect(*m_pDrawingScene);
+    m_ptPosElectricityResistor1 = QPointF(200.0, 200.0);
+    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
+    m_pPhysValRectElectricityResistor1->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
     pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
     pTestStep->setConfigValue("P1", m_ptPosElectricityResistor1);
-    pTestStep->setConfigValue("P1.Unit", strUnit);
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosElectricityResistor1, *m_pPhysValRectElectricityResistor1,
         false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // R2
+    //-----
+
+    strObjName = "DrawingScene";
+    strMethod = "dropGraphObj";
+    strMthArgs = c_strGraphObjNameElectricityResistor2;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjByDropEvent(ZS::Test::CTestStep*)));
+    strObjName = c_strGraphObjNameElectricityResistor2;
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_ptPosElectricityResistor2 = QPointF(400.0, 200.0);
+    *m_pPhysValRectElectricityResistor2 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
+    m_pPhysValRectElectricityResistor2->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor2, Units.Length.px));
+    pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("P1", m_ptPosElectricityResistor2);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForGroup(
+        strObjName, m_ptPosElectricityResistor2, *m_pPhysValRectElectricityResistor2,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Connection Line: R1.P2 -> R2.P1
+    //--------------------------------
+
+    strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
+    strObjName = "DrawingScene";
+    strMethod = "drawGraphObj";
+    strMthArgs = strObjName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)));
+    strObjName = c_strGraphObjNameConnectionLineR1P1R2P1;
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_polygonConnectionLineR1P2R2P1 = QPolygonF({
+        { 0.0, -50.0},
+        { 0.0,  50.0}
+        });
+    *m_pPhysValPolygonConnectionLineR1P2R2P1 = QPolygonF({
+        {m_pPhysValConnectionPoint1->toQPointF()},
+        {m_pPhysValConnectionPoint2->toQPointF()}
+        });
+    // We need a start position, from which we move to the first connection point.
+    // The we add the position of the two connection points.
+    // If more than 3 points are defined, the points from index 2 to the penultimate
+    // index are additional polygon points.
+    QPolygon points({
+        QPoint(240, 250),
+        m_ptPosConnectionPoint1.toPoint(),
+        QPoint((m_ptPosConnectionPoint1.x() + m_ptPosConnectionPoint2.x()) / 2,
+               (m_ptPosConnectionPoint1.y() + m_ptPosConnectionPoint2.y()) / 2),
+        m_ptPosConnectionPoint2.toPoint()
+        });
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("Points", points);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(resultValuesForConnectionLine(
+        strObjName, "R1.P2", "R2.P1",
+        m_polygonConnectionLineR1P2R2P1, *m_pPhysValPolygonConnectionLineR1P2R2P1,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Connection Line: CnctPt1 -> CnctPt2: setLineStyle(Color, SolidLine)
+    //--------------------------------------------------------------------
+
+    strMethod = "setDrawSettings";
+    strMthArgs = "{LineStyle, blue, Solid}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("ImmediatelyApplySettings", false);
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    pTestStep->addDataRow({
+        {"Method", "setPenColor"},
+        {"PenColor", "blue"}
+        });
+    pTestStep->addDataRow({
+        {"Method", "setLineStyle"},
+        {"LineStyle", CEnumLineStyle(ELineStyle::SolidLine).toString()}
+        });
+
+    // Connection Line: CnctPt1 -> CnctPt2: setLineEndStyle(EndPoint, Arrow)
+    //----------------------------------------------------------------------
+
+    strMethod = "setDrawSettings";
+    strMthArgs = "{LineEndPoint, Arrow}";
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepSetDrawSettings(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeConnectionLine));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("ImmediatelyApplySettings", false);
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    pTestStep->addDataRow({
+        {"Method", "setLineEndStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"LineEndStyle", CEnumLineEndStyle(ELineEndStyle::ArrowHead).toString()},
+        });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadBaseLineType"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadBaseLineType", CEnumArrowHeadBaseLineType(EArrowHeadBaseLineType::Normal).toString()},
+        });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadFillStyle"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadFillStyle", CEnumArrowHeadFillStyle(EArrowHeadFillStyle::SolidPattern).toString()},
+        });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadWidth"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadWidth", CEnumArrowHeadWidth(EArrowHeadWidth::Thin).toString()},
+        });
+    pTestStep->addDataRow({
+        {"Method", "setArrowHeadLength"},
+        {"LinePoint", CEnumLinePoint(ELinePoint::End).toString()},
+        {"ArrowHeadLength", CEnumArrowHeadLength(EArrowHeadLength::Medium).toString()},
+        });
 }

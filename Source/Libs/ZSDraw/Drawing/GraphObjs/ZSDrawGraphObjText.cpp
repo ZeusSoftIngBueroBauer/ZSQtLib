@@ -140,7 +140,7 @@ CGraphObjText::CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeText,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeText),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Text" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeText) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItem(),
     m_graphicsTextItem(this),
     m_margins(s_marginsDefault),

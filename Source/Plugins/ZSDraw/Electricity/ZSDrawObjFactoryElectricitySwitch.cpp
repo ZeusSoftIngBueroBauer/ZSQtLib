@@ -24,26 +24,9 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsItem>
-#else
-#include <QtWidgets/QGraphicsItem>
-#endif
-
 #include "Electricity/ZSDrawObjFactoryElectricitySwitch.h"
 #include "Electricity/ZSDrawGraphObjElectricitySwitch.h"
 
-#include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -57,7 +40,7 @@ using namespace ZS::Draw::Plugins::Electricity;
 
 
 /*******************************************************************************
-class CObjFactorySwitch : public CObjFactory
+class CObjFactorySwitch : public CObjFactoryElectricity
 *******************************************************************************/
 
 /*==============================================================================
@@ -67,13 +50,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CObjFactorySwitch::CObjFactorySwitch( const QPixmap& i_pxmToolIcon ) :
 //------------------------------------------------------------------------------
-    CObjFactory(
-        /* strGroupName    */ CGraphObjElectricity::c_strFactoryGroupName,
-        /* strNameSpace    */ "ZS::Draw::Drawing::ObjFactories::Plugins::Electricity",
-        /* strClassName    */ ClassName(),
-        /* iGraphObjType   */ EGraphObjTypeGroup,
-        /* strGraphObjType */ "Switch",
-        /* toolIcon        */ i_pxmToolIcon )
+    CObjFactoryElectricity(ClassName(), "Switch", i_pxmToolIcon)
 {
 }
 
@@ -116,11 +93,15 @@ CGraphObj* CObjFactorySwitch::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObj* pGraphObj = new CGraphObjSwitch(i_pDrawingScene);
-    pGraphObj->setDrawSettings(drawSettings);
-
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
+    // Don't set the passed draw settings. The plugin object uses its own settings.
+    //pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
-
-} // createGraphObj
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactorySwitch::createGraphObj(
@@ -146,302 +127,12 @@ CGraphObj* CObjFactorySwitch::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObj* pGraphObj = new CGraphObjSwitch(i_pDrawingScene);
-    pGraphObj->setDrawSettings(drawSettings);
-
+    QString strObjKey = pGraphObj->keyInTree();
+    if (i_pDrawingScene->getGraphObj(strObjKey) != nullptr) {
+        QString strObjName = i_pDrawingScene->findUniqueGraphObjName(pGraphObj);
+        pGraphObj->setName(strObjName);
+    }
+    // Don't set the passed draw settings. The plugin object uses its own settings.
+    //pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
-
-} // createGraphObj
-
-//------------------------------------------------------------------------------
-SErrResultInfo CObjFactorySwitch::saveGraphObj(
-    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const
-//------------------------------------------------------------------------------
-{
-    if( i_pGraphObj == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
-    }
-
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->name();
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "saveGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    SErrResultInfo errResultInfo;
-
-    CGraphObjSwitch* pGraphObj = dynamic_cast<CGraphObjSwitch*>(i_pGraphObj);
-
-    if( pGraphObj == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSwitch == nullptr" );
-    }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    // Electrical Parameters
-    //----------------------
-
-    i_xmlStreamWriter.writeStartElement("ElectricalParameters");
-    i_xmlStreamWriter.writeTextElement( "State", pGraphObj->getStateAsString() );
-    i_xmlStreamWriter.writeEndElement();
-
-    // Draw Attributes
-    //----------------
-
-    CDrawSettings drawSettings = pGraphObj->drawSettings();
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
-    drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement();
-
-    // Geometry
-    //-------------
-
-    QPointF ptPos         = pGraphObj->pos();
-    QSizeF  siz           = pGraphObj->getSize();
-    double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
-
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
-    i_xmlStreamWriter.writeTextElement( "Size", size2Str(siz) );
-    i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
-    i_xmlStreamWriter.writeEndElement();
-
-    // Z-Value
-    //---------------
-
-    i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
-
-    // Labels
-    //----------------
-
-    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
-
-    //if( arpLabels.size() > 0 )
-    //{
-    //    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
-    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-    //    i_xmlStreamWriter.writeEndElement();
-    //}
-#endif
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
-        mthTracer.setMethodReturn(errResultInfo);
-    }
-
-    return errResultInfo;
-
-} // saveGraphObj
-
-//------------------------------------------------------------------------------
-CGraphObj* CObjFactorySwitch::loadGraphObj(
-    CDrawingScene*    i_pDrawingScene,
-    CGraphObjGroup*   i_pGraphObjGroup,
-    const QString&    i_strObjName,
-    QXmlStreamReader& i_xmlStreamReader )
-//------------------------------------------------------------------------------
-{
-    if( i_pDrawingScene == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
-    }
-
-    QString strAddTrcInfo;
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "loadGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    CGraphObjSwitch* pGraphObj = nullptr;
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    QString                          strElemName;
-    QString                          strElemText;
-    bool                             bConverted;
-    CDrawSettings                    drawSettings(EGraphObjTypeText);
-    CGraphObjSwitch::EState          state = CGraphObjSwitch::EStateOpened;
-    QPointF                          ptPos;
-    QSizeF                           siz;
-    bool                             bPosValid = false;
-    bool                             bSizeValid = false;
-    double                           fRotAngle_deg = 0.0;
-    double                           fZValue = 0.0;
-    QHash<QString, CGraphObjLabel*>  arpLabels;
-
-    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-    {
-        strElemName = i_xmlStreamReader.name().toString();
-
-        if( i_xmlStreamReader.isStartElement() )
-        {
-            if( strElemName == "ElectricalParameters" )
-            {
-            }
-
-            else if( strElemName == "State" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                CGraphObjSwitch::EState stateTmp = CGraphObjSwitch::Str2State(strElemText);
-
-                if( stateTmp != CGraphObjSwitch::EStateUndefined )
-                {
-                    state = stateTmp;
-                }
-            }
-
-            else if( strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings )
-            {
-                drawSettings.load(i_xmlStreamReader);
-            }
-
-            else if( strElemName == XmlStreamParser::c_strXmlElemNameGeometry )
-            {
-            }
-
-            else if( strElemName == "Pos" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                if( bConverted )
-                {
-                    ptPos = ptTmp;
-                    bPosValid = true;
-                }
-
-            } // if( strElemName == "Pos" )
-
-            else if( strElemName == "Size" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                QSizeF sizTmp = str2SizeF(strElemText,&bConverted);
-
-                if( bConverted )
-                {
-                    siz = sizTmp;
-                    bSizeValid = true;
-                }
-
-            } // if( strElemName == "Size" )
-
-            else if( strElemName == "RotAngleDeg" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                double fValTmp = strElemText.toDouble(&bConverted);
-
-                if( bConverted )
-                {
-                    fRotAngle_deg = fValTmp;
-                }
-
-            } // if( strElemName == "RotAngleDeg" )
-
-            else if( strElemName == "ZValue" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                double fTmp = strElemText.toDouble(&bConverted);
-
-                if( bConverted )
-                {
-                    fZValue = fTmp;
-                }
-
-            } // if( strElemName == "ZValue" )
-
-            else if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
-            {
-                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
-
-            } // if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
-
-        } // if( xmlStreamReader.isStartElement() )
-
-        else if( i_xmlStreamReader.isEndElement() )
-        {
-            if( strElemName == "GraphObj" )
-            {
-                break;
-            }
-
-        } // if( i_xmlStreamReader.isEndElement() )
-
-    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-
-    if( bPosValid && bSizeValid )
-    {
-        pGraphObj = new CGraphObjSwitch(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* state         */ state,
-            /* strObjName    */ i_strObjName );
-
-        i_pDrawingScene->addGraphObj(pGraphObj);
-
-        pGraphObj->setPos(ptPos);
-        pGraphObj->setSize(siz);
-        pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
-        pGraphObj->setStackingOrderValue(fZValue);
-
-        // Before calling "onGraphObjCreationFinished" the object must have been added
-        // to its parent group. Otherwise the drawing scene is not able to retrieve
-        // the unique object id and add the object to the hash.
-        if( i_pGraphObjGroup != nullptr )
-        {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-            //i_pGraphObjGroup->addGraphObj(pGraphObj);
-        }
-
-        i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
-
-        #pragma message(__TODO__"The methods onGraphObjCreationFinished and acceptCurrentAsOriginalCoors should become protected and it should not be necessary to explicitly call them")
-        pGraphObj->acceptCurrentAsOriginalCoors();
-
-        //if( arpLabels.size() > 0 )
-        //{
-        //    pGraphObj->addLabels(arpLabels);
-        //}
-    } // if( !strText.isEmpty() && bPosValid )
-
-    if( arpLabels.size() > 0 )
-    {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        CGraphObjLabel* pGraphObjLabel;
-
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-
-            pGraphObjLabel = itLabels.value();
-
-            arpLabels.remove(pGraphObjLabel->getKey());
-
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
-        }
-    }
-#endif
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
-        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
-        mthTracer.setMethodReturn(strMthRet);
-    }
-    return pGraphObj;
-
-} // loadGraphObj
+}

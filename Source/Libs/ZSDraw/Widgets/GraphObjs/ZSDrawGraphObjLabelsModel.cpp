@@ -250,17 +250,17 @@ bool CModelGraphObjLabels::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObj != nullptr) {
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::labelAdded,
-                this, &CModelGraphObjLabels::onGraphObjLabelAdded);
+                m_pGraphObj, &CGraphObj::textLabelAdded,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelAdded);
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::labelRemoved,
-                this, &CModelGraphObjLabels::onGraphObjLabelRemoved);
+                m_pGraphObj, &CGraphObj::textLabelRemoved,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelRemoved);
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::labelRenamed,
-                this, &CModelGraphObjLabels::onGraphObjLabelRenamed);
+                m_pGraphObj, &CGraphObj::textLabelRenamed,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelRenamed);
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::labelChanged,
-                this, &CModelGraphObjLabels::onGraphObjLabelChanged);
+                m_pGraphObj, &CGraphObj::textLabelChanged,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelChanged);
             QObject::disconnect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjLabels::onGraphObjAboutToBeDestroyed);
@@ -277,17 +277,17 @@ bool CModelGraphObjLabels::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObj != nullptr) {
             QObject::connect(
-                m_pGraphObj, &CGraphObj::labelAdded,
-                this, &CModelGraphObjLabels::onGraphObjLabelAdded);
+                m_pGraphObj, &CGraphObj::textLabelAdded,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelAdded);
             QObject::connect(
-                m_pGraphObj, &CGraphObj::labelRemoved,
-                this, &CModelGraphObjLabels::onGraphObjLabelRemoved);
+                m_pGraphObj, &CGraphObj::textLabelRemoved,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelRemoved);
             QObject::connect(
-                m_pGraphObj, &CGraphObj::labelRenamed,
-                this, &CModelGraphObjLabels::onGraphObjLabelRenamed);
+                m_pGraphObj, &CGraphObj::textLabelRenamed,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelRenamed);
             QObject::connect(
-                m_pGraphObj, &CGraphObj::labelChanged,
-                this, &CModelGraphObjLabels::onGraphObjLabelChanged);
+                m_pGraphObj, &CGraphObj::textLabelChanged,
+                this, &CModelGraphObjLabels::onGraphObjTextLabelChanged);
             QObject::connect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjLabels::onGraphObjAboutToBeDestroyed);
@@ -1160,7 +1160,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelAdded(
+void CModelGraphObjLabels::onGraphObjTextLabelAdded(
     CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -1171,7 +1171,7 @@ void CModelGraphObjLabels::onGraphObjLabelAdded(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onGraphObjLabelAdded",
+        /* strMethod          */ "onGraphObjTextLabelAdded",
         /* strMethodInArgs    */ strMthInArgs );
 
     // When applying the changes from the model by invoking "applySettings"
@@ -1203,7 +1203,7 @@ void CModelGraphObjLabels::onGraphObjLabelAdded(
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelRemoved(
+void CModelGraphObjLabels::onGraphObjTextLabelRemoved(
     CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -1214,7 +1214,7 @@ void CModelGraphObjLabels::onGraphObjLabelRemoved(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onGraphObjLabelRemoved",
+        /* strMethod          */ "onGraphObjTextLabelRemoved",
         /* strMethodInArgs    */ strMthInArgs );
 
     // When applying the changes from the model by invoking "applySettings"
@@ -1248,7 +1248,7 @@ void CModelGraphObjLabels::onGraphObjLabelRemoved(
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelRenamed(
+void CModelGraphObjLabels::onGraphObjTextLabelRenamed(
     CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew)
 //------------------------------------------------------------------------------
 {
@@ -1259,7 +1259,7 @@ void CModelGraphObjLabels::onGraphObjLabelRenamed(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onGraphObjLabelRenamed",
+        /* strMethod          */ "onGraphObjTextLabelRenamed",
         /* strMethodInArgs    */ strMthInArgs );
 
     // When applying the changes from the model by invoking "applySettings"
@@ -1294,7 +1294,7 @@ void CModelGraphObjLabels::onGraphObjLabelRenamed(
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelChanged(
+void CModelGraphObjLabels::onGraphObjTextLabelChanged(
     CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -1305,7 +1305,7 @@ void CModelGraphObjLabels::onGraphObjLabelChanged(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onGraphObjLabelChanged",
+        /* strMethod          */ "onGraphObjTextLabelChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
     // When applying the changes from the model by invoking "applySettings"

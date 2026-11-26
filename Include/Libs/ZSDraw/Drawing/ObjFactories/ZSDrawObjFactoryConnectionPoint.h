@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CObjFactoryConnectionPoint : public CObjFactory
@@ -47,6 +45,7 @@ public: // ctors and dtor
     CObjFactoryConnectionPoint( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryConnectionPoint() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return graphObjType2Str(EGraphObjTypeConnectionPoint); }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -66,8 +65,6 @@ public: // interface methods of base class CObjFactory
 
 }; // class CObjFactoryConnectionPoint
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_ObjFactoryConnectionPoint_h

@@ -129,7 +129,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLine,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeLine) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
     m_lineOrig(),
     m_physValLineOrig(*m_pDrawingScene),

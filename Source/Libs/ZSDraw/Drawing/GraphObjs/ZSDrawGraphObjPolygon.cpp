@@ -119,7 +119,7 @@ CGraphObjPolygon::CGraphObjPolygon(CDrawingScene* i_pDrawingScene, EGraphObjType
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ i_graphObjType,
         /* strType             */ ZS::Draw::graphObjType2Str(i_graphObjType),
-        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypePolygon) + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(i_graphObjType) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
     m_physValPolygonOrig(*m_pDrawingScene),
     m_physValPolygonScaledAndRotated(*m_pDrawingScene)

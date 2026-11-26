@@ -69,7 +69,7 @@ class QPainterPath;
 #define TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALRECT_ANGLE_300 0
 #define TEST_PIXELS_DRAWINGS_800x600_OBJECT_COORDINATES_PHYSVALPOLYGON 0
 #define TEST_PIXELS_DRAWINGS_800x600_ADD_OBJECTS 1
-#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 0
+#define TEST_PIXELS_DRAWINGS_800x600_DRAW_OBJECTS 1
 #define TEST_METRICS_DRAWINGS 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN 0
 #define TEST_METRICS_DRAWINGS_YSCALE_TOPDOWN_100x100 0
@@ -161,9 +161,9 @@ class QPainterPath;
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_SMALLPLUSSIGN 0
 #define TEST_DRAW_OBJECTS_STANDARDSHAPES_GROUPS_LINES_BIGPLUSSIGN 0
 
-#define TEST_DRAW_OBJECTS_PLUGINS 0
-#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY 0
-#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY_RESISTORS 0
+#define TEST_DRAW_OBJECTS_PLUGINS 1
+#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY 1
+#define TEST_DRAW_OBJECTS_PLUGINS_ELECTRICITY_RESISTORS 1
 
 #else // TEST_ALL
 
@@ -427,6 +427,12 @@ public: // type definition and constants
     const QString c_strGraphObjNamePolygons = "Polygons";
     const QString c_strGraphObjNameGroupConnectionPointsPt1Pt2 = "ConnectionPointsPt1Pt2";
     const QString c_strGraphObjNameGroupRect1Rect2 = "Rect1Rect2";
+    // Electricity::Resistors
+    const QString c_strGraphObjNameElectricityResistor1 = "R1";
+    const QString c_strGraphObjNameElectricityResistor2 = "R2";
+    const QString c_strGraphObjNameElectricityResistor3 = "R3";
+    const QString c_strGraphObjNameElectricityResistor4 = "R4";
+    const QString c_strGraphObjNameConnectionLineR1P1R2P1 = "R1.P1-R2.P2";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -572,6 +578,7 @@ protected slots:
     void doTestStepShowGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepHideGeometryLabels(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObj(ZS::Test::CTestStep* i_pTestStep);
+    void doTestStepAddGraphObjByDropEvent(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjLine(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjRect(ZS::Test::CTestStep* i_pTestStep);
     void doTestStepAddGraphObjEllipse(ZS::Test::CTestStep* i_pTestStep);
@@ -981,6 +988,18 @@ protected: // instance members
     QSizeF m_sizeTopGroup;
     ZS::Draw::CPhysValRect* m_pPhysValRectTopGroup = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleTopGroup;
+
+    // Electricity::Resistor
+    QPointF m_ptPosElectricityResistor1;
+    ZS::Draw::CPhysValRect* m_pPhysValRectElectricityResistor1 = nullptr;
+    QPointF m_ptPosElectricityResistor2;
+    ZS::Draw::CPhysValRect* m_pPhysValRectElectricityResistor2 = nullptr;
+    QPointF m_ptPosElectricityResistor3;
+    ZS::Draw::CPhysValRect* m_pPhysValRectElectricityResistor3 = nullptr;
+    QPointF m_ptPosElectricityResistor4;
+    ZS::Draw::CPhysValRect* m_pPhysValRectElectricityResistor4 = nullptr;
+    QPolygonF m_polygonConnectionLineR1P2R2P1;
+    ZS::Draw::CPhysValPolygon* m_pPhysValPolygonConnectionLineR1P2R2P1 = nullptr;
 
     /*!< Pointer to trace admin object. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjDrawTestSteps;

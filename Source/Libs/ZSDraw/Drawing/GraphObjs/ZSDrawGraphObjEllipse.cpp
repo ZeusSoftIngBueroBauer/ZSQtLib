@@ -129,7 +129,7 @@ CGraphObjEllipse::CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeEllipse,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Ellipse" + QString::number(s_iInstCount) : i_strObjName),
+        /* strObjName          */ i_strObjName.isEmpty() ? graphObjType2Str(EGraphObjTypeEllipse) + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem(),
     m_rectOrig(),
     m_physValRectOrig(*m_pDrawingScene),

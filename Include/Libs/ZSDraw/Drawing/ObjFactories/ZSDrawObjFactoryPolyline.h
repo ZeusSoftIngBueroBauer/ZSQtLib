@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 class ZSDRAWDLL_API CObjFactoryPolyline : public CObjFactoryPolygon
@@ -47,6 +45,7 @@ public: // ctors and dtor
     CObjFactoryPolyline( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryPolyline() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return graphObjType2Str(EGraphObjTypePolyline); }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -58,8 +57,6 @@ public: // interface methods of base class CObjFactory
 
 }; // class CObjFactoryPolyline
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_ObjFactoryPolyline_h

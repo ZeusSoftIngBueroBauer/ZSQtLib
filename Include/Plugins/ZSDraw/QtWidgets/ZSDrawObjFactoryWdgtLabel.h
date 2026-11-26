@@ -44,6 +44,7 @@ public: // ctors and dtor
     CObjFactoryWdgtLabel( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryWdgtLabel() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return "Label"; }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,

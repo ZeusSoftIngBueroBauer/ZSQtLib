@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSSysGUI/ZSSysIdxTreeModel.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CObjFactory;
 
@@ -67,8 +65,6 @@ public: // overridables of base class QAbstractItemModel
 
 }; // class CObjFactoriesModel
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_ObjFactoriesModel_h

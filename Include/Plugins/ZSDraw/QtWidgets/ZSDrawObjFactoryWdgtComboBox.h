@@ -44,6 +44,7 @@ public: // ctors and dtor
     CObjFactoryWdgtComboBox( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryWdgtComboBox() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return "ComboBox"; }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,

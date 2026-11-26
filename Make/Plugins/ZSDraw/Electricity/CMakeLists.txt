@@ -42,6 +42,7 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSDrawGraphObjElectricitySwitch.h
     ${_HeadersPath}/ZSDrawGraphObjElectricityTransistor.h
     ${_HeadersPath}/ZSDrawGraphObjElectricityVoltageSource.h
+    ${_HeadersPath}/ZSDrawObjFactoryElectricity.h
     ${_HeadersPath}/ZSDrawObjFactoryElectricityCapacitor.h
     ${_HeadersPath}/ZSDrawObjFactoryElectricityDiode.h
     ${_HeadersPath}/ZSDrawObjFactoryElectricityInductor.h
@@ -68,6 +69,7 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSDrawGraphObjElectricitySwitch.cpp
     ${_SourcesPath}/ZSDrawGraphObjElectricityTransistor.cpp
     ${_SourcesPath}/ZSDrawGraphObjElectricityVoltageSource.cpp
+    ${_SourcesPath}/ZSDrawObjFactoryElectricity.cpp
     ${_SourcesPath}/ZSDrawObjFactoryElectricityCapacitor.cpp
     ${_SourcesPath}/ZSDrawObjFactoryElectricityDiode.cpp
     ${_SourcesPath}/ZSDrawObjFactoryElectricityInductor.cpp

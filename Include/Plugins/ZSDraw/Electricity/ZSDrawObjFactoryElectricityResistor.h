@@ -27,24 +27,22 @@ may result in using the software modules.
 #ifndef ZSDraw_ObjFactoryElectricityResistor_h
 #define ZSDraw_ObjFactoryElectricityResistor_h
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "Electricity/ZSDrawObjFactoryElectricity.h"
 
 namespace ZS::Draw::Plugins::Electricity
 {
 //******************************************************************************
-class CObjFactoryResistor : public CObjFactory
+class CObjFactoryResistor : public CObjFactoryElectricity
 //******************************************************************************
 {
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CObjFactoryResistor"; }
 public: // ctors and dtor
     CObjFactoryResistor( const QPixmap& i_pxmToolIcon = QPixmap() );
     ~CObjFactoryResistor() override;
 public: // interface methods of base class CObjFactory
+    QString initialObjNamePrefix() const override { return "R"; }
     int getNumberOfCreatedGraphObjects() const override;
     CGraphObj* createGraphObj(
         CDrawingScene* i_pDrawingScene,
@@ -53,14 +51,6 @@ public: // interface methods of base class CObjFactory
         CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings) override;
-    ZS::System::SErrResultInfo saveGraphObj(
-        CGraphObj* i_pGraphObj,
-        QXmlStreamWriter& i_xmlStreamWriter) const override;
-    CGraphObj* loadGraphObj(
-        CDrawingScene* i_pDrawingScene,
-        CGraphObjGroup* i_pGraphObjGroup,
-        const QString& i_strObjName,
-        QXmlStreamReader& i_xmlStreamReader) override;
 
 }; // class CObjFactoryResistor
 
