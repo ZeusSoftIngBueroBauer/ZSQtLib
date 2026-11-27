@@ -29,9 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a polygon on the drawing scene.
@@ -63,6 +61,9 @@ public: // ctors
     CPhysValPolygon(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
     CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, bool i_bIsClosedPolygon = true);
     CPhysValPolygon(const CDrawingScene& i_drawingScene, QPolygonF i_polygon, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, std::initializer_list<QPointF> i_arPoints, bool i_bIsClosedPolygon = true);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, std::initializer_list<QPointF> i_arPoints, const ZS::PhysVal::CUnit& i_unit, bool i_bIsClosedPolygon = true);
+    CPhysValPolygon(const CDrawingScene& i_drawingScene, std::initializer_list<CPhysValPoint> i_arPhysValPoints, bool i_bIsClosedPolygon = true);
 public: // copy ctor
     CPhysValPolygon(const CPhysValPolygon& i_physValPolygonOther);
 public: // dtor
@@ -148,7 +149,7 @@ protected: // auxiliary instance methods
 protected: // instance members
     /*!< true, if the polygon should be closed by drawing a line from the last point
          to the first point, false otherwise. */
-    bool m_bIsClosedPolygon;
+    bool m_bIsClosedPolygon = true;
     /*!< Original center point of the unscaled and unrotated polygon. */
     QPointF m_ptCenterOrig;
     /*!< Original size of the unscaled and unrotated polygon. */
@@ -168,8 +169,6 @@ protected: // instance members
 
 }; // class CPhysValPolygon
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValPolygon_h

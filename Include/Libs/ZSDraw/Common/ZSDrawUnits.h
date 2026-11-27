@@ -34,9 +34,7 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysUnit.h"
 #include "ZSSys/ZSSysCommon.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Physical size for lengths in drawings.
@@ -215,8 +213,6 @@ public: // instance members
 
 extern ZSDRAWDLL_API CUnits Units;
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_Units_h

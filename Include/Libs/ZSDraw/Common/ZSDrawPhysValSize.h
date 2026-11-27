@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValShape.h"
 #include "QtCore/qsize.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Corresponds to QSizeF but providing a physical unit and a resolution.
@@ -107,8 +105,6 @@ protected: // instance members
 
 }; // class CPhysValSize
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValSize_h

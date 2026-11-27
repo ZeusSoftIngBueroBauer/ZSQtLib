@@ -1678,6 +1678,9 @@ void CGraphObjRect::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
     }
 
     i_pPainter->save();
@@ -2932,9 +2935,9 @@ void CGraphObjRect::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
-            + ", Scaled {" + m_physValRectScaled.toString() + "} " + m_physValRectScaled.unit().symbol() +
-            + ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "} " + m_physValRectScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValRect Orig {" + m_physValRectOrig.toString() + "}" +
+            ", Scaled {" + m_physValRectScaled.toString() + "} " +
+            ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "}";
         i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

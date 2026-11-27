@@ -3309,7 +3309,7 @@ CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol();
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3319,11 +3319,29 @@ CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValPoint physValPoint = i_physValPoint;
-    if (parentGroup() != nullptr) {
-        physValPoint = parentGroup()->mapToScene(i_physValPoint);
+    CGraphObjGroup* pGraphObjGroupParent = parentGroup();
+    if (pGraphObjGroupParent != nullptr) {
+        // @note
+        // Not anchored connection points (connection points not linked to selection points
+        // of other graphic items) may be added as childs to groups. For those connection
+        // points "parentGroup()->mapToScene" returns the expected scene coordinates.
+        // If connection points are linked to selection points of a group, they are also
+        // added as child items of the group branch item to the index tree.
+        // "parentGroup" returns a valid group but the parent group's "mapToScene" method
+        // cannot be used to retrieve the scene coordinates of connection points position as
+        // the position of nchored connection poionts is already defined in scene coordinates.
+        if (m_type == EGraphObjTypeConnectionPoint) {
+            const CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<const CGraphObjConnectionPoint*>(this);
+            if (pGraphObjCnctPt->linkedObject() == pGraphObjGroupParent) {
+                pGraphObjGroupParent = nullptr;
+            }
+        }
+        if (pGraphObjGroupParent != nullptr) {
+            physValPoint = pGraphObjGroupParent->mapToScene(i_physValPoint);
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "}");
     }
     return physValPoint;
 }
@@ -3336,7 +3354,7 @@ CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+        strMthInArgs = "Line {" + i_physValLine.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3350,7 +3368,7 @@ CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine) const
         physValLine = parentGroup()->mapToScene(physValLine);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
+        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "}");
     }
     return physValLine;
 }
@@ -3363,7 +3381,7 @@ CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3377,7 +3395,7 @@ CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect) const
         physValRect = parentGroup()->mapToScene(physValRect);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "}");
     }
     return physValRect;
 }
@@ -3411,7 +3429,7 @@ CPhysValPoint CGraphObj::mapToParent(const CPhysValPoint& i_physValPoint, const 
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "}, UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3433,7 +3451,7 @@ CPhysValPoint CGraphObj::mapToParent(const CPhysValPoint& i_physValPoint, const 
         physValPoint = pGraphObjGroupParent->convert(physValPoint);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "}";
     }
     return physValPoint;
 }
@@ -3462,7 +3480,7 @@ CPhysValLine CGraphObj::mapToParent(const CPhysValLine& i_physValLine, const ZS:
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+        strMthInArgs = "Line {" + i_physValLine.toString() + "}, UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3485,7 +3503,7 @@ CPhysValLine CGraphObj::mapToParent(const CPhysValLine& i_physValLine, const ZS:
         physValLine = pGraphObjGroupParent->convert(physValLine);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
+        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "}";
     }
     return physValLine;
 }
@@ -3514,7 +3532,7 @@ CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect, const ZS:
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "}, UnitDst: " + i_unitDst.symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3536,7 +3554,7 @@ CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect, const ZS:
         physValRect = pGraphObjGroupParent->convert(physValRect);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "}";
     }
     return physValRect;
 }
@@ -3621,7 +3639,7 @@ QPointF CGraphObj::toLocalCoors(const CPhysValPoint& i_physValPoint) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol();
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3659,7 +3677,7 @@ QLineF CGraphObj::toLocalCoors(const CPhysValLine& i_physValLine) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+        strMthInArgs = "Line {" + i_physValLine.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3698,7 +3716,7 @@ QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
@@ -3841,7 +3859,7 @@ CPhysValPoint CGraphObj::fromLocalCoors(const QPointF& i_pt) const
         physValPoint = m_pDrawingScene->convert(pt);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "}";
     }
     return physValPoint;
 }
@@ -3886,7 +3904,7 @@ CPhysValLine CGraphObj::fromLocalCoors(const QLineF& i_line) const
         physValLine = m_pDrawingScene->convert(lineF);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
+        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "}";
     }
     return physValLine;
 }
@@ -3931,7 +3949,7 @@ CPhysValRect CGraphObj::fromLocalCoors(const QRectF& i_rect) const
         physValRect = m_pDrawingScene->convert(rectF);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "}";
     }
     return physValRect;
 }
@@ -8565,7 +8583,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol();
+        strMthInArgs = "PhysValCoors {" + i_physValPoint.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -8592,7 +8610,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "Pt {" + qPoint2Str(o_pt) + "}";
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
+        mthTracer.setMethodReturn("ItemPos {" + qPoint2Str(ptPos) + "}");
     }
     return ptPos;
 }
@@ -8617,7 +8635,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+        strMthInArgs = "PhysValCoors {" + i_physValLine.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -8650,7 +8668,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "Line {" + qLine2Str(o_line) + "}";
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
+        mthTracer.setMethodReturn("ItemPos {" + qPoint2Str(ptPos) + "}");
     }
     return ptPos;
 }
@@ -8677,7 +8695,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+        strMthInArgs = "{" + i_physValRect.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -8713,7 +8731,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "Rect {" + qRect2Str(o_rect) + "}, Angle: " + o_physValAngle.toString();
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
+        mthTracer.setMethodReturn("ItemPos {" + qPoint2Str(ptPos) + "}");
     }
     return ptPos;
 }
@@ -8740,7 +8758,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "PhysValCoors {" + i_physValPolygon.toString() + "} " + i_physValPolygon.unit().symbol();
+        strMthInArgs = "PhysValCoors {" + i_physValPolygon.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -8776,7 +8794,7 @@ QPointF CGraphObj::getItemPosAndLocalCoors(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "Polygon {" + qPolygon2Str(o_polygon) + "}, Angle: " + o_physValAngle.toString();
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn("{" + qPoint2Str(ptPos) + "}");
+        mthTracer.setMethodReturn("ItemPos {" + qPoint2Str(ptPos) + "}");
     }
     return ptPos;
 }
@@ -9991,16 +10009,16 @@ void CGraphObj::traceParentGroupPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += " . . PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
+            strRuntimeInfo += " . . PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + "}" +
                 ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
             i_mthTracer.trace(strRuntimeInfo);
-            QRectF rctBounding = m_pGraphObjGroupParent == nullptr ? QRectF() : m_pGraphObjGroupParent->getBoundingRectInternal();
-            QPointF ptCenterPos = rctBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";
-            strRuntimeInfo += " . . PhysValRect {" + m_pGraphObjGroupParent->getRect().toString() + "}";
+            strRuntimeInfo += " . . PhysValRectScaledAndRotated {" + m_pGraphObjGroupParent->getRect().toString() + "}";
             i_mthTracer.trace(strRuntimeInfo);
+            QRectF rctBounding = m_pGraphObjGroupParent->getBoundingRectInternal();
+            QPointF ptCenterPos = rctBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = " . ";

@@ -206,7 +206,7 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     strGraphObjType = graphObjType2Str(EGraphObjTypeConnectionLine);
     strObjName = "DrawingScene";
     strMethod = "drawGraphObj";
-    strMthArgs = strObjName;
+    strMthArgs = c_strGraphObjNameConnectionLineR1P1R2P1;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
@@ -215,24 +215,28 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
         /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjConnectionLine(ZS::Test::CTestStep*)));
     strObjName = c_strGraphObjNameConnectionLineR1P1R2P1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    QPointF ptScenePosCnctPtR1P2 = m_pPhysValRectElectricityResistor1->rightCenter().toQPointF(Units.Length.px);
+    QPointF ptScenePosCnctPtR2P1 = m_pPhysValRectElectricityResistor2->leftCenter().toQPointF(Units.Length.px);
+    QLineF lineR1P2R2P1(ptScenePosCnctPtR1P2, ptScenePosCnctPtR2P1);
     m_polygonConnectionLineR1P2R2P1 = QPolygonF({
-        { 0.0, -50.0},
-        { 0.0,  50.0}
+        { ptScenePosCnctPtR1P2 - lineR1P2R2P1.center() },
+        { ptScenePosCnctPtR2P1 - lineR1P2R2P1.center() },
         });
-    *m_pPhysValPolygonConnectionLineR1P2R2P1 = QPolygonF({
-        {m_pPhysValConnectionPoint1->toQPointF()},
-        {m_pPhysValConnectionPoint2->toQPointF()}
+    *m_pPhysValPolygonConnectionLineR1P2R2P1 = CPhysValPolygon(*m_pDrawingScene, {
+        {m_pPhysValRectElectricityResistor1->rightCenter()},
+        {m_pPhysValRectElectricityResistor2->leftCenter()},
         });
     // We need a start position, from which we move to the first connection point.
     // The we add the position of the two connection points.
     // If more than 3 points are defined, the points from index 2 to the penultimate
     // index are additional polygon points.
+    QPoint ptMouseStart = m_pPhysValRectElectricityResistor1->rightCenter().toQPointF(Units.Length.px).toPoint();
+    ptMouseStart.setX(ptMouseStart.x() + 20);
+    ptMouseStart.setY(ptMouseStart.y() - 20);
     QPolygon points({
-        QPoint(240, 250),
-        m_ptPosConnectionPoint1.toPoint(),
-        QPoint((m_ptPosConnectionPoint1.x() + m_ptPosConnectionPoint2.x()) / 2,
-               (m_ptPosConnectionPoint1.y() + m_ptPosConnectionPoint2.y()) / 2),
-        m_ptPosConnectionPoint2.toPoint()
+        ptMouseStart,
+        m_pPhysValRectElectricityResistor1->rightCenter().toQPointF(Units.Length.px).toPoint(),
+        m_pPhysValRectElectricityResistor2->leftCenter().toQPointF(Units.Length.px).toPoint(),
         });
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);

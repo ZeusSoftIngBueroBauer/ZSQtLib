@@ -432,7 +432,7 @@ public: // type definition and constants
     const QString c_strGraphObjNameElectricityResistor2 = "R2";
     const QString c_strGraphObjNameElectricityResistor3 = "R3";
     const QString c_strGraphObjNameElectricityResistor4 = "R4";
-    const QString c_strGraphObjNameConnectionLineR1P1R2P1 = "R1.P1-R2.P2";
+    const QString c_strGraphObjNameConnectionLineR1P1R2P1 = "CnctLine-R1.P1-R2.P2";
 public: // ctors and dtor
     CTest();
     ~CTest();

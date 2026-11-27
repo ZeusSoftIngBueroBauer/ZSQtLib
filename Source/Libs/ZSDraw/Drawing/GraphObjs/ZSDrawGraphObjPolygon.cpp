@@ -2237,6 +2237,9 @@ void CGraphObjPolygon::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
     }
 
     QPolygonF polygon = this->polygon();
@@ -4135,8 +4138,8 @@ void CGraphObjPolygon::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValPolygon Orig {" + m_physValPolygonOrig.toString() + "} " + m_physValPolygonOrig.unit().symbol()
-            + ", ScaledRotated {" + m_physValPolygonScaledAndRotated.toString() + "} " + m_physValPolygonScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValPolygon Orig {" + m_physValPolygonOrig.toString() + "}" +
+            ", ScaledRotated {" + m_physValPolygonScaledAndRotated.toString() + "}";
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

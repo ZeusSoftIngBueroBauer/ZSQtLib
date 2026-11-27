@@ -1077,6 +1077,7 @@ void CDrawingScene::clear()
 
     //m_arpGraphicsItemsAcceptingHoverEvents.clear();
     //m_arpGraphicsItemsBroughtToFront.clear();
+    update();
 
 } // clear
 

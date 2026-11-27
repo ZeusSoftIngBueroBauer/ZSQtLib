@@ -30,9 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "QtCore/qline.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a line on the drawing scene.
@@ -135,8 +133,6 @@ protected: // instance members
 
 }; // class CPhysValLine
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValLine_h

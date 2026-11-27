@@ -33,9 +33,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "QtCore/qrect.h"
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 //******************************************************************************
 /*! @brief Represents a rectangle on the drawing scene.
@@ -161,8 +159,6 @@ protected: // instance members
 
 }; // class CPhysValRect
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValRect_h

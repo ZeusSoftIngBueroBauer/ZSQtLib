@@ -39,9 +39,7 @@ class QSettings;
 class QXmlStreamReader;
 class QXmlStreamWriter;
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 /*******************************************************************************
 enum EDrawAttribute
@@ -274,8 +272,6 @@ protected: // instance members
 
 }; // class CDrawSettings
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_Settings_h

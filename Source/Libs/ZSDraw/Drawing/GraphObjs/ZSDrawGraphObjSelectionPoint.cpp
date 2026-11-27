@@ -830,7 +830,7 @@ void CGraphObjSelectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     //QGraphicsItem_setCursor(getProposedCursor(i_pEv->pos()));
-    setPos(i_pEv->scenePos());
+    QGraphicsItem_setPos(i_pEv->scenePos());
 
     // Eat the event. Don't pass it to other objects otherwise the object,
     // the selection point is connected to, will also be moved and gets a
@@ -997,7 +997,7 @@ void CGraphObjSelectionPoint::updatePosition()
         ptSelScenePosParent = m_selPt.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(
             m_selPt.m_selPtType, m_selPt.m_idxPtOrLine);
     }
-    setPos(ptSelScenePosParent);
+    QGraphicsItem_setPos(ptSelScenePosParent);
 
     m_bUpdatePositionInProgress = false;
 }

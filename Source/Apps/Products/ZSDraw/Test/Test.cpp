@@ -3775,6 +3775,8 @@ void CTest::doTestStepAddGraphObjByDropEvent(ZS::Test::CTestStep* i_pTestStep)
         m_pDrawingScene->dropEvent(pDragDropEv);
         delete pDragDropEv;
         pDragDropEv = nullptr;
+        delete pMimeData;
+        pMimeData = nullptr;
         QString strInitialGraphObjNamePrefix = pObjFactory->initialObjNamePrefix();
         int iInstCountPrev = pObjFactory->getNumberOfCreatedGraphObjects() - 1;
         QString strGraphObjNameOfCreatedObject = strInitialGraphObjNamePrefix + QString::number(iInstCountPrev);
@@ -7215,7 +7217,7 @@ void CTest::initObjectCoors()
     *m_pPhysValRectElectricityResistor4 = CPhysValRect(*m_pDrawingScene);
 
     m_polygonConnectionLineR1P2R2P1 = QPolygonF();
-    m_pPhysValPolygonConnectionLineR1P2R2P1 = new CPhysValPolygon(*m_pDrawingScene);
+    *m_pPhysValPolygonConnectionLineR1P2R2P1 = CPhysValPolygon(*m_pDrawingScene);
 }
 
 //------------------------------------------------------------------------------

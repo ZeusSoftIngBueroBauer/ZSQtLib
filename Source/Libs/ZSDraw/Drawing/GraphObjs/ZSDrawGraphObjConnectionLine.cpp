@@ -1758,6 +1758,9 @@ void CGraphObjConnectionLine::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
     }
 
     QPolygonF polygon = this->polygon();
@@ -3354,7 +3357,7 @@ CPhysValPolygon CGraphObjConnectionLine::setPhysValPolygonOrig(const CPhysValPol
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ") " + i_physValPolygon.unit().symbol();
+        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ")";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3366,7 +3369,7 @@ CPhysValPolygon CGraphObjConnectionLine::setPhysValPolygonOrig(const CPhysValPol
     CPhysValPolygon physValPolygonPrev = m_physValPolygonOrig;
     m_physValPolygonOrig = i_physValPolygon;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ") " + physValPolygonPrev.unit().symbol());
+        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ")");
     }
     return physValPolygonPrev;
 }
@@ -3385,7 +3388,7 @@ CPhysValPolygon CGraphObjConnectionLine::setPhysValPolygonScaledAndRotated(const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ") " + i_physValPolygon.unit().symbol();
+        strMthInArgs = "New [" + QString::number(i_physValPolygon.count()) + "](" + i_physValPolygon.toString() + ")";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3397,7 +3400,7 @@ CPhysValPolygon CGraphObjConnectionLine::setPhysValPolygonScaledAndRotated(const
     CPhysValPolygon physValPolygonPrev = m_physValPolygonScaledAndRotated;
     m_physValPolygonScaledAndRotated = i_physValPolygon;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ") " + physValPolygonPrev.unit().symbol());
+        mthTracer.setMethodReturn("Prev [" + QString::number(physValPolygonPrev.count()) + "](" + physValPolygonPrev.toString() + ")");
     }
     return physValPolygonPrev;
 }
@@ -3488,8 +3491,8 @@ void CGraphObjConnectionLine::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValPolygon Orig {" + m_physValPolygonOrig.toString() + "} " + m_physValPolygonOrig.unit().symbol()
-            + ", ScaledRotated {" + m_physValPolygonScaledAndRotated.toString() + "} " + m_physValPolygonScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValPolygon Orig {" + m_physValPolygonOrig.toString() + "}"
+            + ", ScaledRotated {" + m_physValPolygonScaledAndRotated.toString() + "}";
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

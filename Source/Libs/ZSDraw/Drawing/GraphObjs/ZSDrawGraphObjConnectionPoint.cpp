@@ -1343,9 +1343,18 @@ QString CGraphObjConnectionPoint::pathNameOfLinkedObject() const
 QString CGraphObjConnectionPoint::path() const
 //------------------------------------------------------------------------------
 {
-    QString strPath = pathNameOfLinkedObject();
+    QString strPath;
     if (m_selPtLinkedObject.m_pGraphObj != nullptr) {
-        strPath = m_selPtLinkedObject.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+        strPath = pathNameOfLinkedObject();
+        if (m_selPtLinkedObject.m_pGraphObj->tree() != nullptr) {
+            strPath = m_selPtLinkedObject.m_pGraphObj->tree()->buildPathStr(strPath, m_strName);
+        }
+        else {
+            strPath += CDrawingScene::getGraphObjNameNodeSeparator() + m_strName;
+        }
+    }
+    else {
+        strPath = m_strName;
     }
     return strPath;
 }
@@ -1764,6 +1773,9 @@ void CGraphObjConnectionPoint::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
     }
 
     i_pPainter->save();
@@ -2688,11 +2700,26 @@ CPhysValRect CGraphObjConnectionPoint::getPhysValRectOrig(const QRectF& i_rectOr
     }
     CPhysValPoint physValPointCenter(*m_pDrawingScene);
     CPhysValSize physValSize(*m_pDrawingScene);
-    if (parentGroup() != nullptr) {
+    CGraphObjGroup* pGraphObjGroupParent = parentGroup();
+    if (pGraphObjGroupParent != nullptr) {
+        // @note
+        // Not anchored connection points (connection points not linked to selection points
+        // of other graphic items) may be added as childs to groups. For those connection
+        // points "parentGroup()->mapToScene" returns the expected scene coordinates.
+        // If connection points are linked to selection points of a group, they are also
+        // added as child items of the group branch item to the index tree.
+        // "parentGroup" returns a valid group but the parent group's "mapToScene" method
+        // cannot be used to retrieve the scene coordinates of connection points position as
+        // the position of nchored connection poionts is already defined in scene coordinates.
+        if (linkedObject() == pGraphObjGroupParent) {
+            pGraphObjGroupParent = nullptr;
+        }
+    }
+    if (pGraphObjGroupParent != nullptr) {
         QPointF ptCenter = pGraphicsItemThis->mapToParent(i_rectOrig.center());
-        ptCenter = parentGroup()->mapToTopLeftOfBoundingRect(ptCenter);
-        physValPointCenter = parentGroup()->convert(ptCenter);
-        physValSize = parentGroup()->convert(i_rectOrig.size());
+        ptCenter = pGraphObjGroupParent->mapToTopLeftOfBoundingRect(ptCenter);
+        physValPointCenter = pGraphObjGroupParent->convert(ptCenter);
+        physValSize = pGraphObjGroupParent->convert(i_rectOrig.size());
     }
     else {
         // Please note that "mapToScene" maps the local coordinates relative to the
@@ -2802,7 +2829,7 @@ void CGraphObjConnectionPoint::updatePosition()
             mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
         }
         // Please note that on calling setPos the itemChange method is called invoking updateAnchorLines.
-        setPos(anchorLine.p2());
+        QGraphicsItem_setPos(anchorLine.p2());
         m_bUpdatePositionInProgress = false;
     }
 }
@@ -3150,9 +3177,9 @@ void CGraphObjConnectionPoint::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
-            + ", Scaled {" + m_physValRectScaled.toString() + "} " + m_physValRectScaled.unit().symbol();
-            + ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "} " + m_physValRectScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValRect Orig {" + m_physValRectOrig.toString() + "}" +
+            ", Scaled {" + m_physValRectScaled.toString() + "}" +
+            ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "}";
         i_mthTracer.trace(strRuntimeInfo);
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

@@ -34,9 +34,7 @@ may result in using the software modules.
 class QPainter;
 class QRectF;
 
-namespace ZS
-{
-namespace Draw
+namespace ZS::Draw
 {
 class CDrawingScene;
 class CDrawSettings;
@@ -81,7 +79,7 @@ protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;
     /*!< To speed up code and to improve readability a flag is set to define the YAxisScaleOrientation. */
-    bool m_bYAxisTopDown;
+    bool m_bYAxisTopDown = true;
     ///*!< Mathematic component to calculate the division lines of the X-Scale.
     //     Also used to convert pixel values into metric values and vice versa. */
     //const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsX;
@@ -92,12 +90,10 @@ protected: // instance members
     ZS::PhysVal::CUnit m_unit;
     /*!< PhysVal shapes may be added to the drawing scene to be drawn in the background or foreground.
          If added to the drawing scene the index in the list of shapes is set here. Otherwise the index is -1. */
-    int m_idxInDrawingScene;
+    int m_idxInDrawingScene = -1;
 
 }; // class CPhysValShape
 
-} // namespace Draw
-
-} // namespace ZS
+} // namespace ZS::Draw
 
 #endif // #ifndef ZSDraw_PhysValShape_h

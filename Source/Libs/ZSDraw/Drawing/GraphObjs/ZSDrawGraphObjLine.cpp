@@ -1795,6 +1795,9 @@ void CGraphObjLine::paint(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) && mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceDrawSettings(mthTracer, EMethodDir::Enter);
         traceGraphObjStates(mthTracer, EMethodDir::Enter);
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
+        }
     }
 
     i_pPainter->save();
@@ -3141,9 +3144,9 @@ void CGraphObjLine::traceThisPositionInfo(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = " . ";
-        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol() +
-            ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol() +
-            ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
+        strRuntimeInfo += ". PhysValLine Orig {" + m_physValLineOrig.toString() + "}" +
+            ", Scaled {" + m_physValLineScaled.toString() + "}" +
+            ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "}";
         i_mthTracer.trace(strRuntimeInfo);
     if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
     else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
