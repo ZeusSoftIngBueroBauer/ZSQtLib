@@ -501,7 +501,7 @@ void CTestStep::reset()
 //------------------------------------------------------------------------------
 {
     m_strlstResultValues.clear();
-    m_testResult = static_cast<ETestResult>(0);
+    m_testResult = ETestResult::Undefined;
     m_fTimeTestStart_s = 0.0;
     m_fTimeTestEnd_s = 0.0;
     emit_changed();

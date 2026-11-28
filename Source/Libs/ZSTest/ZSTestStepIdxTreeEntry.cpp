@@ -79,25 +79,17 @@ CAbstractTestStepIdxTreeEntry::CAbstractTestStepIdxTreeEntry(
     {
         m_pTree->add(this, i_pTSGrpParent);
     }
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CAbstractTestStepIdxTreeEntry::~CAbstractTestStepIdxTreeEntry()
 //------------------------------------------------------------------------------
 {
     // The root entry will neither be added to the list nor to the map of tree entries.
-    if( m_entryType != CIdxTreeEntry::EEntryType::Root )
-    {
+    if (m_entryType != CIdxTreeEntry::EEntryType::Root) {
         m_pTree->remove(this);
     }
-
-    m_pTest = nullptr;
-    m_enabled = static_cast<EEnabled>(0);
-    //m_strToolTip;
-    m_testResult = static_cast<ETestResult>(0);
-
-} // dtor
+}
 
 /*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -130,29 +122,38 @@ public: // overridables
 void CAbstractTestStepIdxTreeEntry::setEnabled( EEnabled i_enabled )
 //------------------------------------------------------------------------------
 {
-    if( m_enabled != i_enabled )
-    {
+    if (m_enabled != i_enabled) {
         m_enabled = i_enabled;
         emit_changed();
     }
 }
 
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 /*! Sets the tool tip of the entry and informs the tree that the content of the
     entry has been changed and got to be updated.
 
-    /param i_strToolTip [in]
+    @param i_strToolTip [in]
 */
 void CAbstractTestStepIdxTreeEntry::setToolTip( const QString& i_strToolTip )
 //------------------------------------------------------------------------------
 {
-    if( m_strToolTip != i_strToolTip )
-    {
+    if (m_strToolTip != i_strToolTip) {
         m_strToolTip = i_strToolTip;
+        emit_changed();
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! Sets the test result of the entry and informs the tree that the content
+    of the entry has been changed and got to be updated.
+
+    @param i_testResult [in]
+*/
+void CAbstractTestStepIdxTreeEntry::setTestResult(const CEnumTestResult& i_result)
+//------------------------------------------------------------------------------
+{
+    if (m_testResult != i_result) {
+        m_testResult = i_result;
         emit_changed();
     }
 }
@@ -207,33 +208,27 @@ QString CAbstractTestStepIdxTreeEntry::testDuration2StrInBestUnit() const
 //------------------------------------------------------------------------------
 {
     QString strDuration;
-    double  fDuration_s = getTestDurationInSec();
+    double fDuration_s = getTestDurationInSec();
 
-    if( fabs(fDuration_s) <= 1.0e-6 )
-    {
+    if (fabs(fDuration_s) <= 1.0e-6) {
         strDuration = QString::number(1.0e9 * fDuration_s, 'f', 3) + " ns";
     }
-    else if( fabs(fDuration_s) <= 1.0e-3 )
-    {
+    else if (fabs(fDuration_s) <= 1.0e-3) {
         strDuration = QString::number(1.0e6 * fDuration_s, 'f', 3) + " " + Math::c_chSymbolMicro + "s";
     }
-    else if( fabs(fDuration_s) <= 1.0 )
-    {
+    else if (fabs(fDuration_s) <= 1.0) {
         strDuration = QString::number(1.0e3 * fDuration_s, 'f', 3) + " ms";
     }
-    else if( fabs(fDuration_s) <= 1.0e3 )
-    {
+    else if (fabs(fDuration_s) <= 1.0e3) {
         strDuration = QString::number(fDuration_s, 'f', 3) + " s";
     }
-    else
-    {
+    else {
         // I don't think that it is necessary to convert it to a time format with
         // hours and minutes (or even using days and years).
         strDuration = QString::number(fDuration_s, 'f', 3) + " s";
     }
     return strDuration;
-
-} // testDuration2StrInBestUnit
+}
 
 /*==============================================================================
 protected: // overridables
@@ -244,9 +239,7 @@ void CAbstractTestStepIdxTreeEntry::emit_changed()
 //------------------------------------------------------------------------------
 {
     emit changed(this);
-
-    if( m_pTree != nullptr )
-    {
+    if (m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
 }

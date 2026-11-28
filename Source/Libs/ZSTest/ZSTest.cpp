@@ -121,9 +121,9 @@ CTest::CTest(
         /* strAddInfo   */ strMthInArgs );
 
     QString strIniFileScope = "User";
-#ifdef _WINDOWS
+    #ifdef _WINDOWS
     strIniFileScope = "System";
-#endif
+    #endif
     m_pIdxTree = new CTestStepIdxTree(this);
     if (m_strTestStepsAbsFilePath.isEmpty()) {
         m_strTestStepsAbsFilePath = GetDefaultTestStepsAbsFilePath(strIniFileScope);
@@ -150,28 +150,15 @@ CTest::~CTest()
     // Should be called by derived class if desired.
     //m_pIdxTree->save();
 
-    try
-    {
+    try {
         delete m_pIdxTree;
     }
-    catch(...)
-    {
+    catch(...) {
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-
-    m_pIdxTree = nullptr;
-    //m_strTestStepsAbsFilePath;
-    m_pTestStepCurr = nullptr;
-    m_iTestStepInterval_ms = 0;
-    m_iNumberOfTestRuns = 0;
-    m_state = static_cast<ETestState>(0);
-    m_runMode = static_cast<ERunMode>(0);
-    m_bDoTestStepPending = false;
-    m_pTrcAdminObj = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -196,12 +183,9 @@ SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -209,22 +193,16 @@ SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
         /* strMthInArgs */ strMthInArgs );
 
     QString strAbsFilePath = i_strAbsFilePath;
-
-    if( strAbsFilePath.isEmpty() )
-    {
+    if (strAbsFilePath.isEmpty()) {
         strAbsFilePath = m_strTestStepsAbsFilePath;
     }
 
     SErrResultInfo errResultInfo = m_pIdxTree->save(strAbsFilePath);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // saveTestSteps
+}
 
 //------------------------------------------------------------------------------
 /*! Recalls the settings of the test steps and test step groups from an XML file.
@@ -246,12 +224,9 @@ SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -259,22 +234,16 @@ SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
         /* strMthInArgs */ strMthInArgs );
 
     QString strAbsFilePath = i_strAbsFilePath;
-
-    if( strAbsFilePath.isEmpty() )
-    {
+    if (strAbsFilePath.isEmpty()) {
         strAbsFilePath = m_strTestStepsAbsFilePath;
     }
 
     SErrResultInfo errResultInfo = m_pIdxTree->recall(strAbsFilePath);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // recallTestSteps
+}
 
 /*==============================================================================
 public: // instance methods
@@ -285,26 +254,20 @@ void CTest::setTestStepInterval( int i_iTestStepInterval_ms )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strAddTrcInfo = "Interval: " + QString::number(i_iTestStepInterval_ms);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTestStepInterval",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_iTestStepInterval_ms != i_iTestStepInterval_ms )
-    {
+    if (m_iTestStepInterval_ms != i_iTestStepInterval_ms) {
         m_iTestStepInterval_ms = i_iTestStepInterval_ms;
-
         emit testStepIntervalChanged(m_iTestStepInterval_ms);
     }
-
-} // setTestStepInterval
+}
 
 /*==============================================================================
 public: // overridables
@@ -312,184 +275,146 @@ public: // overridables
 
 //------------------------------------------------------------------------------
 /*! Starts the test or continues a paused test.
-
 */
 void CTest::start()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "start",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
-    {
-        strAddTrcInfo  = "State: " + m_state.toString();
-        strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+        strAddTrcInfo = "State: " + m_state.toString() +
+            ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( m_state == ETestState::Idle )
-    {
+    if (m_state == ETestState::Idle) {
         m_iNumberOfTestRuns++;
-
         m_pIdxTree->reset();
-
         setCurrentTestStep(nullptr);
-
         emit testStarted();
-
         onTestStarted();
     }
-
-    if( m_state == ETestState::Idle || m_state == ETestState::Paused )
-    {
+    if (m_state == ETestState::Idle || m_state == ETestState::Paused) {
         setState(ETestState::Running);
         setRunMode(ERunMode::Continuous);
-
         triggerNextTestStep();
     }
-
-} // start
+}
 
 //------------------------------------------------------------------------------
 void CTest::step()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "step",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
-    {
-        strAddTrcInfo  = "State: " + m_state.toString();
-        strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+        strAddTrcInfo = "State: " + m_state.toString() +
+            ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( m_state == ETestState::Idle )
-    {
+    if (m_state == ETestState::Idle) {
+        m_iNumberOfTestRuns++;
         m_pIdxTree->reset();
-
         setCurrentTestStep(nullptr);
+        emit testStarted();
+        onTestStarted();
     }
-
-    if( m_state == ETestState::Idle || m_state == ETestState::Paused )
-    {
+    if (m_state == ETestState::Idle || m_state == ETestState::Paused) {
         setState(ETestState::Running);
         setRunMode(ERunMode::SingleStep);
-
         triggerNextTestStep();
     }
-
-} // step
+}
 
 //------------------------------------------------------------------------------
 void CTest::stop()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "stop",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
-    {
-        strAddTrcInfo  = "State: " + m_state.toString();
-        strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+        strAddTrcInfo = "State: " + m_state.toString() +
+            ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( m_state == ETestState::Running || m_state == ETestState::Paused )
-    {
+    if (m_state == ETestState::Running || m_state == ETestState::Paused) {
         setState(ETestState::Idle);
     }
-
-} // stop
+}
 
 //------------------------------------------------------------------------------
 void CTest::abort()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "abort",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
-    {
-        strAddTrcInfo  = "State: " + m_state.toString();
-        strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+        strAddTrcInfo = "State: " + m_state.toString() +
+            ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( m_state == ETestState::Running || m_state == ETestState::Paused )
-    {
+    if (m_state == ETestState::Running || m_state == ETestState::Paused) {
         setState(ETestState::Idle);
     }
-
-} // abort
+}
 
 //------------------------------------------------------------------------------
 void CTest::pause()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "pause",
         /* strAddInfo   */ strAddTrcInfo );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) )
-    {
-        strAddTrcInfo  = "State: " + m_state.toString();
-        strAddTrcInfo += ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed)) {
+        strAddTrcInfo = "State: " + m_state.toString() +
+            ", TestStepCurr: " + QString(m_pTestStepCurr == nullptr ? "nullptr" : m_pTestStepCurr->path());
         mthTracer.trace(strAddTrcInfo);
     }
 
-    if( m_state == ETestState::Running )
-    {
+    if (m_state == ETestState::Running) {
         setState(ETestState::Paused);
     }
-
-} // pause
+}
 
 //------------------------------------------------------------------------------
 void CTest::resume()
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resume",
         /* strAddInfo   */ strAddTrcInfo );
 
-    if( m_state == ETestState::Paused )
-    {
+    if (m_state == ETestState::Paused) {
         setState(ETestState::Running);
         setRunMode(ERunMode::Continuous);
-
         triggerNextTestStep();
     }
-
-} // resume
+}
 
 /*==============================================================================
 public: // instance methods
@@ -508,16 +433,13 @@ public: // instance methods
 */
 SErrResultInfo CTest::readExpectedTestResults(
     const QString& i_strAbsFilePath,
-    QStringList&   o_strlstExpectedResults ) const
+    QStringList& o_strlstExpectedResults ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_strAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -525,47 +447,34 @@ SErrResultInfo CTest::readExpectedTestResults(
         /* strMthInArgs */ strMthInArgs );
 
     SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "saveTestResults");
-
     QFile file;
-
-    if( i_strAbsFilePath.isEmpty() )
-    {
+    if (i_strAbsFilePath.isEmpty()) {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultInvalidFileName);
     }
-    else
-    {
+    else {
         QFileInfo fileInfo(i_strAbsFilePath);
-
         file.setFileName(i_strAbsFilePath);
-
-        if( !file.open(QIODevice::ReadOnly) )
-        {
+        if (!file.open(QIODevice::ReadOnly)) {
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileOpenForRead);
             errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
         }
     }
 
-    if( !errResultInfo.isErrorResult() )
-    {
+    if (!errResultInfo.isErrorResult()) {
         QTextStream in(&file);
         QString line;
-
-        while( in.readLineInto(&line) )
-        {
+        while (in.readLineInto(&line)) {
             o_strlstExpectedResults << line;
         }
     }
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // readExpectedTestResults
+}
 
 /*==============================================================================
 public: // instance methods

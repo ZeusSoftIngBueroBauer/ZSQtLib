@@ -95,7 +95,7 @@ public: // instance methods
 public: // instance methods
     void reset();
 public: // instance methods
-    void setTestResult( const CEnumTestResult& i_result );
+    void setTestResult(const CEnumTestResult& i_result) override;
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
     virtual CEnumTestResult getTestResult() const override { return m_testResult; }
     virtual double getTestDurationInSec() const override;

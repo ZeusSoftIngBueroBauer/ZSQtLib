@@ -70,9 +70,7 @@ public: // ctors and dtor
     @param i_pTSGrpParent [in] Parent test group or nullptr, if the entry does not have a parent.
 */
 CTestStepGroup::CTestStepGroup(
-    CTest*          i_pTest,
-    const QString&  i_strName,
-    CTestStepGroup* i_pTSGrpParent ) :
+    CTest* i_pTest, const QString& i_strName, CTestStepGroup* i_pTSGrpParent ) :
 //------------------------------------------------------------------------------
     CAbstractTestStepIdxTreeEntry(
         i_pTest, CIdxTreeEntry::EEntryType::Branch, i_strName, i_pTSGrpParent)
@@ -106,7 +104,7 @@ CTestStepGroup::CTestStepGroup(
 //------------------------------------------------------------------------------
     CAbstractTestStepIdxTreeEntry(i_pTest, i_entryType, i_strName, nullptr)
 {
-} // ctor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -120,10 +118,11 @@ public: // instance methods
 
     For a group the resulting test result is
 
-    Undefined .. if ANY of the childrens test result is Undefined
-    Failed ..... if NONE of the childrens test result is Undefined but at least
+    Undefined .. if none of the childrens test result is Failed and at least one
+                 childrens test result is undefined
+    Failed ..... if any of the childrens test result is Failed
                  on childrens test result is Failed
-    Passed ..... if NONE of the childrens test result is either Undefined or Failed.
+    Passed ..... if all childrens test result is Passed.
 
     @param i_pTreeEntry [in] Entry whose test result has been changed.
                              On evaluating the resulting test result of the group
@@ -134,90 +133,35 @@ public: // instance methods
 */
 void CTestStepGroup::onTestStepResultChanged(
     CAbstractTestStepIdxTreeEntry* i_pTreeEntry,
-    const CEnumTestResult&         i_testResult )
+    const CEnumTestResult& i_testResult )
 //------------------------------------------------------------------------------
 {
     // Don't invoke "i_pTreeEntry->getTestResult" here as that would recursively
     // go through all child of the tree entry to calculate the resulting test result
     // if "i_pTreeEntry" is a group.
 
-    // If the saved test result is different from the test result of the child ..
-    if( m_testResult != i_testResult )
-    {
-        CEnumTestResult testResult = ETestResult::TestPassed;
-
-        // If the test result of the child is Failed ..
-        if( i_testResult == ETestResult::TestFailed )
-        {
-            // .. the resulting test result of the group is also Failed.
-            testResult = ETestResult::TestFailed;
+    // Determine the resulting test result for the group entry.
+    CEnumTestResult testResult = i_testResult == ETestResult::TestFailed ? i_testResult : m_testResult;
+    // If the passed test result is Passed or Undefined, the result of all children
+    // must be queried to get the groups resulting test result.
+    if (testResult != ETestResult::TestFailed) {
+        testResult = getTestResult();
+    }
+    if (m_testResult != testResult) {
+        m_testResult = testResult;
+        emit_changed();
+        CTestStepGroup* pParentGroup = getParentGroup();
+        if (pParentGroup != nullptr) {
+            pParentGroup->onTestStepResultChanged(this, m_testResult);
         }
-        // If the test result of the child is Passed  ..
-        else if( i_testResult == ETestResult::TestPassed )
-        {
-            // .. the resulting test result is:
-
-            // Undefined .. if ANY of the childrens test result is Undefined
-            // Failed ..... if NONE of the childrens test result is Undefined but at least
-            //              on childrens test result is Failed
-            // Passed ..... if NONE of the childrens test result is either Undefined or Failed.
-
-            // The test result of all children must be queried to get the
-            // groups resulting test result.
-            for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-            {
-                if( pIdxTreeEntry != nullptr )
-                {
-                    CAbstractTestStepIdxTreeEntry* pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-                    // The passed child entry will be ignored as for this child entry
-                    // the resulting test result is already passed as argument.
-                    if( pTestStepEntry != i_pTreeEntry )
-                    {
-                        CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
-
-                        // Set to Failed also for Undefined and Ignore because those test
-                        // result should not have been passed to this method.
-                        if( testResultTmp == ETestResult::Undefined )
-                        {
-                            // The groups 
-                            testResult = ETestResult::Undefined;
-                            break;
-                        }
-                        else if( testResultTmp == ETestResult::TestFailed )
-                        {
-                            testResult = ETestResult::TestFailed;
-                        }
-                    }
-                }
+        else {
+            CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
+            if (pRootEntry != nullptr) {
+                pRootEntry->onTestStepResultChanged(this, m_testResult);
             }
-        } // if( i_testResult == ETestResult::TestPassed )
-
-        if( m_testResult != i_testResult )
-        {
-            m_testResult = i_testResult;
-
-            emit_changed();
-
-            CTestStepGroup* pParentGroup = getParentGroup();
-
-            if( pParentGroup != nullptr )
-            {
-                pParentGroup->onTestStepResultChanged(this, m_testResult);
-            }
-            else
-            {
-                CTestStepRoot* pRootEntry = dynamic_cast<CTestStepRoot*>(m_pTest->getTestStepIdxTree()->root());
-
-                if( pRootEntry != nullptr )
-                {
-                    pRootEntry->onTestStepResultChanged(this, m_testResult);
-                }
-            }
-        } // if( m_testResult != i_testResult )
-    } // if( m_testResult != testResult )
-
-} // onTestStepResultChanged
+        }
+    }
+}
 
 /*==============================================================================
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry
@@ -228,47 +172,36 @@ public: // must overridables of base class CAbstractTestStepIdxTreeEntry
 
     For a group the resulting test result is
 
-    Undefined .. if ANY of the childrens test result is Undefined
-    Failed ..... if NONE of the childrens test result is Undefined but at least
+    Undefined .. if none of the childrens test result is Failed and at least one
+                 childrens test result is undefined
+    Failed ..... if any of the childrens test result is Failed
                  on childrens test result is Failed
-    Passed ..... if NONE of the childrens test result is either Undefined or Failed.
+    Passed ..... if all childrens test result is Passed.
 
     @return Test result of the group.
 */
 CEnumTestResult CTestStepGroup::getTestResult() const
 //------------------------------------------------------------------------------
 {
-    CEnumTestResult testResult = ETestResult::Undefined;
-
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
-
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-    {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-        CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
-
-        if( testResultTmp == ETestResult::TestFailed )
-        {
-            testResult = ETestResult::TestFailed;
-        }
-        else if( testResultTmp == ETestResult::TestPassed )
-        {
-            if( testResult != ETestResult::TestFailed )
-            {
-                testResult = ETestResult::TestPassed;
+    CEnumTestResult testResult =
+        m_arpTreeEntries.isEmpty() ? ETestResult::TestPassed : ETestResult::Undefined;
+    for (const CIdxTreeEntry* pIdxTreeEntry : m_arpTreeEntries) {
+        testResult = ETestResult::TestPassed;
+        const CAbstractTestStepIdxTreeEntry* pTestStepEntry =
+            dynamic_cast<const CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+        if (pTestStepEntry != nullptr) {
+            CEnumTestResult testResultTmp = pTestStepEntry->getTestResult();
+            if (testResultTmp == ETestResult::TestFailed) {
+                testResult = ETestResult::TestFailed;
+                break;
+            }
+            else if (testResultTmp == ETestResult::Undefined) {
+                testResult = ETestResult::Undefined;
             }
         }
-        else // if( testResultTmp == ETestResult::Undefined || testResultTmp == ETestResult::Skipped )
-        {
-            testResult = ETestResult::Undefined;
-            break;
-        }
     }
-
     return testResult;
-
-} // getTestResult
+}
 
 //------------------------------------------------------------------------------
 /*! Returns the overall sum of the test duration in seconds for this group by
@@ -280,16 +213,12 @@ double CTestStepGroup::getTestDurationInSec() const
 //------------------------------------------------------------------------------
 {
     double fDuration_s = 0.0;
-
-    const CAbstractTestStepIdxTreeEntry* pTestStepEntry;
-
-    for( const auto& pIdxTreeEntry: m_arpTreeEntries )
-    {
-        pTestStepEntry = dynamic_cast<CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
-
-        fDuration_s += pTestStepEntry->getTestDurationInSec();
+    for (const CIdxTreeEntry* pIdxTreeEntry : m_arpTreeEntries) {
+        const CAbstractTestStepIdxTreeEntry* pTestStepEntry =
+            dynamic_cast<const CAbstractTestStepIdxTreeEntry*>(pIdxTreeEntry);
+        if (pTestStepEntry != nullptr) {
+            fDuration_s += pTestStepEntry->getTestDurationInSec();
+        }
     }
-
     return fDuration_s;
-
-} // getTestDurationInSec
+}

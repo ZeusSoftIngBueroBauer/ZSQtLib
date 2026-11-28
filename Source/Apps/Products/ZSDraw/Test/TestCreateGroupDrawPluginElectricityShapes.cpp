@@ -121,9 +121,12 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
 
     ZS::Test::CTestStep* pTestStep = nullptr;
     QStringList strlstExpectedValues;
+    QStringList strlstGraphObjsKeyInTreeGetResultValues;
     QString strObjName;
     QString strMethod;
     QString strMthArgs;
+    QPoint ptMousePos1;
+    QPoint ptMousePos2;
 
     ZS::Test::CTestStepGroup* pGrpResistorShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -159,8 +162,9 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     strObjName = c_strGraphObjNameElectricityResistor1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosElectricityResistor1 = QPointF(200.0, 200.0);
-    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
-    m_pPhysValRectElectricityResistor1->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
+    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene);
+    m_pPhysValRectElectricityResistor1->setCenter(
+        CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
     pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
@@ -187,8 +191,9 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     strObjName = c_strGraphObjNameElectricityResistor2;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosElectricityResistor2 = QPointF(400.0, 200.0);
-    *m_pPhysValRectElectricityResistor2 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
-    m_pPhysValRectElectricityResistor2->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor2, Units.Length.px));
+    *m_pPhysValRectElectricityResistor2 = CGraphObjResistor::initialSize(m_pDrawingScene);
+    m_pPhysValRectElectricityResistor2->setCenter(
+        CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor2, Units.Length.px));
     pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strObjName);
@@ -197,6 +202,111 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForGroup(
         strObjName, m_ptPosElectricityResistor2, *m_pPhysValRectElectricityResistor2,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Group R1 and R2
+    //----------------
+
+    QString strGroupName = "Group-R1R2";
+    strObjName = "DrawingScene";
+    strMethod = "createGroup";
+    strMthArgs = strGroupName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawGraphObjGroup(ZS::Test::CTestStep*)));
+    strObjName = strGroupName;
+    m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
+    m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor1] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, strObjName, c_strGraphObjNameElectricityResistor1);
+    m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor2] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, strObjName, c_strGraphObjNameElectricityResistor2);
+    ptMousePos1 = m_pPhysValRectElectricityResistor1->topLeft().toQPointF(Units.Length.px).toPoint() - QPoint(10, 10);
+    ptMousePos2 = m_pPhysValRectElectricityResistor2->bottomRight().toQPointF(Units.Length.px).toPoint() + QPoint(10, 10);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("P1", ptMousePos1);
+    pTestStep->setConfigValue("P2", ptMousePos2);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strObjName]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor1]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor2]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group R1 and R2
+    CPhysValRect physValRectGroupR1R2(*m_pDrawingScene);
+    physValRectGroupR1R2.setTopLeft(m_pPhysValRectElectricityResistor1->topLeft());
+    physValRectGroupR1R2.setBottomRight(m_pPhysValRectElectricityResistor2->bottomRight());
+    QPointF ptPosGroupR1R2 = physValRectGroupR1R2.center().toQPointF(Units.Length.px);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strObjName, ptPosGroupR1R2, physValRectGroupR1R2, false, iResultValuesPrecision));
+    // R1
+    m_ptPosElectricityResistor1 = QPointF(-100.0, 0.0);
+    m_pPhysValRectElectricityResistor1->setCenter(
+        CPhysValPoint(*m_pDrawingScene, QPointF(30.0, 5.0), Units.Length.px));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameElectricityResistor1,
+        m_ptPosElectricityResistor1, *m_pPhysValRectElectricityResistor1,
+        false, iResultValuesPrecision));
+    // R2
+    m_ptPosElectricityResistor2 = QPointF(100.0, 0.0);
+    m_pPhysValRectElectricityResistor2->setCenter(
+        CPhysValPoint(*m_pDrawingScene, QPointF(230.0, 5.0), Units.Length.px));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameElectricityResistor2,
+        m_ptPosElectricityResistor2, *m_pPhysValRectElectricityResistor2,
+        false, iResultValuesPrecision));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Ungroup R1 and R2
+    //------------------
+
+    strObjName = "DrawingScene";
+    strMethod = "ungroup";
+    strMthArgs = strGroupName;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* strOperation    */ strObjName + "." + strMethod + "(" + strMthArgs + ")",
+        /* pGrpParent      */ pGrpResistorShapes,
+        /* szDoTestStepFct */ SLOT(doTestStepSelectAndUngroup(ZS::Test::CTestStep*)));
+    strObjName = strGroupName;
+    m_hshGraphObjNameToKeys[strObjName] = pIdxTree->buildKeyInTreeStr(strEntryType, strObjName);
+    m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor1] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, c_strGraphObjNameElectricityResistor1);
+    m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor2] = pIdxTree->buildKeyInTreeStr(
+        strEntryType, c_strGraphObjNameElectricityResistor2);
+    pTestStep->setConfigValue("GraphObjType", graphObjType2Str(EGraphObjTypeGroup));
+    pTestStep->setConfigValue("GraphObjName", strObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", m_hshGraphObjNameToKeys[strObjName]);
+    pTestStep->setConfigValue("P0", ptPosGroupR1R2);
+    pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
+    m_hshGraphObjNameToKeys.remove(strObjName);
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor1]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameElectricityResistor2]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // R1
+    m_ptPosElectricityResistor1 = QPointF(200.0, 200.0);
+    m_pPhysValRectElectricityResistor1->setCenter(
+        CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameElectricityResistor1,
+        m_ptPosElectricityResistor1, *m_pPhysValRectElectricityResistor1,
+        false, iResultValuesPrecision));
+    // R2
+    m_ptPosElectricityResistor2 = QPointF(400.0, 200.0);
+    *m_pPhysValRectElectricityResistor2 = CGraphObjResistor::initialSize(m_pDrawingScene);
+    m_pPhysValRectElectricityResistor2->setCenter(
+        CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor2, Units.Length.px));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameElectricityResistor2,
+        m_ptPosElectricityResistor2, *m_pPhysValRectElectricityResistor2,
         false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -230,11 +340,11 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     // The we add the position of the two connection points.
     // If more than 3 points are defined, the points from index 2 to the penultimate
     // index are additional polygon points.
-    QPoint ptMouseStart = m_pPhysValRectElectricityResistor1->rightCenter().toQPointF(Units.Length.px).toPoint();
-    ptMouseStart.setX(ptMouseStart.x() + 20);
-    ptMouseStart.setY(ptMouseStart.y() - 20);
+    ptMousePos1 = m_pPhysValRectElectricityResistor1->rightCenter().toQPointF(Units.Length.px).toPoint();
+    ptMousePos1.setX(ptMousePos1.x() + 20);
+    ptMousePos1.setY(ptMousePos1.y() - 20);
     QPolygon points({
-        ptMouseStart,
+        ptMousePos1,
         m_pPhysValRectElectricityResistor1->rightCenter().toQPointF(Units.Length.px).toPoint(),
         m_pPhysValRectElectricityResistor2->leftCenter().toQPointF(Units.Length.px).toPoint(),
         });
@@ -244,7 +354,7 @@ void CTest::createTestGroupDrawPluginElectricityShapesResistor(
     pTestStep->setConfigValue("ResultValuesPrecision", iResultValuesPrecision);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(resultValuesForConnectionLine(
-        strObjName, "R1.P2", "R2.P1",
+        strObjName, "P2", "P1",
         m_polygonConnectionLineR1P2R2P1, *m_pPhysValPolygonConnectionLineR1P2R2P1,
         false, iResultValuesPrecision));
     pTestStep->setExpectedValues(strlstExpectedValues);

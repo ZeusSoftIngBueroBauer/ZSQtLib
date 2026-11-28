@@ -7616,14 +7616,16 @@ QStringList CTest::resultValuesForGraphObj(
                 QString strNameCntPt2 = pGraphObjConnectionPointP2 == nullptr ? "" : pGraphObjConnectionPointP2->name();
                 strlstResultValues = resultValuesForConnectionLine(
                     i_pGraphObj->name(), strNameCntPt1, strNameCntPt2,
-                    pGraphObjConnectionLine->polygon(), pGraphObjConnectionLine->getPolygon(), i_bIsSelected, i_iPrecision);
+                    pGraphObjConnectionLine->polygon(), pGraphObjConnectionLine->getPolygon(),
+                    i_bIsSelected, i_iPrecision);
             }
         }
         else if (i_pGraphObj->isGroup()) {
             const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
             if (pGraphObjGroup != nullptr) {
                 strlstResultValues = resultValuesForGroup(
-                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect(), i_bIsSelected, i_iPrecision);
+                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect(),
+                    i_bIsSelected, i_iPrecision);
             }
         }
         if (i_bAddLabelResultValues) {

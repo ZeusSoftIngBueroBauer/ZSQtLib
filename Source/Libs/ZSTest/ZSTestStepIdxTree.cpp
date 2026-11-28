@@ -24,19 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qcoreapplication.h>
-#include <QtCore/qmutex.h>
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qsettings.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
@@ -49,6 +36,19 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMutex.h"
+
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qmutex.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qsettings.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -85,8 +85,7 @@ CTestStepIdxTree::CTestStepIdxTree( CTest* i_pTest ) :
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
         /* strMthArgs   */ "");
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CTestStepIdxTree::~CTestStepIdxTree()
@@ -97,10 +96,7 @@ CTestStepIdxTree::~CTestStepIdxTree()
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dtor",
         /* strMthArgs   */ "");
-
-    m_pTest = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods find test step groups
@@ -122,14 +118,11 @@ CTestStepGroup* CTestStepIdxTree::findTestStepGroup(
 //------------------------------------------------------------------------------
 {
     QString strParentPath;
-
-    if( i_pTestGroupParent != nullptr && !i_pTestGroupParent->isRoot() )
-    {
+    if (i_pTestGroupParent != nullptr && !i_pTestGroupParent->isRoot()) {
         strParentPath = i_pTestGroupParent->path();
     }
     return findTestStepGroup(strParentPath, i_strGroupName);
-
-} // findTestStepGroup
+}
 
 /*==============================================================================
 public: // instance methods to find test steps
@@ -151,14 +144,11 @@ CTestStep* CTestStepIdxTree::findTestStep(
 //------------------------------------------------------------------------------
 {
     QString strParentPath;
-
-    if( i_pTestGroupParent != nullptr )
-    {
+    if (i_pTestGroupParent != nullptr) {
         strParentPath = i_pTestGroupParent->path();
     }
     return findTestStep(i_strName, strParentPath);
-
-} // findTestStep
+}
 
 /*==============================================================================
 public: // overridables of base class CModelIdxTree
@@ -190,29 +180,23 @@ void CTestStepIdxTree::reset( CIdxTreeEntry* i_pTreeEntry )
     // objects might be called from within different thread contexts.
     // But this is a protected method called by the public reset method
     // and the mutex has already been locked.
-
-    CIdxTreeEntry* pTreeEntry;
-    int            idxEntry;
-
-    for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
-    {
-        pTreeEntry = i_pTreeEntry->at(idxEntry);
-
-        if( pTreeEntry != nullptr )
-        {
-            if( pTreeEntry->isLeave() )
-            {
+    for (int idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry) {
+        CIdxTreeEntry* pTreeEntry = i_pTreeEntry->at(idxEntry);
+        if (pTreeEntry != nullptr) {
+            if (pTreeEntry->isLeave()) {
                 CTestStep* pTestStep = dynamic_cast<CTestStep*>(pTreeEntry);
                 pTestStep->reset();
             }
-            else // if( !pTreeEntry->isLeave() )
-            {
+            else {
                 reset(pTreeEntry);
             }
-        } // if(pTreeEntry != nullptr)
-    } // for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
-
-} // reset
+        }
+    }
+    CTestStepGroup* pTestStepGroup = dynamic_cast<CTestStepGroup*>(i_pTreeEntry);
+    if (pTestStepGroup != nullptr) {
+        pTestStepGroup->setTestResult(ETestResult::Undefined);
+    }
+}
 
 /*==============================================================================
 public: // overridables
@@ -233,14 +217,10 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -248,67 +228,44 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
         /* strMthInArgs */ strMthInArgs );
 
     QString strMth = "save";
-
     SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
-
     QFile file;
-
-    if( i_strAbsFilePath.isEmpty() )
-    {
+    if (i_strAbsFilePath.isEmpty()) {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultInvalidFileName);
     }
-    else
-    {
+    else {
         QFileInfo fileInfo(i_strAbsFilePath);
-        QDir      dir = fileInfo.absoluteDir();
-
-        if( !dir.exists() )
-        {
+        QDir dir = fileInfo.absoluteDir();
+        if (!dir.exists()) {
             dir.mkpath(dir.absolutePath());
         }
-
         file.setFileName(i_strAbsFilePath);
-
-        if( !file.open(QIODevice::WriteOnly) )
-        {
+        if (!file.open(QIODevice::WriteOnly)) {
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileOpenForWrite);
             errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
         }
     }
-
-    if( !errResultInfo.isErrorResult() )
-    {
+    if (!errResultInfo.isErrorResult()) {
         QByteArray byteArrSchema;
-
         QXmlStreamWriter xmlStreamWriter(&byteArrSchema);
-
         xmlStreamWriter.setAutoFormatting(true);
-
         xmlStreamWriter.writeStartDocument();
         xmlStreamWriter.writeStartElement("Test");
         xmlStreamWriter.writeAttribute( "Name", m_pRoot->name() );
-
         save(xmlStreamWriter, m_pRoot);
-
-        xmlStreamWriter.writeEndElement();  // Method Trace Admin Objects
+        xmlStreamWriter.writeEndElement();
         xmlStreamWriter.writeEndDocument();
-
-        if( !errResultInfo.isErrorResult() )
-        {
+        if (!errResultInfo.isErrorResult()) {
             file.write(byteArrSchema);
         }
-    } // if( !errResultInfo.isErrorResult() )
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // save
+}
 
 //------------------------------------------------------------------------------
 /*! Recalls the settings of the test steps and test step groups from an XML file.
@@ -326,14 +283,10 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -341,263 +294,184 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
         /* strMthInArgs    */ strMthInArgs );
 
     QString strMth = "recall";
-
     QString strAddErrInfo;
-
     SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 
-    if( i_strAbsFilePath.isEmpty() )
-    {
+    if (i_strAbsFilePath.isEmpty()) {
         errResultInfo.setSeverity(EResultSeverityError);
         errResultInfo.setResult(EResultInvalidFileName);
     }
-    else
-    {
+    else {
         file.setFileName(i_strAbsFilePath);
-
-        if( !file.open(QIODevice::ReadOnly) )
-        {
+        if (!file.open(QIODevice::ReadOnly)) {
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileOpenForRead);
             errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
         }
     }
 
-    if( !errResultInfo.isErrorResult() )
-    {
-        QXmlStreamReader            xmlStreamReader(&file);
-        QXmlStreamReader::TokenType xmlStreamTokenType;
-
+    if (!errResultInfo.isErrorResult()) {
+        QXmlStreamReader xmlStreamReader(&file);
         SErrResultInfo errResultInfoTmp = ErrResultInfoSuccess(strMth);
-
         CTestStepGroup* pTSGrp = dynamic_cast<CTestStepGroup*>(m_pRoot);
-        CTestStep*      pTestStep = nullptr;
-
-        QString  strElemName;
-        QString  strName;
-        QString  strVal;
+        CTestStep* pTestStep = nullptr;
+        QString strName;
+        QString strVal;
         EEnabled enabled = EEnabled::No;
-        bool     bVal = false;
-        bool     bConverted = false;
+        bool bVal = false;
+        bool bConverted = false;
 
-        xmlStreamTokenType = xmlStreamReader.readNext();
-
-        if( xmlStreamTokenType != QXmlStreamReader::StartDocument )
-        {
+        QXmlStreamReader::TokenType xmlStreamTokenType = xmlStreamReader.readNext();
+        if (xmlStreamTokenType != QXmlStreamReader::StartDocument) {
             xmlStreamReader.raiseError("Invalid XML document");
         }
-
         xmlStreamTokenType = xmlStreamReader.readNext();
-        strElemName = xmlStreamReader.name().toString();
+        QString strElemName = xmlStreamReader.name().toString();
 
-        if( xmlStreamTokenType != QXmlStreamReader::StartElement || strElemName != "Test" )
-        {
+        if (xmlStreamTokenType != QXmlStreamReader::StartElement || strElemName != "Test") {
             xmlStreamReader.raiseError("Invalid XML document (missing root node \"Test\")");
         }
-
-        if( !xmlStreamReader.hasError() )
-        {
-            while( !xmlStreamReader.atEnd() )
-            {
+        if (!xmlStreamReader.hasError()) {
+            while (!xmlStreamReader.atEnd()) {
                 xmlStreamTokenType = xmlStreamReader.readNext();
-
-                if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
-                {
+                if (xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement()) {
                     strElemName = xmlStreamReader.name().toString();
 
-                    // For best performance start with the most frequently used element names ..
-
-                    //---------------------------------------
-                    if( strElemName == "TestStepGroup" )
-                    //---------------------------------------
-                    {
-                        if( xmlStreamTokenType == QXmlStreamReader::StartElement )
-                        {
+                    if (strElemName == "TestStepGroup") {
+                        if (xmlStreamTokenType == QXmlStreamReader::StartElement) {
                             strName = xmlStreamReader.attributes().value("Name").toString();
-
-                            if( strName.isEmpty() )
-                            {
+                            if (strName.isEmpty()) {
                                 strAddErrInfo = "Attribute \"Name\" for \"" + strElemName + "\" not defined";
                                 xmlStreamReader.raiseError(strAddErrInfo);
                             }
-                            else // if( !strName.isEmpty() )
-                            {
+                            else {
                                 CTestStepGroup* pTSGrpTmp = findTestStepGroup(pTSGrp, strName);
-
-                                if( pTSGrpTmp != nullptr )
-                                {
+                                if (pTSGrpTmp != nullptr) {
                                     pTSGrp = pTSGrpTmp;
-
-                                    if( xmlStreamReader.attributes().hasAttribute("Enabled") )
-                                    {
+                                    if (xmlStreamReader.attributes().hasAttribute("Enabled")) {
                                         strVal = xmlStreamReader.attributes().value("Enabled").toString();
                                         enabled = CEnumEnabled::toEnumerator(strVal);
-                                        if( enabled == EEnabled::Undefined )
-                                        {
+                                        if (enabled == EEnabled::Undefined) {
                                             strAddErrInfo = "Attribute \"Enabled\" for " + strElemName + " \"" + pTSGrp->path() + "\" is out of range.";
                                             errResultInfoTmp.setSeverity(EResultSeverityError);
                                             errResultInfoTmp.setResult(EResultValueOutOfRange);
                                             errResultInfoTmp.setAddErrInfoDscr(strAddErrInfo);
-                                            if( CErrLog::GetInstance() != nullptr )
-                                            {
+                                            if (CErrLog::GetInstance() != nullptr) {
                                                 CErrLog::GetInstance()->addEntry(errResultInfoTmp);
                                             }
                                         }
-                                        else
-                                        {
+                                        else {
                                             pTSGrp->setEnabled(enabled);
                                         }
                                     }
-                                } // if( pTSGrpTmp != nullptr )
-                            } // if( !strName.isEmpty() )
-                        } // if( xmlStreamTokenType == QXmlStreamReader::StartElement )
-
-                        else if (xmlStreamTokenType == QXmlStreamReader::EndElement)
-                        {
-                            if( pTSGrp != nullptr )
-                            {
+                                }
+                            }
+                        }
+                        else if (xmlStreamTokenType == QXmlStreamReader::EndElement) {
+                            if (pTSGrp != nullptr) {
                                 pTSGrp = pTSGrp->getParentGroup();
                             }
-                        } // if (xmlStreamTokenType == QXmlStreamReader::EndElement)
-                    } // if( strElemName == "TestStepGroup" )
+                        }
+                    } // if (strElemName == "TestStepGroup") {
 
-                    //---------------------------------------
-                    else if( strElemName == "TestStep" )
-                    //---------------------------------------
-                    {
-                        if( xmlStreamTokenType == QXmlStreamReader::StartElement )
-                        {
+                    else if (strElemName == "TestStep") {
+                        if (xmlStreamTokenType == QXmlStreamReader::StartElement) {
                             strName = xmlStreamReader.attributes().value("Name").toString();
-
-                            if( strName.isEmpty() )
-                            {
+                            if (strName.isEmpty()) {
                                 strAddErrInfo = "Attribute \"Name\" for \"" + strElemName + "\" not defined";
                                 xmlStreamReader.raiseError(strAddErrInfo);
                             }
-                            else // if( !strName.isEmpty() )
-                            {
+                            else {
                                 pTestStep = findTestStep(pTSGrp, strName);
-
-                                if( pTestStep != nullptr )
-                                {
-                                    if( xmlStreamReader.attributes().hasAttribute("Enabled") )
-                                    {
+                                if (pTestStep != nullptr) {
+                                    if (xmlStreamReader.attributes().hasAttribute("Enabled")) {
                                         strVal = xmlStreamReader.attributes().value("Enabled").toString();
                                         enabled = CEnumEnabled::toEnumerator(strVal);
-                                        if( enabled == EEnabled::Undefined )
-                                        {
+                                        if (enabled == EEnabled::Undefined) {
                                             strAddErrInfo = "Attribute \"Enabled\" for " + strElemName + " \"" + pTestStep->path() + "\" is out of range.";
                                             errResultInfoTmp.setSeverity(EResultSeverityError);
                                             errResultInfoTmp.setResult(EResultValueOutOfRange);
                                             errResultInfoTmp.setAddErrInfoDscr(strAddErrInfo);
-                                            if( CErrLog::GetInstance() != nullptr )
-                                            {
+                                            if (CErrLog::GetInstance() != nullptr) {
                                                 CErrLog::GetInstance()->addEntry(errResultInfoTmp);
                                             }
                                         }
-                                        else
-                                        {
+                                        else {
                                             pTestStep->setEnabled(enabled);
                                         }
                                     }
-                                    if( xmlStreamReader.attributes().hasAttribute("Breakpoint") )
-                                    {
+                                    if (xmlStreamReader.attributes().hasAttribute("Breakpoint")) {
                                         strVal = xmlStreamReader.attributes().value("Breakpoint").toString();
                                         bVal = str2Bool(strVal, &bConverted);
-                                        if( !bConverted )
-                                        {
+                                        if (!bConverted) {
                                             strAddErrInfo = "Attribute \"Breakpoint\" for " + strElemName + " \"" + pTestStep->path() + "\" is out of range.";
                                             errResultInfoTmp.setSeverity(EResultSeverityError);
                                             errResultInfoTmp.setResult(EResultValueOutOfRange);
                                             errResultInfoTmp.setAddErrInfoDscr(strAddErrInfo);
-                                            if( CErrLog::GetInstance() != nullptr )
-                                            {
+                                            if (CErrLog::GetInstance() != nullptr) {
                                                 CErrLog::GetInstance()->addEntry(errResultInfoTmp);
                                             }
                                         }
-                                        else if( !bVal )
-                                        {
+                                        else if (!bVal) {
                                             pTestStep->removeBreakpoint();
                                         }
-                                        else // if( bVal )
-                                        {
+                                        else {
                                             pTestStep->setBreakpoint();
-
-                                            if( xmlStreamReader.attributes().hasAttribute("BreakpointEnabled") )
-                                            {
+                                            if (xmlStreamReader.attributes().hasAttribute("BreakpointEnabled")) {
                                                 strVal = xmlStreamReader.attributes().value("BreakpointEnabled").toString();
                                                 enabled = CEnumEnabled::toEnumerator(strVal);
-                                                if( enabled == EEnabled::Undefined )
-                                                {
+                                                if (enabled == EEnabled::Undefined) {
                                                     strAddErrInfo = "Attribute \"BreakpointEnabled\" for " + strElemName + " \"" + pTestStep->path() + "\" is out of range.";
                                                     errResultInfoTmp.setSeverity(EResultSeverityError);
                                                     errResultInfoTmp.setResult(EResultValueOutOfRange);
                                                     errResultInfoTmp.setAddErrInfoDscr(strAddErrInfo);
-                                                    if( CErrLog::GetInstance() != nullptr )
-                                                    {
+                                                    if (CErrLog::GetInstance() != nullptr) {
                                                         CErrLog::GetInstance()->addEntry(errResultInfoTmp);
                                                     }
                                                 }
-                                                else
-                                                {
+                                                else {
                                                     pTestStep->setBreakpointEnabled(enabled);
                                                 }
                                             }
-                                        } // if( bVal )
-                                    } // if( xmlStreamReader.attributes().hasAttribute("Breakpoint") )
-                                } // if( pTestStep != nullptr )
-                            } // if( !strName.isEmpty() )
-                        } // if( xmlStreamTokenType == QXmlStreamReader::StartElement )
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-                        else if (xmlStreamTokenType == QXmlStreamReader::EndElement)
-                        {
+                        else if (xmlStreamTokenType == QXmlStreamReader::EndElement){
                             pTestStep = nullptr;
-
-                        } // if (xmlStreamTokenType == QXmlStreamReader::EndElement)
+                        }
                     } // if( strElemName == "TestStep" )
 
-                    //---------------------------------------
-                    else if( strElemName == "Test" )
-                    //---------------------------------------
-                    {
-                        if( xmlStreamTokenType != QXmlStreamReader::EndElement )
-                        {
+                    else if (strElemName == "Test") {
+                        if (xmlStreamTokenType != QXmlStreamReader::EndElement) {
                             xmlStreamReader.raiseError("Invalid element name \"" + strElemName + "\"");
                         }
                     }
-
-                    //---------------------------------------
-                    else
-                    //---------------------------------------
-                    {
+                    else {
                         xmlStreamReader.raiseError("Invalid element name \"" + strElemName + "\"");
                     }
-                } // if( xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement() )
+                }
             } // while( !xmlStreamReader.atEnd() )
         } // if( !xmlStreamReader.hasError() )
 
-        if( xmlStreamReader.hasError() )
-        {
+        if (xmlStreamReader.hasError()) {
             strAddErrInfo  = xmlStreamReader.errorString() + " on reading " + i_strAbsFilePath + " ";
             strAddErrInfo += "Line:" + QString::number(xmlStreamReader.lineNumber()) + ", ";
             strAddErrInfo += "Column:" + QString::number(xmlStreamReader.columnNumber());
-
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileReadContent);
             errResultInfo.setAddErrInfoDscr(strAddErrInfo);
         }
-    } // if( !errResultInfo.isErrorResult() )
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // recall
+}
 
 /*==============================================================================
 protected: // auxiliary instance methods
@@ -605,60 +479,41 @@ protected: // auxiliary instance methods
 
 //------------------------------------------------------------------------------
 void CTestStepIdxTree::save(
-    QXmlStreamWriter& i_xmlStreamWriter,
-    CIdxTreeEntry*    i_pTreeEntry ) const
+    QXmlStreamWriter& i_xmlStreamWriter, CIdxTreeEntry* i_pTreeEntry ) const
 //------------------------------------------------------------------------------
 {
     // This is a protected method which may only be called through the public
     // methods. The mutex to protect the list and tree has already been locked.
-
-    CIdxTreeEntry* pTreeEntry;
-    int            idxEntry;
-
-    if( i_pTreeEntry->isLeave() )
-    {
+    if (i_pTreeEntry->isLeave()) {
         CTestStep* pTestStep = dynamic_cast<CTestStep*>(i_pTreeEntry);
-
         i_xmlStreamWriter.writeStartElement("TestStep");
-        i_xmlStreamWriter.writeAttribute( "Name", pTestStep->name() );
-        i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pTestStep->getEnabled()) );
-        i_xmlStreamWriter.writeAttribute( "Breakpoint", bool2Str(pTestStep->isBreakpointSet()) );
-        if( pTestStep->isBreakpointSet() )
-        {
+        i_xmlStreamWriter.writeAttribute("Name", pTestStep->name());
+        i_xmlStreamWriter.writeAttribute("Enabled", CEnumEnabled::toString(pTestStep->getEnabled()));
+        i_xmlStreamWriter.writeAttribute("Breakpoint", bool2Str(pTestStep->isBreakpointSet()));
+        if (pTestStep->isBreakpointSet()) {
             i_xmlStreamWriter.writeAttribute( "BreakpointEnabled", CEnumEnabled::toString(pTestStep->getBreakpointEnabled()) );
         }
         i_xmlStreamWriter.writeEndElement(/*"TestStep"*/);
     }
-    else if( i_pTreeEntry->isBranch() )
-    {
+    else if (i_pTreeEntry->isBranch()) {
         CTestStepGroup* pTestStepGroup = dynamic_cast<CTestStepGroup*>(i_pTreeEntry);
-
         i_xmlStreamWriter.writeStartElement("TestStepGroup");
-        i_xmlStreamWriter.writeAttribute( "Name", pTestStepGroup->name() );
-        i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pTestStepGroup->getEnabled()) );
-
-        for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
-        {
-            pTreeEntry = i_pTreeEntry->at(idxEntry);
-
-            if( pTreeEntry != nullptr )
-            {
+        i_xmlStreamWriter.writeAttribute("Name", pTestStepGroup->name());
+        i_xmlStreamWriter.writeAttribute("Enabled", CEnumEnabled::toString(pTestStepGroup->getEnabled()));
+        for (int idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry) {
+            CIdxTreeEntry* pTreeEntry = i_pTreeEntry->at(idxEntry);
+            if (pTreeEntry != nullptr) {
                 save(i_xmlStreamWriter, pTreeEntry);
             }
         }
         i_xmlStreamWriter.writeEndElement(/*"TestStepGroup"*/);
     }
-    else // if( i_pTreeEntry->entryType() == EIdxTreeEntryType::Root )
-    {
-        for( idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry )
-        {
-            pTreeEntry = i_pTreeEntry->at(idxEntry);
-
-            if( pTreeEntry != nullptr )
-            {
+    else {
+        for (int idxEntry = 0; idxEntry < i_pTreeEntry->count(); ++idxEntry) {
+            CIdxTreeEntry* pTreeEntry = i_pTreeEntry->at(idxEntry);
+            if (pTreeEntry != nullptr) {
                 save(i_xmlStreamWriter, pTreeEntry);
             }
         }
     }
-
-} // save
+}

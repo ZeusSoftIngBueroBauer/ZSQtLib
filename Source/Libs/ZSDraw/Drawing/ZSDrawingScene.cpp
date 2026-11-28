@@ -2510,19 +2510,16 @@ CGraphObjGroup* CDrawingScene::groupGraphObjsSelected()
         // Selection points, labels and connection lines will not become part of the newly
         // created group and will be removed from the list of selected items.
         // In addition items which already belong as childs to a group got to be removed
-        // from the list of selected items as those childs will be added to the new group
-        // as childs of the item.
+        // from the list of selected items as those childs will be implicitly added together
+        // with the group they belong to.
         QList<QGraphicsItem*> arpGraphicsItemsToBeRemoved;
         for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
             CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
             if (pGraphObjSelected->isConnectionLine() || pGraphObjSelected->isSelectionPoint() || pGraphObjSelected->isLabel()) {
                 arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
             }
-            else if (pGraphicsItemSelected->parentItem() != nullptr) {
-                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected->parentItem());
-                if (pGraphObjGroup != nullptr) {
-                    arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
-                }
+            else if (pGraphObjSelected->parentGroup() != nullptr) {
+                arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
             }
         }
         for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsToBeRemoved) {

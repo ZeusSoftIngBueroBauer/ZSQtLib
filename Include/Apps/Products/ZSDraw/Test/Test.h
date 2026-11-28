@@ -27,6 +27,10 @@ may result in using the software modules.
 #ifndef ZSApps_Draw_Test_h
 #define ZSApps_Draw_Test_h
 
+#include "ZSTest/ZSTest.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
+
 #include <QtCore/qstring.h>
 #include <QtCore/qpoint.h>
 #include <QtCore/qrect.h>
@@ -34,9 +38,6 @@ may result in using the software modules.
 #include <QtGui/qpainter.h>
 #include <QtGui/qpolygon.h>
 
-#include "ZSTest/ZSTest.h"
-#include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSDraw/Common/ZSDrawUnits.h"
 
 class QGraphicsItem;
 class QPainterPath;
@@ -47,7 +48,7 @@ class QPainterPath;
 #define TEST_LABELS_CHECK_POS 1
 #define TEST_LABELS_CHECK_POLARCOORS 1
 
-#define TEST_ALL 0
+#define TEST_ALL 1
 
 #if TEST_ALL == 0
 

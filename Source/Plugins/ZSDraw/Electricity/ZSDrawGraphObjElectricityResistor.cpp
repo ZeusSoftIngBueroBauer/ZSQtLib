@@ -123,7 +123,7 @@ CGraphObjResistor::CGraphObjResistor(
     // The group itself will be positioned by the caller of the ctor relative to
     // the caller's coordinate system.
 
-    CPhysValRect physValRect = initialSize(m_pDrawingScene, Units.Length.px);
+    CPhysValRect physValRect = initialSize(m_pDrawingScene);
     QRectF rctBounding = physValRect.toQRectF(Units.Length.px);
     double fBodyWidth = rctBounding.width() / 3.0;
     QRectF rctBody(rctBounding.center().x() - fBodyWidth/2.0, rctBounding.top(), fBodyWidth, rctBounding.height());

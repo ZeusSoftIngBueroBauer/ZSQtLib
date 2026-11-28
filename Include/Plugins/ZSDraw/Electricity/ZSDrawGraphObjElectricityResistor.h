@@ -54,10 +54,9 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw::Plugins::Electricity"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjResistor"; }
-    static CPhysValRect initialSize(ZS::Draw::CDrawingScene* i_pDrawingScene, const ZS::PhysVal::CUnit& i_unit) {
+    static CPhysValRect initialSize(ZS::Draw::CDrawingScene* i_pDrawingScene) {
         QRectF rctBounding(QPointF(0.0, 0.0), QSizeF(60.0, 10.0));
-        CPhysValRect physValRect(*i_pDrawingScene, rctBounding.topLeft(), rctBounding.size(), Units.Length.px);
-        return i_pDrawingScene->convert(physValRect, i_unit);
+        return CPhysValRect(*i_pDrawingScene, rctBounding.topLeft(), rctBounding.size());
     }
 public: // ctors and dtor
     CGraphObjResistor(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");

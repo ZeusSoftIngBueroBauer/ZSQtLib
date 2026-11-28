@@ -68,9 +68,9 @@ public: // overridables
     virtual void setEnabled( ZS::System::EEnabled i_enabled );
     virtual ZS::System::EEnabled getEnabled() const { return m_enabled; }
     virtual bool isEnabled() const { return m_enabled == ZS::System::EEnabled::Yes; }
-public: // overridables
     virtual void setToolTip( const QString& i_strToolTip );
     virtual QString getToolTip() const { return m_strToolTip; }
+    virtual void setTestResult(const CEnumTestResult& i_result);
 public: // overridables
     virtual int getDataRowCount() const { return m_arDataRows.size(); }
     virtual void addDataRow(const QHash<QString, QVariant>& i_dataRow);

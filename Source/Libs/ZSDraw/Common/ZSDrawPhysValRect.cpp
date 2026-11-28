@@ -915,9 +915,6 @@ void CPhysValRect::setCenter(const QPointF& i_pt)
 void CPhysValRect::setCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     m_ptCenter = i_physValPoint.toQPointF(m_unit);
     invalidateSelectionPoints();
 }
@@ -962,9 +959,6 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValSize.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
     //if (!sizeF.isValid()) {
     //    throw CException(__FILE__, __LINE__, EResultInvalidSize);
@@ -1010,9 +1004,6 @@ void CPhysValRect::setWidth(double i_fWidth)
 void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValWidth.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     double fWidth = i_physValWidth.getVal(m_unit);
     if (fWidth < 0.0) {
         throw CException(__FILE__, __LINE__, EResultInvalidValue);
@@ -1080,9 +1071,6 @@ void CPhysValRect::setWidthByMovingLeftCenter(const QPointF& i_pt)
 void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
@@ -1184,9 +1172,6 @@ void CPhysValRect::setWidthByMovingRightCenter(const QPointF& i_pt)
 void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
@@ -1292,9 +1277,6 @@ void CPhysValRect::setHeight(double i_fHeight)
 void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValHeight.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     double fHeight = i_physValHeight.getVal(m_unit);
     if (fHeight < 0.0) {
         throw CException(__FILE__, __LINE__, EResultInvalidValue);
@@ -1362,12 +1344,6 @@ void CPhysValRect::setHeightByMovingTopCenter(const QPointF& i_pt)
 void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
@@ -1484,9 +1460,6 @@ void CPhysValRect::setHeightByMovingBottomCenter(const QPointF& i_pt)
 void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
@@ -1641,9 +1614,6 @@ void CPhysValRect::setTopLeft(const QPointF& i_pt)
 void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomRight();
     // Diagonale from TopLeft to BottomRight.
@@ -1769,9 +1739,6 @@ void CPhysValRect::setTopRight(const QPointF& i_pt)
 void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomLeft();
     // Diagonale from TopRight to BottomLeft:
@@ -1897,9 +1864,6 @@ void CPhysValRect::setBottomRight(const QPointF& i_pt)
 void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topLeft();
     // Diagonale from BottomRight to TopLeft:
@@ -2025,9 +1989,6 @@ void CPhysValRect::setBottomLeft(const QPointF& i_pt)
 void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topRight();
     // Diagonale from BottomLeft to TopTight:

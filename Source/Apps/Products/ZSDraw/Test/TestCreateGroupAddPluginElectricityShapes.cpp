@@ -159,7 +159,7 @@ void CTest::createTestGroupAddPluginElectricityShapesResistor(
     strObjName = c_strGraphObjNameElectricityResistor1;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosElectricityResistor1 = QPointF(200.0, 200.0);
-    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
+    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene);
     m_pPhysValRectElectricityResistor1->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
     pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
@@ -188,7 +188,7 @@ void CTest::createTestGroupAddPluginElectricityShapesResistor(
     strObjName = c_strGraphObjNameElectricityResistor2;
     m_hshGraphObjNameToKeys.insert(strObjName, pIdxTree->buildKeyInTreeStr(strEntryType, strObjName));
     m_ptPosElectricityResistor1 = QPointF(400.0, 200.0);
-    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene, unit);
+    *m_pPhysValRectElectricityResistor1 = CGraphObjResistor::initialSize(m_pDrawingScene);
     m_pPhysValRectElectricityResistor1->setCenter(CPhysValPoint(*m_pDrawingScene, m_ptPosElectricityResistor1, Units.Length.px));
     pTestStep->setConfigValue("GraphObjFactoryGroup", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
